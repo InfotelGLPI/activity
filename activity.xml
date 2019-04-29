@@ -3,7 +3,7 @@
     <name>Activity</name>
     <key>activity</key>
     <state>stable</state>
-    <logo></logo>
+    <logo>https://raw.githubusercontent.com/InfotelGLPI/activity/master/wiki/activity.png</logo>
     <description>
         <short>
             <fr><![CDATA[Gestion de vos activités. Ce plugin vous permet d'ajouter des activités dans le planning. Gestion des congés.]]></fr>
