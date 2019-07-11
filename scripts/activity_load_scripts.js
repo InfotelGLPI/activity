@@ -28,14 +28,14 @@
                   }
                }
             });
-          if($("#activity_link").length == 0) {
-              $("#c_preference ul #bookmark_link").before("\
+         if($("#activity_link").length == 0){
+          $("#c_preference ul #bookmark_link").before("\
                 <li id='activity_link'>\
                     <a href='#' id='showLateralMenuLink'>\
-                        <i id='activity_icon' class='far fa-activity' title=''  class='button-icon'></i>\
+                        <span id='activity_icon' title=''  class='button-icon'></span>\
                     </a>\
                 </li>");
-          }
+         }
          //            });
       }
 

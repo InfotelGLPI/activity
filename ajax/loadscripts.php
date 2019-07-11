@@ -3,7 +3,7 @@
 /*
  -------------------------------------------------------------------------
  Activity plugin for GLPI
- Copyright (C) 2019 by the Activity Development Team.
+ Copyright (C) 2013 by the Activity Development Team.
  -------------------------------------------------------------------------
 
  LICENSE
@@ -34,13 +34,21 @@ header("Content-Type: text/html; charset=UTF-8");
 if (isset($_POST['action'])) {
    switch ($_POST['action']) {
       case "load" :
+         //showTicketTaskOnCRA
+         if ((Session::getCurrentInterface() == "central"
+               && strpos($_SERVER['HTTP_REFERER'], "ticket.form.php") !== false
+               && strpos($_SERVER['HTTP_REFERER'], 'id=') !== false)
+                  || (Session::getCurrentInterface() == "central"
+                  && strpos($_SERVER['HTTP_REFERER'], "planning.php") !== false )) {
+            echo "<script type='text/javascript'>showTicketTaskOnCRA(".json_encode(['root_doc' => $CFG_GLPI['root_doc']]).");</script>";
+         }
+
          //TODO comment For ?
          if (Session::getCurrentInterface() == "central"
                && (strpos($_SERVER['REQUEST_URI'], "cra.php") !== false)) {
             $lang_month  = array_values(Toolbox::getMonthsOfYearArray());
             echo "<script type='text/javascript'>changeClickTodayActivity(".json_encode(['lang_month' => $lang_month]).");</script>";
          }
-
          Ajax::createSlidePanel(
              'showLateralMenu',
              [
@@ -48,7 +56,6 @@ if (isset($_POST['action'])) {
                  'url'       => $CFG_GLPI['root_doc'] . '/plugins/activity/ajax/lateralmenu.php'
              ]
          );
-
          break;
    }
 } else {

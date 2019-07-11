@@ -1,29 +1,11 @@
 <?php
 
+
 /*
- -------------------------------------------------------------------------
- Activity plugin for GLPI
- Copyright (C) 2019 by the Activity Development Team.
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of Activity.
-
- Activity is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
-
- Activity is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with Activity. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
-*/
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 
 if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
@@ -347,7 +329,8 @@ class PluginActivityPlanning extends Planning {
          // attach button (planning and refresh) in planning header
          $('#planning .fc-toolbar .fc-center h2')
             .after(
-               $('<i id=\"refresh_planning\" class=\"fas fa-sync-alt fa-1x pointer\"></i>')
+               $('<img id=\"refresh_planning\" class=\"pointer\" src=\"".
+                  $CFG_GLPI['root_doc']."/pics/refresh.png\">')
             ).after(
                $('<input type=\"hidden\" id=\"planning_datepicker\">')
             );
@@ -361,8 +344,9 @@ class PluginActivityPlanning extends Planning {
             changeMonth:     true,
             changeYear:      true,
             numberOfMonths:  3,
-            showOn:          'both',
-            buttonText: '<i class=\"far fa-calendar-alt\"></i>',
+            showOn:          'button',
+            buttonImage:     '".$CFG_GLPI['root_doc']."/pics/calendar.png',
+            buttonImageOnly: true,
             dateFormat:      'DD, d MM, yy',
             onSelect: function(dateText, inst) {
                var selected_date = $(this).datepicker('getDate');

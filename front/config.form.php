@@ -3,7 +3,7 @@
 /*
  -------------------------------------------------------------------------
  Activity plugin for GLPI
- Copyright (C) 2019 by the Activity Development Team.
+ Copyright (C) 2013 by the Activity Development Team.
  -------------------------------------------------------------------------
 
  LICENSE
@@ -62,6 +62,6 @@ if ($plugin->isActivated("activity")) {
 } else {
    Html::header(__('Setup'), '', "config", "plugins");
    echo "<div align='center'><br><br>";
-   echo "<i class='fas fa-exclamation-triangle fa-4x' style='color:orange'></i><br><br>";
+   echo "<img src=\"".$CFG_GLPI["root_doc"]."/pics/warning.png\" alt=\"warning\"><br><br>";
    echo "<b>".__('Please activate the plugin', 'activity')."</b></div>";
 }

@@ -3,7 +3,7 @@
 /*
   -------------------------------------------------------------------------
   Activity plugin for GLPI
-  Copyright (C) 2019 by the Activity Development Team.
+  Copyright (C) 2013 by the Activity Development Team.
   -------------------------------------------------------------------------
 
   LICENSE
@@ -434,26 +434,26 @@ class PluginActivityHoliday extends CommonDBTM {
          PluginActivityActions::HOLIDAY_REQUEST => [
             'link'    => "#",
             'onclick' => Html::jsGetElementbyID('holiday') . ".dialog('open');return false;",
-            'img'     => "fas fa-user-clock",
+            'img'     => $CFG_GLPI["root_doc"] . "/plugins/activity/pics/add_holiday.png",
             'label'   => __('Create a holiday request', 'activity'),
             'rights'  => Session::haveRight("plugin_activity_can_requestholiday", 1) && sizeof($have_manager) > 0,
          ],
 
          PluginActivityActions::LIST_HOLIDAYS    => [
             'link'   => $CFG_GLPI["root_doc"] . "/plugins/activity/front/holiday.php",
-            'img'    => "fas fa-search",
+            'img'    => $CFG_GLPI["root_doc"] . "/plugins/activity/pics/holiday.png",
             'label'  => __('List of holidays', 'activity'),
             'rights' => Session::haveRight("plugin_activity_can_requestholiday", 1),
          ],
          PluginActivityActions::APPROVE_HOLIDAYS => [
             'link'   => $url,
-            'img'    => "fas fa-user-check",
+            'img'    => $CFG_GLPI["root_doc"] . "/plugins/activity/pics/validation.png",
             'label'  => _n('Approve holiday', 'Approve holidays', 2, 'activity'),
             'rights' => Session::haveRight("plugin_activity_can_validate", 1) && sizeof($users_id_validate) > 0,
          ],
          PluginActivityActions::HOLIDAY_COUNT    => [
             'link'   => $CFG_GLPI["root_doc"] . "/plugins/activity/front/holidaycount.php",
-            'img'    => "far fa-clock",
+            'img'    => $CFG_GLPI["root_doc"] . "/plugins/activity/pics/holiday_count.png",
             'label'  => _n('Holiday counter', 'Holiday counters', 2, 'activity'),
             'rights' => Session::haveRight("plugin_activity_can_requestholiday", 1),
          ]
@@ -464,7 +464,7 @@ class PluginActivityHoliday extends CommonDBTM {
          $add = [
             PluginActivityActions::MANAGER => [
                'link'   => $CFG_GLPI["root_doc"] . "/front/preference.php?glpi_tab=PluginActivityPreference$1",
-               'img'    => "fas fa-user-tie",
+               'img'    => $CFG_GLPI["root_doc"] . "/plugins/activity/pics/manager.png",
                'label'  => __('Add a manager', 'activity'),
                'rights' => Session::haveRight("plugin_activity_can_requestholiday", 1),
             ]
@@ -1167,7 +1167,7 @@ class PluginActivityHoliday extends CommonDBTM {
          'comments' => 1];
 
       if (empty($ID)) {
-         $params['condition'] = ['archived' => 0];
+         $params['condition'] = "`archived` = 0";
          $params['on_change'] = "plugin_activity_show_details(\"" . $CFG_GLPI['root_doc'] . "\", this.value);";
       }
 
@@ -1465,7 +1465,7 @@ class PluginActivityHoliday extends CommonDBTM {
       echo "<table class='tab_cadre_fixe'>";
       echo "<tr class='tab_bg_1'>";
       echo "<td>\n";
-      echo "<i class='fas fa-info-circle fa-1x'></i>&nbsp;" . __("You must fill a registration number for this user before generating the TXT file.", "activity");
+      echo "<img src='" . $CFG_GLPI['root_doc'] . "/plugins/activity/pics/info.png' alt='--' />&nbsp;" . __("You must fill a registration number for this user before generating the TXT file.", "activity");
       echo "<br/>";
       echo __("See this page", "activity") . " - <a href='" . $user->getLinkURL() . "' target='_blank'>" . $dbu->getUserName($user->fields['id']) . " </a>";
       echo "</td></tr></table>";
@@ -1525,7 +1525,7 @@ class PluginActivityHoliday extends CommonDBTM {
 
          echo "<ul style='list-style: none' >";
          echo "<li style='margin-left:16px'><a href='$url' target='_blank' style='cursor:pointer;'>";
-         echo "<i class='far fa-file-alt fa-2x'></i>&nbsp;" . __('Generate TXT file for this holiday', 'activity');
+         echo "<img src='" . $CFG_GLPI['root_doc'] . "/plugins/activity/pics/page.png' />&nbsp;" . __('Generate TXT file for this holiday', 'activity');
          echo "</a></li>";
 
          $used_mail_for_holidays = "";
@@ -1540,7 +1540,7 @@ class PluginActivityHoliday extends CommonDBTM {
             echo "&Body=" . $this->getBodyMail($dateBegin, date("d/m/Y", strtotime($holiday->fields['begin'])), $userName, $approverFullname);
 
             echo "'>";
-            echo "<i class='far fa-envelope fa-2x'></i>&nbsp;" . __('Generate mail for this holiday', 'activity');
+            echo "<img src='" . $CFG_GLPI['root_doc'] . "/plugins/activity/pics/email_add.png' />&nbsp;" . __('Generate mail for this holiday', 'activity');
             echo "</a></li>";
          }
          echo "</ul>";
@@ -1608,40 +1608,17 @@ class PluginActivityHoliday extends CommonDBTM {
 
       $who       = $options['who'];
       $who_group = $options['who_group'];
-      $whogroup  = $options['whogroup'];
       $begin     = $options['begin'];
       $end       = $options['end'];
 
-      // Get items to print
       $ASSIGN = "";
-
-      if ($who_group === "mine") {
-         if (count($_SESSION["glpigroups"])) {
-            $groups = implode("','", $_SESSION['glpigroups']);
-            $ASSIGN = "`users_id`
-                           IN (SELECT DISTINCT `users_id`
-                               FROM `glpi_groups_users`
-                               WHERE `glpi_groups_users`.`groups_id` IN ('$groups'))
-                                     AND ";
-         } else { // Only personal ones
-            $ASSIGN = "`users_id` = '$who'
-                       AND ";
-         }
-      } else {
-         if ($who > 0) {
-            $ASSIGN = "`users_id` = '$who'
-                       AND ";
-         }
-         if ($who_group > 0) {
-            $ASSIGN = "`users_id` IN (SELECT `users_id`
-                                     FROM `glpi_groups_users`
-                                     WHERE `groups_id` = '$who_group')
-                                           AND ";
-         }
-         if ($whogroup > 0) {
-            $ASSIGN = "`groups_id` = '$whogroup'
-                       AND ";
-         }
+      if ($who > 0) {
+         $ASSIGN = " AND (`users_id` = '$who')";
+      }
+      if ($who_group > 0) {
+         $ASSIGN = " AND `users_id` IN (SELECT `users_id`
+                                       FROM `glpi_groups_users`
+                                       WHERE `groups_id` = '$who_group')";
       }
 
       $query = " SELECT `glpi_plugin_activity_holidays`.`id`,
@@ -1657,13 +1634,13 @@ class PluginActivityHoliday extends CommonDBTM {
       $query .= "LEFT JOIN `glpi_plugin_activity_holidaytypes`
                       ON (`glpi_plugin_activity_holidaytypes`.`id` = `glpi_plugin_activity_holidays`.`plugin_activity_holidaytypes_id`) ";
       $query .= " WHERE ";
-      $query.= " $ASSIGN ";
-      $query.= " `is_planned`= 1 ";
-      $query.= " AND `glpi_plugin_activity_holidays`.`global_validation`= ".PluginActivityCommonValidation::ACCEPTED;
+      $query .= " `is_planned`= 1 ";
+      $query .= " AND `glpi_plugin_activity_holidays`.`global_validation`= " . PluginActivityCommonValidation::ACCEPTED;
 
       //$query.= getEntitiesRestrictRequest("AND","glpi_plugin_activity_holidays", '',
       //                                       $_SESSION["glpiactiveentities"],false);
 
+      $query .= " $ASSIGN ";
       $query .= " AND '$begin' < `end` AND '$end' > `begin`
                   ORDER BY `begin` ";
 
@@ -2014,8 +1991,9 @@ class PluginActivityHoliday extends CommonDBTM {
       echo "$(document).ready(function() {
 
                $('#" . $id . "').datepicker({
-                       showOn: 'both',
-                       buttonText: '<i class=\"far fa-calendar-alt\"></i>',
+                       showOn: 'button',
+                       buttonImageOnly: true,
+                       buttonImage: '" . $CFG_GLPI['root_doc'] . "/plugins/activity/pics/cal.png',
                        width : 2,
                        height : 2,
                        dateFormat: 'dd-mm-yy',

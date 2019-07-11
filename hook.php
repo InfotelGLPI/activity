@@ -3,7 +3,7 @@
 /*
  -------------------------------------------------------------------------
  Activity plugin for GLPI
- Copyright (C) 2019 by the Activity Development Team.
+ Copyright (C) 2013 by the Activity Development Team.
  -------------------------------------------------------------------------
 
  LICENSE
@@ -174,8 +174,7 @@ function plugin_activity_uninstall() {
                     "glpi_plugin_activity_holidayvalidations",
                     "glpi_plugin_activity_holidaycounts",
                     "glpi_plugin_activity_holidayperiods",
-                    "glpi_plugin_activity_snapshots",
-                    "glpi_plugin_activity_projecttasks"];
+                    "glpi_plugin_activity_snapshots"];
    foreach ($tables as $table) {
       $DB->query("DROP TABLE IF EXISTS `$table`;");
    }
@@ -326,3 +325,32 @@ function plugin_activity_addWhere($link, $nott, $itemtype, $ID, $val, $searchtyp
    }
    return "";
 }
+
+//function plugin_activity_display_cmenu() {
+//   global $CFG_GLPI;
+//
+//   // activivty load
+//   $plugin = new Plugin();
+//
+//   if ($plugin->isActivated("activity")) {
+//      if (Session::haveRight("plugin_activity", UPDATE)
+//      || Session::haveRight("plugin_activity_can_requestholiday", 1)
+//         || Session::haveRight("plugin_activity_can_validate", 1)) {
+//         echo "<li id='activity_link'>";
+//         Ajax::createSlidePanel(
+//            'showLateralMenu',
+//            [
+//               'title'     => _n('Activity', 'Activities', 1, 'activity'),
+//               'url'       => $CFG_GLPI['root_doc'] . '/plugins/activity/ajax/lateralmenu.php',
+//               //'icon'      => '/pics/menu_config.png',
+//               //'icon_url'  => $CFG_GLPI['root_doc'] . '/ajax/savedsearch.php?action=show',
+//               //'icon_txt'  => _n('Activity', 'Activities', 1, 'activity')
+//            ]
+//         );
+//         echo "<a href='#' id='showLateralMenuLink'>";
+//         echo "<span id='activity_icon' title=\""._n('Activity', 'Activities', 1, 'activity').
+//                "\"  class='button-icon'></span>";
+//         echo "</a></li>";
+//      }
+//   }
+//}

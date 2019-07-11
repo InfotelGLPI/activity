@@ -3,7 +3,7 @@
 /*
  -------------------------------------------------------------------------
  Activity plugin for GLPI
- Copyright (C) 2019 by the Activity Development Team.
+ Copyright (C) 2013 by the Activity Development Team.
  -------------------------------------------------------------------------
 
  LICENSE
@@ -139,7 +139,7 @@ class PluginActivityDashboard extends CommonGLPI {
             $widget     = new PluginMydashboardHtml();
             $title      = __('Activity in the month', 'activity') . " (" . __(strftime("%B")) . ")";
             $widget->setWidgetTitle($title);
-            $widget->setWidgetComment(__("Display of activity by month for a user (tickets, activity, holidays, others)", "activity"));
+            $widget->setWidgetComment(__("Display of activity by month for a user (tickets, activity, holidays, others)", "mydashboard"));
             $datas = [];
             $name  = [];
             $i     = 0;

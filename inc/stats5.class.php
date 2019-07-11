@@ -1,9 +1,10 @@
 <?php
-
 /*
  -------------------------------------------------------------------------
  Activity plugin for GLPI
- Copyright (C) 2019 by the Activity Development Team.
+ Copyright (C) 2006-2012 by the Activity Development Team.
+
+ https://forge.indepnet.net/projects/activity
  -------------------------------------------------------------------------
 
  LICENSE
@@ -24,7 +25,6 @@
  along with Activity. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
 */
-
 
 class PluginActivityStats5 implements PluginActivityInterface {
 

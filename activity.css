@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------
  Activity plugin for GLPI
- Copyright (C) 2019 by the Activity Development Team.
+ Copyright (C) 2013 by the Activity Development Team.
  -------------------------------------------------------------------------
 
  LICENSE
@@ -122,12 +122,11 @@ a.activity_href {
     padding : 10px;
 }
 
-.fa-activity::before {
-   content: "\f073";
-   font-family: "Font Awesome 5 Free";
-   color: #FFF;
-   font-size: 2em;
-   color: white;
+#c_preference #activity_icon {
+   background: url("../activity/pics/activity.png");
+   display: inline-block;
+   width: 18px;
+   height: 18px;
 }
 
 /** "slide panel" component */

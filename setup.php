@@ -3,7 +3,7 @@
 /*
  -------------------------------------------------------------------------
  Activity plugin for GLPI
- Copyright (C) 2019 by the Activity Development Team.
+ Copyright (C) 2013 by the Activity Development Team.
  -------------------------------------------------------------------------
 
  LICENSE
@@ -25,8 +25,6 @@
  --------------------------------------------------------------------------
 */
 
-define('PLUGIN_ACTIVITY_VERSION', '2.5.0');
-
 // Init the hooks of the plugins -Needed
 function plugin_init_activity() {
    global $PLUGIN_HOOKS, $CFG_GLPI;
@@ -45,9 +43,11 @@ function plugin_init_activity() {
        || Session::haveRight("plugin_activity_can_requestholiday", 1)
        || Session::haveRight("plugin_activity_can_validate", 1)) {
 
-      $PLUGIN_HOOKS['add_javascript']['activity'] = ['scripts/scripts-activityholidays.js',
+      $PLUGIN_HOOKS['add_javascript']['activity'] = ['scripts/scripts-activity.js',
+                                                     'scripts/scripts-activityholidays.js',
                                                      'scripts/activity_load_scripts.js'];
-      $PLUGIN_HOOKS['javascript']['activity']     = ["/plugins/activity/scripts/scripts-activitydate.js",
+      $PLUGIN_HOOKS['javascript']['activity']     = ["/plugins/activity/scripts/scripts-activity.js",
+                                                     "/plugins/activity/scripts/scripts-activitydate.js",
                                                      "/plugins/activity/scripts/scripts-activityholidays.js",
                                                      "/plugins/activity/scripts/activity_load_scripts.js"];
    }
@@ -106,14 +106,13 @@ function plugin_init_activity() {
             if (Session::haveRight('plugin_activity', READ)) {
                $PLUGIN_HOOKS["menu_toadd"]['activity']          = ['tools' => 'PluginActivityMenu'];
                $PLUGIN_HOOKS['helpdesk_menu_entry']['activity'] = '/front/menu.php';
+               if (class_exists('PluginMydashboardMenu')) {
+                  $PLUGIN_HOOKS['mydashboard']['activity'] = ["PluginActivityDashboard"];
+               }
             }
 
             $PLUGIN_HOOKS['redirect_page']['activity'] = 'front/holiday.form.php';
          }
-         if (class_exists('PluginMydashboardMenu')) {
-            $PLUGIN_HOOKS['mydashboard']['activity'] = ["PluginActivityDashboard"];
-         }
-
          if (Session::haveRight("plugin_activity", UPDATE) && class_exists('PluginActivityProfile')) {
 
             $PLUGIN_HOOKS['config_page']['activity']        = 'front/config.form.php';
@@ -143,11 +142,6 @@ function plugin_init_activity() {
          }
 
       }
-
-      // Ticket task cra
-      if (Session::haveRight("plugin_activity", READ)) {
-         $PLUGIN_HOOKS['post_item_form']['activity'] = ['PluginActivityTicketTask', 'postForm'];
-      }
    }
    //Planning hook
    $PLUGIN_HOOKS['display_planning']['activity']  = ['PluginActivityActivity'      => "displayPlanningItem",
@@ -163,28 +157,20 @@ function plugin_version_activity() {
 
    return [
       'name'           => _n('Activity', 'Activities', 2, 'activity'),
-      'version'        => PLUGIN_ACTIVITY_VERSION,
+      'version'        => '2.4.0',
       'author'         => "Xavier Caillaud / Infotel",
       'license'        => 'GPLv2+',
       'homepage'       => '',
-      'requirements'   => [
-         'glpi' => [
-            'min' => '9.4',
-            'dev' => false
-         ]
-      ]];
+      'minGlpiVersion' => '9.3'];
 }
 
 // Optional : check prerequisites before install : may print errors or add to message after redirect
 function plugin_activity_check_prerequisites() {
-   if (version_compare(GLPI_VERSION, '9.4', 'lt') 
-         || version_compare(GLPI_VERSION, '9.5', 'ge')) {
-      if (method_exists('Plugin', 'messageIncompatible')) {
-         echo Plugin::messageIncompatible('core', '9.4');
-      }
+   if (version_compare(GLPI_VERSION, '9.3', 'lt')
+       || version_compare(GLPI_VERSION, '9.4', 'ge')) {
+      echo __('This plugin requires GLPI >= 9.3');
       return false;
    }
-
    return true;
 }
 

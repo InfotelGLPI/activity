@@ -3,7 +3,7 @@
 /*
  -------------------------------------------------------------------------
  Activity plugin for GLPI
- Copyright (C) 2019 by the Activity Development Team.
+ Copyright (C) 2013 by the Activity Development Team.
  -------------------------------------------------------------------------
 
  LICENSE
@@ -411,11 +411,11 @@ class PluginActivityHolidayValidation extends CommonDBChild {
             echo "<tr class='tab_bg_1'>";
             echo "<td class='center'>";
             if ($data['status'] == PluginActivityCommonValidation::ACCEPTED) {
-               echo "<div style='color:forestgreen'><i class='fa fa-check-circle fa-4x'></i><br>" . $status . "</div>";
+               echo "<div style='color:forestgreen'><i class='fa fa-check-circle-o fa-4x'></i><br>" . $status . "</div>";
             } else if ($data['status'] == PluginActivityCommonValidation::REFUSED) {
-               echo "<div style='color:darkred'><i class='fa fa-times-circle fa-4x'></i><br>" . $status . "</div>";
+               echo "<div style='color:darkred'><i class='fa fa-times-circle-o fa-4x'></i><br>" . $status . "</div>";
             } else {
-               echo "<div style='color:orange'><i class='fa fa-question-circle fa-4x'></i><br>" . $status . "</div>";
+               echo "<div style='color:orange'><i class='fa fa-question-circle-o fa-4x'></i><br>" . $status . "</div>";
             }
             echo "</td>";
 

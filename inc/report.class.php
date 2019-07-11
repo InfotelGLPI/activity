@@ -3,7 +3,7 @@
 /*
   -------------------------------------------------------------------------
   Activity plugin for GLPI
-  Copyright (C) 2019 by the Activity Development Team.
+  Copyright (C) 2013 by the Activity Development Team.
   -------------------------------------------------------------------------
 
   LICENSE
@@ -219,7 +219,7 @@ class PluginActivityReport extends CommonDBTM {
             echo "<td><a href='".$CFG_GLPI['root_doc']."/front/document.form.php?id=".$doc->fields['id']."' target='_blank'>".$doc->fields['name']."</a></td>";
             echo "<td>".$doc->getDownloadLink()."</td>";
             echo "<td>".Html::convDateTime($doc->fields['date_mod'])."</td>";
-            echo "<td><input type='submit' class='submit' name='delete_snapshot[".$doc->fields['id']."]' value='".__("Put in trashbin")."'</td>";
+            echo "<td><input type='submit' class='submit' name='delete_snapshot[".$doc->fields['id']."]' value='".__("Put in dustbin")."'</td>";
             echo "</tr>";
          }
          echo "</table>";
@@ -262,9 +262,6 @@ class PluginActivityReport extends CommonDBTM {
          "comment"         =>    "**".$input['year']."-".$input['month']."** ".__("Snapshot taken in", "activity")." ".Html::convDateTime(date("Y-m-d H:i:s")),
          "_no_message"     =>    "true"
       ];
-
-      $tab["_filename"][0] = $filename;
-
       $document_id = $doc->add($tab);
       if ($document_id) {
          $documentitem = new Document_Item();
@@ -300,9 +297,8 @@ class PluginActivityReport extends CommonDBTM {
       echo "<option value='".Search::PDF_OUTPUT_LANDSCAPE."'>".__('Export CRA', 'activity').
            "</option>";
       echo "</select>&nbsp;";
-      echo "<button type='submit' name='export' class='unstyled pointer' ".
-           " title=\"" . _sx('button', 'Export') . "\">" .
-           "<i class='far fa-save'></i><span class='sr-only'>"._sx('button', 'Export')."<span>";
+      echo "<input type='image' name='export' src='".$CFG_GLPI["root_doc"]."/pics/greenbutton.png'
+             title=\"".__s('Export')."\" value=\"".__s('Export')."\">";
    }
 
    function showGenericSearch($input) {

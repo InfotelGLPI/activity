@@ -1,0 +1,152 @@
+/*body {
+   overflow-x:hidden;
+   overflow-y: auto;
+   margin:30;
+}*/
+
+#plugin_activity_page {
+   /*width:960px;*/
+   position:relative;
+   margin-top:20px;
+   padding-left:10px;
+}
+
+.plugin_activity_menu_btn {
+   /*background: url(../lateralmenu/img/menu_calendar.png) center center no-repeat;
+   display:block;
+   height:22px;
+   width:42px;
+   position:absolute;
+   top:80px;
+   right:20px;
+   */
+   display:block;
+   /*border: 1px solid #7DAEDF;*/
+   background:url(../lateralmenu/img/open.png) center center no-repeat;
+   height:47px;
+   width:57px;
+   position:absolute;
+   top:140px;
+   right:10px;
+   z-index:9999;
+}
+
+#plugin_activity_menu {
+   height:100%;
+   position:fixed;
+   background:#3A5693;
+   top:0;
+   bottom:0;
+   height:100%;
+   width:220px;
+   right:-220px;
+   z-index:9999;
+   -moz-opacity:0.95;
+   opacity: 0.95;
+   filter:alpha(opacity=95);
+}
+
+#plugin_activity_menu ul {
+   padding:0;
+   margin:0;
+   list-style:none;
+   color:white;
+}
+
+#plugin_activity_menu ul li {
+   /*height:47px;*/
+   padding-left:30px;
+   line-height:47px;
+   border-bottom:1px solid #EEF4FB;
+}
+
+#plugin_activity_menu ul li.active {
+   background:#476E95;
+   color:#FFF;
+}
+
+#plugin_activity_menu ul li:hover {
+   background:#CCC;
+}
+
+#plugin_activity_menu ul li a {
+   color:#FFF;
+   text-decoration:none;
+   text-align :left;
+   /*font-family: 'Open Sans', sans-serif;*/
+   font-size:14px;
+   display:block;
+}
+
+.plugin_activity_close {
+   display:block;
+   /*border: 1px solid #7DAEDF;*/
+   background:url(../lateralmenu/img/close.png) center center no-repeat;
+   height:47px;
+   width:57px;
+   position:absolute;
+   top:140px;
+   left:-59px;
+}
+
+
+/* Disable iOS/WinMobile font size changes */
+@media screen and (max-width: 600px),
+screen and (max-device-width: 480px) {
+   html {
+      -ms-text-size-adjust: none;
+      -webkit-text-size-adjust: none;
+   }
+}
+
+/* ==== Media Queries ==== */
+
+/* Wide Screen */
+@media (min-width : 1280px) {
+   
+   #plugin_activity_page {
+      width:1280px;
+   }
+   
+}
+
+/* Default Screen */
+@media (min-width : 960px) and (max-width : 1280px) { 
+   
+   #plugin_activity_page {
+      width:960px;
+   }
+
+}
+
+/* Tablet Screen Big */
+@media (min-width : 720px) and (max-width : 960px) {
+   
+   #plugin_activity_page {
+      width:720px;
+   }
+
+}
+
+/* Tablet Screen Small */
+@media (min-width : 640px) and (max-width : 720px) {
+   
+   #plugin_activity_page {
+      width:640px;
+   }
+    
+}
+
+/* Mobile Screen Wide */
+@media (max-width : 640px) {
+   
+   #plugin_activity_page {
+      width:100%;
+      padding:0;
+   }
+   
+   .plugin_activity_menu_btn {
+      right:10px;	
+   }
+
+}

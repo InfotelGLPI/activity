@@ -3,7 +3,7 @@
 /*
   -------------------------------------------------------------------------
   Activity plugin for GLPI
-  Copyright (C) 2019 by the Activity Development Team.
+  Copyright (C) 2013 by the Activity Development Team.
   -------------------------------------------------------------------------
 
   LICENSE
@@ -372,19 +372,19 @@ class PluginActivityActivity extends CommonDBTM {
       $listActions = [
          PluginActivityActions::ADD_ACTIVITY    => [
             'link'   => $CFG_GLPI["root_doc"] . "/front/planning.php",//plugins/activity/front/activity.form.php
-            'img'    => "far fa-calendar-plus",
+            'img'    => $CFG_GLPI["root_doc"] . "/plugins/activity/pics/add.png",
             'label'  => __('Add an activity', 'activity'),
             'rights' => Session::haveRight("plugin_activity", CREATE),
          ],
          PluginActivityActions::LIST_ACTIVITIES => [
             'link'   => $CFG_GLPI["root_doc"] . "/plugins/activity/front/activity.php",
-            'img'    => "far fa-calendar-alt",
+            'img'    => $CFG_GLPI["root_doc"] . "/plugins/activity/pics/calendar.png",
             'label'  => __('List of activities', 'activity'),
             'rights' => Session::haveRight("plugin_activity", READ),
          ],
          PluginActivityActions::CRA             => [
             'link'   => $CFG_GLPI["root_doc"] . "/plugins/activity/front/cra.php",
-            'img'    => "far fa-calendar-check",
+            'img'    => $CFG_GLPI["root_doc"] . "/plugins/activity/pics/cra.png",
             'label'  => __('CRA', 'activity'),
             'rights' => Session::haveRight("plugin_activity_statistics", 1),
          ]
@@ -452,8 +452,8 @@ class PluginActivityActivity extends CommonDBTM {
                $return .= "onclick=\"" . $action['onclick'] . "\"";
             }
             $return .= ">";
-            $return .= "<i class='" . $action['img'] . " fa-5x' style='color:#b5b5b5' title='" . $action['label'] . "'></i>";
-            $return .= "<br><br>" . $action['label'] . "</a>";
+            $return .= "<img src='" . $action['img'] . "' alt='" . $action['label'] . "'>";
+            $return .= "<br>" . $action['label'] . "</a>";
 
             if (!$widget) {
                $return .= "</td>";
@@ -833,40 +833,17 @@ class PluginActivityActivity extends CommonDBTM {
 
       $who       = $options['who'];
       $who_group = $options['who_group'];
-      $whogroup  = $options['whogroup'];
       $begin     = $options['begin'];
       $end       = $options['end'];
 
-      // Get items to print
       $ASSIGN = "";
-
-      if ($who_group === "mine") {
-         if (count($_SESSION["glpigroups"])) {
-            $groups = implode("','", $_SESSION['glpigroups']);
-            $ASSIGN = "`users_id`
-                           IN (SELECT DISTINCT `users_id`
-                               FROM `glpi_groups_users`
-                               WHERE `glpi_groups_users`.`groups_id` IN ('$groups'))
-                                     AND ";
-         } else { // Only personal ones
-            $ASSIGN = "`users_id` = '$who'
-                       AND ";
-         }
-      } else {
-         if ($who > 0) {
-            $ASSIGN = "`users_id` = '$who'
-                       AND ";
-         }
-         if ($who_group > 0) {
-            $ASSIGN = "`users_id` IN (SELECT `users_id`
-                                     FROM `glpi_groups_users`
-                                     WHERE `groups_id` = '$who_group')
-                                           AND ";
-         }
-         if ($whogroup > 0) {
-            $ASSIGN = "`groups_id` = '$whogroup'
-                       AND ";
-         }
+      if ($who > 0) {
+         $ASSIGN = " AND (`users_id` = '$who')";
+      }
+      if ($who_group > 0) {
+         $ASSIGN = " AND `users_id` IN (SELECT `users_id`
+                                 FROM `glpi_groups_users`
+                                 WHERE `groups_id` = '$who_group')";
       }
 
       $query = " SELECT `glpi_plugin_activity_activities`.`id`,
@@ -883,12 +860,12 @@ class PluginActivityActivity extends CommonDBTM {
                 ON (`glpi_plugin_activity_activitytypes`.`id` = `glpi_plugin_activity_activities`.`plugin_activity_activitytypes_id`) ";
       $query .= "LEFT JOIN `glpi_entities` ON (`glpi_plugin_activity_activities`.`entities_id` = `glpi_entities`.`id`) ";
       $query .= " WHERE ";
-      $query  .= " $ASSIGN ";
       $query .= " `is_planned`= 1 ";
       $dbu = new DbUtils();
       $query .= $dbu->getEntitiesRestrictRequest("AND", "glpi_plugin_activity_activities", '',
                                            $_SESSION["glpiactiveentities"], false);
 
+      $query  .= " $ASSIGN ";
       $query  .= " AND '$begin' < `end` AND '$end' > `begin`
             ORDER BY `begin` ";
       $result = $DB->query($query);

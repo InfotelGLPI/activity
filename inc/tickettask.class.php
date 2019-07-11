@@ -3,7 +3,7 @@
 /*
  -------------------------------------------------------------------------
  Activity plugin for GLPI
- Copyright (C) 2019 by the Activity Development Team.
+ Copyright (C) 2013 by the Activity Development Team.
  -------------------------------------------------------------------------
 
  LICENSE
@@ -34,7 +34,6 @@ class PluginActivityTicketTask extends CommonDBTM {
    var $dohistory = false;
 
    static $rightname = "plugin_activity";
-
    /**
     * functions mandatory
     * getTypeName(), canCreate(), canView()
@@ -52,48 +51,36 @@ class PluginActivityTicketTask extends CommonDBTM {
    }
 
 
-   static public function postForm($params) {
-      $item       = $params['item'];
-      switch ($item->getType()) {
-         case 'TicketTask':
-            $self = new self();
-            if ($item->getID() && !empty($item->getID())) {
-               $self->getFromDBForTask($item->getID());
-            } else {
-               $self->getEmpty();
-            }
+   function showCRAForm($input) {
+      if (isset($input['tickettasks_id']) && !empty($input['tickettasks_id'])) {
+         $this->getFromDBForTask($input['tickettasks_id']);
+      } else {
+         $this->getEmpty();
+      }
 
-            $is_cra_default = 0;
-            $opt            = new PluginActivityOption();
-            $opt->getFromDB(1);
-            if ($opt) {
-               $is_cra_default = $opt->fields['is_cra_default'];
-            }
+      $is_cra_default = 0;
+      $opt = new PluginActivityOption();
+      $opt->getFromDB(1);
+      if ($opt) {
+         $is_cra_default = $opt->fields['is_cra_default'];
+      }
 
-            if (Session::haveRight("plugin_activity_statistics", 1)) {
-               echo "<tr class='tab_bg_1'>";
-               echo "<td colspan='3'></td>";
-               echo '<td>';
-               echo "<div id='is_oncra_" . $item->getID() . "' class='fa-label'>
-               <i class='far fa-flag fa-fw'
-                  title='" . __('Use in CRA', 'activity') . "'></i>";
-               Dropdown::showYesNo('is_oncra',
-                                   (isset($self->fields['id']) && $self->fields['id']) > 0 ? $self->fields['is_oncra'] : $is_cra_default,
-                                   -1,
-                                   ['value' => 1]);
-               echo '</div></td>';
-               echo '</tr>';
-
-            } else {
-               echo "<input type='hidden' value='1' name='is_oncra'>";
-            }
-            break;
+      if (Session::haveRight("plugin_activity_statistics", 1)) {
+         echo '<tr class="tab_bg_1"><td colspan="2"></td>';
+         echo '<td>';
+         echo __('Use in CRA', 'activity');
+         echo '</td>';
+         echo "<td><div id='is_oncra_".$input['tickettasks_id']."'>";
+         Dropdown::showYesNo('is_oncra', (isset($this->fields['id']) && $this->fields['id'])>0?$this->fields['is_oncra']:$is_cra_default, -1, ['value' => 1]);
+         echo '</div></td>';
+         echo '</tr>';
+      } else {
+         echo "<input type='hidden' value='1' name='is_oncra'>";
       }
    }
 
-
    function getFromDBForTask($tickettasks_id) {
-      $dbu  = new DbUtils();
+      $dbu = new DbUtils();
       $data = $dbu->getAllDataFromTable($this->getTable(), [$dbu->getForeignKeyFieldForTable('glpi_tickettasks') => $tickettasks_id]);
 
       $this->fields = array_shift($data);
@@ -112,7 +99,7 @@ class PluginActivityTicketTask extends CommonDBTM {
 
       if (self::canCreate()) {
          $tickettask = new PluginActivityTicketTask();
-         $is_exist   = $tickettask->getFromDBByCrit(["tickettasks_id=" . $item->getID()]);
+         $is_exist = $tickettask->getFromDBByCrit(["tickettasks_id=".$item->getID()]);
 
          if (isset($item->input['id'])
              && isset($item->input['is_oncra'])) {
@@ -122,21 +109,21 @@ class PluginActivityTicketTask extends CommonDBTM {
                $tickettask->update(['id'             => $tickettask->fields['id'],
                                     'is_oncra'       => $item->input['is_oncra'],
                                     'tickettasks_id' => $item->input['id']]);
-            } else if (!$is_exist) {
-               $tickettask->add(['is_oncra'       => $item->input['is_oncra'],
+            } else if(!$is_exist){
+               $tickettask->add(['is_oncra'        => $item->input['is_oncra'],
                                  'tickettasks_id' => $item->getID()]);
             }
          } else {
             $is_cra_default = 0;
-            $opt            = new PluginActivityOption();
+            $opt = new PluginActivityOption();
             $opt->getFromDB(1);
             if ($opt) {
                $is_cra_default = $opt->fields['is_cra_default'];
             }
-            if (!$is_exist) {
-               $tickettask->add(['is_oncra'       => isset($item->input['is_oncra']) ? $item->input['is_oncra'] : $is_cra_default,
+            if(!$is_exist){
+               $tickettask->add(['is_oncra'        => isset($item->input['is_oncra']) ? $item->input['is_oncra'] : $is_cra_default,
                                  'tickettasks_id' => $item->getID()]);
-            }
+            } 
          }
       }
    }
@@ -186,9 +173,9 @@ class PluginActivityTicketTask extends CommonDBTM {
     * @param $data array data to process
     *
     * @return processed datas
-    **/
+   **/
    static function manageBeginAndEndPlanDates(&$data) {
-      $AllDay = PluginActivityReport::getAllDay();
+      $AllDay  = PluginActivityReport::getAllDay();
 
       // Planned with duration
       if (!isset($data['plan']['end'])) {
@@ -196,24 +183,24 @@ class PluginActivityTicketTask extends CommonDBTM {
              && isset($data['plan']['_duration'])) {
 
             $data['plan']['end'] = $data['plan']['begin'];
-            $duration            = $data['plan']['_duration'];
+            $duration = $data['plan']['_duration'];
 
             while ($duration > $AllDay) {
-               $data['plan']['end'] = date("Y-m-d H:i:s", strtotime($data['plan']['end'] . ' + 1 DAY'));
-               $duration            -= $AllDay;
+               $data['plan']['end'] = date("Y-m-d H:i:s", strtotime($data['plan']['end'].' + 1 DAY'));
+               $duration -= $AllDay;
             }
 
             // Case of time between AM_END and PM_BEGIN
             $data['plan']['end'] = date("Y-m-d H:i:s", strtotime($data['plan']['end']) + $duration);
             if (strtotime(date('H:i:s', strtotime($data['plan']['begin']))) <= strtotime(PluginActivityReport::$AM_END)
-                && strtotime(date('H:i:s', strtotime($data['plan']['end']))) >= strtotime(PluginActivityReport::$PM_BEGIN)) {
+                    && strtotime(date('H:i:s', strtotime($data['plan']['end']))) >= strtotime(PluginActivityReport::$PM_BEGIN)) {
                $data['plan']['end'] = date("Y-m-d H:i:s", strtotime($data['plan']['end']) + (strtotime(PluginActivityReport::$PM_BEGIN) - strtotime(PluginActivityReport::$AM_END)));
             }
          }
 
          // Planned with end date
       } else {
-         $duration = strtotime(date('Y-m-d', strtotime($data['plan']['end'])) . '00:00:00') - strtotime(date('Y-m-d', strtotime($data['plan']['begin'])) . '00:00:00');
+         $duration = strtotime(date('Y-m-d', strtotime($data['plan']['end'])).'00:00:00') - strtotime(date('Y-m-d', strtotime($data['plan']['begin'])).'00:00:00');
 
          // Add days
          $data['plan']['_duration'] = ($duration / 86400) * $AllDay;
@@ -228,7 +215,7 @@ class PluginActivityTicketTask extends CommonDBTM {
             $data['plan']['_duration'] += strtotime($endHour) - strtotime($beginHour);
             // Case of time between AM_END and PM_BEGIN
             if (strtotime($beginHour) <= strtotime(PluginActivityReport::$AM_END)
-                && strtotime($endHour) >= strtotime(PluginActivityReport::$PM_BEGIN)) {
+                    && strtotime($endHour) >= strtotime(PluginActivityReport::$PM_BEGIN)) {
                $data['plan']['_duration'] -= (strtotime(PluginActivityReport::$PM_BEGIN) - strtotime(PluginActivityReport::$AM_END));
             }
          }
@@ -242,12 +229,50 @@ class PluginActivityTicketTask extends CommonDBTM {
       unset($data["plan"]);
    }
 
+   /**
+    *
+    * @global type $CFG_GLPI
+    * @param type $input
+    */
+   function showPlanningDuration($input) {
+      global $CFG_GLPI;
+
+      if (isset($input['tickettasks_id']) && $input['tickettasks_id'] > 0) {
+         $tickettask = new TicketTask();
+         $tickettask->getFromDB($input['tickettasks_id']);
+         $default_delay = floor(($tickettask->fields['actiontime']) / 15 / MINUTE_TIMESTAMP) * 15 * MINUTE_TIMESTAMP;
+         $end = date('Y-m-d H:i:s', strtotime($tickettask->fields['begin']) + $tickettask->fields['actiontime'] + (strtotime(PluginActivityReport::$PM_BEGIN) - strtotime(PluginActivityReport::$AM_END)));
+
+      } else {
+         $default_delay = 0;
+         $end = date('Y-m-d H:i:s');
+      }
+
+      $rand = Dropdown::showTimeStamp("plan[_duration]", ['min' => 0,
+                  'max' => 50 * HOUR_TIMESTAMP,
+                  'value' => $default_delay,
+                  'emptylabel' => __('Specify an end date')]);
+      echo "<br><div id='date_end$rand'></div>";
+
+      $params = ['duration'     => '__VALUE__',
+                      'end'          => $end,
+                      'name'         => "plan[end]",
+                      'global_begin' => $CFG_GLPI["planning_begin"],
+                      'global_end'   => $CFG_GLPI["planning_end"]];
+
+      Ajax::updateItemOnSelectEvent("dropdown_plan[_duration]$rand", "date_end$rand", $CFG_GLPI["root_doc"]."/ajax/planningend.php", $params);
+
+      if ($default_delay == 0) {
+         $params['duration'] = 0;
+         Ajax::updateItem("date_end$rand", $CFG_GLPI["root_doc"]."/ajax/planningend.php", $params);
+      }
+   }
 
    /**
-    * Add items in the items fields of the parm array
-    * Items need to have an unique index beginning by the begin date of the item to display
-    * needed to be correcly displayed
-    **/
+   * Add items in the items fields of the parm array
+   * Items need to have an unique index beginning by the begin date of the item to display
+   * needed to be correcly displayed
+   **/
    static function populatePlanning($options = []) {
       global $DB, $CFG_GLPI;
 
@@ -257,9 +282,9 @@ class PluginActivityTicketTask extends CommonDBTM {
          'check_planned'       => false,
          'display_done_events' => true,
       ];
-      $options         = array_merge($default_options, $options);
+      $options = array_merge($default_options, $options);
 
-      $interv = [];
+      $interv   = [];
 
       if (!isset($options['begin']) || ($options['begin'] == 'NULL')
           || !isset($options['end']) || ($options['end'] == 'NULL')) {
@@ -270,12 +295,12 @@ class PluginActivityTicketTask extends CommonDBTM {
          return $interv;
       }
 
-      $who   = $options['who'];
-      $begin = $options['begin'];
-      $end   = $options['end'];
+      $who        = $options['who'];
+      $begin      = $options['begin'];
+      $end        = $options['end'];
 
       $plugin = new Plugin();
-      $query  = "SELECT    `glpi_tickettasks`.*,
+      $query = "SELECT    `glpi_tickettasks`.*,
                           `glpi_plugin_activity_tickettasks`.`is_oncra`,
                           `glpi_entities`.`name` AS entity,
                           `glpi_tickets`.`name`,
@@ -288,43 +313,43 @@ class PluginActivityTicketTask extends CommonDBTM {
                         ON (`glpi_tickets`.`entities_id` = `glpi_entities`.`id`) 
                      LEFT JOIN `glpi_plugin_activity_tickettasks` 
                         ON (`glpi_tickettasks`.`id` = `glpi_plugin_activity_tickettasks`.`tickettasks_id`) ";
-      $query  .= "WHERE ";
+      $query .= "WHERE ";
       if ($plugin->isActivated('manageentities')) {
          $query .= "`glpi_tickettasks`.`tickets_id` 
                      NOT IN (SELECT `tickets_id` 
                               FROM `glpi_plugin_manageentities_cridetails`) AND ";
       }
-      $dbu    = new DbUtils();
-      $query  .= "((`glpi_tickettasks`.`begin` >= '" . $begin . "' 
-                           AND `glpi_tickettasks`.`end` <= '" . $end . "'
-                           AND `glpi_tickettasks`.`users_id_tech` = '" . $who . "' " .
-                 $dbu->getEntitiesRestrictRequest("AND", "glpi_tickets", '',
-                                                  $_SESSION["glpiactiveentities"], false);
-      $query  .= "                     ) 
-                           OR (`glpi_tickettasks`.`date` >= '" . $begin . "' 
-                           AND `glpi_tickettasks`.`date` <= '" . $end . "'
-                           AND `glpi_tickettasks`.`users_id` = '" . $who . "'
-                           AND `glpi_tickettasks`.`begin` IS NULL " . $dbu->getEntitiesRestrictRequest("AND", "glpi_tickets", '',
-                                                                                                       $_SESSION["glpiactiveentities"], false);
-      $query  .= " )) AND `glpi_tickettasks`.`actiontime` != 0 
+      $dbu = new DbUtils();
+      $query .= "((`glpi_tickettasks`.`begin` >= '".$begin."' 
+                           AND `glpi_tickettasks`.`end` <= '".$end."'
+                           AND `glpi_tickettasks`.`users_id_tech` = '".$who."' ".
+                $dbu->getEntitiesRestrictRequest("AND", "glpi_tickets", '',
+                                             $_SESSION["glpiactiveentities"], false);
+      $query.= "                     ) 
+                           OR (`glpi_tickettasks`.`date` >= '".$begin."' 
+                           AND `glpi_tickettasks`.`date` <= '".$end."'
+                           AND `glpi_tickettasks`.`users_id` = '".$who."'
+                           AND `glpi_tickettasks`.`begin` IS NULL ".$dbu->getEntitiesRestrictRequest("AND", "glpi_tickets", '',
+                                             $_SESSION["glpiactiveentities"], false);
+      $query.= " )) AND `glpi_tickettasks`.`actiontime` != 0 
                   AND `glpi_plugin_activity_tickettasks`.`is_oncra` = 1";
-      $query  .= " ORDER BY `glpi_tickettasks`.`begin` ASC";
+      $query.= " ORDER BY `glpi_tickettasks`.`begin` ASC";
       $result = $DB->query($query);
 
       $number = $DB->numrows($result);
 
-      $activities = [];
+      $activities     = [];
 
       if ($number) {
-         $allTickets     = [];
-         $privateTickets = [];
+         $allTickets       = [];
+         $privateTickets   = [];
 
          while ($datat = $DB->fetch_array($result)) {
-            $mtitle   = $datat["entity"] . " > " . __('Ticket');
+            $mtitle   = $datat["entity"]." > ".__('Ticket');
             $internal = PluginActivityConfig::getConfigFromDB($datat['entities_id']);
             if ($internal) {
                foreach ($internal as $field) {
-                  $mtitle = $datat["entity"] . " > " . $field["name"];
+                  $mtitle = $datat["entity"]." > ".$field["name"];
                }
             }
 
@@ -333,11 +358,11 @@ class PluginActivityTicketTask extends CommonDBTM {
             } else {
                $begin = $datat["date"];
             }
-            $report  = new PluginActivityReport();
-            $holiday = new PluginActivityHoliday();
-            $act     = new PluginActivityActivity();
-            $AllDay  = PluginActivityReport::getAllDay();
-            $opt     = new PluginActivityOption();
+            $report     = new PluginActivityReport();
+            $holiday    = new PluginActivityHoliday();
+            $act        = new PluginActivityActivity();
+            $AllDay     = PluginActivityReport::getAllDay();
+            $opt        = new PluginActivityOption();
             $opt->getFromDB(1);
 
             if (!$datat['is_private']) {
@@ -372,20 +397,20 @@ class PluginActivityTicketTask extends CommonDBTM {
       if (count($activities) > 0) {
          foreach ($activities as $k => $int) {
 
-            $key = $int["start"] . "$$" . "PluginActivityTicketTask" . $int["id"];
+            $key = $int["start"]."$$"."PluginActivityTicketTask".$int["id"];
 
-            $interv[$key]['color']            = $options['color'];
-            $interv[$key]['event_type_color'] = $options['event_type_color'];
-            $interv[$key]["itemtype"]         = 'PluginActivityTicketTask';
-            $interv[$key]["id"]               = $int["id"];
-            $interv[$key]["users_id"]         = $who;
-            $interv[$key]["begin"]            = $int["start"];
-            $interv[$key]["end"]              = $int["end"];
-            $interv[$key]["name"]             = Html::resume_text($int["title"], $CFG_GLPI["cut"]);
+            $interv[$key]['color']              = $options['color'];
+            $interv[$key]['event_type_color']   = $options['event_type_color'];
+            $interv[$key]["itemtype"]           = 'PluginActivityTicketTask';
+            $interv[$key]["id"]                 = $int["id"];
+            $interv[$key]["users_id"]           = $who;
+            $interv[$key]["begin"]           = $int["start"];
+            $interv[$key]["end"]             = $int["end"];
+            $interv[$key]["name"]               = Html::resume_text($int["title"], $CFG_GLPI["cut"]);
 
             $interv[$key]["content"]
-               = Html::resume_text(Html::clean(Toolbox::unclean_cross_side_scripting_deep($int["description"])),
-                                   $CFG_GLPI["cut"]);
+                  = Html::resume_text(Html::clean(Toolbox::unclean_cross_side_scripting_deep($int["description"])),
+                                      $CFG_GLPI["cut"]);
 
          }
       }
@@ -398,28 +423,27 @@ class PluginActivityTicketTask extends CommonDBTM {
     * Display a Planning Item
     *
     * @param $parm Array of the item to display
-    *
     * @return Nothing (display function)
     **/
    static function displayPlanningItem(array $val, $who, $type = "", $complete = 0) {
 
       $html = "";
-      $rand = mt_rand();
+      $rand     = mt_rand();
 
       if ($val["name"]) {
-         $html .= $val["name"] . "<br>";
+         $html .= $val["name"]."<br>";
       }
 
       if ($val["end"]) {
-         $html .= "<strong>" . __('End date') . "</strong> : " . Html::convdatetime($val["end"]) . "<br>";
+         $html .= "<strong>".__('End date')."</strong> : ".Html::convdatetime($val["end"])."<br>";
       }
 
       if ($complete) {
-         $html .= "<div class='event-description'>" . $val["content"] . "</div>";
+         $html.= "<div class='event-description'>".$val["content"]."</div>";
       } else {
-         $html .= Html::showToolTip($val["content"],
-                                    ['applyto' => "cri_" . $val["id"] . $rand,
-                                     'display' => false]);
+         $html.= Html::showToolTip($val["content"],
+                                   ['applyto' => "cri_".$val["id"].$rand,
+                                         'display' => false]);
       }
 
       return $html;
