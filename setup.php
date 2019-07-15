@@ -43,7 +43,8 @@ function plugin_init_activity() {
    // Lateral menu
    if (Session::haveRight("plugin_activity", UPDATE)
        || Session::haveRight("plugin_activity_can_requestholiday", 1)
-       || Session::haveRight("plugin_activity_can_validate", 1)) {
+       || Session::haveRight("plugin_activity_can_validate", 1)
+       || Session::haveRight("plugin_activity_all_users", 1)) {
 
       $PLUGIN_HOOKS['add_javascript']['activity'] = ['scripts/scripts-activityholidays.js',
                                                      'scripts/activity_load_scripts.js'];
