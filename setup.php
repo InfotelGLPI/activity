@@ -25,7 +25,7 @@
  --------------------------------------------------------------------------
 */
 
-define('PLUGIN_ACTIVITY_VERSION', '2.5.0');
+define('PLUGIN_ACTIVITY_VERSION', '2.5.1');
 
 // Init the hooks of the plugins -Needed
 function plugin_init_activity() {
@@ -33,11 +33,13 @@ function plugin_init_activity() {
 
    $PLUGIN_HOOKS['csrf_compliant']['activity'] = true;
    $PLUGIN_HOOKS['change_profile']['activity'] = ['PluginActivityProfile', 'initProfile'];
-   $PLUGIN_HOOKS['add_css']['activity']        = ['activity.css'];
-   $PLUGIN_HOOKS['javascript']['activity'][]   = '/plugins/activity/lib/sdashboard/lib/flotr2/flotr2.js';
+   if (isset($_SESSION["glpiactiveprofile"]["interface"])
+       && $_SESSION["glpiactiveprofile"]["interface"] != "helpdesk") {
+      $PLUGIN_HOOKS['add_css']['activity']      = ['activity.css'];
+      $PLUGIN_HOOKS['javascript']['activity'][] = '/plugins/activity/lib/sdashboard/lib/flotr2/flotr2.js';
 
-   $PLUGIN_HOOKS['add_javascript']['activity'] = ['lib/jquery/js/jquery.ui.touch-punch.min.js'];
-
+      $PLUGIN_HOOKS['add_javascript']['activity'] = ['lib/jquery/js/jquery.ui.touch-punch.min.js'];
+   }
 //   $PLUGIN_HOOKS['display_cmenu']['activity'] = "plugin_activity_display_cmenu";
 
    // Lateral menu

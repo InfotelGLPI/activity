@@ -110,7 +110,14 @@ class PluginActivityOption extends CommonDBTM {
       Dropdown::showYesNo('use_integerschedules', $this->fields['use_integerschedules']);
       echo "</td>";
       echo "</tr>";
-
+      
+      echo "<tr class='tab_bg_1'>";
+      echo "<td>".__('Authorize activities on week-ends', 'activity')."</td>";
+      echo "<td>";
+      Dropdown::showYesNo('use_weekend', $this->fields['use_weekend']);
+      echo "</td>";
+      echo "</tr>";
+      
       echo "<tr class='tab_bg_1'>";
       echo "<td>".__('Principal client', 'activity')."</td>";
       echo "<td>";

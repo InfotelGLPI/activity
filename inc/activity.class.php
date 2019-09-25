@@ -141,7 +141,8 @@ class PluginActivityActivity extends CommonDBTM {
       $opt->getFromDB(1);
       $use_pairs            = $opt->fields['use_pairs'];
       $use_integerschedules = $opt->fields['use_integerschedules'];
-
+      $use_we               = $opt->fields['use_weekend'];
+      
       if ((isset($input['begin']) && ($input['begin'] != 'NULL'))
           && (isset($input['end']) && ($input['end'] != 'NULL'))) {
 
@@ -184,16 +185,17 @@ class PluginActivityActivity extends CommonDBTM {
          return false;
       }
 
-      $hol = new PluginActivityHoliday();
-      if ($hol->isWeekend($input["begin"], true)) {
-         Session::addMessageAfterRedirect(__('The chosen begin date is on weekend', 'activity'), false, ERROR);
-         return false;
+      if ($use_we == 0) {
+        $hol = new PluginActivityHoliday();
+        if ($hol->isWeekend($input["begin"], true)) {
+           Session::addMessageAfterRedirect(__('The chosen begin date is on weekend', 'activity'), false, ERROR);
+           return false;
+        }
+        if ($hol->isWeekend($input["end"], false)) {
+           Session::addMessageAfterRedirect(__('The chosen end date is on weekend', 'activity'), false, ERROR);
+           return false;
+        }
       }
-      if ($hol->isWeekend($input["end"], false)) {
-         Session::addMessageAfterRedirect(__('The chosen end date is on weekend', 'activity'), false, ERROR);
-         return false;
-      }
-
       if (isset($input["allDay"])) {
          if ($input["allDay"] == 1) {
             $AllDay              = PluginActivityReport::getAllDay();
@@ -274,7 +276,8 @@ class PluginActivityActivity extends CommonDBTM {
       $opt->getFromDB(1);
       $use_pairs            = $opt->fields['use_pairs'];
       $use_integerschedules = $opt->fields['use_integerschedules'];
-
+      $use_we               = $opt->fields['use_weekend'];
+      
       if ((isset($input['begin']) && ($input['begin'] != 'NULL'))
           && (isset($input['end']) && ($input['end'] != 'NULL'))) {
 
@@ -306,17 +309,18 @@ class PluginActivityActivity extends CommonDBTM {
             __('Error in entering dates. The starting date is later than the ending date'),
             false, ERROR);
       }
-
-      $hol = new PluginActivityHoliday();
-      if ($hol->isWeekend($input["begin"], true)) {
-         Session::addMessageAfterRedirect(__('The chosen begin date is on weekend', 'activity'), false, ERROR);
-         return false;
+      
+      if ($use_we == 0) {
+        $hol = new PluginActivityHoliday();
+        if ($hol->isWeekend($input["begin"], true)) {
+           Session::addMessageAfterRedirect(__('The chosen begin date is on weekend', 'activity'), false, ERROR);
+           return false;
+        }
+        if ($hol->isWeekend($input["end"], false)) {
+           Session::addMessageAfterRedirect(__('The chosen end date is on weekend', 'activity'), false, ERROR);
+           return false;
+        }
       }
-      if ($hol->isWeekend($input["end"], false)) {
-         Session::addMessageAfterRedirect(__('The chosen end date is on weekend', 'activity'), false, ERROR);
-         return false;
-      }
-
       if (isset($input["allDay"])) {
          if ($input["allDay"] == 1) {
             $AllDay              = PluginActivityReport::getAllDay();
@@ -602,7 +606,8 @@ class PluginActivityActivity extends CommonDBTM {
       $opt->getFromDB(1);
       $use_pairs            = $opt->fields['use_pairs'];
       $use_integerschedules = $opt->fields['use_integerschedules'];
-
+      $use_we               = $opt->fields['use_weekend'];
+      
       if ((isset($options['begin']) && ($options['begin'] != 'NULL'))
           && (isset($options['end']) && ($options['end'] != 'NULL'))) {
 
@@ -622,15 +627,17 @@ class PluginActivityActivity extends CommonDBTM {
             echo __('Only pairs schedules are allowed', 'activity');
             return true;
          }
-
-         $hol = new PluginActivityHoliday();
-         if ($hol->isWeekend($options["begin"], true)) {
-            echo __('The chosen begin date is on weekend', 'activity');
-            return true;
-         }
-         if ($hol->isWeekend($options["end"], false)) {
-            echo __('The chosen end date is on weekend', 'activity');
-            return true;
+         
+         if ($use_we == 0) {
+           $hol = new PluginActivityHoliday();
+           if ($hol->isWeekend($options["begin"], true)) {
+              echo __('The chosen begin date is on weekend', 'activity');
+              return true;
+           }
+           if ($hol->isWeekend($options["end"], false)) {
+              echo __('The chosen end date is on weekend', 'activity');
+              return true;
+           }
          }
       }
 

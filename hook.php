@@ -35,7 +35,7 @@ function plugin_activity_install() {
 
    if (!$DB->tableExists("glpi_plugin_activity_activities")) {
       $install  = true;
-      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/empty-2.4.0.sql");
+      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/empty-2.5.1.sql");
    }
    if (!$DB->tableExists('glpi_plugin_activity_holidays')) {
       $DB->runFile(GLPI_ROOT."/plugins/activity/install/sql/update-2.0.0.sql");
@@ -143,6 +143,11 @@ function plugin_activity_install() {
    //version 2.3.0
    if (!$DB->fieldExists("glpi_plugin_activity_options", "use_project")) {
       $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/update-2.3.0.sql");
+   }
+   
+   //version 2.5.1
+   if (!$DB->fieldExists("glpi_plugin_activity_options", "use_weekend")) {
+      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/update-2.5.1.sql");
    }
 
    PluginActivityProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
