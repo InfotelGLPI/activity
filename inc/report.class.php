@@ -253,7 +253,7 @@ class PluginActivityReport extends CommonDBTM {
       $monthname = $months[$input['month']];
 
       $tab = [
-         "documentcategories_id" => 21,//PDF
+         //"documentcategories_id" => 21,//PDF
          "mime"            =>    "application/pdf",
          "entities_id"     =>    $_SESSION['glpiactive_entity'],
          "name"            =>    "CRA ".$monthname." ".$input['year']." - ".$dbu->getUserName($crit["users_id"]),
