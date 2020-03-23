@@ -36,8 +36,8 @@ class PluginActivityNotificationTargetHoliday extends NotificationTarget {
    const HOLIDAY_REQUESTER = 4499;
 
    function getEvents() {
-      return  [ 'newvalidation'    => __('New personal holiday request', 'activity'),
-                     'answervalidation' => __('Answer to a personal holiday request', 'activity')];
+      return ['newvalidation'    => __('New personal holiday request', 'activity'),
+              'answervalidation' => __('Answer to a personal holiday request', 'activity')];
    }
 
    /**
@@ -54,10 +54,10 @@ class PluginActivityNotificationTargetHoliday extends NotificationTarget {
 
          case PluginActivityNotificationTargetHoliday::HOLIDAY_REQUESTER:
             return $this->getUserAddress();
-         break;
+            break;
          case PluginActivityNotificationTargetHoliday::HOLIDAY_VALIDATOR:
             return $this->getValidatorAddress();
-         break;
+            break;
       }
    }
 
@@ -65,16 +65,16 @@ class PluginActivityNotificationTargetHoliday extends NotificationTarget {
    function getUserAddress() {
       global $DB;
 
-       $query = " SELECT DISTINCT `glpi_useremails`.`email`
+      $query = " SELECT DISTINCT `glpi_useremails`.`email`
                   FROM `glpi_plugin_activity_holidays`,`glpi_useremails`
                   WHERE `glpi_useremails`.`users_id` = `glpi_plugin_activity_holidays`.`users_id` 
                   AND `glpi_useremails`.`is_default` = 1
-                  AND  `glpi_plugin_activity_holidays`.`id` ='".$this->obj->fields["id"]."'";
+                  AND  `glpi_plugin_activity_holidays`.`id` ='" . $this->obj->fields["id"] . "'";
 
-       $result = $DB->query($query);
-       $res['email'] = $DB->result($result, 0, 'email');
+      $result       = $DB->query($query);
+      $res['email'] = $DB->result($result, 0, 'email');
 
-       $this->addToRecipientsList($res);
+      $this->addToRecipientsList($res);
    }
 
    function getValidatorAddress() {
@@ -83,7 +83,7 @@ class PluginActivityNotificationTargetHoliday extends NotificationTarget {
       $query = "SELECT DISTINCT `glpi_users`.`id` AS id
                 FROM `glpi_plugin_activity_holidayvalidations`
                 LEFT JOIN `glpi_users` ON (`glpi_users`.`id` = `glpi_plugin_activity_holidayvalidations`.`users_id_validate`)
-                WHERE `glpi_plugin_activity_holidayvalidations`.`plugin_activity_holidays_id` = '".$this->obj->fields["id"]."'";
+                WHERE `glpi_plugin_activity_holidayvalidations`.`plugin_activity_holidays_id` = '" . $this->obj->fields["id"] . "'";
 
       foreach ($DB->request($query) as $data) {
          $data['email'] = UserEmail::getDefaultForUser($data['id']);
@@ -92,7 +92,7 @@ class PluginActivityNotificationTargetHoliday extends NotificationTarget {
    }
 
    function addDataForTemplate($event, $options = []) {
-      global $CFG_GLPI,$DB;
+      global $CFG_GLPI, $DB;
 
       $dbu    = new DbUtils();
       $AllDay = PluginActivityReport::getAllDay();
@@ -131,8 +131,8 @@ class PluginActivityNotificationTargetHoliday extends NotificationTarget {
       $this->data['##lang.holiday.end.date##'] = __('End date');
       $this->data['##holiday.end.date##']      = Html::convDateTime($this->obj->getField("end"));
 
-      $actionTime                             = $this->obj->getField('actiontime');
-      $nbDays                                 = $actionTime / $AllDay;
+      $actionTime                            = $this->obj->getField('actiontime');
+      $nbDays                                = $actionTime / $AllDay;
       $this->data['##lang.holiday.nbdays##'] = __('Number of days', 'activity');
       $this->data['##holiday.nbdays##']      = $nbDays;
 
@@ -147,7 +147,7 @@ class PluginActivityNotificationTargetHoliday extends NotificationTarget {
 
       if (isset($this->obj->fields['comment'])) {
          $this->data['##lang.holiday.commentrequest##'] = sprintf(__('%1$s: %2$s'), __('Request'), __('Comments'));
-         $comment                                        = stripslashes(str_replace(['\r\n', '\n', '\r'], "<br/>", $this->obj->fields['comment']));
+         $comment                                       = stripslashes(str_replace(['\r\n', '\n', '\r'], "<br/>", $this->obj->fields['comment']));
          $this->data['##holiday.commentrequest##']      = $comment;
       }
 
@@ -155,8 +155,8 @@ class PluginActivityNotificationTargetHoliday extends NotificationTarget {
       $this->data['##holiday.holidaytype##']      = $holidayType->getField("name");
 
       $this->data['##lang.activity.url##'] = "URL";
-      $this->data['##activity.url##']      = urldecode($CFG_GLPI["url_base"]."/index.php?redirect=PluginActivityHoliday_".
-            $this->obj->getField("id"));
+      $this->data['##activity.url##']      = urldecode($CFG_GLPI["url_base"] . "/index.php?redirect=PluginActivityHoliday_" .
+                                                       $this->obj->getField("id"));
 
       //      $this->data['##activity.url##'] = urldecode($CFG_GLPI["url_base"]."/plugins/activity/ajax/generateTXTFile.php?holidays_id=".
       //                                 $holiday->getField("id"));
@@ -167,9 +167,9 @@ class PluginActivityNotificationTargetHoliday extends NotificationTarget {
       //comment infos
       $restrict = ["plugin_activity_holidays_id" => $this->obj->getField('id')];
 
-      $order = " ORDER BY `validation_date` DESC";
-      $dbu = new DbUtils();
-      $comments = $dbu->getAllDataFromTable('glpi_plugin_activity_holidayvalidations', $restrict, false, $order);
+//      $order    = " ORDER BY `validation_date` DESC";
+      $dbu      = new DbUtils();
+      $comments = $dbu->getAllDataFromTable('glpi_plugin_activity_holidayvalidations', $restrict, false);
 
       $this->data['##lang.comment.name##']        = __('Name');
       $this->data['##lang.comment.author##']      = __('Writer');
@@ -179,10 +179,10 @@ class PluginActivityNotificationTargetHoliday extends NotificationTarget {
       foreach ($comments as $comment) {
          $tmp = [];
 
-         $tmp['##comment.name##'] = $comment['comment_validation'];
-         $tmp['##comment.author##'] = Html::clean($dbu->getUserName($comment['users_id_validate']));
+         $tmp['##comment.name##']        = $comment['comment_validation'];
+         $tmp['##comment.author##']      = Html::clean($dbu->getUserName($comment['users_id_validate']));
          $tmp['##comment.datecomment##'] = Html::convDateTime($comment['validation_date']);
-         $tmp['##comment.comment##'] = nl2br($comment['comment_validation']);
+         $tmp['##comment.comment##']     = nl2br($comment['comment_validation']);
 
          $this->data['comments'][] = $tmp;
       }
@@ -191,33 +191,33 @@ class PluginActivityNotificationTargetHoliday extends NotificationTarget {
    function getTags() {
 
       $tags = ['activity.title'            => __('Title'),
-                    'holiday.name'              => __('Name'),
-                    'holiday.applicant.name'    => __('Writer'),
-                    'holiday.end.date'          => __('End date'),
-                    'holiday.begin.date'        => __('Begin date'),
-                    'holiday.nbdays'            => __('Number of days', 'activity'),
-                    'holiday.date.validation'   => sprintf(__('%1$s %2$s'), __('Date'), __('Validation')),
-                    'holiday.date.submission'   => sprintf(__('%1$s %2$s'), __('Date'), __('Request')),
-                    'holiday.commentvalidation' => sprintf(__('%1$s: %2$s'), _n('Approval', 'Approvals', 1), __('Comments')),
-                    'holiday.commentrequest'    => sprintf(__('%1$s: %2$s'), __('Request'), __('Comments'))];
+               'holiday.name'              => __('Name'),
+               'holiday.applicant.name'    => __('Writer'),
+               'holiday.end.date'          => __('End date'),
+               'holiday.begin.date'        => __('Begin date'),
+               'holiday.nbdays'            => __('Number of days', 'activity'),
+               'holiday.date.validation'   => sprintf(__('%1$s %2$s'), __('Date'), __('Validation')),
+               'holiday.date.submission'   => sprintf(__('%1$s %2$s'), __('Date'), __('Request')),
+               'holiday.commentvalidation' => sprintf(__('%1$s: %2$s'), _n('Approval', 'Approvals', 1), __('Comments')),
+               'holiday.commentrequest'    => sprintf(__('%1$s: %2$s'), __('Request'), __('Comments'))];
 
       foreach ($tags as $tag => $label) {
          $this->addTagToList(['tag'   => $tag,
-                                   'label' => $label,
-                                   'value' => true]);
+                              'label' => $label,
+                              'value' => true]);
       }
 
       $this->addTagToList(['tag'     => 'activity',
-                                'label'   => __('New personal holiday request', 'activity'),
-                                'value'   => false,
-                                'foreach' => true,
-                                'events'  => ['newvalidation']]);
+                           'label'   => __('New personal holiday request', 'activity'),
+                           'value'   => false,
+                           'foreach' => true,
+                           'events'  => ['newvalidation']]);
 
       $this->addTagToList(['tag'     => 'activity',
-                                'label'   => __('Answer to a personal holiday request', 'activity'),
-                                'value'   => false,
-                                'foreach' => true,
-                                'events'  => ['answervalidation']]);
+                           'label'   => __('Answer to a personal holiday request', 'activity'),
+                           'value'   => false,
+                           'foreach' => true,
+                           'events'  => ['answervalidation']]);
 
       asort($this->tag_descriptions);
    }
