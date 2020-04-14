@@ -245,7 +245,7 @@ class PluginActivityReport extends CommonDBTM {
          mkdir($docpath, 0777, true);
       }
 
-      $PDF->Output(GLPI_TMP_DIR."/".$filename);
+      $PDF->Output(GLPI_TMP_DIR."/".$filename, 'F');
 
       $doc          = new Document();
 
