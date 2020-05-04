@@ -236,7 +236,10 @@ class PluginActivityReport extends CommonDBTM {
    static function takeASnapshot($crit, $input, $PDF) {
 
       $dbu = new DbUtils();
-      $name = "CRA - "/*.getUserName($crit["users_id"])." - "*/.$PDF->GetNoCra(getdate());
+
+      $user = new User();
+      $user->getFromDB($input["users_id"]);
+      $name = $user->fields['name']." - CRA - ".$PDF->GetNoCra(getdate());
       $filename = $name.".pdf";
       $docpath = GLPI_TMP_DIR;
 
@@ -256,7 +259,7 @@ class PluginActivityReport extends CommonDBTM {
          //"documentcategories_id" => 21,//PDF
          "mime"            =>    "application/pdf",
          "entities_id"     =>    $_SESSION['glpiactive_entity'],
-         "name"            =>    "CRA ".$monthname." ".$input['year']." - ".$dbu->getUserName($crit["users_id"]),
+         "name"            =>    $user->fields['name']." - CRA - ".$monthname." ".$input['year'],
          "upload_file"     =>    $filename,
       /*       "filepath"  => $seepath.$filename,*/
          "comment"         =>    "**".$input['year']."-".$input['month']."** ".__("Snapshot taken in", "activity")." ".Html::convDateTime(date("Y-m-d H:i:s")),
@@ -931,14 +934,16 @@ class PluginActivityReport extends CommonDBTM {
             if (isset($input['snapshot'])) {
                self::takeASnapshot($crit, $input, $PDF);
             } else { // Si il ne souhaite pas -> on affiche le CRA pdf dans une Popup
-               $filename = "CRA - ".$PDF->GetNoCra(getdate()).".pdf";
+               $user = new User();
+               $user->getFromDB($input["users_id"]);
+               $filename = $user->fields['name']." - CRA - ".$PDF->GetNoCra(getdate()).".pdf";
                $seepath = GLPI_PLUGIN_DOC_DIR."/activity/";
 
                //Sauvegarde du PDF dans le fichier
                if (!is_dir($seepath)) {
                   mkdir($seepath);
                }
-               $PDF->Output($seepath."/".$filename);
+               $PDF->Output($seepath."/".$filename, 'F');
 
                $showPopUp = true;
             }
