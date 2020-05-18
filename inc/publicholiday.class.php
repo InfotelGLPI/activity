@@ -92,8 +92,8 @@ class PluginActivityPublicHoliday extends CommonDBTM {
                   $begin          = $year[$i] . '-' . $hb . ' 00:00:00';
                   $end            = $year[$i] . '-' . $he . ' 00:00:00';
 
-                  if(($options['begin'] < $begin && $begin < $options['end'])
-                     || ($options['begin'] < $end && $end < $options['end'])){
+                  if(($options['begin'] <= $begin && $begin <= $options['end'])
+                     || ($options['begin'] <= $end && $end <= $options['end'])){
                      $key                              = $begin . "$$" . "PluginActivityPublicHoliday" . $k;
                      $interv[$key]['color']            = $options['color'];
                      $interv[$key]['event_type_color'] = $options['event_type_color'];
@@ -112,8 +112,8 @@ class PluginActivityPublicHoliday extends CommonDBTM {
 
                $begin                            = $holiday['begin'] . ' 00:00:00';
                $end                              = $holiday['end'] . ' 00:00:00';
-               if(($options['begin'] < $begin && $begin < $options['end'])
-                  || ($options['begin'] < $end && $end < $options['end'])) {
+               if(($options['begin'] <= $begin && $begin <= $options['end'])
+                  || ($options['begin'] <= $end && $end <= $options['end'])) {
                   $key                              = $begin . "$$" . "PluginActivityPublicHoliday" . $k;
                   $interv[$key]['color']            = $options['color'];
                   $interv[$key]['event_type_color'] = $options['event_type_color'];
