@@ -333,7 +333,7 @@ class PluginActivityHolidaycount extends CommonDBTM {
          $total         = 0;
          $total_holiday = 0;
 
-         $CP       = $this->showCountForHolidayTypeAndPeriod("CP", $nbHolidays);
+         $CP       = $this->showCountForHolidayTypeAndPeriod(PluginActivityHolidayType::CP, $nbHolidays);
          $total_CP = 0;
          foreach ($CP as $key => $val) {
             echo "<tr>";
@@ -362,7 +362,7 @@ class PluginActivityHolidaycount extends CommonDBTM {
             $total_CP += $CP;
          }
 
-         $RT        = $this->showCountForHolidayTypeAndPeriod("RT", $nbHolidays);
+         $RT        = $this->showCountForHolidayTypeAndPeriod(PluginActivityHolidayType::RTT, $nbHolidays);
          $total_RTT = 0;
 
          foreach ($RT as $key => $val) {

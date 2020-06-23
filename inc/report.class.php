@@ -333,11 +333,9 @@ class PluginActivityReport extends CommonDBTM {
       }
       if ($output_type == Search::HTML_OUTPUT) {
 
-         if (Session::getCurrentInterface() == 'central') {
-            Html::header(PluginActivityActivity::getTypeName(2), '', "tools", "pluginactivitymenu");
-         } else {
-            Html::helpHeader(PluginActivityActivity::getTypeName(2));
-         }
+
+       Html::header(PluginActivityPlanningExternalEvent::getTypeName(2));
+
 
          Html::requireJs('activity');
 
@@ -448,7 +446,7 @@ class PluginActivityReport extends CommonDBTM {
 
 
    function showCRA($input, $output_type, $pdfMode = false, PluginActivityCraPDF $PDF) {
-      global $CFG_GLPI, $DB;
+     global $CFG_GLPI, $DB;
 
       $dbu    = new DbUtils();
       $AllDay = self::getAllDay();
@@ -463,17 +461,19 @@ class PluginActivityReport extends CommonDBTM {
       $crit["global_validation"]   = PluginActivityCommonValidation::ACCEPTED;
 
       // 1.1 Plugin Activity
-      $query  = PluginActivityActivity::queryAllActivities($crit);
+      $query  = PluginActivityPlanningExternalEvent::queryAllExternalEvents($crit);
       $result = $DB->query($query);
       $number = $DB->numrows($result);
 
-      $query1 = "SELECT SUM(actiontime) AS total 
-                  FROM `glpi_plugin_activity_activities`";
+      $query1 = "SELECT SUM(`glpi_plugin_activity_planningexternalevents`.`actiontime`) AS total 
+                  FROM `glpi_plugin_activity_planningexternalevents`
+                   LEFT JOIN `glpi_planningexternalevents` 
+                     ON (`glpi_plugin_activity_planningexternalevents`.`planningexternalevents_id` = `glpi_planningexternalevents`.`id`)";
       $query1.= " WHERE (`begin` >= '".$crit["begin"]."' 
                            AND `begin` <= '".$crit["end"]."')
-                        AND `users_id` = '".$crit["users_id"]."'";
+                              AND `users_id` = '".$crit["users_id"]."'";
       if ($result1 = $DB->query($query1)) {
-         $data1 = $DB->fetch_array($result1);
+         $data1 = DBmysql::fetchArray($result1);
          $total = $data1["total"];
       }
 
@@ -504,13 +504,13 @@ class PluginActivityReport extends CommonDBTM {
 
          $crit["documentcategories_id"] = $config->fields["documentcategories_id"];
 
-         $manage  = PluginActivityActivity::queryManageentities($crit);
+         $manage  = PluginActivityPlanningExternalEvent::queryManageentities($crit);
          $resultm = $DB->query($manage);
          $numberm = $DB->numrows($resultm);
       }
 
       // 1.3 Tickets
-      $tickets = PluginActivityActivity::queryTickets($crit);
+      $tickets = PluginActivityPlanningExternalEvent::queryTickets($crit);
       $resultt1 = $DB->query($tickets);
       $numbert = $DB->numrows($resultt1);
 
@@ -536,22 +536,22 @@ class PluginActivityReport extends CommonDBTM {
 
          // 2.3 Plugin Activity
          $crit["is_usedbycra"] = true;
-         $query2 = PluginActivityActivity::queryUserActivities($crit);
+         $query2 = PluginActivityPlanningExternalEvent::queryUserExternalEvents($crit);
 
          $result2 = $DB->query($query2);
          if ($DB->numrows($result2)) {
-            while ($data2 = $DB->fetch_array($result2)) {
+            while ($data2 = DBmysql::fetchArray($result2)) {
                $type    = $data2["type"];
-               $parents = $dbu->getAncestorsOf("glpi_plugin_activity_activitytypes", $data2["type_id"]);
+               $parents = $dbu->getAncestorsOf("glpi_planningeventcategories", $data2["type_id"]);
                $last    = end($parents);
 
                if (empty($data2["type"])) {
                   $type = $data2["entity"]." > ".__('No defined type', 'activity');
                } else {
                   if (count($parents) > 1) {
-                     $dropdown = new PluginActivityActivityType();
+                     $dropdown = new PlanningEventCategory();
                      $dropdown->getFromDB($last);
-                     $type = $dropdown->fields['completename'];
+                     $type = $dropdown->fields['name'];
                   } else {
                      $type = $data2["type"];
                   }
@@ -564,7 +564,7 @@ class PluginActivityReport extends CommonDBTM {
                // Repartition of the time
                $values = $this->timeRepartition($data2['actiontime']/$AllDay, $data2["begin"], $values, $opt_act, $type, $holiday->getHolidays());
 
-               $this->item_search[$type]['PluginActivityActivity'][date('Y-m-d', strtotime($data2["begin"]))][] = $data2['id'];
+               $this->item_search[$type]['PlanningExternalEvent'][date('Y-m-d', strtotime($data2["begin"]))][] = $data2['id'];
             }
          }
 
@@ -578,7 +578,7 @@ class PluginActivityReport extends CommonDBTM {
 
             $resulth = $DB->query($queryh);
             if ($DB->numrows($resulth)) {
-               while ($datah = $DB->fetch_array($resulth)) {
+               while ($datah = DBmysql::fetchArray($resulth)) {
                   if (empty($datah["type"])) {
                      $type = $datah["entity"]." > ".__('No defined type', 'activity');
                   } else {
@@ -603,7 +603,7 @@ class PluginActivityReport extends CommonDBTM {
 
          // 1.3 Tickets
          if ($numbert !="0") {
-            while ($datat=$DB->fetch_array($resultt1)) {
+            while ($datat= DBmysql::fetchArray($resultt1)) {
                $mtitle = strtoupper($datat["entity"])." > ".__('Unbilled', 'activity');
                $internal = PluginActivityConfig::getConfigFromDB($datat['entities_id']);
                if ($internal) {
@@ -625,7 +625,7 @@ class PluginActivityReport extends CommonDBTM {
          // 2.4 Plugin Manageentities
          if ($plugin->isActivated('manageentities')) {
             if ($numberm !="0") {
-               while ($datam=$DB->fetch_array($resultm)) {
+               while ($datam= DBmysql::fetchArray($resultm)) {
 
                   $queryTask = "SELECT `glpi_tickettasks`.*
                                  FROM `glpi_tickettasks`
@@ -642,7 +642,7 @@ class PluginActivityReport extends CommonDBTM {
                   $resultTask = $DB->query($queryTask);
                   $numberTask = $DB->numrows($resultTask);
                   if ($numberTask !="0") {
-                     while ($dataTask=$DB->fetch_array($resultTask)) {
+                     while ($dataTask= DBmysql::fetchArray($resultTask)) {
 
                         $mtitle = strtoupper($datam["entity"])." > ";
                         if ($datam["withcontract"]) {
@@ -666,14 +666,14 @@ class PluginActivityReport extends CommonDBTM {
          $opt = new PluginActivityOption();
          if ($opt->getFromDB(1) && $opt->getUseProject()) {
             if ($numberpt != "0") {
-               while ($datapt = $DB->fetch_array($resultpt)) {
+               while ($datapt = DBmysql::fetchArray($resultpt)) {
                   $project = new Project();
                   $project->getFromDB($datapt["projects_id"]);
                   $mtitle = strtoupper($project->getName()) . " > " . ProjectTask::getTypeName();
                   if ($datapt['planned_duration'] == 0) {
                      //$timestart        = strtotime($datapt["plan_start_date"]);
 
-                     $count            = PluginActivityActivity::getNbDays($datapt["plan_start_date"], $datapt["plan_end_date"]);
+                     $count            = PluginActivityPlanningExternalEvent::getNbDays($datapt["plan_start_date"], $datapt["plan_end_date"]);
                      $planned_duration = 0;
                      $timestart        = new DateTime($datapt["plan_start_date"]);
                      $timeendDay       = new DateTime($datapt["plan_start_date"]);
@@ -730,7 +730,7 @@ class PluginActivityReport extends CommonDBTM {
             $title[$k] = $v;
          }
 
-         $count = PluginActivityActivity::getNbDays($crit["begin"], $crit["end"]);
+         $count = PluginActivityPlanningExternalEvent::getNbDays($crit["begin"], $crit["end"]);
 
          $countopened  = 0;
          $countwe      = 0;
@@ -747,7 +747,7 @@ class PluginActivityReport extends CommonDBTM {
          //         $We = array('Di', 'Sa');
          $timeHeaders = [];
          for ($i = 0; $i != $count; $i++) {
-            $d = PluginActivityActivity::dateAdd($i, $crit["begin"]);
+            $d = PluginActivityPlanningExternalEvent::dateAdd($i, $crit["begin"]);
             list($annee, $mois, $jour) = explode('-', $d);
             $timestamp = mktime (0, 0, 0, $mois, $jour, $annee);
             self::showTitle($output_type, $num, $joursem[date("w", $timestamp)], 'day', false);
@@ -774,7 +774,7 @@ class PluginActivityReport extends CommonDBTM {
          self::showTitle($output_type, $num, __('Project', 'activity'), '', false);
          self::showTitle($output_type, $num, __('Activity', 'activity'), '', false);
          for ($i = 0; $i != $count; $i++) {
-            $d = PluginActivityActivity::dateAdd($i, $crit["begin"]);
+            $d = PluginActivityPlanningExternalEvent::dateAdd($i, $crit["begin"]);
             $days[] = $d;
             list($annee, $mois, $jour) = explode('-', $d);
             self::showTitle($output_type, $num, $jour, 'day', false);
@@ -893,7 +893,7 @@ class PluginActivityReport extends CommonDBTM {
          self::showTitle($output_type, $num, __('Comments'), '', false);
 
          for ($i = 0; $i != $count; $i++) {
-            $d = PluginActivityActivity::dateAdd($i, $crit["begin"]);
+            $d = PluginActivityPlanningExternalEvent::dateAdd($i, $crit["begin"]);
             $class = "class='center'";
             $style = "";
             if ($holiday->countWe($d, $d, $holiday->getHolidays()) > 0) {
@@ -949,7 +949,7 @@ class PluginActivityReport extends CommonDBTM {
             }
          }
 
-         echo Search::showFooter($output_type, PluginActivityActivity::getTypeName(1));
+         echo Search::showFooter($output_type, PluginActivityPlanningExternalEvent::getTypeName(1));
 
          if ($number != "0") {
             $num = 1;
@@ -961,7 +961,7 @@ class PluginActivityReport extends CommonDBTM {
 
             echo Search::showHeader($output_type, $number+$numberm+$numbert, 3, true);
             echo Search::showNewLine($output_type);
-            self::showTitle($output_type, $num, PluginActivityActivityType::getTypeName(2), 'activitytype', false);
+            self::showTitle($output_type, $num, PlanningEventCategory::getTypeName(2), 'activitytype', false);
             self::showTitle($output_type, $num, __('Comments'), 'comment', false);
             self::showTitle($output_type, $num, __('Total'), 'hours', false);
             self::showTitle($output_type, $num, __('Percent', 'activity'), 'percent', false);
@@ -969,7 +969,7 @@ class PluginActivityReport extends CommonDBTM {
 
             // 2.1 Spew out the data in a table
             $row_num = 1;
-            while ($data = $DB->fetch_array($result)) {
+            while ($data = DBmysql::fetchArray($result)) {
                if ($data["total_actiontime"] > 0) {
                   $percent = $data["total_actiontime"] * 100 / $total;
                } else {
@@ -983,31 +983,34 @@ class PluginActivityReport extends CommonDBTM {
 
                $comment = "";
                $dbu = new DbUtils();
-               $queryt = "SELECT `glpi_plugin_activity_activities`.`comment` AS comment,
-                                 `glpi_plugin_activity_activities`.`actiontime`
-                     FROM `glpi_plugin_activity_activities` 
-                     INNER JOIN `glpi_plugin_activity_activitytypes` 
-                        ON (`glpi_plugin_activity_activitytypes`.`id` = `glpi_plugin_activity_activities`.`plugin_activity_activitytypes_id`)";
-               $queryt.= "WHERE (`glpi_plugin_activity_activities`.`begin` >= '".$crit["begin"]."' 
-                           AND `glpi_plugin_activity_activities`.`begin` <= '".$crit["end"]."') 
-                           AND `glpi_plugin_activity_activities`.`plugin_activity_activitytypes_id` = '".$data["type"]."' ";
-               $queryt.= "  AND `glpi_plugin_activity_activities`.`users_id` = '".$crit["users_id"]."' "
-                           .$dbu->getEntitiesRestrictRequest("AND", "glpi_plugin_activity_activities");
+               $queryt = "SELECT `glpi_planningexternalevents`.`text` AS text,
+                                 `glpi_plugin_activity_planningexternalevents`.`actiontime`
+                     FROM `glpi_planningexternalevents` 
+                     INNER JOIN `glpi_planningeventcategories` 
+                        ON (`glpi_planningeventcategories`.`id` = `glpi_planningexternalevents`.`planningeventcategories_id`)
+                     INNER JOIN `glpi_plugin_activity_planningexternalevents` 
+                              ON (`glpi_planningexternalevents`.`id` = `glpi_plugin_activity_planningexternalevents`.`planningexternalevents_id`)";
+               $queryt.= "WHERE (`glpi_planningexternalevents`.`begin` >= '".$crit["begin"]."' 
+                           AND `glpi_planningexternalevents`.`begin` <= '".$crit["end"]."') 
+                           AND `glpi_planningexternalevents`.`planningeventcategories_id` = '".$data["type"]."' ";
+               $queryt.= "  AND `glpi_planningexternalevents`.`users_id` = '".$crit["users_id"]."' "
+                           .$dbu->getEntitiesRestrictRequest("AND", "glpi_planningexternalevents");
 
                $resultt = $DB->query($queryt);
                $numbert = $DB->numrows($resultt);
                if ($numbert != "0") {
-                  while ($datat = $DB->fetch_array($resultt)) {
-                     $comment .= $datat["comment"]." (".($datat["actiontime"]/$AllDay).")<br>";
+                  while ($datat = DBmysql::fetchArray($resultt)) {
+                     $totalPercent = $datat["actiontime"] / $AllDay;
+                     $comment          .= $datat["text"]." (".(round($totalPercent, 2)).")<br>";
                   }
                }
                echo Search::showItem($output_type, nl2br(Html::clean($comment)), $num, $row_num);
-               $total_ouvres = $data["total_actiontime"]/$AllDay;
+               $total_ouvres = $data["total_actiontime"] /$AllDay;
                echo Search::showItem($output_type, Html::formatNumber($total_ouvres, false, 3), $num, $row_num);
                echo Search::showItem($output_type, Html::formatNumber($percent)."%", $num, $row_num);
                echo Search::showEndLine($output_type);
             }
-            echo Search::showFooter($output_type, PluginActivityActivity::getTypeName(1));
+            echo Search::showFooter($output_type, PluginActivityPlanningExternalEvent::getTypeName(1));
          }
 
       } else {
@@ -1015,7 +1018,7 @@ class PluginActivityReport extends CommonDBTM {
          echo Search::showNewLine($output_type);
          self::showTitle($output_type, $num, __('No activity found', 'activity'), '', false);
          echo Search::showEndLine($output_type);
-         echo Search::showFooter($output_type, PluginActivityActivity::getTypeName(1));
+         echo Search::showFooter($output_type, PluginActivityPlanningExternalEvent::getTypeName(1));
       }
 
       if ($pdfMode && $showPopUp) {
@@ -1110,6 +1113,29 @@ class PluginActivityReport extends CommonDBTM {
     * @param string $activity : name of the activity
     * @return float
     */
+   function getActionTimeForExternalEvent($begin, $end, $values, $actiontime, $type) {
+
+      $holidays = PluginActivityHoliday::getCalendarHolidaysArray($_SESSION["glpiactive_entity"]);
+
+      $holidaysO = new PluginActivityHoliday();
+
+      $duration = strtotime($end) - strtotime($begin);
+
+      $finalDuration = $duration - $holidaysO->countWe($begin, $end, $holidays);
+
+      return $finalDuration;
+   }
+
+   /**
+    * Get the time between two dates
+    *
+    * @param int $time : time to add
+    * @param datetime $begin : begin date to add
+    * @param array $values : array of times
+    * @param int $type : holiday, work, part time, sickness
+    * @param string $activity : name of the activity
+    * @return float
+    */
    function getActionTime($begin, $end, $values, $actiontime, $type) {
 
       $holidays = PluginActivityHoliday::getCalendarHolidaysArray($_SESSION["glpiactive_entity"]);
@@ -1124,6 +1150,7 @@ class PluginActivityReport extends CommonDBTM {
 
       return $finalDuration;
    }
+
 
    /**
     * Set times and check if day is not exceeding 1
@@ -1315,7 +1342,7 @@ class PluginActivityReport extends CommonDBTM {
       } else {
          $holiday = new PluginActivityHoliday();
          $holiday->setHolidays();
-         $count = PluginActivityActivity::getNbDays($crit["begin"], $crit["end"]);
+         $count = PluginActivityPlanningExternalEvent::getNbDays($crit["begin"], $crit["end"]);
          echo Search::showNewLine($output_type);
          $keys = array_keys($activity_data);
          echo Search::showItem($output_type, isset($keys[0])?$keys[0]: "", $num, $row_num);
@@ -1323,7 +1350,7 @@ class PluginActivityReport extends CommonDBTM {
          echo Search::showItem($output_type, "", $num, $row_num);
 
          for ($i = 0; $i != $count; $i++) {
-            $d = PluginActivityActivity::dateAdd($i, $crit["begin"]);
+            $d = PluginActivityPlanningExternalEvent::dateAdd($i, $crit["begin"]);
             $class = "class='center'";
             $style = "";
             if ($holiday->countWe($d, $d, $holiday->getHolidays()) > 0) {

@@ -30,12 +30,12 @@ include ('../../../inc/includes.php');
 Session::checkLoginUser();
 
 if (Session::getCurrentInterface() == 'central') {
-   Html::header(PluginActivityActivity::getTypeName(2), '', "tools", "pluginactivitymenu");
+   Html::header(PluginActivityPlanningExternalEvent::getTypeName(2), '', "tools", "pluginactivitymenu");
 } else {
-   Html::helpHeader(PluginActivityActivity::getTypeName(2));
+   Html::helpHeader(PluginActivityPlanningExternalEvent::getTypeName(2));
 }
 
-$activity = new PluginActivityActivity();
+$activity = new PlanningExternalEvent();
 
 $can = $activity->canView();
 $canholiday = Session::haveRight("plugin_activity_can_requestholiday", 1);
@@ -45,15 +45,15 @@ echo "<table align='center' cellspacing='5'><tr>";
 
 if ($can) {
    echo "<td>";
-   $listActions = PluginActivityActivity::getActionsOn();
-   echo PluginActivityActivity::menu("PluginActivityActivity", $listActions);
+   $listActions = PluginActivityPlanningExternalEvent::getActionsOn();
+   echo PluginActivityPlanningExternalEvent::menu("PluginActivityPlanningExternalEvent", $listActions);
    echo "</td>";
 }
 if ($canholiday
          || $canvalidateholiday) {
    echo "<td>";
    $listActions = PluginActivityHoliday::getActionsOn();
-   echo PluginActivityActivity::menu("PluginActivityHoliday", $listActions);
+   echo PluginActivityPlanningExternalEvent::menu("PluginActivityHoliday", $listActions);
    echo "</td>";
 
 }

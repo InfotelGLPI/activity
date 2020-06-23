@@ -35,6 +35,9 @@ class PluginActivityHolidayType extends CommonDropdown {
    var $can_be_translated  = true;
    static $rightname = "dropdown";
 
+   const RTT = 'RT';
+   const CP = 'CP';
+
    static function canCreate() {
       return Session::haveRight('plugin_activity', CREATE)
                && Session::haveRight("plugin_activity_all_users", 1);

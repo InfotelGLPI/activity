@@ -293,8 +293,8 @@ class PluginActivityDashboard extends CommonGLPI {
          case $this->getType() . "3":
             $widgetHTML = new PluginMydashboardHtml();
             $widgetHTML->setWidgetTitle(__("Activity Menu", 'activity'));
-            $listActions = array_merge(PluginActivityActivity::getActionsOn(), PluginActivityHoliday::getActionsOn());
-            $widgetHTML->setWidgetHtmlContent(PluginActivityActivity::menu("PluginActivityActivity", $listActions, true));
+            $listActions = array_merge(PluginActivityPlanningExternalEvent::getActionsOn(), PluginActivityPlanningExternalEvent::getActionsOn());
+            $widgetHTML->setWidgetHtmlContent(PluginActivityPlanningExternalEvent::menu("PluginActivityPlanningExternalEvent", $listActions, true));
             return $widgetHTML;
             break;
          case $this->getType() . "4":
@@ -385,16 +385,18 @@ class PluginActivityDashboard extends CommonGLPI {
       $crit["global_validation"] = PluginActivityCommonValidation::ACCEPTED;
 
       # 1.1 Plugin Activity
-      $query  = PluginActivityActivity::queryAllActivities($crit);
+      $query  = PluginActivityPlanningExternalEvent::queryAllExternalEvents($crit);
       $result = $DB->query($query);
       $number = $DB->numrows($result);
       $total  = 0;
 
-      $query1 = "SELECT SUM(actiontime) AS total 
-                  FROM `glpi_plugin_activity_activities`";
-      $query1 .= " WHERE (`begin` >= '" . $crit["begin"] . "' 
-                           AND `begin` <= '" . $crit["end"] . "')
-                        AND `users_id` = '" . $crit["users_id"] . "'";
+      $query1 = "SELECT SUM(`glpi_plugin_activity_planningexternalevents`.`actiontime`) AS total 
+                  FROM `glpi_plugin_activity_planningexternalevents`
+                   LEFT JOIN `glpi_planningexternalevents` 
+                     ON (`glpi_plugin_activity_planningexternalevents`.`planningexternalevents_id` = `glpi_planningexternalevents`.`id`)";
+      $query1.= " WHERE (`begin` >= '".$crit["begin"]."' 
+                           AND `begin` <= '".$crit["end"]."')
+                              AND `users_id` = '".$crit["users_id"]."'";
       if ($result1 = $DB->query($query1)) {
          $data1 = $DB->fetch_array($result1);
          $total = $data1["total"];
@@ -410,13 +412,13 @@ class PluginActivityDashboard extends CommonGLPI {
 
          $crit["documentcategories_id"] = $config->fields["documentcategories_id"];
 
-         $manage  = PluginActivityActivity::queryManageentities($crit);
+         $manage  = PluginActivityPlanningExternalEvent::queryManageentities($crit);
          $resultm = $DB->query($manage);
          $numberm = $DB->numrows($resultm);
       }
 
       # 1.3 Tickets
-      $tickets  = PluginActivityActivity::queryTickets($crit);
+      $tickets  = PluginActivityPlanningExternalEvent::queryTickets($crit);
       $resultt1 = $DB->query($tickets);
       $numbert  = $DB->numrows($resultt1);
 
@@ -453,13 +455,13 @@ class PluginActivityDashboard extends CommonGLPI {
                if (empty($data["type"])) {
                   $type = $data["entity"] . " > " . __('No defined type', 'activity');
                } else {
-                  $dropdown = new PluginActivityActivityType();
+                  $dropdown = new PlanningEventCategory();
                   if (count($parents) > 1) {
                      $dropdown->getFromDB($last);
-                     $type = $dropdown->fields['completename'];
+                     $type = $dropdown->fields['name'];
                   } else {
                      $dropdown->getFromDB($data["type"]);
-                     $type = $dropdown->fields['completename'];
+                     $type = $dropdown->fields['name'];
                   }
                }
 
@@ -586,7 +588,7 @@ class PluginActivityDashboard extends CommonGLPI {
 
       $AllDay = PluginActivityReport::getAllDay();
 
-      $default_view = PluginActivityActivity::$DAY;
+      $default_view = PluginActivityPlanningExternalEvent::$DAY;
 
       $report  = new PluginActivityReport();
       $holiday = new PluginActivityHoliday();
@@ -630,17 +632,17 @@ class PluginActivityDashboard extends CommonGLPI {
       }
       // ACTIVITIES
       $activities    = [];
-      $activity      = new PluginActivityActivity();
+      $activity      = new PlanningExternalEvent();
       $dbu           = new DbUtils();
       $allActivities = $dbu->getAllDataFromTable($activity->getTable());
 
-      $query  = PluginActivityActivity::queryUserActivities($crit);
+      $query  = PluginActivityPlanningExternalEvent::queryUserExternalEvents($crit);
       $result = $DB->query($query);
 
       $number = $DB->numrows($result);
       $values = [];
       if ($DB->numrows($result)) {
-         while ($data = $DB->fetch_array($result)) {
+         while ($data = DBmysql::fetchArray($result)) {
             $values = $report->timeRepartition($data['actiontime'] / $AllDay, $data["begin"], $values, PluginActivityReport::$WORK, $data['id'], $holiday->getHolidays(), true);
          }
          $currentime = date("Y-m-d H:i:s");
@@ -683,7 +685,7 @@ class PluginActivityDashboard extends CommonGLPI {
                                         'end'             => $end,
                                         'editable'        => false,
                                         'allDay'          => $isallday,
-                                        'color'           => PluginActivityActivity::$ACTIVITY_COLOR,
+                                        'color'           => PluginActivityPlanningExternalEvent::$ACTIVITY_COLOR,
                                         'backgroundColor' => ($iscurrent) ? 'rgb(136, 218, 99)' : ''
                   ];
                }
@@ -700,7 +702,7 @@ class PluginActivityDashboard extends CommonGLPI {
       $values       = [];
       $holidaytypes = [];
       if ($DB->numrows($resulth)) {
-         while ($datah = $DB->fetch_array($resulth)) {
+         while ($datah = DBmysql::fetchArray($resulth)) {
 
             //$isallday = false;
             //if ($datah['allDay'] == 1) {
@@ -735,7 +737,7 @@ class PluginActivityDashboard extends CommonGLPI {
                                            'end'         => $end,
                                            'editable'    => false,
                                            'allDay'      => $isallday,
-                                           'color'       => PluginActivityActivity::$HOLIDAY_COLOR
+                                           'color'       => PluginActivityPlanningExternalEvent::$HOLIDAY_COLOR
                      ];
                   }
                }
@@ -744,7 +746,7 @@ class PluginActivityDashboard extends CommonGLPI {
       }
 
       // TICKETS
-      $tickets = PluginActivityActivity::queryTickets($crit);
+      $tickets = PluginActivityPlanningExternalEvent::queryTickets($crit);
       $resultt = $DB->query($tickets);
       $numbert = $DB->numrows($resultt);
 
@@ -816,7 +818,7 @@ class PluginActivityDashboard extends CommonGLPI {
                                            'end'         => $end,
                                            'editable'    => false,
                                            'allDay'      => false,
-                                           'color'       => PluginActivityActivity::$TICKET_COLOR];
+                                           'color'       => PluginActivityPlanningExternalEvent::$TICKET_COLOR];
                   }
                }
             }
