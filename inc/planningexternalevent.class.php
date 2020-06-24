@@ -187,7 +187,7 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
             'rights' => Session::haveRight("plugin_activity", CREATE),
          ],
          PluginActivityActions::LIST_ACTIVITIES => [
-            'link'   => $CFG_GLPI["root_doc"] . "/plugins/activity/front/activity.php",
+            'link'   => $CFG_GLPI["root_doc"] . "/plugins/activity/front/planningexternalevent.php",
             'img'    => "far fa-calendar-alt",
             'label'  => __('List of activities', 'activity'),
             'rights' => Session::haveRight("plugin_activity", READ),

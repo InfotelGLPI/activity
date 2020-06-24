@@ -1000,12 +1000,11 @@ class PluginActivityReport extends CommonDBTM {
                $numbert = $DB->numrows($resultt);
                if ($numbert != "0") {
                   while ($datat = DBmysql::fetchArray($resultt)) {
-                     $totalPercent = $datat["actiontime"] / $AllDay;
-                     $comment          .= $datat["text"]." (".(round($totalPercent, 2)).")<br>";
+                     $comment          .= $datat["text"]." (".(self::TotalTpsPassesArrondis($datat["actiontime"] / $AllDay)).")<br>";
                   }
                }
                echo Search::showItem($output_type, nl2br(Html::clean($comment)), $num, $row_num);
-               $total_ouvres = $data["total_actiontime"] /$AllDay;
+               $total_ouvres = self::TotalTpsPassesArrondis($data["total_actiontime"] /$AllDay);
                echo Search::showItem($output_type, Html::formatNumber($total_ouvres, false, 3), $num, $row_num);
                echo Search::showItem($output_type, Html::formatNumber($percent)."%", $num, $row_num);
                echo Search::showEndLine($output_type);
