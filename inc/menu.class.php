@@ -50,10 +50,15 @@ class PluginActivityMenu extends CommonGLPI {
          $menu['options']['holidaycount']['title']           = _n('Holiday counter', 'Holiday counters', 2, 'activity');;
          $menu['options']['holidaycount']['page']            = '/plugins/activity/front/holidaycount.php';
          $menu['options']['holidaycount']['links']['add']    = '/plugins/activity/front/holidaycount.form.php';
-         $menu['options']['holidaycount']['links']['search']    = '/plugins/activity/front/holidaycount.php';
+         $menu['options']['holidaycount']['links']['search'] = '/plugins/activity/front/holidaycount.php';
+         $menu['icon']                                       = self::getIcon();
       }
 
       return $menu;
+   }
+
+   static function getIcon() {
+      return "fas fa-share-alt";
    }
 
    static function removeRightsFromSession() {

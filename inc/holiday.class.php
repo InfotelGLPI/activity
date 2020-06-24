@@ -1672,7 +1672,7 @@ class PluginActivityHoliday extends CommonDBTM {
 
       if ($DB->numrows($result) > 0) {
 
-         for ($i = 0; $data = $DB->fetch_array($result); $i++) {
+         for ($i = 0; $data = $DB->fetchArray($result); $i++) {
 
             $key                              = $data["begin"] . "$$" . "PluginActivityHoliday" . $data["id"];
             $interv[$key]['color']            = $options['color'];
@@ -1826,7 +1826,7 @@ class PluginActivityHoliday extends CommonDBTM {
       //                .getEntitiesRestrictRequest("AND", "glpi_plugin_activity_holidays")."
       $result = $DB->query($query);
       if ($DB->numrows($result)) {
-         while ($data = $DB->fetch_array($result)) {
+         while ($data = $DB->fetchArray($result)) {
             $in_holiday[] = $data['realname'] . ' ' . $data['firstname'];
          }
          return $in_holiday;
@@ -1917,7 +1917,7 @@ class PluginActivityHoliday extends CommonDBTM {
                       WHERE `glpi_calendars_holidays`.`calendars_id` = '" . $calendars_id . "'";
 
          if ($result = $DB->query($query)) {
-            while ($data = $DB->fetch_array($result)) {
+            while ($data = $DB->fetchArray($result)) {
                $holidays[] = ['begin'        => $data['begin_date'],
                               'end'          => $data['end_date'],
                               'is_perpetual' => $data['is_perpetual']];
@@ -2206,7 +2206,7 @@ class PluginActivityHoliday extends CommonDBTM {
          $result = $DB->query($query);
 
          if ($DB->numrows($result)) {
-            while ($data = $DB->fetch_array($result)) {
+            while ($data = $DB->fetchArray($result)) {
                $nb_jours['total']                 += $data['actiontime'] / $AllDay;
                $nb_jours['period'][$period['id']] += $data['actiontime'] / $AllDay;
             }
@@ -2257,7 +2257,7 @@ class PluginActivityHoliday extends CommonDBTM {
          $result = $DB->query($query);
 
          if ($DB->numrows($result)) {
-            while ($data = $DB->fetch_array($result)) {
+            while ($data = $DB->fetchArray($result)) {
 
                if ($data['is_holiday'] && $data['is_holiday_counter']) {
                   $nb_jours_i[PluginActivityReport::$HOLIDAY]['total'] += $data['actiontime'] / $AllDay;

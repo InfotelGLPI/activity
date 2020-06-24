@@ -40,7 +40,7 @@ function update223to224() {
 
    if ($result_users = $DB->query($query_users)) {
       if ($DB->numrows($result_users) > 0) {
-         while ($data_user = $DB->fetch_assoc($result_users)) {
+         while ($data_user = $DB->fetchAssoc($result_users)) {
             $user_id = $data_user['users_id'];
 
             //select cp
@@ -55,7 +55,7 @@ function update223to224() {
             $CP = [];
             if ($result_cp = $DB->query($query_cp)) {
                if ($DB->numrows($result_cp) > 0) {
-                  while ($data_cp = $DB->fetch_assoc($result_cp)) {
+                  while ($data_cp = $DB->fetchAssoc($result_cp)) {
                      $CP[$data_cp['plugin_activity_holidayperiods_id']] = ['count'                           => $data_cp['count'],
                                                                                  'name'                            => $data_cp['name'],
                                                                                  'begin'                           => $data_cp['begin'],
@@ -76,7 +76,7 @@ function update223to224() {
             $RTT = [];
             if ($result_rtt = $DB->query($query_rtt)) {
                if ($DB->numrows($result_rtt) > 0) {
-                  while ($data_rtt = $DB->fetch_assoc($result_rtt)) {
+                  while ($data_rtt = $DB->fetchAssoc($result_rtt)) {
                      $RTT[$data_rtt['plugin_activity_holidayperiods_id']] = ['count'                           => $data_rtt['count'],
                                                                                   'name'                            => $data_rtt['name'],
                                                                                   'begin'                           => $data_rtt['begin'],
@@ -93,7 +93,7 @@ function update223to224() {
 
             if ($results = $DB->query($query)) {
                if ($DB->numrows($results) > 0) {
-                  while ($data = $DB->fetch_assoc($results)) {
+                  while ($data = $DB->fetchAssoc($results)) {
 
                      $start = $data['begin'];
                      $end   = $data['end'];

@@ -339,7 +339,7 @@ class PluginActivityDashboard extends CommonGLPI {
 
             $i = 0;
             if ($nb) {
-               while ($data = $DB->fetch_assoc($result)) {
+               while ($data = $DB->fetchAssoc($result)) {
 
 
                   $datas[$i]["date"] = Html::convDateTime($data['date']);
@@ -398,7 +398,7 @@ class PluginActivityDashboard extends CommonGLPI {
                            AND `begin` <= '".$crit["end"]."')
                               AND `users_id` = '".$crit["users_id"]."'";
       if ($result1 = $DB->query($query1)) {
-         $data1 = $DB->fetch_array($result1);
+         $data1 = $DB->fetchArray($result1);
          $total = $data1["total"];
       }
 
@@ -442,7 +442,7 @@ class PluginActivityDashboard extends CommonGLPI {
          # 2.3 Plugin Activity
          if ($number != "0") {
 
-            while ($data = $DB->fetch_array($result)) {
+            while ($data = $DB->fetchArray($result)) {
                if ($data["total_actiontime"] > 0) {
                   $percent = $data["total_actiontime"] * 100 / $total;
                } else {
@@ -484,7 +484,7 @@ class PluginActivityDashboard extends CommonGLPI {
             $resulth = $DB->query($queryh);
             if ($DB->numrows($resulth)) {
                $tmp = [];
-               while ($datah = $DB->fetch_array($resulth)) {
+               while ($datah = $DB->fetchArray($resulth)) {
                   if (empty($datah["type"])) {
                      $type = $datah["entity"] . " > " . __('No defined type', 'activity');
                   } else {
@@ -510,7 +510,7 @@ class PluginActivityDashboard extends CommonGLPI {
             $sums   = [];
             $sum    = 0;
             $report = new PluginActivityReport();
-            while ($datat = $DB->fetch_array($resultt1)) {
+            while ($datat = $DB->fetchArray($resultt1)) {
 
                $mtitle   = strtoupper($datat["entity"]) . " > " . _n('Ticket', 'Tickets', 2);
                $internal = PluginActivityConfig::getConfigFromDB($datat['entities_id']);
@@ -546,7 +546,7 @@ class PluginActivityDashboard extends CommonGLPI {
          //         # 2.4 Plugin Manageentities
          if ($plugin->isActivated('manageentities')) {
             if ($numberm != "0") {
-               while ($datam = $DB->fetch_array($resultm)) {
+               while ($datam = $DB->fetchArray($resultm)) {
 
                   $queryTask = "SELECT `glpi_tickettasks`.*
                                  FROM `glpi_tickettasks`
@@ -563,7 +563,7 @@ class PluginActivityDashboard extends CommonGLPI {
                   $resultTask = $DB->query($queryTask);
                   $numberTask = $DB->numrows($resultTask);
                   if ($numberTask != "0") {
-                     while ($dataTask = $DB->fetch_array($resultTask)) {
+                     while ($dataTask = $DB->fetchArray($resultTask)) {
 
                         $mtitle = $datam["entity"] . " > ";
                         if ($datam["withcontract"]) {
@@ -758,7 +758,7 @@ class PluginActivityDashboard extends CommonGLPI {
          $alltickets = [];
          $all        = [];
          $tickets    = [];
-         while ($datat = $DB->fetch_array($resultt)) {
+         while ($datat = $DB->fetchArray($resultt)) {
             $mtitle   = strtoupper($datat["entity"]) . " > " . __('Ticket');
             $internal = PluginActivityConfig::getConfigFromDB($datat['entities_id']);
             if ($internal) {

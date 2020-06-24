@@ -213,7 +213,7 @@ class PluginActivityReport extends CommonDBTM {
                  ."<th>".__("Document")."</th>"
                  ."<th>".__("Date")."</th>"
                  ."<th></th></tr>";
-         while ($data = $DB->fetch_array($result)) {
+         while ($data = $DB->fetchArray($result)) {
             $doc->getFromDB($data['documents_id']);
             echo "<tr>";
             echo "<td><a href='".$CFG_GLPI['root_doc']."/front/document.form.php?id=".$doc->fields['id']."' target='_blank'>".$doc->fields['name']."</a></td>";

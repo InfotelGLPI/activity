@@ -252,7 +252,7 @@ class PluginActivityHolidaycount extends CommonDBTM {
       $number = $DB->numrows($result);
 
       if ($number) {
-         while ($data = $DB->fetch_array($result)) {
+         while ($data = $DB->fetchArray($result)) {
 
             $count += $data['count'];
 
@@ -284,7 +284,7 @@ class PluginActivityHolidaycount extends CommonDBTM {
       $number = $DB->numrows($result);
 
       if ($number) {
-         while ($data = $DB->fetch_array($result)) {
+         while ($data = $DB->fetchArray($result)) {
             $hcounts[] = $data;
          }
       }
@@ -318,7 +318,7 @@ class PluginActivityHolidaycount extends CommonDBTM {
       $number = $DB->numrows($result);
 
       if ($number) {
-         while ($data = $DB->fetch_array($result)) {
+         while ($data = $DB->fetchArray($result)) {
             $hcounts[] = $data;
          }
       }
