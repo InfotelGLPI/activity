@@ -58,7 +58,7 @@ class PluginActivityMenu extends CommonGLPI {
    }
 
    static function getIcon() {
-      return "fas fa-share-alt";
+      return "far fa-calendar-alt";
    }
 
    static function removeRightsFromSession() {
