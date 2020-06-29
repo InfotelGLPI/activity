@@ -25,7 +25,7 @@
  --------------------------------------------------------------------------
 */
 
-define('PLUGIN_ACTIVITY_VERSION', '2.6.0');
+define('PLUGIN_ACTIVITY_VERSION', '3.0.0');
 
 // Init the hooks of the plugins -Needed
 function plugin_init_activity() {
@@ -36,9 +36,8 @@ function plugin_init_activity() {
    if (isset($_SESSION["glpiactiveprofile"]["interface"])
        && $_SESSION["glpiactiveprofile"]["interface"] != "helpdesk") {
       $PLUGIN_HOOKS['add_css']['activity']      = ['activity.css'];
-      $PLUGIN_HOOKS['javascript']['activity'][] = '/plugins/activity/lib/sdashboard/lib/flotr2/flotr2.js';
-      $PLUGIN_HOOKS['add_javascript']['activity'] = ['lib/jquery/js/jquery.ui.touch-punch.min.js'];
-      $PLUGIN_HOOKS['add_javascript']['activity'] = ['lib/jquery/i18n/jquery.ui.datepicker-fr.js'];
+      $PLUGIN_HOOKS['javascript']['activity'][] = '/plugins/activity/public/lib/sdashboard/lib/flotr2/flotr2.js';
+      $PLUGIN_HOOKS['add_javascript']['activity'] = ['/public/lib/jquery/js/jquery.ui.touch-punch.min.js'];
 
    }
 

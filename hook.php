@@ -33,9 +33,10 @@ function plugin_activity_install() {
    $install = false;
    $update200 = false;
 
+   // version 3.0.0
    if (!$DB->tableExists("glpi_plugin_activity_activities")) {
       $install  = true;
-      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/empty-2.6.0.sql");
+      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/empty-3.0.0.sql");
    }
 
    if (!$DB->tableExists('glpi_plugin_activity_holidays')) {
@@ -149,11 +150,11 @@ function plugin_activity_install() {
       $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/update-2.5.1.sql");
    }
 
-   //version 2.6
+   //version 3.0.0
    if ($DB->tableExists("glpi_planningexternalevents") && $DB->tableExists('glpi_plugin_activity_activities')) {
-      include(GLPI_ROOT."/plugins/activity/install/update_251_260.php");
-      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/update-2.6.0.sql");
-      update251to260();
+      include(GLPI_ROOT."/plugins/activity/install/update_251_300.php");
+      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/update-3.0.0.sql");
+      update251to300();
    }
 
    PluginActivityProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);

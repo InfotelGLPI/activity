@@ -582,7 +582,7 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
                      ON (`glpi_planningexternalevents`.`entities_id` = `glpi_entities`.`id`)";
       $query .= " WHERE ";
       $query .= "  `glpi_planningexternalevents`.`users_id` = '" . $criteria["users_id"] . "' "
-         . $dbu->getEntitiesRestrictRequest("AND", "glpi_plugin_activity_activities") . "
+         . $dbu->getEntitiesRestrictRequest("AND", "glpi_planningexternalevents") . "
                   AND (`glpi_planningexternalevents`.`begin` >= '" . $criteria["begin"] . "' 
                   AND `glpi_planningexternalevents`.`begin` <= '" . $criteria["end"] . "') ";
 
