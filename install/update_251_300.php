@@ -96,36 +96,7 @@ function update251to300() {
    }
 
 
-  // $migration->dropTable('glpi_plugin_activity_activitytypes');
-  // $migration->dropTable('glpi_plugin_activity_activities');
+   $migration->dropTable('glpi_plugin_activity_activitytypes');
+   $migration->dropTable('glpi_plugin_activity_activities');
 
-}
-
-function getActionTime($begin, $end) {
-
-   $holidays = PluginActivityHoliday::getCalendarHolidaysArray($_SESSION["glpiactive_entity"]);
-
-   $holidaysO = new PluginActivityHoliday();
-
-   $date_diff = strtotime($end." 23:59") - strtotime($begin." 00:01");
-   $nbSecondes = 60*60*24;
-   $duration = round($date_diff / $nbSecondes);
-
-   $finalDuration = $duration - $holidaysO->countWe($begin, $end, $holidays);
-
-   return $finalDuration;
-}
-
-/** Log dans le terminal de commande
- * @param $message
- * @param bool $echo
- */
-function msgLog($message, $echo = true){
-
-   if($message != ""){
-      if($echo){
-         echo $message;
-      }
-      return $message;
-   }
 }

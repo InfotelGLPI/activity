@@ -36,8 +36,8 @@ function plugin_init_activity() {
    if (isset($_SESSION["glpiactiveprofile"]["interface"])
        && $_SESSION["glpiactiveprofile"]["interface"] != "helpdesk") {
       $PLUGIN_HOOKS['add_css']['activity']      = ['activity.css'];
-      $PLUGIN_HOOKS['javascript']['activity'][] = '/plugins/activity/public/lib/sdashboard/lib/flotr2/flotr2.js';
-      $PLUGIN_HOOKS['add_javascript']['activity'] = ['/public/lib/jquery/js/jquery.ui.touch-punch.min.js'];
+      $PLUGIN_HOOKS['javascript']['activity'][] = '/plugins/activity/lib/sdashboard/lib/flotr2/flotr2.js';
+      $PLUGIN_HOOKS['add_javascript']['activity'] = ['/lib/jquery/js/jquery.ui.touch-punch.min.js'];
 
    }
 
