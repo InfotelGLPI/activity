@@ -11,3 +11,19 @@ CREATE TABLE `glpi_plugin_activity_planningexternalevents` (
 ALTER TABLE `glpi_plugin_activity_tickettasks` DROP INDEX `tickettasks_id`;
 ALTER TABLE `glpi_plugin_activity_projecttasks` DROP INDEX `projecttasks_id`;
 
+ALTER TABLE `glpi_plugin_activity_holidays` CHANGE `date_mod` `date_mod` TIMESTAMP NULL default NULL;
+ALTER TABLE `glpi_plugin_activity_holidays` CHANGE `begin` `begin` TIMESTAMP NULL default NULL;
+ALTER TABLE `glpi_plugin_activity_holidays` CHANGE `end` `end` TIMESTAMP NULL default NULL;
+
+ALTER TABLE `glpi_plugin_activity_holidayvalidations` CHANGE `submission_date` `submission_date` TIMESTAMP NULL default NULL;
+ALTER TABLE `glpi_plugin_activity_holidayvalidations` CHANGE `validation_date` `validation_date` TIMESTAMP NULL default NULL;
+
+ALTER TABLE `glpi_plugin_activity_holidaycounts` CHANGE `date_mod` `date_mod` TIMESTAMP NULL default NULL;
+
+ALTER TABLE `glpi_plugin_activity_snapshots` CHANGE `date` `date` TIMESTAMP NULL default NULL;
+
+
+
+
+
+

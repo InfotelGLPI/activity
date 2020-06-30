@@ -2,9 +2,9 @@ DROP TABLE IF EXISTS `glpi_plugin_activity_holidays`;
 CREATE TABLE `glpi_plugin_activity_holidays` (
    `id` int(11) NOT NULL auto_increment,
    `name` varchar(255) collate utf8_unicode_ci NOT NULL default '',
-   `date_mod` DATETIME NULL default NULL,
-   `begin` DATETIME NULL default NULL,
-   `end`  DATETIME NULL default NULL,
+   `date_mod` timestamp NULL default NULL,
+   `begin` timestamp NULL default NULL,
+   `end`  timestamp NULL default NULL,
    `is_planned` tinyint(1) NOT NULL DEFAULT '0',
    `global_validation` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1 -> NONE ; 2 -> Waiting ; 3 -> accepted ; 4 -> rejected',
    `comment` text COLLATE utf8_unicode_ci default NULL,
@@ -94,8 +94,8 @@ CREATE TABLE IF NOT EXISTS `glpi_plugin_activity_holidayvalidations` (
   `users_id_validate` int(11) NOT NULL DEFAULT '0',
   `comment_validation` text COLLATE utf8_unicode_ci,
   `status` tinyint (1) NOT NULL DEFAULT 2 COMMENT '1 -> NONE ; 2 -> Waiting ; 3 -> accepted ; 4 -> rejected',
-  `submission_date` datetime DEFAULT NULL,
-  `validation_date` datetime DEFAULT NULL,
+  `submission_date` timestamp DEFAULT NULL,
+  `validation_date` timestamp DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `users_id_validate` (`users_id_validate`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
@@ -104,7 +104,7 @@ DROP TABLE IF EXISTS `glpi_plugin_activity_holidaycounts`;
 CREATE TABLE `glpi_plugin_activity_holidaycounts` (
    `id` int(11) NOT NULL auto_increment,
    `name` varchar(255) collate utf8_unicode_ci NOT NULL default '',
-   `date_mod` DATETIME NULL default NULL,
+   `date_mod` timestamp NULL default NULL,
    `count` decimal(20,1) NOT NULL DEFAULT '0.00',
    `plugin_activity_holidayperiods_id` int(4) NOT NULL default '0',
    `plugin_activity_holidaytypes_id` int(4) NOT NULL default '0',
@@ -132,7 +132,7 @@ DROP TABLE IF EXISTS `glpi_plugin_activity_snapshots`;
 CREATE TABLE `glpi_plugin_activity_snapshots` (
    `id` int(11) NOT NULL auto_increment,
    `documents_id` int(11) NOT NULL,
-   `date` DATETIME NULL default NULL,
+   `date` timestamp NULL default NULL,
    `month` int(2) NOT NULL,
    `year` int(5) NOT NULL,
    PRIMARY KEY  (`id`)
