@@ -49,10 +49,10 @@ if (isset($_GET["popup"])) {
 
 if (isset($_SESSION["glpipopup"]["name"])) {
    switch ($_SESSION["glpipopup"]["name"]) {
-      case "activity" :
-         Html::popHeader(PluginActivityActivity::getTypeName(2), $_SERVER['PHP_SELF']);
+      case "planningexternalevents" :
+         Html::popHeader(PluginActivityPlanningExternalEvent::getTypeName(2), $_SERVER['PHP_SELF']);
          $_POST['target'] = "popup.php";
-         PluginActivityActivity::showGenericSearch(array_merge($_POST, ['users_id' => $users_id]));
+         PluginActivityPlanningExternalEvent::showGenericSearch(array_merge($_POST, ['users_id' => $users_id]));
          break;
       case "holiday" :
          $holiday = new PluginActivityHoliday();

@@ -33,10 +33,12 @@ function plugin_activity_install() {
    $install = false;
    $update200 = false;
 
+   // version 3.0.0
    if (!$DB->tableExists("glpi_plugin_activity_activities")) {
       $install  = true;
-      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/empty-2.5.1.sql");
+      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/empty-3.0.0.sql");
    }
+
    if (!$DB->tableExists('glpi_plugin_activity_holidays')) {
       $DB->runFile(GLPI_ROOT."/plugins/activity/install/sql/update-2.0.0.sql");
       $update200 = true;
@@ -118,9 +120,7 @@ function plugin_activity_install() {
    if (!$DB->fieldExists("glpi_plugin_activity_options", "use_type_as_name")) {
       $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/update-2.2.2.sql");
    }
-   if (!$DB->fieldExists("glpi_plugin_activity_activities", "begin")) {
-      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/update-2.2.3.sql");
-   }
+
    //version 2.2.4
    if (!$DB->fieldExists("glpi_plugin_activity_holidaytypes", "is_holiday_counter")) {
       $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/update-2.2.4.sql");
@@ -150,6 +150,13 @@ function plugin_activity_install() {
       $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/update-2.5.1.sql");
    }
 
+   //version 3.0.0
+   if ($DB->tableExists("glpi_planningexternalevents") && $DB->tableExists('glpi_plugin_activity_activities')) {
+      include(GLPI_ROOT."/plugins/activity/install/update_251_300.php");
+      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/update-3.0.0.sql");
+      update251to300();
+   }
+
    PluginActivityProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
    PluginActivityProfile::initProfile();
    $DB->query("DROP TABLE IF EXISTS `glpi_plugin_activity_profiles`;");
@@ -168,9 +175,7 @@ function plugin_activity_uninstall() {
    include_once (GLPI_ROOT."/plugins/activity/inc/menu.class.php");
 
    // Plugin tables deletion
-   $tables = ["glpi_plugin_activity_activities",
-                    "glpi_plugin_activity_activitytypes",
-                    "glpi_plugin_activity_holidaytypes",
+   $tables = ["glpi_plugin_activity_holidaytypes",
                     "glpi_plugin_activity_holidays",
                     "glpi_plugin_activity_configs",
                     "glpi_plugin_activity_tickettasks",
@@ -180,7 +185,9 @@ function plugin_activity_uninstall() {
                     "glpi_plugin_activity_holidaycounts",
                     "glpi_plugin_activity_holidayperiods",
                     "glpi_plugin_activity_snapshots",
-                    "glpi_plugin_activity_projecttasks"];
+                    "glpi_plugin_activity_projecttasks",
+                    "glpi_plugin_activity_planningexternalevents"];
+
    foreach ($tables as $table) {
       $DB->query("DROP TABLE IF EXISTS `$table`;");
    }
@@ -252,12 +259,10 @@ function plugin_activity_getDatabaseRelations() {
 
    if ($plugin->isActivated("activity")) {
       return ["glpi_tickettasks" => ["glpi_plugin_activity_tickettasks" => "tickettasks_id"],
-                   "glpi_entities" => ["glpi_plugin_activity_activities" => "entities_id",
-                                             "glpi_plugin_activity_configs" => "entities_id"],
-                   "glpi_plugin_activity_activitytypes" => ["glpi_plugin_activity_activities"    => "plugin_activity_activitytypes_id"],
-                   "glpi_plugin_activity_holidaytypes" => ["glpi_plugin_activity_holidays"    => "plugin_activity_holidaytypes_id",
+                  "glpi_planningexternalevents" => ["glpi_plugin_activity_planningexternalevents" => "planningexternalevents_id"],
+                     "glpi_plugin_activity_holidaytypes" => ["glpi_plugin_activity_holidays"    => "plugin_activity_holidaytypes_id",
                                                                   "glpi_plugin_activity_holidaycounts"    => "plugin_activity_holidaytypes_id"],
-                   "glpi_plugin_activity_holidayperiods" => ["glpi_plugin_activity_holidaycounts"   => "plugin_activity_holidayperiods_id"]];
+                           "glpi_plugin_activity_holidayperiods" => ["glpi_plugin_activity_holidaycounts"   => "plugin_activity_holidayperiods_id"]];
    }
    return  [];
 }
@@ -268,9 +273,8 @@ function plugin_activity_getDropdown() {
    $plugin = new Plugin();
 
    if ($plugin->isActivated("activity")) {
-      return ['PluginActivityActivityType' => PluginActivityActivityType::getTypeName(2),
-                     'PluginActivityHolidayType' => PluginActivityHolidayType::getTypeName(2),
-                     'PluginActivityHolidayPeriod' => PluginActivityHolidayPeriod::getTypeName(2)];
+      return ['PluginActivityHolidayType' => PluginActivityHolidayType::getTypeName(2),
+                 'PluginActivityHolidayPeriod' => PluginActivityHolidayPeriod::getTypeName(2)];
    } else {
       return [];
    }
@@ -291,12 +295,12 @@ function plugin_activity_postinit() {
 function plugin_activity_addDefaultWhere($type) {
 
    switch ($type) {
-      case "PluginActivityActivity" :
+/*      case "PluginActivityActivity" :
          $who = Session::getLoginUserID();
          if (!Session::haveRight("plugin_activity_all_users", 1)) {
             return " `glpi_plugin_activity_activities`.`users_id` = '$who' ";
          }
-         break;
+         break;*/
 
       case "PluginActivityHoliday" :
          $who = Session::getLoginUserID();

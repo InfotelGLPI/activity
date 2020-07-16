@@ -34,6 +34,6 @@ Session::checkLoginUser();
 header("Content-Type: text/html; charset=UTF-8");
 echo "<div class='center' id='tabsbody' >";
 echo "<table class='tab_cadre_fixe'>";
-PluginActivityActivity::showMenu();
+PluginActivityLateralmenu::showMenu();
 echo "</table>";
 echo "</div>";

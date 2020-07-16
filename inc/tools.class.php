@@ -45,7 +45,7 @@ class PluginActivityTools {
                   AND `glpi_tickets`.`is_deleted` = 0 
                   ".self::getSpecificEntityRestrict('glpi_tickets', $params);
 
-      $result = $DB->fetch_array($DB->query($query));
+      $result = $DB->fetchArray($DB->query($query));
 
       return $result;
    }
@@ -68,7 +68,7 @@ class PluginActivityTools {
                   AND `glpi_tickets`.`is_deleted` = 0 
                   ".self::getSpecificEntityRestrict('glpi_tickets', $params);
 
-      $result = $DB->fetch_array($DB->query($query));
+      $result = $DB->fetchArray($DB->query($query));
 
       return $result;
    }

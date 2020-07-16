@@ -95,19 +95,6 @@ class PluginActivityProjectTask extends CommonDBTM {
       }
    }
 
-//   static function preTaskAdd(TicketTask $item) {
-//
-//      if (self::canCreate()) {
-//         if (!is_array($item->input) || !count($item->input)) {
-//            // Already cancel by another plugin
-//            return false;
-//         }
-//
-//         if (isset($item->input['plan'])) {
-//            self::manageBeginAndEndPlanDates($item->input);
-//         }
-//      }
-//   }
 
    function getFromDBForTask($projecttasks_id) {
       $dbu = new DbUtils();

@@ -433,29 +433,29 @@ class PluginActivityHoliday extends CommonDBTM {
       $listActions = [
          PluginActivityActions::HOLIDAY_REQUEST => [
             'link'    => "#",
-            'onclick' => Html::jsGetElementbyID('holiday') . ".dialog('open');return false;",
+            'onclick' => '$(function() {' .Html::jsGetElementbyID('holiday').".dialog('open'); return false; });",
             'img'     => "fas fa-user-clock",
             'label'   => __('Create a holiday request', 'activity'),
-            'rights'  => Session::haveRight("plugin_activity_can_requestholiday", 1) && sizeof($have_manager) > 0,
+            'rights'  => Session::haveRight("plugin_activity_can_requestholiday", READ) && sizeof($have_manager) > 0,
          ],
 
          PluginActivityActions::LIST_HOLIDAYS    => [
             'link'   => $CFG_GLPI["root_doc"] . "/plugins/activity/front/holiday.php",
             'img'    => "fas fa-search",
             'label'  => __('List of holidays', 'activity'),
-            'rights' => Session::haveRight("plugin_activity_can_requestholiday", 1),
+            'rights' => Session::haveRight("plugin_activity_can_requestholiday", READ),
          ],
          PluginActivityActions::APPROVE_HOLIDAYS => [
             'link'   => $url,
             'img'    => "fas fa-user-check",
             'label'  => _n('Approve holiday', 'Approve holidays', 2, 'activity'),
-            'rights' => Session::haveRight("plugin_activity_can_validate", 1) && sizeof($users_id_validate) > 0,
+            'rights' => Session::haveRight("plugin_activity_can_validate", READ) && sizeof($users_id_validate) > 0,
          ],
          PluginActivityActions::HOLIDAY_COUNT    => [
             'link'   => $CFG_GLPI["root_doc"] . "/plugins/activity/front/holidaycount.php",
             'img'    => "far fa-clock",
             'label'  => _n('Holiday counter', 'Holiday counters', 2, 'activity'),
-            'rights' => Session::haveRight("plugin_activity_can_requestholiday", 1),
+            'rights' => Session::haveRight("plugin_activity_can_requestholiday", READ),
          ]
       ];
 
@@ -466,7 +466,7 @@ class PluginActivityHoliday extends CommonDBTM {
                'link'   => $CFG_GLPI["root_doc"] . "/front/preference.php?glpi_tab=PluginActivityPreference$1",
                'img'    => "fas fa-user-tie",
                'label'  => __('Add a manager', 'activity'),
-               'rights' => Session::haveRight("plugin_activity_can_requestholiday", 1),
+               'rights' => Session::haveRight("plugin_activity_can_requestholiday", READ),
             ]
          ];
       }
@@ -1294,6 +1294,7 @@ class PluginActivityHoliday extends CommonDBTM {
 
       $params['value'] = $this->fields["actiontime"];
 
+
       echo "<div id='div_duration'>" . PluginActivityReport::TotalTpsPassesArrondis($actionTime / $AllDay) . "</div>";
       $period = $this->getPeriodForTemplate($actionTime);
 
@@ -1671,7 +1672,7 @@ class PluginActivityHoliday extends CommonDBTM {
 
       if ($DB->numrows($result) > 0) {
 
-         for ($i = 0; $data = $DB->fetch_array($result); $i++) {
+         for ($i = 0; $data = $DB->fetchArray($result); $i++) {
 
             $key                              = $data["begin"] . "$$" . "PluginActivityHoliday" . $data["id"];
             $interv[$key]['color']            = $options['color'];
@@ -1825,7 +1826,7 @@ class PluginActivityHoliday extends CommonDBTM {
       //                .getEntitiesRestrictRequest("AND", "glpi_plugin_activity_holidays")."
       $result = $DB->query($query);
       if ($DB->numrows($result)) {
-         while ($data = $DB->fetch_array($result)) {
+         while ($data = $DB->fetchArray($result)) {
             $in_holiday[] = $data['realname'] . ' ' . $data['firstname'];
          }
          return $in_holiday;
@@ -1916,7 +1917,7 @@ class PluginActivityHoliday extends CommonDBTM {
                       WHERE `glpi_calendars_holidays`.`calendars_id` = '" . $calendars_id . "'";
 
          if ($result = $DB->query($query)) {
-            while ($data = $DB->fetch_array($result)) {
+            while ($data = $DB->fetchArray($result)) {
                $holidays[] = ['begin'        => $data['begin_date'],
                               'end'          => $data['end_date'],
                               'is_perpetual' => $data['is_perpetual']];
@@ -2009,10 +2010,8 @@ class PluginActivityHoliday extends CommonDBTM {
     */
    public function initDate($id) {
       global $CFG_GLPI;
-
       $this->showHeaderJS();
       echo "$(document).ready(function() {
-
                $('#" . $id . "').datepicker({
                        showOn: 'both',
                        buttonText: '<i class=\"far fa-calendar-alt\"></i>',
@@ -2047,7 +2046,6 @@ class PluginActivityHoliday extends CommonDBTM {
       }
 
       $this->showHeaderJS();
-
       echo "    $.datepicker.regional['fr'] = {clearText: '" . __('Clear') . "', clearStatus: '',\n";
       echo "        closeText: '" . __('Close') . "', closeStatus: '" . __('Close without clearing', 'activity') . "',\n";
       echo "        prevText: '< " . __('Previous') . "', prevStatus: '" . __('See previous month', 'activity') . "',\n";
@@ -2063,7 +2061,6 @@ class PluginActivityHoliday extends CommonDBTM {
       echo "        dayStatus: '" . __('Use DD as first day of week', 'activity') . "', dateStatus: '" . __('Choose the DD, MM d', 'activity') . "',\n";
       echo "        dateFormat: 'dd/mm/yy', firstDay: 0,\n";
       echo "        initStatus: '" . __('Choose the date', 'activity') . "', isRTL: false};\n";
-
       echo "    $.datepicker.setDefaults($.datepicker.regional['fr']);\n";
 
       $this->closeFormJS();
@@ -2209,7 +2206,7 @@ class PluginActivityHoliday extends CommonDBTM {
          $result = $DB->query($query);
 
          if ($DB->numrows($result)) {
-            while ($data = $DB->fetch_array($result)) {
+            while ($data = $DB->fetchArray($result)) {
                $nb_jours['total']                 += $data['actiontime'] / $AllDay;
                $nb_jours['period'][$period['id']] += $data['actiontime'] / $AllDay;
             }
@@ -2260,7 +2257,7 @@ class PluginActivityHoliday extends CommonDBTM {
          $result = $DB->query($query);
 
          if ($DB->numrows($result)) {
-            while ($data = $DB->fetch_array($result)) {
+            while ($data = $DB->fetchArray($result)) {
 
                if ($data['is_holiday'] && $data['is_holiday_counter']) {
                   $nb_jours_i[PluginActivityReport::$HOLIDAY]['total'] += $data['actiontime'] / $AllDay;

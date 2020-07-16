@@ -53,13 +53,13 @@ if (isset($_GET["users_id"])) {
 //   Html::popHeader(PluginActivityActivity::getTypeName(2));
 //} else {
 if (Session::getCurrentInterface() == 'central') {
-   Html::header(PluginActivityActivity::getTypeName(2), '', "tools", "pluginactivitymenu");
+   Html::header(PluginActivityPlanningExternalEvent::getTypeName(2), '', "tools", "pluginactivitymenu");
 } else {
-   Html::helpHeader(PluginActivityActivity::getTypeName(2));
+   Html::helpHeader(PluginActivityPlanningExternalEvent::getTypeName(2));
 }
 //}
 
-$activity = new PluginActivityActivity();
+$activity = new PlanningExternalEvent();
 
 if ($activity->canView()) {
    //TODO used by modal
@@ -73,7 +73,7 @@ if ($activity->canView()) {
 
    //} else {
 
-      Search::show("PluginActivityActivity");
+      Search::show("PlanningExternalEvent");
    //}
 } else {
    Html::displayRightError();

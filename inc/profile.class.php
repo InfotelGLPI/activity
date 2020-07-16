@@ -39,7 +39,7 @@ class PluginActivityProfile extends Profile {
 
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
       if ($item->getType() == 'Profile') {
-         return PluginActivityActivity::getTypeName(2);
+         return PluginActivityPlanningExternalEvent::getTypeName(2);
       }
       return '';
    }
@@ -82,8 +82,8 @@ class PluginActivityProfile extends Profile {
 
       $rights = $this->getAllRights();
       $profile->displayRightsChoiceMatrix($rights, ['canedit'       => $canedit,
-         'default_class' => 'tab_bg_2',
-         'title'         => __('General')]);
+                                                    'default_class' => 'tab_bg_2',
+                                                    'title'         => __('General')]);
 
       echo "<table class='tab_cadre_fixehov'>";
       $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_activity_can_requestholiday',
@@ -133,7 +133,7 @@ class PluginActivityProfile extends Profile {
 
    static function getAllRights($all = false) {
       $rights = [
-         ['itemtype' => 'PluginActivityActivity',
+         ['itemtype' => 'PluginActivityPlanningExternalEvent',
                'label'    => _n('Activity', 'Activities', 1, 'activity'),
                'field'    => 'plugin_activity'
          ]
@@ -148,11 +148,11 @@ class PluginActivityProfile extends Profile {
                            'label'    => _n('Validate holiday', 'Validate holidays', 2, 'activity'),
                            'field'    => 'plugin_activity_can_validate'];
 
-         $rights[] = ['itemtype' => 'PluginActivityActivity',
+         $rights[] = ['itemtype' => 'PluginActivityPlanningExternalEvent',
                            'label'    => __('Statistics and reports', 'activity'),
                            'field'    => 'plugin_activity_statistics'];
 
-         $rights[] = ['itemtype' => 'PluginActivityActivity',
+         $rights[] = ['itemtype' => 'PluginActivityPlanningExternalEvent',
                            'label'    => __('Display activities of all', 'activity'),
                            'field'    => 'plugin_activity_all_users'];
       }
