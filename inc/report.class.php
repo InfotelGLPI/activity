@@ -473,7 +473,7 @@ class PluginActivityReport extends CommonDBTM {
                            AND `begin` <= '".$crit["end"]."')
                               AND `users_id` = '".$crit["users_id"]."'";
       if ($result1 = $DB->query($query1)) {
-         $data1 = DBmysql::fetchArray($result1);
+         $data1 = $DB->fetchArray($result1);
          $total = $data1["total"];
       }
 
@@ -540,7 +540,7 @@ class PluginActivityReport extends CommonDBTM {
 
          $result2 = $DB->query($query2);
          if ($DB->numrows($result2)) {
-            while ($data2 = DBmysql::fetchArray($result2)) {
+            while ($data2 = $DB->fetchArray($result2)) {
                $type    = $data2["type"];
                $parents = $dbu->getAncestorsOf("glpi_planningeventcategories", $data2["type_id"]);
                $last    = end($parents);
@@ -578,7 +578,7 @@ class PluginActivityReport extends CommonDBTM {
 
             $resulth = $DB->query($queryh);
             if ($DB->numrows($resulth)) {
-               while ($datah = DBmysql::fetchArray($resulth)) {
+               while ($datah = $DB->fetchArray($resulth)) {
                   if (empty($datah["type"])) {
                      $type = $datah["entity"]." > ".__('No defined type', 'activity');
                   } else {
@@ -603,7 +603,7 @@ class PluginActivityReport extends CommonDBTM {
 
          // 1.3 Tickets
          if ($numbert !="0") {
-            while ($datat= DBmysql::fetchArray($resultt1)) {
+            while ($datat= $DB->fetchArray($resultt1)) {
                $mtitle = strtoupper($datat["entity"])." > ".__('Unbilled', 'activity');
                $internal = PluginActivityConfig::getConfigFromDB($datat['entities_id']);
                if ($internal) {
@@ -625,7 +625,7 @@ class PluginActivityReport extends CommonDBTM {
          // 2.4 Plugin Manageentities
          if ($plugin->isActivated('manageentities')) {
             if ($numberm !="0") {
-               while ($datam= DBmysql::fetchArray($resultm)) {
+               while ($datam= $DB->fetchArray($resultm)) {
 
                   $queryTask = "SELECT `glpi_tickettasks`.*
                                  FROM `glpi_tickettasks`
@@ -642,7 +642,7 @@ class PluginActivityReport extends CommonDBTM {
                   $resultTask = $DB->query($queryTask);
                   $numberTask = $DB->numrows($resultTask);
                   if ($numberTask !="0") {
-                     while ($dataTask= DBmysql::fetchArray($resultTask)) {
+                     while ($dataTask= $DB->fetchArray($resultTask)) {
 
                         $mtitle = strtoupper($datam["entity"])." > ";
                         if ($datam["withcontract"]) {
@@ -666,7 +666,7 @@ class PluginActivityReport extends CommonDBTM {
          $opt = new PluginActivityOption();
          if ($opt->getFromDB(1) && $opt->getUseProject()) {
             if ($numberpt != "0") {
-               while ($datapt = DBmysql::fetchArray($resultpt)) {
+               while ($datapt = $DB->fetchArray($resultpt)) {
                   $project = new Project();
                   $project->getFromDB($datapt["projects_id"]);
                   $mtitle = strtoupper($project->getName()) . " > " . ProjectTask::getTypeName();
@@ -969,7 +969,7 @@ class PluginActivityReport extends CommonDBTM {
 
             // 2.1 Spew out the data in a table
             $row_num = 1;
-            while ($data = DBmysql::fetchArray($result)) {
+            while ($data = $DB->fetchArray($result)) {
                if ($data["total_actiontime"] > 0) {
                   $percent = $data["total_actiontime"] * 100 / $total;
                } else {
@@ -999,7 +999,7 @@ class PluginActivityReport extends CommonDBTM {
                $resultt = $DB->query($queryt);
                $numbert = $DB->numrows($resultt);
                if ($numbert != "0") {
-                  while ($datat = DBmysql::fetchArray($resultt)) {
+                  while ($datat = $DB->fetchArray($resultt)) {
                      $comment          .= $datat["text"]." (".(self::TotalTpsPassesArrondis($datat["actiontime"] / $AllDay)).")<br>";
                   }
                }

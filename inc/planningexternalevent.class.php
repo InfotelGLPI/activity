@@ -361,12 +361,12 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
 
          if ($use_we == 0) {
             $hol = new PluginActivityHoliday();
-            if ($hol->isWeekend($_POST, true)) {
+            if ($hol->isWeekend($_POST['start'], true)) {
                Session::addMessageAfterRedirect(__('The chosen begin date is on weekend', 'activity'), false, ERROR);
                unset($item->input);
                return false;
             }
-            if ($hol->isWeekend($_POST, false)) {
+            if ($hol->isWeekend($_POST['end'], false)) {
                Session::addMessageAfterRedirect(__('The chosen end date is on weekend', 'activity'), false, ERROR);
                unset($item->input);
                return false;

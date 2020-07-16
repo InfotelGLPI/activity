@@ -262,9 +262,9 @@ class PluginActivityHoliday extends CommonDBTM {
             $groups[] = $groupuser["id"];
          }
 
-         $restrict = ["groups_id" => [implode(',', $groups)],
+         $restrict = ["groups_id"  => [implode(',', $groups)],
                       "is_manager" => 1,
-                      "NOT" => ["users_id"  => $user_id]];
+                      "NOT"        => ["users_id" => $user_id]];
          $managers = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
 
          foreach ($managers as $manager) {
@@ -398,14 +398,14 @@ class PluginActivityHoliday extends CommonDBTM {
             $groups[] = $groupuser["id"];
          }
 
-         $restrict = ["groups_id" => [implode(',', $groups)],
-                      "is_manager" => 1,
-                      "users_id"  => $user_id];
+         $restrict          = ["groups_id"  => [implode(',', $groups)],
+                               "is_manager" => 1,
+                               "users_id"   => $user_id];
          $users_id_validate = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
 
-         $restrict = ["groups_id" => [implode(',', $groups)],
-                      "is_manager" => 1,
-                      "NOT" => ["users_id"  => $user_id]];
+         $restrict     = ["groups_id"  => [implode(',', $groups)],
+                          "is_manager" => 1,
+                          "NOT"        => ["users_id" => $user_id]];
          $have_manager = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
 
       }
@@ -433,7 +433,7 @@ class PluginActivityHoliday extends CommonDBTM {
       $listActions = [
          PluginActivityActions::HOLIDAY_REQUEST => [
             'link'    => "#",
-            'onclick' => '$(function() {' .Html::jsGetElementbyID('holiday').".dialog('open'); return false; });",
+            'onclick' => '$(function() {' . Html::jsGetElementbyID('holiday') . ".dialog('open'); return false; });",
             'img'     => "fas fa-user-clock",
             'label'   => __('Create a holiday request', 'activity'),
             'rights'  => Session::haveRight("plugin_activity_can_requestholiday", READ) && sizeof($have_manager) > 0,
@@ -712,9 +712,9 @@ class PluginActivityHoliday extends CommonDBTM {
             $groups[] = $groupuser["id"];
          }
 
-         $restrict = ["groups_id" => [implode(',', $groups)],
+         $restrict = ["groups_id"  => [implode(',', $groups)],
                       "is_manager" => 1,
-                      "NOT" => ["users_id"  => $user_id]];
+                      "NOT"        => ["users_id" => $user_id]];
          $managers = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
          foreach ($managers as $manager) {
             $datas['users_id_validate'] = $manager['users_id'];
@@ -775,7 +775,7 @@ class PluginActivityHoliday extends CommonDBTM {
          } else if (strpos($data, "{{user_realname}}")) {
             $finalRows .= str_ireplace("{{user_realname}}", strtoupper($user->fields['realname']), $data);
          } else if (strpos($data, "{{user_matricule}}")) {
-            $nb = substr($user->fields['registration_number'],1);
+            $nb        = substr($user->fields['registration_number'], 1);
             $finalRows .= str_ireplace("{{user_matricule}}", $nb, $data);
          } else if (strpos($data, "{{nb_days}}")) {
             $finalRows .= str_ireplace("{{nb_days}}", ($holidays->fields['actiontime'] / PluginActivityReport::getAllDay()), $data);
@@ -816,7 +816,7 @@ class PluginActivityHoliday extends CommonDBTM {
             $groups[] = $groupuser["id"];
          }
 
-         $restrict = ["groups_id" => [implode(',', $groups)],
+         $restrict = ["groups_id"  => [implode(',', $groups)],
                       "is_manager" => 1];
          $managers = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
 
@@ -857,9 +857,9 @@ class PluginActivityHoliday extends CommonDBTM {
             $groups[] = $groupuser["id"];
          }
 
-         $restrict = ["groups_id" => [implode(',', $groups)],
+         $restrict = ["groups_id"  => [implode(',', $groups)],
                       "is_manager" => 1,
-                      "NOT" => ["users_id"  => $user_id]];
+                      "NOT"        => ["users_id" => $user_id]];
          $managers = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
          foreach ($managers as $manager) {
             $datas['users_id_validate'] = $manager['users_id'];
@@ -1079,7 +1079,7 @@ class PluginActivityHoliday extends CommonDBTM {
    function showForm($ID, $options = []) {
       global $CFG_GLPI;
 
-      $dbu = new DbUtils();
+      $dbu    = new DbUtils();
       $AllDay = PluginActivityReport::getAllDay();
 
       $_SESSION['notification_holidayvalidation'] = "false";
@@ -1608,42 +1608,41 @@ class PluginActivityHoliday extends CommonDBTM {
       }
 
       $who       = $options['who'];
-      $who_group = $options['who_group'];
-      $whogroup  = $options['whogroup'];
+      $who_group = $options['whogroup'];
       $begin     = $options['begin'];
       $end       = $options['end'];
 
       // Get items to print
       $ASSIGN = "";
 
-      if ($who_group === "mine") {
-         if (count($_SESSION["glpigroups"])) {
-            $groups = implode("','", $_SESSION['glpigroups']);
-            $ASSIGN = "`users_id`
-                           IN (SELECT DISTINCT `users_id`
-                               FROM `glpi_groups_users`
-                               WHERE `glpi_groups_users`.`groups_id` IN ('$groups'))
-                                     AND ";
-         } else { // Only personal ones
-            $ASSIGN = "`users_id` = '$who'
+      //      if ($who_group === "mine") {
+      //         if (count($_SESSION["glpigroups"])) {
+      //            $groups = implode("','", $_SESSION['glpigroups']);
+      //            $ASSIGN = "`users_id`
+      //                           IN (SELECT DISTINCT `users_id`
+      //                               FROM `glpi_groups_users`
+      //                               WHERE `glpi_groups_users`.`groups_id` IN ('$groups'))
+      //                                     AND ";
+      //         } else { // Only personal ones
+      //            $ASSIGN = "`users_id` = '$who'
+      //                       AND ";
+      //         }
+      //      } else {
+      if ($who > 0) {
+         $ASSIGN = "`users_id` = '$who'
                        AND ";
-         }
-      } else {
-         if ($who > 0) {
-            $ASSIGN = "`users_id` = '$who'
-                       AND ";
-         }
-         if ($who_group > 0) {
-            $ASSIGN = "`users_id` IN (SELECT `users_id`
+      }
+      if ($who_group > 0) {
+         $ASSIGN = "`users_id` IN (SELECT `users_id`
                                      FROM `glpi_groups_users`
                                      WHERE `groups_id` = '$who_group')
                                            AND ";
-         }
-         if ($whogroup > 0) {
-            $ASSIGN = "`groups_id` = '$whogroup'
-                       AND ";
-         }
       }
+//      if ($who_group > 0) {
+//         $ASSIGN = "`groups_id` = '$who_group'
+//                       AND ";
+//      }
+      //      }
 
       $query = " SELECT `glpi_plugin_activity_holidays`.`id`,
                               `glpi_plugin_activity_holidays`.`name`,
@@ -1658,9 +1657,9 @@ class PluginActivityHoliday extends CommonDBTM {
       $query .= "LEFT JOIN `glpi_plugin_activity_holidaytypes`
                       ON (`glpi_plugin_activity_holidaytypes`.`id` = `glpi_plugin_activity_holidays`.`plugin_activity_holidaytypes_id`) ";
       $query .= " WHERE ";
-      $query.= " $ASSIGN ";
-      $query.= " `is_planned`= 1 ";
-      $query.= " AND `glpi_plugin_activity_holidays`.`global_validation`= ".PluginActivityCommonValidation::ACCEPTED;
+      $query .= " $ASSIGN ";
+      $query .= " `is_planned`= 1 ";
+      $query .= " AND `glpi_plugin_activity_holidays`.`global_validation`= " . PluginActivityCommonValidation::ACCEPTED;
 
       //$query.= getEntitiesRestrictRequest("AND","glpi_plugin_activity_holidays", '',
       //                                       $_SESSION["glpiactiveentities"],false);
@@ -1850,18 +1849,18 @@ class PluginActivityHoliday extends CommonDBTM {
 
 
    static function userHasPlannedHolidays($dateBegin, $dateEnd, $userId) {
-      $holiday   = new PluginActivityHoliday();
+      $holiday = new PluginActivityHoliday();
 
       $condition = [
-         "OR" => [["AND" => ["`glpi_plugin_activity_holidays`.`begin`" => ["<=",$dateBegin],
-                   "`glpi_plugin_activity_holidays`.`end`" => [">=",$dateBegin]]],
-                  ["AND" => ["`glpi_plugin_activity_holidays`.`begin`" => ["<=",$dateEnd],
-                   "`glpi_plugin_activity_holidays`.`end`" => [">=",$dateEnd]]]
+         "OR"         => [["AND" => ["`glpi_plugin_activity_holidays`.`begin`" => ["<=", $dateBegin],
+                                     "`glpi_plugin_activity_holidays`.`end`"   => [">=", $dateBegin]]],
+                          ["AND" => ["`glpi_plugin_activity_holidays`.`begin`" => ["<=", $dateEnd],
+                                     "`glpi_plugin_activity_holidays`.`end`"   => [">=", $dateEnd]]]
          ],
          "`users_id`" => $userId
       ];
-      $dbu   = new DbUtils();
-      $datas = $dbu->getAllDataFromTable($holiday->getTable(), $condition);
+      $dbu       = new DbUtils();
+      $datas     = $dbu->getAllDataFromTable($holiday->getTable(), $condition);
 
       if (sizeof($datas) > 0) {
          return true;
@@ -2070,12 +2069,12 @@ class PluginActivityHoliday extends CommonDBTM {
    /**
     * Get the specific massive actions
     *
-    * @since version 0.84
-    *
     * @param $checkitem link item to check right   (default NULL)
     *
     * @return an array of massive actions
-    **/
+    **@since version 0.84
+    *
+    */
    function getSpecificMassiveActions($checkitem = null) {
       $isadmin = $this->canCreate();
       $actions = parent::getSpecificMassiveActions($checkitem);
@@ -2170,12 +2169,12 @@ class PluginActivityHoliday extends CommonDBTM {
 
    /**
     *
-    * @global type $DB
-    *
     * @param type  $users_id
     * @param type  $periods
     *
     * @return type
+    * @global type $DB
+    *
     */
    function countNbHolidayByPeriod($users_id, $periods) {
       global $DB;
@@ -2217,13 +2216,14 @@ class PluginActivityHoliday extends CommonDBTM {
 
    /**
     * Counts number of days of holiday between two dates for a user
-    * @global type $DB
     *
     * @param type  $users_id
     * @param type  $start
     * @param type  $end
     *
     * @return type
+    * @global type $DB
+    *
     */
 
    function countNbHoliday($users_id, $periods, $statut) {

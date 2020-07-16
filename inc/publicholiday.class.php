@@ -104,8 +104,8 @@ class PluginActivityPublicHoliday extends CommonDBTM {
                      $interv[$key]["end"]              = $end;
                      $interv[$key]["name"]             = self::getTypeName(1);
                      $interv[$key]["content"]          = " ";
+                     $interv[$key]["editable"]         = false;
                   }
-
                }
 
             } else {
@@ -124,6 +124,7 @@ class PluginActivityPublicHoliday extends CommonDBTM {
                   $interv[$key]["end"]              = $end;
                   $interv[$key]["name"]             = self::getTypeName(1);
                   $interv[$key]["content"]          = " ";
+                  $interv[$key]["editable"]         = false;
                }
             }
          }

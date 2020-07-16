@@ -81,8 +81,8 @@ function update251to300() {
    foreach ($activities as $activity) {
 
       $migrate_activities_query = 'INSERT INTO `glpi_planningexternalevents`(`id`,`entities_id`,`users_id`,`name`,`text`,`begin`,`end`,`planningeventcategories_id`,`state`)
-                                    VALUES("'.$activity['id'].'", "'.$activity['entities_id'].'", "'.$activity['users_id'].'", "'.$activity['name'].'", "'.$activity['comment'].'",
-                                     "'.$activity['begin'].'", "'.$activity['end'].'","'.$activity['activitytypes_id'].'"
+                                    VALUES("'.$activity['id'].'", "'.$activity['entities_id'].'", "'.$activity['users_id'].'", "'.addslashes($activity['name']).'", "'.addslashes($activity['comment']).'",
+                                     "'.$activity['begin'].'", "'.$activity['end'].'","'.$activity['plugin_activity_activitytypes_id'].'"
                                        , "'.$activity['is_planned'].'")';
 
 
