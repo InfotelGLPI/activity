@@ -41,7 +41,7 @@ $can = $activity->canView();
 $canholiday = Session::haveRight("plugin_activity_can_requestholiday", 1);
 $canvalidateholiday = Session::haveRight("plugin_activity_can_validate", 1);
 
-echo "<table align='center' cellspacing='5'><tr>";
+echo "<table align='center' cellspacing='5'  style=\"margin-left: auto;margin-right:auto;\"><tr>";
 
 if ($can) {
    echo "<td>";

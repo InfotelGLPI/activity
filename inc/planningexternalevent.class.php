@@ -559,11 +559,6 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
       return $query;
    }
 
-   /**
-    * @param $criteria
-    *
-    * @return string
-    */
    static function queryUserExternalEvents($criteria) {
 
       $dbu = new DbUtils();
