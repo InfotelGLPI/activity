@@ -390,7 +390,7 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
 
       if ($opt && $opt->fields['use_type_as_name'] == 1) {
 
-         $item->input["name"] = Dropdown::getDropdownName('planningeventcategories', $item->input['planningeventcategories_id']);
+         $item->input["name"] = Dropdown::getDropdownName('glpi_planningeventcategories', $item->input['planningeventcategories_id']);
       }
 
       if (!isset($item->input["planningeventcategories_id"]) || $item->input["planningeventcategories_id"] == 0) {
@@ -559,6 +559,11 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
       return $query;
    }
 
+   /**
+    * @param $criteria
+    *
+    * @return string
+    */
    static function queryUserExternalEvents($criteria) {
 
       $dbu = new DbUtils();

@@ -72,7 +72,8 @@ function update251to300() {
    $migration = new Migration("3.0.0");
 
    $migrate_cat_activities_query = "INSERT INTO `glpi_planningeventcategories`(`id`,`name`, `comment`, `date_creation`) 
-           SELECT `glpi_plugin_activity_activitytypes`.`id`,`glpi_plugin_activity_activitytypes`.`name`,`glpi_plugin_activity_activitytypes`.`comment`, NOW()  FROM  `glpi_plugin_activity_activitytypes`;";
+           SELECT `glpi_plugin_activity_activitytypes`.`id`,`glpi_plugin_activity_activitytypes`.`completename`,`glpi_plugin_activity_activitytypes`.`comment`, NOW()  
+            FROM  `glpi_plugin_activity_activitytypes`;";
 
    $DB->query($migrate_cat_activities_query);
 
@@ -94,7 +95,6 @@ function update251to300() {
 
       $DB->query($migrate_cra_activities_query);
    }
-
 
    $migration->dropTable('glpi_plugin_activity_activitytypes');
    $migration->dropTable('glpi_plugin_activity_activities');

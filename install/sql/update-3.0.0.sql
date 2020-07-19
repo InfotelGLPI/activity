@@ -11,16 +11,16 @@ CREATE TABLE `glpi_plugin_activity_planningexternalevents` (
 ALTER TABLE `glpi_plugin_activity_tickettasks` DROP INDEX `tickettasks_id`;
 ALTER TABLE `glpi_plugin_activity_projecttasks` DROP INDEX `projecttasks_id`;
 
-ALTER TABLE `glpi_plugin_activity_holidays` CHANGE `date_mod` `date_mod` TIMESTAMP NULL default '0000-00-00 00:00:00';
-ALTER TABLE `glpi_plugin_activity_holidays` CHANGE `begin` `begin` TIMESTAMP NULL default '0000-00-00 00:00:00';
-ALTER TABLE `glpi_plugin_activity_holidays` CHANGE `end` `end` TIMESTAMP NULL default '0000-00-00 00:00:00';
+ALTER TABLE `glpi_plugin_activity_holidays` CHANGE `date_mod` `date_mod` timestamp NULL DEFAULT NULL;
+ALTER TABLE `glpi_plugin_activity_holidays` CHANGE `begin` `begin` timestamp NULL DEFAULT NULL;
+ALTER TABLE `glpi_plugin_activity_holidays` CHANGE `end` `end` timestamp NULL DEFAULT NULL;
 
-ALTER TABLE `glpi_plugin_activity_holidayvalidations` CHANGE `submission_date` `submission_date` TIMESTAMP NULL default '0000-00-00 00:00:00';
-ALTER TABLE `glpi_plugin_activity_holidayvalidations` CHANGE `validation_date` `validation_date` TIMESTAMP NULL default '0000-00-00 00:00:00';
+ALTER TABLE `glpi_plugin_activity_holidayvalidations` CHANGE `submission_date` `submission_date` timestamp NULL DEFAULT NULL;
+ALTER TABLE `glpi_plugin_activity_holidayvalidations` CHANGE `validation_date` `validation_date` timestamp NULL DEFAULT NULL;
 
-ALTER TABLE `glpi_plugin_activity_holidaycounts` CHANGE `date_mod` `date_mod` TIMESTAMP NULL default '0000-00-00 00:00:00';
+ALTER TABLE `glpi_plugin_activity_holidaycounts` CHANGE `date_mod` `date_mod` timestamp NULL DEFAULT NULL;
 
-ALTER TABLE `glpi_plugin_activity_snapshots` CHANGE `date` `date` TIMESTAMP NULL default '0000-00-00 00:00:00';
+ALTER TABLE `glpi_plugin_activity_snapshots` CHANGE `date` `date` timestamp NULL DEFAULT NULL;
 
 
 

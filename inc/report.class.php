@@ -541,20 +541,21 @@ class PluginActivityReport extends CommonDBTM {
          $result2 = $DB->query($query2);
          if ($DB->numrows($result2)) {
             while ($data2 = $DB->fetchArray($result2)) {
-               $type    = $data2["type"];
-               $parents = $dbu->getAncestorsOf("glpi_planningeventcategories", $data2["type_id"]);
-               $last    = end($parents);
+               //NO parents for glpi_planningeventcategories
+//               $type    = $data2["type"];
+//               $parents = $dbu->getAncestorsOf("glpi_planningeventcategories", $data2["type_id"]);
+//               $last    = end($parents);
 
                if (empty($data2["type"])) {
                   $type = $data2["entity"]." > ".__('No defined type', 'activity');
                } else {
-                  if (count($parents) > 1) {
-                     $dropdown = new PlanningEventCategory();
-                     $dropdown->getFromDB($last);
-                     $type = $dropdown->fields['name'];
-                  } else {
+//                  if (count($parents) > 1) {
+//                     $dropdown = new PlanningEventCategory();
+//                     $dropdown->getFromDB($last);
+//                     $type = $dropdown->fields['name'];
+//                  } else {
                      $type = $data2["type"];
-                  }
+//                  }
                }
 
                $title[$type][] = $data2["begin"];
@@ -1265,14 +1266,10 @@ class PluginActivityReport extends CommonDBTM {
       $activity_data = [];
       $tot_act       = [];
       switch ($type) {
+         case self::$SICKNESS:
+         case self::$PART_TIME:
          case self::$HOLIDAY:
             $activity_data[self::getHolidayName($type)] = $activity;
-            break;
-         case
-            self::$PART_TIME: $activity_data[self::getHolidayName($type)] = $activity;
-            break;
-         case self::$SICKNESS:
-            $activity_data[self::getHolidayName($type)]  = $activity;
             break;
          case
             self::$WORK:      $activity_data = $activity;
@@ -1286,8 +1283,14 @@ class PluginActivityReport extends CommonDBTM {
             echo Search::showNewLine($output_type);
             $parent = $key;
             $child  = '';
-            if (strstr($key, '>')) {
-               list($parent, $child) = explode('>', $key);
+
+            if (strstr($key, '>') !== false) {
+               $delimiter = ">";
+            } elseif (strstr($key, '&gt;') !== false) {
+               $delimiter = "&gt;";
+            }
+            if (strstr($key, '>') || strstr($key, '&gt;')) {
+               list($parent, $child) = explode($delimiter, $key);
                echo Search::showItem($output_type, trim($parent), $num, $row_num);
                echo Search::showItem($output_type, trim($child), $num, $row_num);
             } else {
