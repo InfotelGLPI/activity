@@ -76,8 +76,8 @@ function update251to300() {
    $cats = $dbu->getAllDataFromTable('glpi_plugin_activity_activitytypes');
 
    foreach ($cats as $cat) {
-      $migrate_cat_activities_query = 'INSERT INTO `glpi_planningeventcategories` (`name`, `comment`, `date_creation`, `old_id`) 
-           VALUES("' . $cat['name'] . '","' . addslashes($cat['comment']) . '","' . $cat['date_creation'] . '","' . $cat['id'] . '")';
+      $migrate_cat_activities_query = 'INSERT INTO `glpi_planningeventcategories` (`name`, `comment`, `old_id`) 
+           VALUES("' . $cat['name'] . '","' . addslashes($cat['comment']) . '","' . $cat['id'] . '")';
 
       $DB->query($migrate_cat_activities_query);
 
