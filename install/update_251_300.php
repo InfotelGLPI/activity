@@ -77,7 +77,7 @@ function update251to300() {
 
    foreach ($cats as $cat) {
       $migrate_cat_activities_query = 'INSERT INTO `glpi_planningeventcategories` (`name`, `comment`, `old_id`) 
-           VALUES("' . $cat['name'] . '","' . addslashes($cat['comment']) . '","' . $cat['id'] . '")';
+           VALUES("' . $cat['completename'] . '","' . addslashes($cat['comment']) . '","' . $cat['id'] . '")';
 
       $DB->query($migrate_cat_activities_query);
 
@@ -90,8 +90,14 @@ function update251to300() {
 
    foreach ($activities as $activity) {
 
+      if (strstr($activity['name'], '>')) {
+         list($parent, $child) = explode('>', $activity['name']);
+         $name = $child;
+      } else {
+         $name = $activity['name'];
+      }
       $migrate_activities_query = 'INSERT INTO `glpi_planningexternalevents`(`entities_id`,`users_id`,`name`,`text`,`begin`,`end`,`state`,`planningeventcategories_id`, `old_id`)
-                                    VALUES("' . $activity['entities_id'] . '", "' . $activity['users_id'] . '", "' . addslashes($activity['name']) . '", "' . addslashes($activity['comment']) . '",
+                                    VALUES("' . $activity['entities_id'] . '", "' . $activity['users_id'] . '", "' . addslashes($name) . '", "' . addslashes($activity['comment']) . '",
                                      "' . $activity['begin'] . '", "' . $activity['end'] . '", "' . $activity['is_planned'] . '","' . $activity['plugin_activity_activitytypes_id'] . '", "' . $activity['id'] . '")';
 
 
@@ -108,14 +114,19 @@ function update251to300() {
 
    foreach ($new_cats as $new_cat) {
 
-
+      if (strstr($new_cat['name'], '>')) {
+         list($parent, $child) = explode('>', $new_cat['name']);
+         $name = $child;
+      } else {
+         $name = $new_cat['name'];
+      }
       $query = "UPDATE `glpi_planningexternalevents` 
                          SET `planningeventcategories_id`='" . $new_cat['id'] . "'
                          WHERE `planningeventcategories_id`= " . $new_cat['old_id'] . ";";
       $DB->query($query);
 
       $query_create_eventtemplates = 'INSERT INTO `glpi_planningexternaleventtemplates` (`name`, `state`, `planningeventcategories_id`) VALUES
-                                           ("' . $new_cat['name'] . '", "' . 1 . '", "' . $new_cat['id'] . '")';
+                                           ("' .  addslashes($name) . '", "' . 1 . '", "' . $new_cat['id'] . '")';
 
       $DB->query($query_create_eventtemplates);
    }
