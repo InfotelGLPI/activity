@@ -8,9 +8,6 @@ CREATE TABLE `glpi_plugin_activity_planningexternalevents` (
    KEY `is_oncra` (`is_oncra`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-ALTER TABLE `glpi_plugin_activity_tickettasks` DROP INDEX `tickettasks_id`;
-ALTER TABLE `glpi_plugin_activity_projecttasks` DROP INDEX `projecttasks_id`;
-
 ALTER TABLE `glpi_plugin_activity_holidays` CHANGE `date_mod` `date_mod` timestamp NULL DEFAULT NULL;
 ALTER TABLE `glpi_plugin_activity_holidays` CHANGE `begin` `begin` timestamp NULL DEFAULT NULL;
 ALTER TABLE `glpi_plugin_activity_holidays` CHANGE `end` `end` timestamp NULL DEFAULT NULL;
@@ -22,8 +19,5 @@ ALTER TABLE `glpi_plugin_activity_holidaycounts` CHANGE `date_mod` `date_mod` ti
 
 ALTER TABLE `glpi_plugin_activity_snapshots` CHANGE `date` `date` timestamp NULL DEFAULT NULL;
 
-
-
-
-
-
+ALTER TABLE `glpi_plugin_activity_tickettasks` DROP INDEX `tickettasks_id`;
+ALTER TABLE `glpi_plugin_activity_projecttasks` DROP INDEX `projecttasks_id`;
