@@ -118,10 +118,10 @@ class PluginActivityProjectTask extends CommonDBTM {
          if ($item->getID()) {
 
             $projecttask->getFromDBForTask($item->getID());
-            $is_cra_default = $projecttask->fields['is_oncra'];
+            $is_cra_default = isset($projecttask->fields['is_oncra'])?$projecttask->fields['is_oncra']:$is_cra_default;
          }
 
-
+         echo '<tr class="tab_bg_1">';
          echo '<td>';
          echo __('Use in CRA', 'activity');
          echo '</td>';
@@ -130,6 +130,7 @@ class PluginActivityProjectTask extends CommonDBTM {
          Dropdown::showYesNo('is_oncra', $is_cra_default, -1, ['value' => 1]);
          echo '</td>';
          echo '<td colspan="2"></td>';
+         echo '</tr>';
       }
 
    }

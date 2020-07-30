@@ -29,6 +29,8 @@ include ('../../../inc/includes.php');
 
 Session::checkLoginUser();
 
+Html::header(PluginActivityHoliday::getTypeName(2), '', "tools", "pluginactivitymenu");
+
 if (isset($_GET['itemtype'])) {
    unset($_GET['root_doc']);
 
@@ -58,3 +60,4 @@ if (isset($_GET['itemtype'])) {
 
    $report->showGenericSearch($_POST);
 }
+Html::footer();
