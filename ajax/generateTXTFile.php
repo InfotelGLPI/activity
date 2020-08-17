@@ -43,6 +43,7 @@ $holiday->getFromDB($hId);
 
 if (isset($holiday->fields['id'])) {
 
+
    $user = new User();
    $user->getFromDB($holiday->fields['users_id']);
 
@@ -56,19 +57,33 @@ if (isset($holiday->fields['id'])) {
 
    $filename = "DC ".$userName." ".date('Y')." ".$dateBegin.".txt";
 
-   $f = fopen("php://output", 'w');
+
+   $f = fopen(GLPI_TMP_DIR."/".$filename, 'w');
    fwrite($f, $strTxtFile);
    fclose($f);
 
-   header('Pragma: public');
-   header('Expires: 0');
-   header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-   header('Cache-Control: private', false); // required for certain browsers
-   header("Content-Type: application/octet-stream");
 
-   header('Content-Disposition: attachment; filename="'. basename($filename) . '";');
-   header('Content-Transfer-Encoding: binary');
+   $input = [];
+   $input['id'] = $hId;
+   $input['mail_subject'] = "DC ".$userName." ".date('Y')." ".$dateBegin;
+   $input['mail_body'] = "DC ".$userName." ".date('Y')." ".$dateBegin;
+   $input['validate_id'] = Session::getLoginUserID();
+   $input['users_id'] = $holiday->fields['users_id'];
+   $input['filename'] = $filename;
+   $input['filepath'] = GLPI_TMP_DIR."/".$filename;
+   $notification = new PluginActivityNotification();
+   $notification->sendComm($input);
 
+//   unlink(GLPI_TMP_DIR."/".$filename);
+//   header('Pragma: public');
+//   header('Expires: 0');
+//   header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+//   header('Cache-Control: private', false); // required for certain browsers
+//   header("Content-Type: application/octet-stream");
+//
+//   header('Content-Disposition: attachment; filename="'. basename($filename) . '";');
+//   header('Content-Transfer-Encoding: binary');
+//echo "ok";
 } else {
    exit();
 }
