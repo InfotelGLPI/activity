@@ -1,16 +1,12 @@
-OK Validé
--------------------------------------------------------------------------
-{{approver_full_name}}
-
-Bonjour, 
-
-Veuillez trouver ci-joint ma demande de congés pour la période du {{holiday_date_complete}}. 
-
-Cordialement. 
-{{user_name}}
-
-Transmis le {{holiday_date}} 
-
-
-
-
+OK Validé<br>
+-------------------------------------------------------------------------<br>
+{{approver_full_name}}<br>
+<br>
+Bonjour, <br>
+<br>
+Veuillez trouver ci-joint ma demande de congés pour la période du {{holiday_date_complete}}. <br>
+<br>
+Cordialement. <br>
+{{user_name}}<br>
+<br>
+Transmis le {{holiday_date}} <br>

@@ -31,7 +31,7 @@ if (!defined('GLPI_ROOT')) {
 
 class PluginActivityHoliday extends CommonDBTM {
 
-   var    $dohistory = false;
+   var    $dohistory = true;
    var    $holidays  = [];
    static $rightname = "plugin_activity";
 
@@ -87,6 +87,7 @@ class PluginActivityHoliday extends CommonDBTM {
       $this->addDefaultFormTab($ong);
       $this->addStandardTab("PluginActivityHolidayValidation", $ong, $options);
       $this->addStandardTab(__CLASS__, $ong, $options);
+      $this->addStandardTab('Log', $ong, $options);
       return $ong;
    }
 
@@ -677,7 +678,12 @@ class PluginActivityHoliday extends CommonDBTM {
       return parent::getSpecificValueToSelect($field, $name, $values, $options);
    }
 
-   public function generateTXTfile($idHoliday) {
+   /**
+    * @param $idHoliday
+    *
+    * @return string
+    */
+   public function createTxtFile($idHoliday) {
 
       $holidays = new PluginActivityHoliday();
       $holidays->getFromDB($idHoliday);
@@ -1473,7 +1479,7 @@ class PluginActivityHoliday extends CommonDBTM {
    }
 
 
-   private function getBodyMail($dateComplete, $date, $userName, $approverFullName) {
+   function getBodyMail($dateComplete, $date, $userName, $approverFullName) {
 
       $rows = file(GLPI_ROOT . '/plugins/activity/files/templates/mail_template.txt');
 
@@ -1492,12 +1498,12 @@ class PluginActivityHoliday extends CommonDBTM {
             $finalRows .= str_ireplace("{{user_name}}", $userName, $data);
 
          } else if (strpos($data, "{{holiday_date}}") !== false) {
-            $finalRows .= str_ireplace("{{holiday_date}}", date("d/m/y"), $data);
+            $finalRows .= str_ireplace("{{holiday_date}}", date("d/m/Y"), $data);
 
          } else {
             $finalRows .= $data;
          }
-         $finalRows .= "%0D%0A";
+//         $finalRows .= "%0D%0A";
       }
 
       return $finalRows;
@@ -1535,15 +1541,31 @@ class PluginActivityHoliday extends CommonDBTM {
          if ($opt) {
             $used_mail_for_holidays = $opt->fields['used_mail_for_holidays'];
          }
-         if (!empty($used_mail_for_holidays)) {
-            echo "<li style='margin-left:16px;'><a href='mailto:" . $used_mail_for_holidays;
-            echo "&Subject=" . __("Holiday request from", "activity") . " " . $userName . " " . __("of", "activity") . " " . $dateBegin;
-            echo "&Body=" . $this->getBodyMail($dateBegin, date("d/m/Y", strtotime($holiday->fields['begin'])), $userName, $approverFullname);
+         //         if (!empty($used_mail_for_holidays)) {
+         //            echo "<li style='margin-left:16px;'><a href='mailto:" . $used_mail_for_holidays;
+         //            echo "&Subject=" . __("Holiday request from", "activity") . " " . $userName . " " . __("of", "activity") . " " . $dateBegin;
+         //            echo "&Body=" . $this->getBodyMail($dateBegin, date("d/m/Y", strtotime($holiday->fields['begin'])), $userName, $approverFullname);
+         //
+         //            echo "'>";
+         //            echo "<i class='far fa-envelope fa-2x'></i>&nbsp;" . __('Generate mail for this holiday', 'activity');
+         //            echo "</a></li>";
+         //         }
+         echo "<li style='margin-left:16px;'><a href ='javascript:send()' id='send'><i class='far fa-envelope fa-2x'></i>&nbsp;" . __('Send the mail for this holiday', 'activity') . "</a>";
 
-            echo "'>";
-            echo "<i class='far fa-envelope fa-2x'></i>&nbsp;" . __('Generate mail for this holiday', 'activity');
-            echo "</a></li>";
-         }
+         echo "</li>";
+         echo Html::scriptBlock("
+                        
+                        function send(){
+                           $.ajax({
+                              url:  '" . $CFG_GLPI['root_doc'] . "/plugins/activity/ajax/sendmail.php?holidays_id=$holidaysId',
+                              type: 'GET'
+                              
+                     
+                           }).done(function(data) {
+                              window.location.reload()
+                           })
+                        }
+                    ;");
          echo "</ul>";
          echo "</td></tr></table>";
       }
@@ -1638,10 +1660,10 @@ class PluginActivityHoliday extends CommonDBTM {
                                      WHERE `groups_id` = '$who_group')
                                            AND ";
       }
-//      if ($who_group > 0) {
-//         $ASSIGN = "`groups_id` = '$who_group'
-//                       AND ";
-//      }
+      //      if ($who_group > 0) {
+      //         $ASSIGN = "`groups_id` = '$who_group'
+      //                       AND ";
+      //      }
       //      }
 
       $query = " SELECT `glpi_plugin_activity_holidays`.`id`,
