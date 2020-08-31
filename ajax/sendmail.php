@@ -25,7 +25,7 @@
   --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 
 if (!isset($_POST['holidays_id']) && !isset($_GET['holidays_id'])) {
    exit();
@@ -43,47 +43,35 @@ $holiday->getFromDB($hId);
 
 if (isset($holiday->fields['id'])) {
 
-
    $user = new User();
    $user->getFromDB($holiday->fields['users_id']);
 
-   $userName = (isset($user->fields['realname'])?strtoupper($user->fields['realname']):'')." ".(isset($user->fields['firstname'])?$user->fields['firstname']:'');
+   $userName         = (isset($user->fields['realname']) ? strtoupper($user->fields['realname']) : '') . " " . (isset($user->fields['firstname']) ? $user->fields['firstname'] : '');
+   $approverFullname = (isset($_SESSION['glpifirstname']) ? ucfirst($_SESSION['glpifirstname']) : '') . " " . (isset($_SESSION['glpirealname']) ? strtoupper($_SESSION['glpirealname']) : '');
+   $periods          = $holiday->getPeriodForTemplate($holiday->fields['actiontime']);
 
-   $periods = $holiday->getPeriodForTemplate($holiday->fields['actiontime']);
-
-   $dateBegin = date('d-m-y', strtotime($holiday->fields['begin'])).$periods['txt'];
+   $dateBegin = date('d-m-y', strtotime($holiday->fields['begin'])) . $periods['txt'];
 
    $strTxtFile = $holiday->createTxtFile($hId);
 
-   $filename = "DC ".$userName." ".date('Y')." ".$dateBegin.".txt";
+   $filename = "DC " . $userName . " " . date('Y') . " " . $dateBegin . ".txt";
 
-
-   $f = fopen(GLPI_TMP_DIR."/".$filename, 'w');
+   $f = fopen(GLPI_TMP_DIR . "/" . $filename, 'w');
    fwrite($f, $strTxtFile);
    fclose($f);
 
-
-   $input = [];
-   $input['id'] = $hId;
-   $input['mail_subject'] = "DC ".$userName." ".date('Y')." ".$dateBegin;
-   $input['mail_body'] = "DC ".$userName." ".date('Y')." ".$dateBegin;
-   $input['validate_id'] = Session::getLoginUserID();
-   $input['users_id'] = $holiday->fields['users_id'];
-   $input['filename'] = $filename;
-   $input['filepath'] = GLPI_TMP_DIR."/".$filename;
-   $notification = new PluginActivityNotification();
+   $input                 = [];
+   $input['id']           = $hId;
+   $dateBegin             = date('d/m/Y', strtotime($holiday->fields['begin'])) . " " . $periods['txt'];
+   $input['mail_subject'] = __("Holiday request from", "activity") . " " . $userName . " " . __("of", "activity") . " " . $dateBegin;
+   $input['mail_body']    = $holiday->getBodyMail($dateBegin, date("d/m/Y", strtotime($holiday->fields['begin'])), $userName, $approverFullname);
+   $input['validate_id']  = Session::getLoginUserID();
+   $input['users_id']     = $holiday->fields['users_id'];
+   $input['filename']     = $filename;
+   $input['filepath']     = GLPI_TMP_DIR . "/" . $filename;
+   $notification          = new PluginActivityNotification();
    $notification->sendComm($input);
 
-//   unlink(GLPI_TMP_DIR."/".$filename);
-//   header('Pragma: public');
-//   header('Expires: 0');
-//   header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-//   header('Cache-Control: private', false); // required for certain browsers
-//   header("Content-Type: application/octet-stream");
-//
-//   header('Content-Disposition: attachment; filename="'. basename($filename) . '";');
-//   header('Content-Transfer-Encoding: binary');
-//echo "ok";
 } else {
    exit();
 }

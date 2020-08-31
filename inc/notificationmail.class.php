@@ -1,31 +1,29 @@
 <?php
 
-/* 
+/*
  -------------------------------------------------------------------------
- Ticketreports plugin for GLPI
- Copyright (C) 2003-2016 by the Ticketreports Development Team.
-
- https://github.com/InfotelGLPI/ticketreports
+ Activity plugin for GLPI
+ Copyright (C) 2019 by the Activity Development Team.
  -------------------------------------------------------------------------
 
  LICENSE
-      
- This file is part of Ticketreports.
 
- Ticketreports is free software; you can redistribute it and/or modify
+ This file is part of Activity.
+
+ Activity is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- Ticketreports is distributed in the hope that it will be useful,
+ Activity is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with Ticketreports. If not, see <http://www.gnu.org/licenses/>.
+ along with Activity. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
- */
+*/
 
 if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
@@ -34,22 +32,22 @@ if (!defined('GLPI_ROOT')) {
 class PluginActivityNotificationMail extends \PHPMailer\PHPMailer\PHPMailer {
 
    //! mailing type (new,attrib,followup,finish)
-   var $mailtype           = NULL;
+   var $mailtype = NULL;
    /** Job class variable - job to be mailed
     * @see Job
     */
-   var $job                = NULL;
+   var $job = NULL;
    /** User class variable - user who make changes
     * @see User
     */
-   var $user =              NULL;
+   var $user = NULL;
    /// Is the followupadded private ?
-   var $followupisprivate  = NULL;
+   var $followupisprivate = NULL;
 
    /// Set default variables for all new objects
-   var $WordWrap           = 80;
+   var $WordWrap = 80;
    /// Defaut charset
-   var $CharSet            = "utf-8";
+   var $CharSet = "utf-8";
 
 
    /**
@@ -63,7 +61,7 @@ class PluginActivityNotificationMail extends \PHPMailer\PHPMailer\PHPMailer {
 
       if ($CFG_GLPI['smtp_mode'] != MAIL_MAIL) {
          $this->Mailer = "smtp";
-         $this->Host   = $CFG_GLPI['smtp_host'].':'.$CFG_GLPI['smtp_port'];
+         $this->Host   = $CFG_GLPI['smtp_host'] . ':' . $CFG_GLPI['smtp_port'];
 
          if ($CFG_GLPI['smtp_username'] != '') {
             $this->SMTPAuth = true;
@@ -78,11 +76,11 @@ class PluginActivityNotificationMail extends \PHPMailer\PHPMailer\PHPMailer {
          if ($CFG_GLPI['smtp_mode'] == MAIL_SMTPTLS) {
             $this->SMTPSecure = "tls";
          }
-         
+
          if (!$CFG_GLPI['smtp_check_certificate']) {
-            $this->SMTPOptions = array('ssl' => array('verify_peer'       => false,
-                                                      'verify_peer_name'  => false,
-                                                      'allow_self_signed' => true));
+            $this->SMTPOptions = ['ssl' => ['verify_peer'       => false,
+                                            'verify_peer_name'  => false,
+                                            'allow_self_signed' => true]];
          }
       }
 
@@ -106,7 +104,7 @@ class PluginActivityNotificationMail extends \PHPMailer\PHPMailer\PHPMailer {
     * @return boolean
     * from http://www.linuxjournal.com/article/9585
     **/
-   static function isUserAddressValid($address, $options=array('checkdns'=>false)) {
+   static function isUserAddressValid($address, $options = ['checkdns' => false]) {
 
       $checkdns = $options['checkdns'];
       $isValid  = true;
@@ -116,7 +114,7 @@ class PluginActivityNotificationMail extends \PHPMailer\PHPMailer\PHPMailer {
          $isValid = false;
 
       } else {
-         $domain    = substr($address, $atIndex+1);
+         $domain    = substr($address, $atIndex + 1);
          $local     = substr($address, 0, $atIndex);
          $localLen  = strlen($local);
          $domainLen = strlen($domain);
@@ -127,7 +125,7 @@ class PluginActivityNotificationMail extends \PHPMailer\PHPMailer\PHPMailer {
          } else if (($domainLen < 1) || ($domainLen > 255)) {
             // domain part length exceeded
             $isValid = false;
-         } else if (($local[0] == '.') || ($local[$localLen-1] == '.')) {
+         } else if (($local[0] == '.') || ($local[$localLen - 1] == '.')) {
             // local part starts or ends with '.'
             $isValid = false;
          } else if (preg_match('/\\.\\./', $local)) {
@@ -140,17 +138,17 @@ class PluginActivityNotificationMail extends \PHPMailer\PHPMailer\PHPMailer {
             // domain part has two consecutive dots
             $isValid = false;
          } else if (!preg_match('/^(\\\\.|[A-Za-z0-9!#%&`_=\\/$\'*+?^{}|~.-])+$/',
-            str_replace("\\\\","",$local))) {
+                                str_replace("\\\\", "", $local))) {
             // character not valid in local part unless
             // local part is quoted
-            if (!preg_match('/^"(\\\\"|[^"])+"$/', str_replace("\\\\","",$local))) {
+            if (!preg_match('/^"(\\\\"|[^"])+"$/', str_replace("\\\\", "", $local))) {
                $isValid = false;
             }
          }
 
          if ($checkdns) {
             if ($isValid
-               && !(checkdnsrr($domain,"MX") || checkdnsrr($domain,"A"))) {
+                && !(checkdnsrr($domain, "MX") || checkdnsrr($domain, "A"))) {
                // domain not found in DNS
                $isValid = false;
             }
@@ -164,32 +162,31 @@ class PluginActivityNotificationMail extends \PHPMailer\PHPMailer\PHPMailer {
    }
 
 
-
    /**
     * @param $options   array
     **/
-   function sendNotification($options=array()) {
-      
+   function sendNotification($options = []) {
+
       $this->SetFrom($options['from'], $options['fromname'], false);
 
       if ($options['replyto']) {
          $this->AddReplyTo($options['replyto'], $options['replytoname']);
       }
-      $this->Subject  = Html::entity_decode_deep($options['subject']);
+      $this->Subject = Html::entity_decode_deep($options['subject']);
 
       if (empty($options['content_html'])) {
          $this->isHTML(false);
          $this->Body = $options['content_text'];
       } else {
          $this->isHTML(true);
-         $this->Body    = Html::entity_decode_deep(str_replace(array('\r', '\n', '\r\n'), '<br>', $options['content_html']));
+         $this->Body    = Html::entity_decode_deep(str_replace(['\r', '\n', '\r\n'], '<br>', $options['content_html']));
          $this->AltBody = $options['content_text'];
       }
 
       $this->AddAddress($options['to'], $options['toname']);
-      
+
       if (!empty($options['messageid'])) {
-         $this->MessageID = "<".$options['messageid'].">";
+         $this->MessageID = "<" . $options['messageid'] . ">";
       }
 
       // Attach pdf to mail
@@ -198,91 +195,40 @@ class PluginActivityNotificationMail extends \PHPMailer\PHPMailer\PHPMailer {
             $this->AddAttachment($attachment['filepath'], $attachment['name']);
          }
       }
-      
-      $messageerror = __('Error in sending the email');
+
+      $messageerror = __('Error in sending the email', 'activity');
 
       if (!$this->Send()) {
-         Session::addMessageAfterRedirect($messageerror."<br>".$this->ErrorInfo, true);
+         Session::addMessageAfterRedirect($messageerror . "<br>" . $this->ErrorInfo, true);
          $this->ClearAddresses();
          return false;
       } else {
          if ((count($this->to)) > 0) {
-            foreach($this->to as $to){
+            foreach ($this->to as $to) {
                //TRANS to be written in logs %1$s is the to email / %2$s is the subject of the mail
                Toolbox::logInFile("mail", sprintf(__('%1$s: %2$s'),
-                  sprintf(__('An email was sent to %s'), $to[0]),
-                  $options['subject']."\n"));
+                                                  sprintf(__('An email was sent to %s'), $to[0]),
+                                                  $options['subject'] . "\n"));
             }
          }
          if ((count($this->cc)) > 0) {
-            foreach($this->cc as $to){
+            foreach ($this->cc as $to) {
                //TRANS to be written in logs %1$s is the to email / %2$s is the subject of the mail
                Toolbox::logInFile("mail", sprintf(__('%1$s: %2$s'),
-                  sprintf(__('An email was sent to %s'), $to[0]),
-                  $options['subject']."\n"));
+                                                  sprintf(__('An email was sent to %s'), $to[0]),
+                                                  $options['subject'] . "\n"));
             }
          }
          if ((count($this->bcc)) > 0) {
-            foreach($this->bcc as $to){
+            foreach ($this->bcc as $to) {
                //TRANS to be written in logs %1$s is the to email / %2$s is the subject of the mail
                Toolbox::logInFile("mail", sprintf(__('%1$s: %2$s'),
-                  sprintf(__('An email was sent to %s'), $to[0]),
-                  $options['subject']."\n"));
+                                                  sprintf(__('An email was sent to %s'), $to[0]),
+                                                  $options['subject'] . "\n"));
             }
          }
       }
       $this->ClearAddresses();
       return true;
    }
-   
-   /**
-    * @param $options   array
-   **/
-   function sendCoreNotification($options=array()) {
-
-      $this->SetFrom($options['from'], $options['fromname'], false);
-
-      if ($options['replyto']) {
-         $this->AddReplyTo($options['replyto'], $options['replytoname']);
-      }
-      $this->Subject  = $options['subject'];
-
-      if (empty($options['content_html'])) {
-         $this->isHTML(false);
-         $this->Body = $options['content_text'];
-      } else {
-         $this->isHTML(true);
-         $this->Body    = $options['content_html'];
-         $this->AltBody = $options['content_text'];
-      }
-
-      $this->AddAddress($options['to'], $options['toname']);
-
-      if (!empty($options['messageid'])) {
-         $this->MessageID = "<".$options['messageid'].">";
-      }
-
-      // Attach pdf to mail
-      if (!empty($options['attachment'])) {
-         foreach ($options['attachment'] as $attachment) {
-            $this->AddAttachment($attachment['filepath'], $attachment['name']);
-         }
-      }
-
-      $messageerror = __('Error in sending the email');
-
-      if (!$this->Send()) {
-         $senderror = true;
-         Session::addMessageAfterRedirect($messageerror."<br>".$this->ErrorInfo, true);
-      } else {
-         //TRANS to be written in logs %1$s is the to email / %2$s is the subject of the mail
-         Toolbox::logInFile("mail", sprintf(__('%1$s: %2$s'),
-                                            sprintf(__('An email was sent to %s'), $options['to']),
-                                            $options['subject']."\n"));
-      }
-
-      $this->ClearAddresses();
-      return true;
-   }
-
 }
