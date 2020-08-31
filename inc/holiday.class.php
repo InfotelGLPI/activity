@@ -31,7 +31,7 @@ if (!defined('GLPI_ROOT')) {
 
 class PluginActivityHoliday extends CommonDBTM {
 
-   var    $dohistory = false;
+   var    $dohistory = true;
    var    $holidays  = [];
    static $rightname = "plugin_activity";
 
@@ -87,6 +87,7 @@ class PluginActivityHoliday extends CommonDBTM {
       $this->addDefaultFormTab($ong);
       $this->addStandardTab("PluginActivityHolidayValidation", $ong, $options);
       $this->addStandardTab(__CLASS__, $ong, $options);
+      $this->addStandardTab('Log', $ong, $options);
       return $ong;
    }
 
@@ -1543,6 +1544,24 @@ class PluginActivityHoliday extends CommonDBTM {
             echo "<i class='far fa-envelope fa-2x'></i>&nbsp;" . __('Generate mail for this holiday', 'activity');
             echo "</a></li>";
          }
+         echo "<li style='margin-left:16px;'><a href ='javascript:send()' id='send'><i class='far fa-envelope fa-2x'></i>&nbsp;" . __('Send the mail for this holiday', 'activity')."</a>";
+
+         echo "</li>";
+         echo Html::scriptBlock("
+                        
+                        function send(){
+                           $.ajax({
+                              url:  '".$CFG_GLPI['root_doc']."/plugins/activity/ajax/generateTXTFile.php?holidays_id=$holidaysId',
+                              type: 'GET'
+                              
+                     
+                           }).done(function(data) {
+                              window.location.reload()
+                           })
+                        }
+                    ;");
+
+
          echo "</ul>";
          echo "</td></tr></table>";
       }
