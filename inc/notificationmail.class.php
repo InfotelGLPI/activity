@@ -61,12 +61,12 @@ class PluginActivityNotificationMail extends \PHPMailer\PHPMailer\PHPMailer {
 
       if ($CFG_GLPI['smtp_mode'] != MAIL_MAIL) {
          $this->Mailer = "smtp";
-         $this->Host   = $CFG_GLPI['smtp_host'] . ':' . $CFG_GLPI['smtp_port'];
+         $this->Host   = $CFG_GLPI['smtp_host'].':'.$CFG_GLPI['smtp_port'];
 
          if ($CFG_GLPI['smtp_username'] != '') {
             $this->SMTPAuth = true;
             $this->Username = $CFG_GLPI['smtp_username'];
-            $this->Password = Toolbox::decrypt($CFG_GLPI['smtp_passwd'], GLPIKEY);
+            $this->Password = Toolbox::sodiumDecrypt($CFG_GLPI['smtp_passwd']);
          }
 
          if ($CFG_GLPI['smtp_mode'] == MAIL_SMTPSSL) {
@@ -82,10 +82,19 @@ class PluginActivityNotificationMail extends \PHPMailer\PHPMailer\PHPMailer {
                                             'verify_peer_name'  => false,
                                             'allow_self_signed' => true]];
          }
+         if ($CFG_GLPI['smtp_sender'] != '') {
+            $this->Sender = $CFG_GLPI['smtp_sender'];
+         }
       }
 
       if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
-         $this->do_debug = 3;
+         $this->SMTPDebug = SMTP::DEBUG_CONNECTION;
+         $this->Debugoutput = function ($message, $level) {
+            Toolbox::logInFile(
+               'mail-debug',
+               "$level - $message"
+            );
+         };
       }
 
       $this->AddCustomHeader("Auto-Submitted: auto-generated");
