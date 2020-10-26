@@ -25,7 +25,7 @@
  --------------------------------------------------------------------------
 */
 
-define('PLUGIN_ACTIVITY_VERSION', '3.0.0');
+define('PLUGIN_ACTIVITY_VERSION', '3.0.1');
 
 // Init the hooks of the plugins -Needed
 function plugin_init_activity() {

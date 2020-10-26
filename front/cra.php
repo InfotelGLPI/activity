@@ -29,7 +29,6 @@ include ('../../../inc/includes.php');
 
 Session::checkLoginUser();
 
-Html::header(PluginActivityHoliday::getTypeName(2), '', "tools", "pluginactivitymenu");
 
 if (isset($_GET['itemtype'])) {
    unset($_GET['root_doc']);
@@ -43,6 +42,7 @@ if (isset($_GET['itemtype'])) {
    header('Location: '.$target."?".Toolbox::append_params($_GET, '&'));
 
 } else {
+   Html::header(PluginActivityHoliday::getTypeName(2), '', "tools", "pluginactivitymenu");
    if (empty($_POST["month"])) {
       $_POST["month"] = intval(strftime("%m"));
    }
