@@ -38,7 +38,8 @@ class PluginActivityProfile extends Profile {
    }
 
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
-      if ($item->getType() == 'Profile') {
+      if ($item->getType() == 'Profile' && $item->getField('interface') != 'helpdesk'
+      ) {
          return PluginActivityPlanningExternalEvent::getTypeName(2);
       }
       return '';
