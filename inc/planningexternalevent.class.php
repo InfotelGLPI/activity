@@ -289,7 +289,7 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
                $extevent->add(['is_oncra'                    => isset($item->input['is_oncra']) ? $item->input['is_oncra'] : $is_cra_default,
                                'planningexternalevents_id'   => $item->getID(),
                                'actiontime'                  => $actiontime]);
-            } else if ($_POST['action'] == 'clone_event') {
+            } else if (isset($_POST['action']) && $_POST['action'] == 'clone_event') {
                $iterator =   $DB->request(['FROM' => 'glpi_plugin_activity_planningexternalevents',
                   'LEFT JOIN' => ['glpi_planningexternalevents' => ['FKEY' => ['glpi_planningexternalevents'     => 'id',
                      'glpi_plugin_activity_planningexternalevents' => 'planningexternalevents_id']]],
@@ -308,17 +308,18 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
 
    static function prepareInputToUpdateWithPluginOptions($item) {
 
-      $holiday = new PluginActivityHoliday();
+      $holiday            = new PluginActivityHoliday();
+      $planning_ext_event = new PlanningExternalEvent();
       $holiday->setHolidays();
 
       $opt = new PluginActivityOption();
       $opt->getFromDB(1);
 
-      $use_pairs = $opt->fields['use_pairs'];
+      $use_pairs            = $opt->fields['use_pairs'];
       $use_integerschedules = $opt->fields['use_integerschedules'];
-      $use_we = $opt->fields['use_weekend'];
+      $use_we               = $opt->fields['use_weekend'];
 
-      if ($_POST['action'] == 'update_event_times') {
+      if (isset($_POST['action']) && $_POST['action'] == 'update_event_times') {
 
          if ((isset($_POST['start']) && ($_POST['start'] != 'NULL')) && (isset($_POST['end']) && ($_POST['end'] != 'NULL'))) {
             $begin = $_POST['start'];
@@ -340,8 +341,36 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
                unset($item->input);
                return false;
             }
+
          }
       } else {
+
+         if (isset($item->fields['rrule']) && !empty($item->fields['rrule'])) {
+            $rrule            = $item->input['rrule'];
+            $input_date_begin = explode("-", $item->fields['begin']);
+            $crit["begin"]    = $input_date_begin[0] . "-" . $input_date_begin[1] . "-01 00:00:00";
+            $lastday          = cal_days_in_month(CAL_GREGORIAN, "12", $input_date_begin[0]);
+            $crit["end"]      = $input_date_begin[0] . "-" . "12" . "-" . $lastday . " 23:59:59";
+
+            if (isset($rrule['exceptions']) && $rrule['exceptions'] != '') {
+               $rrule['exceptions'] =  explode(",", $rrule['exceptions']);
+            }
+
+            $array_inputs_occurence = PluginActivityPlanningExternalEvent::prepareInputsForReccurOccurence($item->fields, $crit, $rrule);
+            $occurences             = $array_inputs_occurence['rset']->getOccurrencesBetween($array_inputs_occurence['begin_datetime'], $array_inputs_occurence['end_datetime']);
+            // add the found occurences to the final tab after replacing their dates
+
+            foreach ($occurences as $currentDate) {
+               $input                 = [];
+               $input['current_date'] = $currentDate->format('Y-m-d H:i:s');
+               $date_exception        = PluginActivityHoliday::checkInHolidays($input, $holiday->getHolidays());
+               if ($date_exception != false) {
+                  $array_inputs_occurence['rrule']['exceptions'][] = $date_exception;
+                  }
+               }
+            $item->input['rrule'] = $planning_ext_event->encodeRrule($array_inputs_occurence['rrule']);
+         }
+
          if (!isset($_POST["planningeventcategories_id"]) || $_POST["planningeventcategories_id"] == 0) {
             Session::addMessageAfterRedirect(__('Activity type is mandatory field', 'activity'), false, ERROR);
             unset($item->input);
@@ -361,31 +390,53 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
 
          if ($use_we == 0) {
             $hol = new PluginActivityHoliday();
-            if ($hol->isWeekend($_POST['start'], true)) {
-               Session::addMessageAfterRedirect(__('The chosen begin date is on weekend', 'activity'), false, ERROR);
-               unset($item->input);
-               return false;
+            if (isset($_POST['start'])) {
+               if ($hol->isWeekend($_POST['start'], true)) {
+                  Session::addMessageAfterRedirect(__('The chosen begin date is on weekend', 'activity'), false, ERROR);
+                  unset($item->input);
+                  return false;
+               }
             }
-            if ($hol->isWeekend($_POST['end'], false)) {
-               Session::addMessageAfterRedirect(__('The chosen end date is on weekend', 'activity'), false, ERROR);
-               unset($item->input);
-               return false;
+            if (isset($_POST['end'])) {
+               if ($hol->isWeekend($_POST['end'], false)) {
+                  Session::addMessageAfterRedirect(__('The chosen end date is on weekend', 'activity'), false, ERROR);
+                  unset($item->input);
+                  return false;
+               }
             }
          }
       }
    }
 
+   static function prepareInputsForReccurOccurence($item, $crit, $rrule = '') {
+
+      $array_inputs_occurence                   = [];
+      $array_inputs_occurence['duration']       = strtotime($item['end']) - strtotime($item['begin']);
+      if ($rrule != '') {
+         $array_inputs_occurence['rrule']          = $rrule;
+      } else {
+         $array_inputs_occurence['rrule']          = json_decode($item['rrule'], 1);
+      }
+      $array_inputs_occurence['rset']           = PlanningExternalEvent::getRsetFromRRuleField($array_inputs_occurence['rrule'], $item['begin']);
+      $begin_datetime                           = new DateTime($crit["begin"], new DateTimeZone('UTC'));
+      $array_inputs_occurence['begin_datetime'] = $begin_datetime->sub(New DateInterval("PT" . ($array_inputs_occurence['duration'] - 1) . "S"));
+      $array_inputs_occurence['end_datetime']   = new DateTime($crit['end'], new DateTimeZone('UTC'));
+
+      return $array_inputs_occurence;
+   }
+
 
    static function prepareInputToAddWithPluginOptions(PlanningExternalEvent $item) {
-      $holiday = new PluginActivityHoliday();
+      $holiday            = new PluginActivityHoliday();
+      $planning_ext_event = new PlanningExternalEvent();
       $holiday->setHolidays();
 
       $opt = new PluginActivityOption();
       $opt->getFromDB(1);
 
-      $use_pairs = $opt->fields['use_pairs'];
+      $use_pairs            = $opt->fields['use_pairs'];
       $use_integerschedules = $opt->fields['use_integerschedules'];
-      $use_we = $opt->fields['use_weekend'];
+      $use_we               = $opt->fields['use_weekend'];
 
 
       if ($opt && $opt->fields['use_type_as_name'] == 1) {
@@ -408,10 +459,37 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
       if ((isset($item->input['begin']) && ($item->input['begin'] != 'NULL')) &&
          (isset($item->input['end']) && ($item->input['end'] != 'NULL'))) {
 
+
          $begin_hour = date('i', strtotime($item->input['begin']));
          $end_hour = date('i', strtotime($item->input['end']));
 
-         $delay = floor((strtotime($item->input['end']) - strtotime($item->input['begin'])) / 3600);
+
+         if (isset($item->input['rrule']) && !empty($item->input['rrule'])) {
+            $input_date_begin = explode("-", $item->input['begin']);
+            $crit["begin"] = $input_date_begin[0] . "-" . $input_date_begin[1] . "-01 00:00:00";
+            $lastday = cal_days_in_month(CAL_GREGORIAN, "12", $input_date_begin[0]);
+            $crit["end"] = $input_date_begin[0] . "-" . "12" . "-" . $lastday . " 23:59:59";
+
+            $array_inputs_occurence = PluginActivityPlanningExternalEvent::prepareInputsForReccurOccurence($item->input, $crit);
+            $occurences = $array_inputs_occurence['rset']->getOccurrencesBetween($array_inputs_occurence['begin_datetime'], $array_inputs_occurence['end_datetime']);
+            // add the found occurences to the final tab after replacing their dates
+
+            foreach ($occurences as $currentDate) {
+               $input                 = [];
+               $input['current_date'] = $currentDate->format('Y-m-d H:i:s');
+               $date_exception        = PluginActivityHoliday::checkInHolidays($input, $holiday->getHolidays());
+               if ($date_exception != false) {
+                  if (!isset($array_inputs_occurence['rrule']['exceptions'])) {
+                     $array_inputs_occurence['rrule']['exceptions'][] = $date_exception;
+                  } else {
+                     array_push($array_inputs_occurence['rrule']['exceptions'], $date_exception);
+                  }
+               }
+            }
+               $item->input['rrule'] = $planning_ext_event->encodeRrule($array_inputs_occurence['rrule']);
+         }
+
+            $delay = floor((strtotime($item->input['end']) - strtotime($item->input['begin'])) / 3600);
 
          if ($use_integerschedules && ($begin_hour != '00' || $end_hour != '00')) {
             Session::addMessageAfterRedirect(__('Only whole hours are allowed (no split times)', 'activity'));
@@ -430,6 +508,8 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
             unset($item->input);
             return false;
          }
+
+
 
          if ($use_we == 0) {
             $hol = new PluginActivityHoliday();
