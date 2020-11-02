@@ -541,14 +541,52 @@ class PluginActivityReport extends CommonDBTM {
          $result2 = $DB->query($query2);
          if ($DB->numrows($result2)) {
             while ($data2 = $DB->fetchArray($result2)) {
-               //NO parents for glpi_planningeventcategories
-//               $type    = $data2["type"];
-//               $parents = $dbu->getAncestorsOf("glpi_planningeventcategories", $data2["type_id"]);
-//               $last    = end($parents);
+               if (isset($data2['rrule']) && !empty($data2['rrule'])) {
+                  $duration = strtotime($data2['end']) - strtotime($data2['begin']);
+                  $rrule = json_decode($data2['rrule'], 1);
+                  $rset = PlanningExternalEvent::getRsetFromRRuleField($rrule, $data2['begin']);
+                  $begin_datetime = new DateTime($crit['begin'], new DateTimeZone('UTC'));
+                  $begin_datetime->sub(New DateInterval("PT" . ($duration - 1) . "S"));
+                  $end_datetime = new DateTime($crit['end'], new DateTimeZone('UTC'));
+                  $occurences = $rset->getOccurrencesBetween($begin_datetime, $end_datetime);
 
-               if (empty($data2["type"])) {
-                  $type = $data2["entity"]." > ".__('No defined type', 'activity');
+                  // add the found occurences to the final tab after replacing their dates
+                  foreach ($occurences as $currentDate) {
+                     $occurence_begin = $currentDate;
+                     $data2['begin'] = $occurence_begin->format('Y-m-d H:i:s');
+
+                     $occurence_end = (clone $currentDate)->add(new DateInterval("PT" . $duration . "S"));
+                     $data2['end'] = $occurence_end->format('Y-m-d H:i:s');
+                     $type = $data2["type"];
+                     $parents = $dbu->getAncestorsOf("glpi_planningeventcategories", $data2["type_id"]);
+                     $last = end($parents);
+
+                     if (empty($data2["type"])) {
+                        $type = $data2["entity"] . " > " . __('No defined type', 'activity');
+                     } else {
+                        if (count($parents) > 1) {
+                           $dropdown = new PluginActivityActivityType();
+                           $dropdown->getFromDB($last);
+                           $type = $dropdown->fields['completename'];
+                        } else {
+                           $type = $data2["type"];
+                        }
+                     }
+
+                     $title[$type][] = $data2["begin"];
+
+                     $opt_act = self::$WORK;
+
+                     // Repartition of the time
+                     $values = $this->timeRepartition($data2['actiontime'] / $AllDay, $data2["begin"], $values, $opt_act, $type, $holiday->getHolidays());
+
+                     $this->item_search[$type]['PlanningExternalEvent'][date('Y-m-d', strtotime($data2["begin"]))][] = $data2['id'];
+                  }
+
                } else {
+                  if (empty($data2["type"])) {
+                     $type = $data2["entity"] . " > " . __('No defined type', 'activity');
+                  } else {
 //                  if (count($parents) > 1) {
 //                     $dropdown = new PlanningEventCategory();
 //                     $dropdown->getFromDB($last);
@@ -556,16 +594,17 @@ class PluginActivityReport extends CommonDBTM {
 //                  } else {
                      $type = $data2["type"];
 //                  }
+                  }
+
+                  $title[$type][] = $data2["begin"];
+
+                  $opt_act = self::$WORK;
+
+                  // Repartition of the time
+                  $values = $this->timeRepartition($data2['actiontime'] / $AllDay, $data2["begin"], $values, $opt_act, $type, $holiday->getHolidays());
+
+                  $this->item_search[$type]['PlanningExternalEvent'][date('Y-m-d', strtotime($data2["begin"]))][] = $data2['id'];
                }
-
-               $title[$type][] = $data2["begin"];
-
-               $opt_act = self::$WORK;
-
-               // Repartition of the time
-               $values = $this->timeRepartition($data2['actiontime']/$AllDay, $data2["begin"], $values, $opt_act, $type, $holiday->getHolidays());
-
-               $this->item_search[$type]['PlanningExternalEvent'][date('Y-m-d', strtotime($data2["begin"]))][] = $data2['id'];
             }
          }
 

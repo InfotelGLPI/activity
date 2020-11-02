@@ -1891,36 +1891,51 @@ class PluginActivityHoliday extends CommonDBTM {
       }
    }
 
-   static function checkInHolidays($input, $holidays = []) {
-      if (isset($input['begin'])) {
-         $begin = date('Y-m-d', strtotime($input['begin']));
+   protected function checkInHolidaysWithReccurentOrNot($holidays, $begin, $is_reccurent_event) {
+      if (!empty($holidays)) {
+         foreach ($holidays as $holiday) {
+            $hbegin = $holiday['begin'];
+            $hend   = $holiday['end'];
 
-         if (!empty($holidays)) {
-            foreach ($holidays as $holiday) {
-               $hbegin = $holiday['begin'];
-               $hend   = $holiday['end'];
+            if ($holiday['is_perpetual'] == 1) {
+               $hb = date('m-d', strtotime($holiday['begin']));
+               $he = date('m-d', strtotime($holiday['end']));
+               $hd = date('m-d', strtotime($begin));
 
-               if ($holiday['is_perpetual'] == 1) {
-                  $hb = date('m-d', strtotime($holiday['begin']));
-                  $he = date('m-d', strtotime($holiday['end']));
-                  $hd = date('m-d', strtotime($begin));
-
-                  if ($hd >= $hb
-                      && $hd <= $he) {
+               if ($hd >= $hb
+                  && $hd <= $he) {
+                  if ($is_reccurent_event) {
+                     return $begin;
+                  } else {
                      return true;
                   }
+               }
 
-               } else {
-
-                  if ($begin >= $hbegin
-                      && $begin <= $hend) {
+            } else {
+               if ($begin >= $hbegin
+                  && $begin <= $hend) {
+                  if ($is_reccurent_event) {
+                     return $begin;
+                  } else {
                      return true;
                   }
                }
             }
          }
       }
-      return false;
+   }
+
+   static function checkInHolidays($input, $holidays = []) {
+      $holiday = new Self();
+      if (isset($input['begin']) && !isset($input['current_date'])) {
+         $begin       = date('Y-m-d', strtotime($input['begin']));
+         return $holiday->checkInHolidaysWithReccurentOrNot($holidays, $begin, false);
+
+      } elseif (isset($input['current_date'])) {
+         $begin = date('Y-m-d', strtotime($input['current_date']));
+         return $holiday->checkInHolidaysWithReccurentOrNot($holidays, $begin, true);
+      }
+
    }
 
    static function getCalendarHolidaysArray($entities_id) {
