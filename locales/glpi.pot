@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-03 15:46+0000\n"
+"POT-Creation-Date: 2020-11-19 10:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -250,15 +250,14 @@ msgstr ""
 msgid "See the page"
 msgstr ""
 
-#: inc/holiday.class.php:938 inc/holiday.class.php:945
-#: inc/holiday.class.php:952 inc/holiday.class.php:1211
-#: inc/holiday.class.php:1265
-msgid "Only on morning"
+#: inc/holiday.class.php:938 inc/holiday.class.php:966
+#: inc/holiday.class.php:1221 inc/holiday.class.php:1275
+msgid "Only on afternoon"
 msgstr ""
 
-#: inc/holiday.class.php:966 inc/holiday.class.php:1221
-#: inc/holiday.class.php:1275
-msgid "Only on afternoon"
+#: inc/holiday.class.php:945 inc/holiday.class.php:952
+#: inc/holiday.class.php:1211 inc/holiday.class.php:1265
+msgid "Only on morning"
 msgstr ""
 
 #: inc/holiday.class.php:1475
