@@ -935,7 +935,7 @@ class PluginActivityHoliday extends CommonDBTM {
             $arrayRet['begin'] = 'a';
             $arrayRet['end']   = '';
             $arrayRet['txt']   = ' a';
-            $arrayRet['lang']  = __('Only on morning', 'activity');
+            $arrayRet['lang']  = __('Only on afternoon', 'activity');
 
          } else if ($momentDeb == PluginActivityReport::$PM_BEGIN && $momentEnd == PluginActivityReport::$AM_END) {
             // begin afternoon / end afternoon
