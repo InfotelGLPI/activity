@@ -1180,19 +1180,19 @@ class PluginActivityHoliday extends CommonDBTM {
       Dropdown::show('PluginActivityHolidayPeriod', $params);
 
       echo "</td></tr>";
+      $params_begin = [];
+
 
       // ------------------------------------------------------------------------
-      // begin
+      // BEGIN DATE
       // ------------------------------------------------------------------------
       echo "<tr><td>" . __('Start date') . "</td><td>";
-      echo "<input type='text' name='begin' id='begin' size='12' ";
       if (!isset($this->fields['id']) || $this->fields['id'] == '') {
-         $root_doc = json_encode($CFG_GLPI['root_doc']);
-         echo " onchange='updateDuration(this, $root_doc);' ";
-         echo "value='" . date('d-m-Y', strtotime($begin)) . "' />";
          echo "<input type='hidden' name='is_planned' value='1' />";
          echo "<input type='hidden' name='actiontime' id='actiontime' value='" . ($actionTime / $AllDay) . "' />";
-         $this->initDate('begin');
+         //$params_begin['value']     = date('d-m-Y', strtotime($begin));
+         $params_begin['on_change'] = "updateDuration(this, '" . $CFG_GLPI['root_doc'] . "');";
+         Html::showDateField("begin", $params_begin);
       } else {
          echo " disabled='disabled' ";
          echo "value='" . date('d-m-Y', strtotime($begin)) . "' />";
@@ -1237,16 +1237,17 @@ class PluginActivityHoliday extends CommonDBTM {
          echo "</tr>";
       }
 
+      $params_end = [];
+
       // ------------------------------------------------------------------------
       // END DATE
       // ------------------------------------------------------------------------
       echo "<tr><td>" . __('End date') . "</td><td>";
-      echo "<input type='text' name='end' id='end' size='12' ";
       if (!isset($this->fields['id']) || $this->fields['id'] == '') {
-         $root_doc = json_encode($CFG_GLPI['root_doc']);
-         echo " onchange='updateDuration(this, $root_doc);' ";
-         echo " value='" . date('d-m-Y', strtotime($end)) . "' />";
-         $this->initDate('end');
+         //$params_end['value'] = date('d-m-Y', strtotime($end));
+         $params_end['on_change'] = "updateDuration(this,\"" . $CFG_GLPI['root_doc'] . "\");";
+         Html::showDateField("end", $params_end);
+
       } else {
          echo " disabled='disabled' ";
          echo " value='" . date('d-m-Y', strtotime($end)) . "' />";

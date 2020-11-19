@@ -1,20 +1,24 @@
 function updateDuration(input,root_doc){
    var hiddenDuration = document.getElementById('actiontime');
 
-   var beginDate = document.getElementById('begin');
-   var endDate = document.getElementById('end');
+   var beginDate = $("input[name='begin']").val();
+   var endDate = $("input[name='end']").val()
 
-   var tmp = beginDate.value.split('-');
+   var tmp = beginDate.split('-');
    var objDateDeb = new Date(tmp[2],tmp[1]-1,tmp[0]);
-   tmp = endDate.value.split('-');
+   tmp = endDate.split('-');
    var objDateEnd  = new Date(tmp[2],tmp[1]-1,tmp[0]);
+
+
 
    if (dateDiff(objDateDeb,objDateEnd).day < 0) {
       objDateEnd = objDateDeb;
-      endDate.value = beginDate.value;
+      endDate = beginDate;
    }
 
-   getActionTime(beginDate.value,endDate.value,Math.abs(dateDiff(objDateEnd, objDateDeb).day),input,'day',root_doc);
+   console.log(beginDate)
+   console.log(endDate)
+   getActionTime(beginDate,endDate,Math.abs(dateDiff(objDateEnd, objDateDeb).day),input,'day',root_doc);
 }
 
 
@@ -54,7 +58,7 @@ function getActionTime(beginDate,endDate,actiontime,input,format,root_doc){
 
       document.getElementById('actiontime').value = finalDuration;
       document.getElementById('div_duration').innerHTML = finalDuration;
-      updateRadioBtnDate(input,finalDuration);
+      updateRadioBtnDate(beginDate, endDate, input,finalDuration);
    } else {
       args="begin="+beginDate+"&end="+endDate+"&actiontime="+actiontime;
 
@@ -64,7 +68,6 @@ function getActionTime(beginDate,endDate,actiontime,input,format,root_doc){
          if (xhr_object.readyState == 4) {
             var jsondata = JSON.parse(xhr_object.responseText);
             var finalDuration =  jsondata['actiontime']-1;
-            console.log(finalDuration)
 
             if (cbAmBegin.checked == true ||cbPmBegin.checked) {
                finalDuration+=0.5;
@@ -75,7 +78,7 @@ function getActionTime(beginDate,endDate,actiontime,input,format,root_doc){
                finalDuration-=0.5;
             }
 
-            updateRadioBtnDate(input,finalDuration);
+            updateRadioBtnDate(beginDate, endDate, input,finalDuration);
 
             if (!isNaN(finalDuration)) {
                document.getElementById('div_duration').innerHTML = finalDuration;
@@ -89,9 +92,9 @@ function getActionTime(beginDate,endDate,actiontime,input,format,root_doc){
    }
 }
 
-function updateRadioBtnDate(input,tmpDuration){
-   var beginDate = document.getElementById('begin');
-   var endDate = document.getElementById('end');
+function updateRadioBtnDate(beginDate, endDate, input,tmpDuration){
+   // var beginDate = document.getElementById('begin');
+   // var endDate = document.getElementById('end');
 
    var cbAmBegin     = document.getElementById('cb_begindate_am');
    var cbPmBegin     = document.getElementById('cb_begindate_pm');
@@ -107,7 +110,9 @@ function updateRadioBtnDate(input,tmpDuration){
       cbAllDayEnd.disabled = true;
    } else {
       // same date
-      if (beginDate.value == endDate.value) {
+
+
+      if (beginDate == endDate) {
 
          cbAmBegin.disabled = false;
          cbPmBegin.disabled = false;
@@ -122,6 +127,7 @@ function updateRadioBtnDate(input,tmpDuration){
          cbAllDayEnd.checked = false;
 
       } else {
+
          cbAmBegin.disabled = true;
          cbPmBegin.disabled = false;
          cbAllDayBegin.disabled = false;
@@ -132,11 +138,14 @@ function updateRadioBtnDate(input,tmpDuration){
 
          if (cbAmBegin.checked == true) {
             cbPmBegin.checked = true;
+
          }
          if (cbPmEnd.checked == true) {
             cbAmEnd.checked = true;
+
          } else if (cbPmEnd.checked == false && cbAmEnd.checked == false && cbAllDayEnd.checked == false) {
             cbAllDayEnd.checked = true;
+
          }
 
       }
