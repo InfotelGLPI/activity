@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-19 16:50+0000\n"
+"POT-Creation-Date: 2020-11-29 10:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -90,38 +90,38 @@ msgstr ""
 msgid "Project / activity"
 msgstr ""
 
-#: inc/crapdf.class.php:458 inc/holidaytype.class.php:89
+#: inc/crapdf.class.php:465 inc/holidaytype.class.php:89
 #: inc/report.class.php:1439
 msgid "Part time"
 msgstr ""
 
-#: inc/crapdf.class.php:459 inc/report.class.php:1437
+#: inc/crapdf.class.php:466 inc/report.class.php:1437
 msgid "Holidays or exceptional absences"
 msgstr ""
 
-#: inc/crapdf.class.php:460 inc/report.class.php:1441
+#: inc/crapdf.class.php:467 inc/report.class.php:1441
 msgid "Sickness or maternity"
 msgstr ""
 
-#: inc/crapdf.class.php:489 inc/report.class.php:932
+#: inc/crapdf.class.php:496 inc/report.class.php:932
 msgid "Absences"
 msgstr ""
 
-#: inc/crapdf.class.php:522
+#: inc/crapdf.class.php:529
 msgid ""
 "Entry except in the month, the total must be equal to the number of working "
 "days this month"
 msgstr ""
 
-#: inc/crapdf.class.php:531
+#: inc/crapdf.class.php:538
 msgid "Total incorrect"
 msgstr ""
 
-#: inc/crapdf.class.php:533
+#: inc/crapdf.class.php:540
 msgid "Total OK"
 msgstr ""
 
-#: inc/crapdf.class.php:575
+#: inc/crapdf.class.php:582
 msgid "Generated with GLPI on"
 msgstr ""
 
