@@ -350,6 +350,9 @@ class PluginActivityCraPDF extends FPDF {
       $this->Ln();
    }
 
+   /**
+    * @param array $data_time
+    */
    function computeTotal($data_time = []) {
       $total_all = 0;
       foreach ($data_time as $times) {
@@ -360,7 +363,11 @@ class PluginActivityCraPDF extends FPDF {
       $this->setTotal($this->getTotal() + $total_all);
    }
 
-   function drawTime($data_time = [], $type) {
+   /**
+    * @param array $data_time
+    * @param       $type
+    */
+   function drawTime($type, $data_time = []) {
 
       $count = 0;
       foreach ($data_time as $activity => $times) {
@@ -598,7 +605,7 @@ class PluginActivityCraPDF extends FPDF {
       // Display work times
       if (!empty($times)) {
          $this->drawTimeHeader();
-         $this->drawTime($times, PluginActivityReport::$WORK);
+         $this->drawTime(PluginActivityReport::$WORK, $times);
       }
 
       // Display holiday times
@@ -606,7 +613,7 @@ class PluginActivityCraPDF extends FPDF {
          $this->drawHolidayHeader();
       }
       if (!empty($holidays)) {
-         $this->drawTime($holidays, PluginActivityReport::$HOLIDAY);
+         $this->drawTime(PluginActivityReport::$HOLIDAY, $holidays);
       }
 
       // Display total of all

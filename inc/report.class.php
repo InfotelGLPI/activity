@@ -429,7 +429,7 @@ class PluginActivityReport extends CommonDBTM {
       if (!empty($input["users_id"])
             && !empty($input["month"])
                && !empty($input["year"])) {
-         $this->showCRA($input, $output_type, $pdfMode, $PDF);
+         $this->showCRA($input, $output_type, $PDF, $pdfMode);
       }
 
       self::showSnapshots($input);
@@ -445,7 +445,7 @@ class PluginActivityReport extends CommonDBTM {
    }
 
 
-   function showCRA($input, $output_type, $pdfMode = false, PluginActivityCraPDF $PDF) {
+   function showCRA($input, $output_type, PluginActivityCraPDF $PDF, $pdfMode = false) {
      global $CFG_GLPI, $DB;
 
       $dbu    = new DbUtils();
