@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-29 10:22+0000\n"
+"POT-Creation-Date: 2020-11-30 13:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -58,16 +58,16 @@ msgstr ""
 msgid "Please activate the plugin"
 msgstr ""
 
+#: front/cra.php:45 inc/crapdf.class.php:246
+msgid "Report of Activities"
+msgstr ""
+
 #: inc/config.class.php:64
 msgid "Define internal helpdesk"
 msgstr ""
 
 #: inc/config.class.php:116
 msgid "Show internal helpdesk"
-msgstr ""
-
-#: inc/crapdf.class.php:246
-msgid "Report of Activities"
 msgstr ""
 
 #: inc/crapdf.class.php:274
@@ -91,19 +91,19 @@ msgid "Project / activity"
 msgstr ""
 
 #: inc/crapdf.class.php:465 inc/holidaytype.class.php:89
-#: inc/report.class.php:1439
+#: inc/report.class.php:1445
 msgid "Part time"
 msgstr ""
 
-#: inc/crapdf.class.php:466 inc/report.class.php:1437
+#: inc/crapdf.class.php:466 inc/report.class.php:1443
 msgid "Holidays or exceptional absences"
 msgstr ""
 
-#: inc/crapdf.class.php:467 inc/report.class.php:1441
+#: inc/crapdf.class.php:467 inc/report.class.php:1447
 msgid "Sickness or maternity"
 msgstr ""
 
-#: inc/crapdf.class.php:496 inc/report.class.php:932
+#: inc/crapdf.class.php:496 inc/report.class.php:934
 msgid "Absences"
 msgstr ""
 
@@ -662,15 +662,15 @@ msgstr ""
 msgid "Project"
 msgstr ""
 
-#: inc/report.class.php:999
+#: inc/report.class.php:1001
 msgid "Activities detail"
 msgstr ""
 
-#: inc/report.class.php:1007
+#: inc/report.class.php:1009
 msgid "Percent"
 msgstr ""
 
-#: inc/report.class.php:1058
+#: inc/report.class.php:1060
 msgid "No activity found"
 msgstr ""
 
