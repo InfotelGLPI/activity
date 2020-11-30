@@ -42,7 +42,7 @@ if (isset($_GET['itemtype'])) {
    header('Location: '.$target."?".Toolbox::append_params($_GET, '&'));
 
 } else {
-   Html::header(PluginActivityHoliday::getTypeName(2), '', "tools", "pluginactivitymenu");
+   Html::header(__('Report of Activities', 'activity'), '', "tools", "pluginactivitymenu");
    if (empty($_POST["month"])) {
       $_POST["month"] = intval(strftime("%m"));
    }

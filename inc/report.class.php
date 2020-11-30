@@ -915,7 +915,9 @@ class PluginActivityReport extends CommonDBTM {
                         if (!isset($time[$type][$holiday_type_type][$date_act]['values'])) {
                            $time[$type][$holiday_type_type][$date_act]['values'] = $value;
                         } else {
-                           $time[$type][$holiday_type_type][$date_act]['values'] += $value;
+                           if ($value > 0) {
+                              $time[$type][$holiday_type_type][$date_act]['values'] += $value;
+                           }
                         }
                      }
                   }
@@ -1329,9 +1331,13 @@ class PluginActivityReport extends CommonDBTM {
                $delimiter = "&gt;";
             }
             if (strstr($key, '>') || strstr($key, '&gt;')) {
-               list($parent, $child) = explode($delimiter, $key);
-               echo Search::showItem($output_type, trim($parent), $num, $row_num);
-               echo Search::showItem($output_type, trim($child), $num, $row_num);
+               $childs = explode($delimiter, $key);
+               echo Search::showItem($output_type, trim($childs[0]), $num, $row_num);
+               if (isset($childs[2])) {
+                  echo Search::showItem($output_type, trim($childs[2]), $num, $row_num);
+               } else {
+                  echo Search::showItem($output_type, trim($childs[1]), $num, $row_num);
+               }
             } else {
                if ($type == self::$WORK) {
                   echo Search::showItem($output_type, $child, $num, $row_num);
