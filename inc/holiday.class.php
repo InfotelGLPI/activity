@@ -1383,7 +1383,7 @@ class PluginActivityHoliday extends CommonDBTM {
 
             echo "<tr class='tab_bg_2'>";
             echo "<td class='right' colspan='4' >\n";
-            echo "<input type='submit' name='delete' value=\"" . _sx('button',
+            echo "<input type='submit' name='purge' value=\"" . _sx('button',
                                                                      'Delete permanently') . "\"
                          class='submit' " .
                  Html::addConfirmationOnAction(__('Confirm the final deletion?')) . ">";
