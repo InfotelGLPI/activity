@@ -1194,7 +1194,7 @@ class PluginActivityHoliday extends CommonDBTM {
          $params_begin['on_change'] = "updateDuration(this, '" . $CFG_GLPI['root_doc'] . "');";
          Html::showDateField("begin", $params_begin);
       } else {
-         echo " disabled='disabled' ";
+         echo "<input disabled='disabled' ";
          echo "value='" . date('d-m-Y', strtotime($begin)) . "' />";
       }
       echo "</td></tr>";
@@ -1249,7 +1249,7 @@ class PluginActivityHoliday extends CommonDBTM {
          Html::showDateField("end", $params_end);
 
       } else {
-         echo " disabled='disabled' ";
+         echo "<input disabled='disabled' ";
          echo " value='" . date('d-m-Y', strtotime($end)) . "' />";
       }
 

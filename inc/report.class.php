@@ -42,7 +42,6 @@ class PluginActivityReport extends CommonDBTM {
    static $ALL_DAY_LABEL    = 'allDay';
    static $DEFAULT_LABEL    = 'none';
    static $ONE_DAY_ACTIVITY = '86400';
-   static $ONE_DAY_CRA      = '28800';
 
 
    private $item_search  = [];
