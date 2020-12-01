@@ -285,11 +285,11 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
             if ($opt) {
                $is_cra_default = $opt->fields['is_cra_default'];
             }
-            if (!$is_exist && isset($_POST['action']) && $_POST['action'] !== 'clone_event') {
+            if (!$is_exist && isset($_POST['add'])) {
                $extevent->add(['is_oncra'                    => isset($item->input['is_oncra']) ? $item->input['is_oncra'] : $is_cra_default,
                                'planningexternalevents_id'   => $item->getID(),
                                'actiontime'                  => $actiontime]);
-            } else if (isset($_POST['action']) && $_POST['action'] == 'clone_event') {
+            } else if ($_POST['action'] == 'clone_event') {
                $iterator =   $DB->request(['FROM' => 'glpi_plugin_activity_planningexternalevents',
                   'LEFT JOIN' => ['glpi_planningexternalevents' => ['FKEY' => ['glpi_planningexternalevents'     => 'id',
                      'glpi_plugin_activity_planningexternalevents' => 'planningexternalevents_id']]],

@@ -31,16 +31,19 @@ if (!defined('GLPI_ROOT')) {
 
 class PluginActivityReport extends CommonDBTM {
 
-   static $WORK            = 0;
-   static $HOLIDAY         = 1;
-   static $PART_TIME       = 2;
-   static $SICKNESS        = 3;
-   static $AM_END          = '13:00:00';
-   static $PM_BEGIN        = '14:00:00';
-   static $AM_LABEL        = 'am';
-   static $PM_LABEL        = 'pm';
-   static $ALL_DAY_LABEL   = 'allDay';
-   static $DEFAULT_LABEL   = 'none';
+   static $WORK             = 0;
+   static $HOLIDAY          = 1;
+   static $PART_TIME        = 2;
+   static $SICKNESS         = 3;
+   static $AM_END           = '13:00:00';
+   static $PM_BEGIN         = '14:00:00';
+   static $AM_LABEL         = 'am';
+   static $PM_LABEL         = 'pm';
+   static $ALL_DAY_LABEL    = 'allDay';
+   static $DEFAULT_LABEL    = 'none';
+   static $ONE_DAY_ACTIVITY = '86400';
+   static $ONE_DAY_CRA      = '28800';
+
 
    private $item_search  = [];
 
@@ -1046,7 +1049,7 @@ class PluginActivityReport extends CommonDBTM {
                   }
                }
                echo Search::showItem($output_type, nl2br(Html::clean($comment)), $num, $row_num);
-               $total_ouvres = self::TotalTpsPassesArrondis($data["total_actiontime"] /$AllDay);
+               $total_ouvres = self::TotalTpsPassesArrondis($data["total_actiontime"] / $AllDay);
                echo Search::showItem($output_type, Html::formatNumber($total_ouvres, false, 3), $num, $row_num);
                echo Search::showItem($output_type, Html::formatNumber($percent)."%", $num, $row_num);
                echo Search::showEndLine($output_type);
@@ -1157,13 +1160,17 @@ class PluginActivityReport extends CommonDBTM {
    function getActionTimeForExternalEvent($begin, $end, $values, $actiontime, $type) {
 
       $holidays = PluginActivityHoliday::getCalendarHolidaysArray($_SESSION["glpiactive_entity"]);
+      $AllDay   = self::getAllDay();
 
       $holidaysO = new PluginActivityHoliday();
 
       $duration = strtotime($end) - strtotime($begin);
 
-      $finalDuration = $duration - $holidaysO->countWe($begin, $end, $holidays);
+      if ($duration == self::$ONE_DAY_ACTIVITY) {
+         $duration = $AllDay;
+      }
 
+      $finalDuration = $duration - $holidaysO->countWe($begin, $end, $holidays);
       return $finalDuration;
    }
 
