@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-02 17:14+0000\n"
+"POT-Creation-Date: 2020-12-03 08:55+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #: setup.php:173 ajax/loadscripts.php:47 inc/config.class.php:38
 #: inc/menu.class.php:32 inc/option.class.php:38 inc/preference.class.php:42
-#: inc/profile.class.php:138 inc/report.class.php:855
+#: inc/profile.class.php:138 inc/report.class.php:860
 msgid "Activity"
 msgid_plural "Activities"
 msgstr[0] ""
@@ -91,19 +91,19 @@ msgid "Project / activity"
 msgstr ""
 
 #: inc/crapdf.class.php:465 inc/holidaytype.class.php:89
-#: inc/report.class.php:1497
+#: inc/report.class.php:1502
 msgid "Part time"
 msgstr ""
 
-#: inc/crapdf.class.php:466 inc/report.class.php:1495
+#: inc/crapdf.class.php:466 inc/report.class.php:1500
 msgid "Holidays or exceptional absences"
 msgstr ""
 
-#: inc/crapdf.class.php:467 inc/report.class.php:1499
+#: inc/crapdf.class.php:467 inc/report.class.php:1504
 msgid "Sickness or maternity"
 msgstr ""
 
-#: inc/crapdf.class.php:496 inc/report.class.php:974
+#: inc/crapdf.class.php:496 inc/report.class.php:979
 msgid "Absences"
 msgstr ""
 
@@ -152,7 +152,7 @@ msgid "All day"
 msgstr ""
 
 #: inc/dashboard.class.php:456 inc/dashboard.class.php:489
-#: inc/report.class.php:568 inc/report.class.php:610 inc/report.class.php:663
+#: inc/report.class.php:573 inc/report.class.php:615 inc/report.class.php:668
 msgid "No defined type"
 msgstr ""
 
@@ -180,12 +180,12 @@ msgid "User is mandatory field"
 msgstr ""
 
 #: inc/holiday.class.php:214 inc/planningexternalevent.class.php:395
-#: inc/planningexternalevent.class.php:517
+#: inc/planningexternalevent.class.php:522
 msgid "The chosen begin date is on weekend"
 msgstr ""
 
 #: inc/holiday.class.php:221 inc/planningexternalevent.class.php:386
-#: inc/planningexternalevent.class.php:507
+#: inc/planningexternalevent.class.php:512
 msgid "The chosen date is a public holiday"
 msgstr ""
 
@@ -573,12 +573,12 @@ msgid "Use in CRA"
 msgstr ""
 
 #: inc/planningexternalevent.class.php:334
-#: inc/planningexternalevent.class.php:495
+#: inc/planningexternalevent.class.php:500
 msgid "Only whole hours are allowed (no split times)"
 msgstr ""
 
 #: inc/planningexternalevent.class.php:340
-#: inc/planningexternalevent.class.php:501
+#: inc/planningexternalevent.class.php:506
 msgid "Only pairs schedules are allowed"
 msgstr ""
 
@@ -588,7 +588,7 @@ msgid "Activity type is mandatory field"
 msgstr ""
 
 #: inc/planningexternalevent.class.php:402
-#: inc/planningexternalevent.class.php:522
+#: inc/planningexternalevent.class.php:527
 msgid "The chosen end date is on weekend"
 msgstr ""
 
@@ -654,23 +654,23 @@ msgstr ""
 msgid "Previous month"
 msgstr ""
 
-#: inc/report.class.php:687
+#: inc/report.class.php:692
 msgid "Unbilled"
 msgstr ""
 
-#: inc/report.class.php:854
+#: inc/report.class.php:859
 msgid "Project"
 msgstr ""
 
-#: inc/report.class.php:1041
+#: inc/report.class.php:1046
 msgid "Activities detail"
 msgstr ""
 
-#: inc/report.class.php:1049
+#: inc/report.class.php:1054
 msgid "Percent"
 msgstr ""
 
-#: inc/report.class.php:1100
+#: inc/report.class.php:1105
 msgid "No activity found"
 msgstr ""
 
