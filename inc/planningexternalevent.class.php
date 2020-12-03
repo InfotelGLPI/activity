@@ -413,9 +413,9 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
       $array_inputs_occurence                   = [];
       $array_inputs_occurence['duration']       = strtotime($item['end']) - strtotime($item['begin']);
       if ($rrule != '') {
-         $array_inputs_occurence['rrule']          = $rrule;
+         $array_inputs_occurence['rrule']       = $rrule;
       } else {
-         $array_inputs_occurence['rrule']          = json_decode($item['rrule'], 1);
+         $array_inputs_occurence['rrule']       = json_decode($item['rrule'], 1);
       }
       $array_inputs_occurence['rset']           = PlanningExternalEvent::getRsetFromRRuleField($array_inputs_occurence['rrule'], $item['begin']);
       $begin_datetime                           = new DateTime($crit["begin"], new DateTimeZone('UTC'));
@@ -463,14 +463,19 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
          $begin_hour = date('i', strtotime($item->input['begin']));
          $end_hour = date('i', strtotime($item->input['end']));
 
-
+         //add exceptions for holidays
          if (isset($item->input['rrule']) && !empty($item->input['rrule'])) {
             $input_date_begin = explode("-", $item->input['begin']);
             $crit["begin"] = $input_date_begin[0] . "-" . $input_date_begin[1] . "-01 00:00:00";
             $lastday = cal_days_in_month(CAL_GREGORIAN, "12", $input_date_begin[0]);
             $crit["end"] = $input_date_begin[0] . "-" . "12" . "-" . $lastday . " 23:59:59";
 
-            $array_inputs_occurence = PluginActivityPlanningExternalEvent::prepareInputsForReccurOccurence($item->input, $crit);
+
+            if (isset($_POST['action']) && $_POST['action'] == 'clone_event') {
+               $item->input['rrule'] = $item->getField('rrule');
+            }
+               $array_inputs_occurence = PluginActivityPlanningExternalEvent::prepareInputsForReccurOccurence($item->input, $crit);
+
             $occurences = $array_inputs_occurence['rset']->getOccurrencesBetween($array_inputs_occurence['begin_datetime'], $array_inputs_occurence['end_datetime']);
             // add the found occurences to the final tab after replacing their dates
 
@@ -534,6 +539,11 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
          // Already cancel by another plugin
          return false;
       }
+
+      if (isset($_POST['action']) && $_POST['action'] == 'delete_event') {
+         return false;
+      }
+
       self::prepareInputToUpdateWithPluginOptions($item);
       self::setActivity($item);
    }

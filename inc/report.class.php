@@ -555,6 +555,7 @@ class PluginActivityReport extends CommonDBTM {
 
                   // add the found occurences to the final tab after replacing their dates
                   foreach ($occurences as $currentDate) {
+
                      $occurence_begin = $currentDate;
                      $data2['begin']  = $occurence_begin->format('Y-m-d H:i:s');
 
@@ -563,6 +564,10 @@ class PluginActivityReport extends CommonDBTM {
                      //                     $type = $data2["type"];
                      //                     $parents = $dbu->getAncestorsOf("glpi_planningeventcategories", $data2["type_id"]);
                      //                     $last = end($parents);
+
+                     if ($holiday->isWeekend($data2['begin'], true)) {
+                        continue;
+                     }
 
                      if (empty($data2["type"])) {
                         $type = $data2["entity"] . " > " . __('No defined type', 'activity');
