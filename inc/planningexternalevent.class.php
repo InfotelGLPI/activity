@@ -363,6 +363,13 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
             foreach ($occurences as $currentDate) {
                $input                 = [];
                $input['current_date'] = $currentDate->format('Y-m-d H:i:s');
+               if ($use_we == 0) {
+                  if ($holiday->isWeekend($input['current_date'], true)) {
+                     Session::addMessageAfterRedirect(__('One of the dates is on weekend, please add the date in the exceptionsof the reccurent rule', 'activity'), false, ERROR);
+                     unset($item->input);
+                     return false;
+                  }
+               }
                $date_exception        = PluginActivityHoliday::checkInHolidays($input, $holiday->getHolidays());
                if ($date_exception != false) {
                   $array_inputs_occurence['rrule']['exceptions'][] = $date_exception;
@@ -482,7 +489,15 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
             foreach ($occurences as $currentDate) {
                $input                 = [];
                $input['current_date'] = $currentDate->format('Y-m-d H:i:s');
-               $date_exception        = PluginActivityHoliday::checkInHolidays($input, $holiday->getHolidays());
+               if ($use_we == 0) {
+                  if ($holiday->isWeekend($input['current_date'], true)) {
+                     Session::addMessageAfterRedirect(__('One of the dates is on weekend, please add the date in the exceptionsof the reccurent rule', 'activity'), false, ERROR);
+                     unset($item->input);
+                     return false;
+                  }
+               }
+               $date_exception = PluginActivityHoliday::checkInHolidays($input, $holiday->getHolidays());
+
                if ($date_exception != false) {
                   if (!isset($array_inputs_occurence['rrule']['exceptions'])) {
                      $array_inputs_occurence['rrule']['exceptions'][] = $date_exception;
