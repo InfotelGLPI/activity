@@ -289,7 +289,7 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
                $extevent->add(['is_oncra'                    => isset($item->input['is_oncra']) ? $item->input['is_oncra'] : $is_cra_default,
                                'planningexternalevents_id'   => $item->getID(),
                                'actiontime'                  => $actiontime]);
-            } else if ($_POST['action'] == 'clone_event') {
+            } else if (isset($_POST['action']) && $_POST['action'] == 'clone_event') {
                $iterator =   $DB->request(['FROM' => 'glpi_plugin_activity_planningexternalevents',
                   'LEFT JOIN' => ['glpi_planningexternalevents' => ['FKEY' => ['glpi_planningexternalevents'     => 'id',
                      'glpi_plugin_activity_planningexternalevents' => 'planningexternalevents_id']]],
@@ -345,14 +345,16 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
          }
       } else {
 
-         if (isset($item->fields['rrule']) && !empty($item->fields['rrule'])) {
+         if (isset($item->fields['rrule'])
+             && !empty($item->fields['rrule'])) {
             $rrule            = $item->input['rrule'];
             $input_date_begin = explode("-", $item->fields['begin']);
             $crit["begin"]    = $input_date_begin[0] . "-" . $input_date_begin[1] . "-01 00:00:00";
             $lastday          = cal_days_in_month(CAL_GREGORIAN, "12", $input_date_begin[0]);
             $crit["end"]      = $input_date_begin[0] . "-" . "12" . "-" . $lastday . " 23:59:59";
 
-            if (isset($rrule['exceptions']) && $rrule['exceptions'] != '') {
+            if (isset($rrule['exceptions'])
+                && $rrule['exceptions'] != '') {
                $rrule['exceptions'] =  explode(",", $rrule['exceptions']);
             }
 
