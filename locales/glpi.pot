@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-14 09:13+0000\n"
+"POT-Creation-Date: 2020-12-18 15:58+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #: setup.php:173 ajax/loadscripts.php:47 inc/config.class.php:38
 #: inc/menu.class.php:32 inc/option.class.php:38 inc/preference.class.php:42
-#: inc/profile.class.php:138 inc/report.class.php:860
+#: inc/profile.class.php:43 inc/profile.class.php:138 inc/report.class.php:860
 msgid "Activity"
 msgid_plural "Activities"
 msgstr[0] ""
@@ -320,11 +320,11 @@ msgid_plural "Comments"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/holiday.class.php:2394
+#: inc/holiday.class.php:2391
 msgid "Remaining holidays for the period"
 msgstr ""
 
-#: inc/holiday.class.php:2395
+#: inc/holiday.class.php:2392
 msgid "Leave awaiting validation"
 msgstr ""
 
