@@ -52,7 +52,7 @@ if (isset($holiday->fields['id']) &&
 
    $dateBegin = date('d-m-y', strtotime($holiday->fields['begin'])).$periods['txt'];
 
-   $strTxtFile = $holiday->generateTXTfile($hId);
+   $strTxtFile = $holiday->createTxtFile($hId);
 
    $filename = "DC ".$userName." ".date('Y')." ".$dateBegin.".txt";
 

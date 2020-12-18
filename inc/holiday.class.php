@@ -2184,9 +2184,6 @@ class PluginActivityHoliday extends CommonDBTM {
                      }
                   }
                }
-            } else {
-               //TODO voir quoi mettre à la place de $key
-               $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_NORIGHT);
             }
 
             break;
