@@ -43,7 +43,7 @@ class PluginActivityNotification extends CommonDBTM {
    }
 
    static function sendComm($input) {
-      global $_FILES;
+      global $_FILES, $CFG_GLPI;
       $send = false;
 
       // Subject
@@ -94,8 +94,8 @@ class PluginActivityNotification extends CommonDBTM {
          $options = [
             'to'           => $option->getField('used_mail_for_holidays'),
             'toname'       => $option->getField('used_mail_for_holidays'),
-            'from'         => $validate_email,
-            'fromname'     => $validate_name,
+            'from'         => $CFG_GLPI["from_email"],
+            'fromname'     => $CFG_GLPI["from_email_name"],
             'replyto'      => $validate_email,
             'replytoname'  => $validate_name,
             'subject'      => stripslashes($subject),
