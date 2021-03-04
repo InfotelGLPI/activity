@@ -164,4 +164,228 @@ class PluginActivityTicketTask extends CommonDBTM {
       }
       self::setTicketTask($item);
    }
+
+   /**
+    * Add items in the items fields of the parm array
+    * Items need to have an unique index beginning by the begin date of the item to display
+    * needed to be correcly displayed
+    **/
+   static function populatePlanning($options = []) {
+      global $DB, $CFG_GLPI;
+
+      $default_options = [
+         'color'               => '',
+         'event_type_color'    => '',
+         'check_planned'       => false,
+         'display_done_events' => true,
+      ];
+      $options = array_merge($default_options, $options);
+
+      $interv   = [];
+
+      if (!isset($options['begin']) || ($options['begin'] == 'NULL')
+          || !isset($options['end']) || ($options['end'] == 'NULL')) {
+         return $interv;
+      }
+
+      if (!$options['display_done_events']) {
+         return $interv;
+      }
+
+      $who        = $options['who'];
+      $begin      = $options['begin'];
+      $end        = $options['end'];
+
+      $plugin = new Plugin();
+      $query = "SELECT    `glpi_tickettasks`.*,
+                          `glpi_plugin_activity_tickettasks`.`is_oncra`,
+                          `glpi_entities`.`name` AS entity,
+                          `glpi_tickets`.`name`,
+                          `glpi_tickets`.`id` AS tickets_id,
+                          `glpi_entities`.`id` AS entities_id
+                     FROM `glpi_tickettasks`
+                     INNER JOIN `glpi_tickets`
+                        ON (`glpi_tickets`.`id` = `glpi_tickettasks`.`tickets_id` AND `glpi_tickets`.`is_deleted` = 0)
+                     LEFT JOIN `glpi_entities` 
+                        ON (`glpi_tickets`.`entities_id` = `glpi_entities`.`id`) 
+                     LEFT JOIN `glpi_plugin_activity_tickettasks` 
+                        ON (`glpi_tickettasks`.`id` = `glpi_plugin_activity_tickettasks`.`tickettasks_id`) ";
+      $query .= "WHERE ";
+      if ($plugin->isActivated('manageentities')) {
+         $query .= "`glpi_tickettasks`.`tickets_id` 
+                     NOT IN (SELECT `tickets_id` 
+                              FROM `glpi_plugin_manageentities_cridetails`) AND ";
+      }
+      $dbu = new DbUtils();
+      $query .= "((`glpi_tickettasks`.`begin` >= '".$begin."' 
+                           AND `glpi_tickettasks`.`end` <= '".$end."'
+                           AND `glpi_tickettasks`.`users_id_tech` = '".$who."' ".
+                $dbu->getEntitiesRestrictRequest("AND", "glpi_tickets", '',
+                                                 $_SESSION["glpiactiveentities"], false);
+      $query.= "                     ) 
+                           OR (`glpi_tickettasks`.`date` >= '".$begin."' 
+                           AND `glpi_tickettasks`.`date` <= '".$end."'
+                           AND `glpi_tickettasks`.`users_id` = '".$who."'
+                           AND `glpi_tickettasks`.`begin` IS NULL ".$dbu->getEntitiesRestrictRequest("AND", "glpi_tickets", '',
+                                                                                                     $_SESSION["glpiactiveentities"], false);
+      $query.= " )) AND `glpi_tickettasks`.`actiontime` != 0 
+                  AND `glpi_plugin_activity_tickettasks`.`is_oncra` = 1";
+      $query.= " ORDER BY `glpi_tickettasks`.`begin` ASC";
+      $result = $DB->query($query);
+
+      $number = $DB->numrows($result);
+
+      $activities     = [];
+
+      if ($number) {
+         $allTickets       = [];
+         $privateTickets   = [];
+
+         while ($datat = $DB->fetchArray($result)) {
+            $mtitle   = $datat["entity"]." > ".__('Ticket');
+            $internal = PluginActivityConfig::getConfigFromDB($datat['entities_id']);
+            if ($internal) {
+               foreach ($internal as $field) {
+                  $mtitle = $datat["entity"]." > ".$field["name"];
+               }
+            }
+
+            if (!empty($datat["begin"]) && !empty($datat["end"])) {
+               $begin = $datat["begin"];
+            } else {
+               $begin = $datat["date"];
+            }
+            $report     = new PluginActivityReport();
+            $holiday    = new PluginActivityHoliday();
+            $self        = new Self();
+            $AllDay     = PluginActivityReport::getAllDay();
+            $opt        = new PluginActivityOption();
+            $opt->getFromDB(1);
+
+            if (!$datat['is_private']) {
+               if ($opt->fields['use_timerepartition']) {
+                  $allTickets = $report->timeRepartition($datat['actiontime'] / $AllDay,
+                                                         $begin,
+                                                         $allTickets, PluginActivityReport::$WORK,
+                                                         $mtitle,
+                                                         $holiday->getHolidays());
+
+               } else {
+                  $allTickets[0][$mtitle][$begin] = $datat['actiontime'] / $AllDay;
+               }
+            } else {
+               if ($opt->fields['use_timerepartition']) {
+                  $privateTickets = $report->timeRepartition($datat['actiontime'] / $AllDay,
+                                                             $begin,
+                                                             $privateTickets, PluginActivityReport::$WORK,
+                                                             $mtitle,
+                                                             $holiday->getHolidays());
+               } else {
+                  $privateTickets[0][$mtitle][$begin] = $datat['actiontime'] / $AllDay;
+               }
+            }
+         }
+
+         $self->setTicketActivity($allTickets, $activities);
+         $self->setTicketActivity($privateTickets, $activities, true);
+
+      }
+
+      if (count($activities) > 0) {
+         foreach ($activities as $k => $int) {
+
+            $key = $int["start"]."$$"."PluginActivityTicketTask".$int["id"];
+
+            $interv[$key]['color']              = $options['color'];
+            $interv[$key]['event_type_color']   = $options['event_type_color'];
+            $interv[$key]["itemtype"]           = 'PluginActivityTicketTask';
+            $interv[$key]["id"]                 = $int["id"];
+            $interv[$key]["users_id"]           = $who;
+            $interv[$key]["begin"]           = $int["start"];
+            $interv[$key]["end"]             = $int["end"];
+            $interv[$key]["name"]               = Html::resume_text($int["title"], $CFG_GLPI["cut"]);
+            $interv[$key]["editable"]         = false;
+            $interv[$key]["content"]
+               = Html::resume_text(Html::clean(Toolbox::unclean_cross_side_scripting_deep($int["description"])),
+                                   $CFG_GLPI["cut"]);
+
+         }
+      }
+
+      return $interv;
+
+   }
+
+   /**
+    * Set ticket activities for script
+    *
+    * @param type $tag
+    * @param type $color
+    * @param type $ticket
+    * @param type $activities
+    * @param type $is_private
+    */
+   function setTicketActivity($ticket = [], &$activities = [], $is_private = false) {
+
+      $AllDay = PluginActivityReport::getAllDay();
+
+      $opt = new PluginActivityOption();
+      $opt->getFromDB(1);
+
+      $y = 1;
+
+      foreach ($ticket as $k => $v) {
+         foreach ($v as $title => $data) {
+            foreach ($data as $date => $duration) {
+               if ($opt->fields['use_timerepartition'] > 0 && $opt->fields['use_mandaydisplay']) {
+                  $action = PluginActivityReport::TotalTpsPassesArrondis($duration) * $AllDay;
+               } else {
+                  $action = $duration * $AllDay;
+               }
+               $content = Html::timestampToString($action, false);
+               $end     = date("Y-m-d H:i:s", strtotime($date) + $action);
+
+               $y++;
+               if ($action > 0) {
+                  $activities[] = [
+                     'id'          => $y,
+                     'title'       => $title,
+                     'description' => $content . ($is_private ? " [" . __('Private') . "]" : ""),
+                     'start'       => $date,
+                     'end'         => $end];
+               }
+            }
+         }
+      }
+   }
+
+   /**
+    * Display a Planning Item
+    *
+    * @param $parm Array of the item to display
+    * @return Nothing (display function)
+    **/
+   static function displayPlanningItem(array $val, $who, $type = "", $complete = 0) {
+
+      $html = "";
+      $rand     = mt_rand();
+
+      if ($val["name"]) {
+         $html .= $val["name"]."<br>";
+      }
+
+      if ($val["end"]) {
+         $html .= "<strong>".__('End date')."</strong> : ".Html::convdatetime($val["end"])."<br>";
+      }
+
+      if ($complete) {
+         $html.= "<div class='event-description'>".$val["content"]."</div>";
+      } else {
+         $html.= Html::showToolTip($val["content"],
+                                   ['applyto' => "cri_".$val["id"].$rand,
+                                    'display' => false]);
+      }
+
+      return $html;
+   }
 }

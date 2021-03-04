@@ -619,7 +619,7 @@ class PluginActivityReport extends CommonDBTM {
                      //                     $dropdown->getFromDB($last);
                      //                     $type = $dropdown->fields['name'];
                      //                  } else {
-                     $type = $data2["type"];
+                     $type = htmlspecialchars_decode($data2["type"]);
                      //                  }
                   }
 

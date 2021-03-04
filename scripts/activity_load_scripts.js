@@ -31,8 +31,8 @@
          if($("#activity_link").length == 0) {
             $("#c_preference ul #bookmark_link").before("\
                 <li id='activity_link'>\
-                    <a href='#' id='showLateralMenuLink'>\
-                        <i id='activity_icon' class='far fa-activity' title=''  class='button-icon'></i>\
+                    <a class='fa fa-2x fa-calendar-alt' href='#' id='showLateralMenuLink'>\
+                        \
                     </a>\
                 </li>");
          }

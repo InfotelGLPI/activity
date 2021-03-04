@@ -126,9 +126,7 @@ a.activity_href {
 .fa-activity::before {
     content: "\f073";
     font-family: "Font Awesome 5 Free";
-    color: #FFF;
     font-size: 2em;
-    color: white;
 }
 
 /** "slide panel" component */

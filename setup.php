@@ -77,6 +77,7 @@ function plugin_init_activity() {
 
       Plugin::registerClass('PluginActivityProfile', ['addtabon' => 'Profile']);
       Plugin::registerClass('PluginActivityPublicHoliday', ['planning_types' => true]);
+      Plugin::registerClass('PluginActivityTicketTask', ['planning_types' => true]);
 
       $opt = new PluginActivityOption();
       $opt->getFromDB(1);
