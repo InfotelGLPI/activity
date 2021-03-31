@@ -6,8 +6,13 @@ function updateDuration(input,root_doc){
 
    var tmp = beginDate.split('-');
    var objDateDeb = new Date(tmp[2],tmp[1]-1,tmp[0]);
+   if(endDate.length <= 0){
+      endDate = beginDate;
+   }
+
    tmp = endDate.split('-');
    var objDateEnd  = new Date(tmp[2],tmp[1]-1,tmp[0]);
+
 
 
 
@@ -16,8 +21,8 @@ function updateDuration(input,root_doc){
       endDate = beginDate;
    }
 
-   console.log(beginDate)
-   console.log(endDate)
+   // console.log(beginDate)
+   // console.log(endDate)
    getActionTime(beginDate,endDate,Math.abs(dateDiff(objDateEnd, objDateDeb).day),input,'day',root_doc);
 }
 
