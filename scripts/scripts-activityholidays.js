@@ -185,6 +185,9 @@ function dateDiff(date1, date2){
  */
 function plugin_activity_show_details(root_doc, holidayperiod_id) {
    users_id = $('input[name="users_id"]').val();
+   if (users_id === undefined) {
+      users_id = $('select[name="users_id"]').val();
+   }
    $('#tr_plugin_activity_details').closest('tr').remove();
    $.ajax({
       url: root_doc + '/plugins/activity/ajax/activityholidays.php',
