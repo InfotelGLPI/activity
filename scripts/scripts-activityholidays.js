@@ -14,15 +14,12 @@ function updateDuration(input,root_doc){
    var objDateEnd  = new Date(tmp[2],tmp[1]-1,tmp[0]);
 
 
-
-
-   if (dateDiff(objDateDeb,objDateEnd).day < 0) {
-      objDateEnd = objDateDeb;
-      endDate = beginDate;
-   }
-
-   // console.log(beginDate)
-   // console.log(endDate)
+   // if (dateDiff(objDateDeb,objDateEnd).day < 0) {
+   //    objDateEnd = objDateDeb;
+   //    endDate = beginDate;
+   // }
+   //console.log(beginDate)
+   //console.log(endDate)
    getActionTime(beginDate,endDate,Math.abs(dateDiff(objDateEnd, objDateDeb).day),input,'day',root_doc);
 }
 
