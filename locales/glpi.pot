@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-12 14:13+0000\n"
+"POT-Creation-Date: 2021-10-30 12:59+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: setup.php:174 ajax/loadscripts.php:47 inc/config.class.php:38
+#: setup.php:177 ajax/loadscripts.php:47 inc/config.class.php:38
 #: inc/menu.class.php:32 inc/option.class.php:38 inc/preference.class.php:42
 #: inc/profile.class.php:43 inc/profile.class.php:138 inc/report.class.php:860
 msgid "Activity"
@@ -91,15 +91,15 @@ msgid "Project / activity"
 msgstr ""
 
 #: inc/crapdf.class.php:465 inc/holidaytype.class.php:89
-#: inc/report.class.php:1502
+#: inc/report.class.php:1503
 msgid "Part time"
 msgstr ""
 
-#: inc/crapdf.class.php:466 inc/report.class.php:1500
+#: inc/crapdf.class.php:466 inc/report.class.php:1501
 msgid "Holidays or exceptional absences"
 msgstr ""
 
-#: inc/crapdf.class.php:467 inc/report.class.php:1504
+#: inc/crapdf.class.php:467 inc/report.class.php:1505
 msgid "Sickness or maternity"
 msgstr ""
 
@@ -125,33 +125,41 @@ msgstr ""
 msgid "Generated with GLPI on"
 msgstr ""
 
-#: inc/dashboard.class.php:83 inc/dashboard.class.php:140
-msgid "Activity in the month"
+#: inc/dashboard.class.php:84
+msgid "Tables"
 msgstr ""
 
-#: inc/dashboard.class.php:85 inc/dashboard.class.php:295
+#: inc/dashboard.class.php:85 inc/dashboard.class.php:307
 msgid "Activity Menu"
 msgstr ""
 
-#: inc/dashboard.class.php:86 inc/dashboard.class.php:365
+#: inc/dashboard.class.php:88 inc/dashboard.class.php:381
 msgid "Interventions not in CRA"
 msgstr ""
 
-#: inc/dashboard.class.php:142
+#: inc/dashboard.class.php:92
+msgid "Pie charts"
+msgstr ""
+
+#: inc/dashboard.class.php:93 inc/dashboard.class.php:152
+msgid "Activity in the month"
+msgstr ""
+
+#: inc/dashboard.class.php:95 inc/dashboard.class.php:154
 msgid ""
 "Display of activity by month for a user (tickets, activity, holidays, others)"
 msgstr ""
 
-#: inc/dashboard.class.php:237
+#: inc/dashboard.class.php:249
 msgid "Planning access"
 msgstr ""
 
-#: inc/dashboard.class.php:257 inc/holiday.class.php:1232
+#: inc/dashboard.class.php:269 inc/holiday.class.php:1232
 #: inc/holiday.class.php:1287
 msgid "All day"
 msgstr ""
 
-#: inc/dashboard.class.php:456 inc/dashboard.class.php:489
+#: inc/dashboard.class.php:472 inc/dashboard.class.php:505
 #: inc/report.class.php:573 inc/report.class.php:615 inc/report.class.php:668
 msgid "No defined type"
 msgstr ""
@@ -226,7 +234,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: inc/holiday.class.php:458 inc/holidaycount.class.php:39
-#: inc/menu.class.php:50
+#: inc/menu.class.php:51
 msgid "Holiday counter"
 msgid_plural "Holiday counters"
 msgstr[0] ""
@@ -473,12 +481,12 @@ msgid "Error in sending the email"
 msgstr ""
 
 #: inc/notificationtargetholiday.class.php:39
-#: inc/notificationtargetholiday.class.php:211
+#: inc/notificationtargetholiday.class.php:208
 msgid "New personal holiday request"
 msgstr ""
 
 #: inc/notificationtargetholiday.class.php:40
-#: inc/notificationtargetholiday.class.php:217
+#: inc/notificationtargetholiday.class.php:214
 msgid "Answer to a personal holiday request"
 msgstr ""
 
@@ -495,7 +503,7 @@ msgid "A new holiday request has been submitted"
 msgstr ""
 
 #: inc/notificationtargetholiday.class.php:136
-#: inc/notificationtargetholiday.class.php:198
+#: inc/notificationtargetholiday.class.php:195
 msgid "Number of days"
 msgstr ""
 
