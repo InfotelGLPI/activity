@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-30 12:59+0000\n"
+"POT-Creation-Date: 2021-10-30 14:39+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -66,7 +66,7 @@ msgstr ""
 msgid "Define internal helpdesk"
 msgstr ""
 
-#: inc/config.class.php:116
+#: inc/config.class.php:114
 msgid "Show internal helpdesk"
 msgstr ""
 
@@ -539,27 +539,27 @@ msgstr ""
 msgid "Principal client"
 msgstr ""
 
-#: inc/option.class.php:131
+#: inc/option.class.php:129
 msgid "Used mail for holidays"
 msgstr ""
 
-#: inc/option.class.php:140
+#: inc/option.class.php:136
 msgid "CRA Footer"
 msgstr ""
 
-#: inc/option.class.php:151
+#: inc/option.class.php:147
 msgid "Use group manager as holiday manager"
 msgstr ""
 
-#: inc/option.class.php:158
+#: inc/option.class.php:154
 msgid "Default validation percent"
 msgstr ""
 
-#: inc/option.class.php:167 inc/option.class.php:197
+#: inc/option.class.php:163 inc/option.class.php:193
 msgid "is on CRA by default"
 msgstr ""
 
-#: inc/option.class.php:174
+#: inc/option.class.php:170
 msgid "Use projects"
 msgstr ""
 
