@@ -33,7 +33,7 @@ Session::checkLoginUser();
 
 header("Content-Type: text/html; charset=UTF-8");
 echo "<div class='center' id='tabsbody' >";
-echo "<table class='tab_cadre_fixe'>";
+echo "<table class='tab_cadre' width='100%'>";
 PluginActivityLateralmenu::showMenu();
 echo "</table>";
 echo "</div>";

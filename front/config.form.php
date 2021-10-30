@@ -54,8 +54,8 @@ if ($plugin->isActivated("activity")) {
 
    } else {
       Html::header(PluginActivityPlanningExternalEvent::getTypeName(2), '', "tools", "pluginactivitymenu");
-      $config->showForm();
-      $opt->showForm();
+      $config->showForm(1);
+      $opt->showForm(1);
       Html::footer();
    }
 

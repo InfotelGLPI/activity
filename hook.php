@@ -151,7 +151,9 @@ function plugin_activity_install() {
    }
 
    //version 3.0.0
-   if ($DB->tableExists("glpi_planningexternalevents") && $DB->tableExists('glpi_plugin_activity_activities')) {
+   if ($DB->tableExists("glpi_planningexternalevents")
+       && !$DB->tableExists('glpi_plugin_activity_planningexternalevents')
+       && $DB->tableExists('glpi_plugin_activity_activities')) {
       include(GLPI_ROOT."/plugins/activity/install/update_251_300.php");
       $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/update-3.0.0.sql");
       update251to300();

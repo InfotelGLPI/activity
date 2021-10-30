@@ -41,7 +41,7 @@ if (isset($_POST['action'])) {
             echo "<script type='text/javascript'>changeClickTodayActivity(".json_encode(['lang_month' => $lang_month]).");</script>";
          }
 
-         Ajax::createSlidePanel(
+         PluginActivityLateralmenu::createSlidePanel(
              'showLateralMenu',
              [
                  'title'     => _n('Activity', 'Activities', 1, 'activity'),

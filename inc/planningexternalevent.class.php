@@ -138,7 +138,7 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
                $return .= "onclick=\"" . $action['onclick'] . "\"";
             }
             $return .= ">";
-            $return .= "<i class='" . $action['img'] . " fa-5x' style='color:#b5b5b5' title='" . $action['label'] . "'></i>";
+            $return .= "<i class='" . $action['img'] . " fa-4x'  title='" . $action['label'] . "'></i>";
             $return .= "<br><br>" . $action['label'] . "</a>";
 
             if (!$widget) {
@@ -295,7 +295,7 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
                      'glpi_plugin_activity_planningexternalevents' => 'planningexternalevents_id']]],
                   'WHERE' => ['planningexternalevents_id' => $_POST['event']['old_items_id']]]);
                if (count($iterator)) {
-                  while ($data = $iterator->next()) {
+                  foreach ($iterator as $data) {
                      $extevent->add(['is_oncra'       => $data['is_oncra'],
                         'planningexternalevents_id'   => $item->getID(),
                         'actiontime'                  => $data['actiontime']]);

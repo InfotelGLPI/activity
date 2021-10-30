@@ -406,7 +406,7 @@ class PluginActivityTools {
          $form .= "<tr><th>".__('Begin')."</th><td>".Html::showDateField("begin", array('display' => false,'value' => isset($params['begin'])?$params['begin']:date("Y-01-01")))."</td>";
          $form .= "<th>".__('End')."</th><td>".Html::showDateField("end", array('display' => false,'value' => isset($params['end'])?$params['end']:date("Y-m-d")))."</td></tr>";
       }
-      $form .= "<tr><th colspan='4'><input type='submit' class='submit' value='".__("Refresh","activity")."'/></th></tr>";
+      $form .= "<tr><th colspan='4'><input type='submit' class='btn btn-primary' value='".__("Refresh","activity")."'/></th></tr>";
       $form .= "</table>";
       $form .= Html::closeForm(false);
       

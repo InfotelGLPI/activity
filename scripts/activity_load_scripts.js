@@ -31,9 +31,10 @@
                }
             }
          });
-         if($("#activity_link").length === 0) {
-            $("#c_preference ul #bookmark_link").before("\<li id='activity_link'><a class='fa fa-2x fa-calendar-alt' href='#' id='showLateralMenuLink'></a></li>");
+         if($("#showLateralMenuLink").length === 0) {
+            $('.ms-md-4').before("\<a class='fas fa-1x fa-calendar-alt' href='#' id='showLateralMenuLink'></a>");
          }
+
          //            });
       }
 

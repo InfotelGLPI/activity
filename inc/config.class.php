@@ -38,8 +38,8 @@ class PluginActivityConfig extends CommonDBTM {
       return _n('Activity', 'Activity', $nb, 'activity');
    }
 
-   function showForm () {
-
+   function showForm ($ID, $options = []) {
+      $this->getfromDB($ID);
       if (!$this->canView()) {
          return false;
       }
@@ -74,13 +74,11 @@ class PluginActivityConfig extends CommonDBTM {
 
       // Checkbox is_internal_helpdesk
       echo "<td>";
-      Html::autocompletionTextField($this, "name",
-                                     ['name'   => 'name',
-                                           'size'   => 70]);
+      echo Html::input('name', ['size' => 70]);
       echo "</td>";
       echo "</tr>";
 
-      echo "<tr class='tab_bg_1'><td class='center' colspan='3'><input type=\"submit\" name=\"update\" class=\"submit\"
+      echo "<tr class='tab_bg_1'><td class='center' colspan='3'><input type=\"submit\" name=\"update\" class=\"btn btn-primary\"
          value=\""._sx('button', 'Save')."\" ></td></tr>";
 
       echo "</table></div>";
@@ -127,10 +125,6 @@ class PluginActivityConfig extends CommonDBTM {
          echo "<tr class='tab_bg_1'>";
          //CHECKBOX
          echo "<td width='10'>";
-         $sel = "";
-         if (isset($_GET["select"])&&$_GET["select"]=="all") {
-            $sel="checked";
-         }
          if ($canedit) {
             Html::showMassiveActionCheckBox(__CLASS__, $field["id"]);
          }

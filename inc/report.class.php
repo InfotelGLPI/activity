@@ -85,7 +85,7 @@ class PluginActivityReport extends CommonDBTM {
     */
    static function monthDropdown($name = "month", $selected = null) {
 
-      $dd = "<select name='$name'>";
+      $dd = "<select class='form-select' name='$name'>";
 
       $monthsarray = Toolbox::getMonthsOfYearArray();
 
@@ -118,7 +118,7 @@ class PluginActivityReport extends CommonDBTM {
     */
    static function YearDropdown($name = "year", $selected = null) {
 
-      $dd   = "<select name='$name'>";
+      $dd   = "<select class='form-select' name='$name'>";
       $year = date("Y") - 3;
       for ($i = 0; $i <= 6; $i++) {
 
@@ -159,7 +159,7 @@ class PluginActivityReport extends CommonDBTM {
       echo "<input type='hidden' name='users_id' value='" . $input['users_id'] . "'/>";
       echo "<input type='hidden' name='display_type' value='" . Search::PDF_OUTPUT_LANDSCAPE . "'/>";
       echo "<input type='hidden' name='snapshot' value='snapshot'/>";
-      echo "<input type='submit' name='submit' class='submit' value=' " . __("Take a snapshot of the CRA", "activity") . " '/>";
+      echo "<input type='submit' name='submit' class='btn btn-primary' value=' " . __("Take a snapshot of the CRA", "activity") . " '/>";
       echo "</tr></td>";
       echo "</table>";
 
@@ -221,7 +221,7 @@ class PluginActivityReport extends CommonDBTM {
             echo "<td><a href='" . $CFG_GLPI['root_doc'] . "/front/document.form.php?id=" . $doc->fields['id'] . "' target='_blank'>" . $doc->fields['name'] . "</a></td>";
             echo "<td>" . $doc->getDownloadLink() . "</td>";
             echo "<td>" . Html::convDateTime($doc->fields['date_mod']) . "</td>";
-            echo "<td><input type='submit' class='submit' name='delete_snapshot[" . $doc->fields['id'] . "]' value='" . __("Put in trashbin") . "'</td>";
+            echo "<td><input type='submit' class='btn btn-primary' name='delete_snapshot[" . $doc->fields['id'] . "]' value='" . __("Put in trashbin") . "'</td>";
             echo "</tr>";
          }
          echo "</table>";
@@ -301,11 +301,11 @@ class PluginActivityReport extends CommonDBTM {
    static function showOutputFormat() {
       global $CFG_GLPI;
 
-      echo "<select name='display_type'>";
+      echo "<select class='form-select' name='display_type'>";
       echo "<option value='" . Search::PDF_OUTPUT_LANDSCAPE . "'>" . __('Export CRA', 'activity') .
            "</option>";
       echo "</select>&nbsp;";
-      echo "<button type='submit' name='export' class='unstyled pointer' " .
+      echo "<button type='submit' name='export' class='btn btn-primary unstyled pointer' " .
            " title=\"" . _sx('button', 'Export') . "\">" .
            "<i class='far fa-save'></i><span class='sr-only'>" . _sx('button', 'Export') . "<span>";
    }
@@ -386,7 +386,7 @@ class PluginActivityReport extends CommonDBTM {
          }
          echo "</td>";
          echo "<td align='center'>";
-         echo "<input type=\"submit\" class='submit' id='send_cra' name=\"submit\" Value=\"" . _sx('button', 'Post') . "\" />";
+         echo "<input type=\"submit\" class='btn btn-primary' id='send_cra' name=\"submit\" Value=\"" . _sx('button', 'Post') . "\" />";
          echo "</td>";
          echo "</tr>";
          echo "</table>";
@@ -1090,7 +1090,7 @@ class PluginActivityReport extends CommonDBTM {
                      $comment .= $datat["text"] . " (" . (self::TotalTpsPassesArrondis($datat["actiontime"] / $AllDay)) . ")<br>";
                   }
                }
-               echo Search::showItem($output_type, nl2br(Html::clean($comment)), $num, $row_num);
+               echo Search::showItem($output_type, nl2br(Glpi\Toolbox\RichText::getSafeHtml($comment)), $num, $row_num);
                $total_ouvres = self::TotalTpsPassesArrondis($data["total_actiontime"] / $AllDay);
                echo Search::showItem($output_type, Html::formatNumber($total_ouvres, false, 3), $num, $row_num);
                echo Search::showItem($output_type, Html::formatNumber($percent) . "%", $num, $row_num);

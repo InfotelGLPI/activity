@@ -48,11 +48,11 @@ class PluginActivityPreference extends CommonDBTM {
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
       global $CFG_GLPI;
       $pref = new PluginActivityPreference();
-      $pref->showForm(Session::getLoginUserID());
+      $pref->showPreferenceForm(Session::getLoginUserID());
       return true;
    }
 
-   function showForm($user_id) {
+   function showPreferenceForm($user_id) {
       global $CFG_GLPI;
 
       $dbu  = new DbUtils();
@@ -92,7 +92,7 @@ class PluginActivityPreference extends CommonDBTM {
                echo "<input type='hidden' name='id' value='".$manager['id']."'>";
                echo "<input type='submit' name='delete' value=\""._sx('button',
                      'Delete permanently')."\"
-                            class='submit'></td>";
+                            class='btn btn-primary'></td>";
                echo "</tr>";
             }
          }
@@ -175,7 +175,7 @@ class PluginActivityPreference extends CommonDBTM {
          echo "<input type='hidden' name='users_id' value='".Session::getLoginUserID()."'>";
          echo "<input type='submit' name='add' value=\""._sx('button',
                      'Add')."\"
-                            class='submit'></td>";
+                            class='btn btn-primary'></td>";
          echo "</tr>";
 
          echo "</table>";

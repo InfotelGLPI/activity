@@ -131,6 +131,16 @@ a.activity_href {
 
 /** "slide panel" component */
 
+a#showLateralMenuLink {
+    margin-left: 10px;
+
+}
+
+.plugin_activity_button{
+    margin: 5px;
+    padding: 10px!important;
+}
+
 body {
     position: relative;
 }
@@ -140,7 +150,7 @@ body.iframed {
 }
 
 .slidepanel {
-    z-index: 100;
+    z-index:  9999;
     position: absolute;
     width: 30em;
     max-width: 40%;

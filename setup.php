@@ -25,7 +25,7 @@
  --------------------------------------------------------------------------
 */
 
-define('PLUGIN_ACTIVITY_VERSION', '3.0.1');
+define('PLUGIN_ACTIVITY_VERSION', '3.1.0');
 
 if (!defined("PLUGIN_ACTIVITY_DIR")) {
    define("PLUGIN_ACTIVITY_DIR", Plugin::getPhpDir("activity"));
@@ -181,7 +181,7 @@ function plugin_version_activity() {
       'homepage'       => '',
       'requirements'   => [
          'glpi' => [
-            'min' => '9.5',
+            'min' => '10.0',
             'dev' => false
          ]
       ]];
@@ -189,10 +189,10 @@ function plugin_version_activity() {
 
 // Optional : check prerequisites before install : may print errors or add to message after redirect
 function plugin_activity_check_prerequisites() {
-   if (version_compare(GLPI_VERSION, '9.5', 'lt')
-         || version_compare(GLPI_VERSION, '9.6', 'ge')) {
+   if (version_compare(GLPI_VERSION, '10.0', 'lt')
+         || version_compare(GLPI_VERSION, '11.0', 'ge')) {
       if (method_exists('Plugin', 'messageIncompatible')) {
-         echo Plugin::messageIncompatible('core', '9.5');
+         echo Plugin::messageIncompatible('core', '10.0');
       }
       return false;
    }

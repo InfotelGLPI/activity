@@ -39,7 +39,7 @@ class PluginActivityOption extends CommonDBTM {
    }
 
 
-   function showForm () {
+   function showForm ($ID, $options = []) {
       global $CFG_GLPI;
 
       $this->getFromDB(1);
@@ -121,18 +121,14 @@ class PluginActivityOption extends CommonDBTM {
       echo "<tr class='tab_bg_1'>";
       echo "<td>".__('Principal client', 'activity')."</td>";
       echo "<td>";
-      Html::autocompletionTextField($this, "principal_client",
-                                     ['name'   => 'principal_client',
-                                           'size'   => 70]);
+      echo Html::input('principal_client', ['value' => $this->fields['principal_client'], 'size' => 70]);
       echo "</td>";
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
       echo "<td>".__('Used mail for holidays', 'activity')."</td>";
       echo "<td>";
-      Html::autocompletionTextField($this, "used_mail_for_holidays",
-                                     ['name'   => 'used_mail_for_holidays',
-                                           'size'   => 70]);
+      echo Html::input('used_mail_for_holidays', ['value' => $this->fields['used_mail_for_holidays'], 'size' => 70]);
       echo "</td>";
       echo "</tr>";
 
@@ -200,7 +196,7 @@ class PluginActivityOption extends CommonDBTM {
       echo "</td>";
       echo "</tr>";
 
-      echo "<tr class='tab_bg_1'><td class='center' colspan='2'><input type=hidden name='id' value='1'><input type=\"submit\" name=\"update\" class=\"submit\"
+      echo "<tr class='tab_bg_1'><td class='center' colspan='2'><input type=hidden name='id' value='1'><input type=\"submit\" name=\"update\" class=\"btn btn-primary\"
          value=\""._sx('button', 'Save')."\" ></td></tr>";
 
       echo "</table></div>";
