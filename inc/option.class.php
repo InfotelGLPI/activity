@@ -196,8 +196,10 @@ class PluginActivityOption extends CommonDBTM {
       echo "</td>";
       echo "</tr>";
 
-      echo "<tr class='tab_bg_1'><td class='center' colspan='2'><input type=hidden name='id' value='1'><input type=\"submit\" name=\"update\" class=\"btn btn-primary\"
-         value=\""._sx('button', 'Save')."\" ></td></tr>";
+      echo "<tr class='tab_bg_1'><td class='center' colspan='2'>";
+      echo Html::hidden('id', ['value' => 1]);
+      echo Html::submit(_sx('button', 'Save'), ['name' => 'update', 'class' => 'btn btn-primary']);
+      echo "</td></tr>";
 
       echo "</table></div>";
       Html::closeForm();

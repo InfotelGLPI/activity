@@ -49,7 +49,7 @@ class PluginActivityLateralmenu extends CommonDBTM {
             echo "<td colspan='2'>";
             echo "<a href=\"" . $action['link'] . "\"  class='btn btn-info btn-sm plugin_activity_button'";
             if (isset($action['onclick']) && !empty($action['onclick'])) {
-               echo "onclick=\"" . $action['onclick'] . "\"";
+               echo $action['onclick'];
             }
             echo ">";
             echo $action['label'];

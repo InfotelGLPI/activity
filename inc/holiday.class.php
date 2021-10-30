@@ -434,7 +434,7 @@ class PluginActivityHoliday extends CommonDBTM {
       $listActions = [
          PluginActivityActions::HOLIDAY_REQUEST => [
             'link'    => "#",
-            'onclick' => '$(function() {' . Html::jsGetElementbyID('holiday') . ".dialog('open'); return false; });",
+            'onclick' => "data-bs-toggle='modal' data-bs-target='#holiday'",
             'img'     => "fas fa-user-clock",
             'label'   => __('Create a holiday request', 'activity'),
             'rights'  => Session::haveRight("plugin_activity_can_requestholiday", READ) && sizeof($have_manager) > 0,
@@ -1128,7 +1128,6 @@ class PluginActivityHoliday extends CommonDBTM {
       echo "<td>";
 
       echo "<table width='100%'>";
-      echo "<tr class='tab_bg_2'><td colspan='3'>" . __('Planning') . "</td></tr>";
 
       if (isset($this->fields["begin"]) && !empty($this->fields["begin"])) {
          $begin = $this->fields["begin"];
@@ -1188,8 +1187,9 @@ class PluginActivityHoliday extends CommonDBTM {
       // ------------------------------------------------------------------------
       echo "<tr><td>" . __('Start date') . "</td><td>";
       if (!isset($this->fields['id']) || $this->fields['id'] == '') {
-         echo "<input type='hidden' name='is_planned' value='1' />";
-         echo "<input type='hidden' name='actiontime' id='actiontime' value='" . ($actionTime / $AllDay) . "' />";
+         echo Html::hidden('is_planned', ['value' => '1']);
+         echo Html::hidden('actiontime', ['value' => ($actionTime / $AllDay)]);
+//         echo "<input type='hidden' name='actiontime' id='actiontime' value='" . ($actionTime / $AllDay) . "' />";
          //$params_begin['value']     = date('d-m-Y', strtotime($begin));
          $params_begin['on_change'] = "updateDuration(this, '" . $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "');";
          Html::showDateField("begin", $params_begin);
@@ -1335,7 +1335,7 @@ class PluginActivityHoliday extends CommonDBTM {
                         ]);
       } else if (empty($ID) && !Session::haveRight("plugin_activity_all_users", 1)) {
          echo $dbu->getUserName(Session::getLoginUserID());
-         echo "<input type='hidden' name='users_id' value='" . Session::getLoginUserID() . "'>";
+         echo Html::hidden('users_id', ['value' => Session::getLoginUserID()]);
       }
 
       if (!empty($ID) && Session::haveRight("plugin_activity_all_users", 1)) {
@@ -1353,7 +1353,7 @@ class PluginActivityHoliday extends CommonDBTM {
          }
       } else if (!empty($ID) && !Session::haveRight("plugin_activity_all_users", 1)) {
          echo $dbu->getUserName($this->fields["users_id"]);
-         echo "<input type='hidden' name='users_id' value='" . $this->fields["users_id"] . "'>";
+         echo Html::hidden('users_id', ['value' => $this->fields["users_id"]]);
       }
 
       echo "</td>";
@@ -1383,12 +1383,13 @@ class PluginActivityHoliday extends CommonDBTM {
 
             echo "<tr class='tab_bg_2'>";
             echo "<td class='right' colspan='4' >\n";
-            echo "<input type='submit' name='purge' value=\"" . _sx('button',
-                                                                     'Delete permanently') . "\"
-                         class='btn btn-primary' " .
-                 Html::addConfirmationOnAction(__('Confirm the final deletion?')) . ">";
+            echo Html::submit(_x('button', 'Delete permanently'), [
+               'name'      => 'purge',
+               'class' => 'btn btn-primary',
+               'confirm'   => __('Confirm the final deletion?')
+            ]);
             echo "</td></tr>";
-            echo "<input type='hidden' name='id' value='" . $this->fields['id'] . "' >";
+            echo Html::hidden('id', ['value' => $this->fields["id"]]);
          } else if ($this->fields["users_id"] == Session::getLoginUserID()) {
             $this->showFormButtons($options);
          }

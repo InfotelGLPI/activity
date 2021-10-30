@@ -89,10 +89,9 @@ class PluginActivityPreference extends CommonDBTM {
                echo "<tr class='tab_bg_1'>";
                echo "<td>".$dbu->getUserName($manager['users_id_validate'])."</td>";
                echo "<td>";
-               echo "<input type='hidden' name='id' value='".$manager['id']."'>";
-               echo "<input type='submit' name='delete' value=\""._sx('button',
-                     'Delete permanently')."\"
-                            class='btn btn-primary'></td>";
+               echo Html::hidden('id', ['value' => $manager['id']]);
+               echo Html::submit(_sx('button', 'Delete permanently'), ['name' => 'delete', 'class' => 'btn btn-primary']);
+               echo "</td>";
                echo "</tr>";
             }
          }
@@ -172,10 +171,10 @@ class PluginActivityPreference extends CommonDBTM {
 
          echo "</td>";
          echo "<td>";
-         echo "<input type='hidden' name='users_id' value='".Session::getLoginUserID()."'>";
-         echo "<input type='submit' name='add' value=\""._sx('button',
-                     'Add')."\"
-                            class='btn btn-primary'></td>";
+
+         echo Html::hidden('users_id', ['value' => Session::getLoginUserID()]);
+         echo Html::submit(_sx('button', 'Add'), ['name' => 'add', 'class' => 'btn btn-primary']);
+         echo "</td>";
          echo "</tr>";
 
          echo "</table>";

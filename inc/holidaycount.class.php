@@ -186,7 +186,7 @@ class PluginActivityHolidaycount extends CommonDBTM {
       echo "</td>";
       echo "<td>";
       echo $dbu->getUserName(Session::getLoginUserID());
-      echo "<input type='hidden' name='users_id' value='" . Session::getLoginUserID() . "'>";
+      echo Html::hidden('users_id', ['value' => Session::getLoginUserID()]);
       echo "</td>";
       echo "<td>";
 
@@ -215,7 +215,7 @@ class PluginActivityHolidaycount extends CommonDBTM {
 
       echo "<td>" . __('Counter', 'activity') . "</td>";
       echo "<td>";
-      echo "<input type='text' name='count' value='" . Html::formatNumber($this->fields["count"], true) . "' size='14'>";
+      Html::input('count', ['value' => Html::formatNumber($this->fields["count"], true), 'size' => 14]);
       echo "</td>";
       echo "</tr>";
 

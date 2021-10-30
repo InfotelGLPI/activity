@@ -346,10 +346,10 @@ class PluginActivityHolidayValidation extends CommonDBChild {
          echo $item->getValueToSelect('validation_percent', 'validation_percent',
                                       $item->fields["validation_percent"]);
          echo "</td>";
-         echo "<td><input type='submit' name='update' class='btn btn-primary' value='" .
-              _sx('button', 'Save') . "'>";
+         echo "<td>";
+         echo Html::submit(_sx('button', 'Save'), ['name' => 'update', 'class' => 'btn btn-primary']);
          if (!empty($hID)) {
-            echo "<input type='hidden' name='id' value='$hID'>";
+            echo Html::hidden('id', ['value' => $hID]);
          }
          echo "</td>";
       } else {
@@ -471,13 +471,13 @@ class PluginActivityHolidayValidation extends CommonDBChild {
          echo "<td>" . __('Status of the approval request') . "</td>";
          echo "<td class='center'>";
          echo "<div style='color:forestgreen'><i id='accept_holiday' class='question far fa-check-circle fa-4x'></i><br>" . __('Accept holiday', 'activity') . "</div>";
-         echo "<input type='hidden' name='accept_holiday' value='0'>";
+         echo Html::hidden('accept_holiday', ['value' => 0]);
          echo "</td>";
          echo "<td class='center'>";
          echo "<div style='color:darkred'><i id='refuse_holiday' class='question far fa-times-circle fa-4x'></i><br>" . __('Refuse holiday', 'activity') . "</div>";
-         echo "<input type='hidden' name='refuse_holiday' value='0'>";
-         echo "<input type='hidden' name='validation_date' value='" . date('Y-m-d H:i:s') . "' />";
-         echo "<input type='hidden' name='id' value='" . $this->fields['id'] . "'>";
+         echo Html::hidden('refuse_holiday', ['value' => 0]);
+         echo Html::hidden('validation_date', ['value' => date('Y-m-d H:i:s')]);
+         echo Html::hidden('id', ['value' => $this->fields['id']]);
          echo "</td>";
          echo "</tr>";
 

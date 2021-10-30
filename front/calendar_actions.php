@@ -203,7 +203,7 @@ if (isset($_POST["add"])) {
    // Refresh modal
 } else if (isset($_POST["refreshModal"])) {
    PluginActivityActivity::showActivityModalForm($_POST['rand']);
-   echo "<input type='hidden' id='new_activity_csrf' value='".Session::getNewCSRFToken()."'>";
+   echo Html::hidden('new_activity_csrf', ['value' => Session::getNewCSRFToken()]);
    return true;
 }
 

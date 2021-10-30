@@ -85,7 +85,7 @@ class PluginActivityTicketTask extends CommonDBTM {
                echo '</tr>';
 
             } else {
-               echo "<input type='hidden' value='1' name='is_oncra'>";
+               echo Html::hidden('is_oncra', ['value' => 1]);
             }
             break;
       }

@@ -357,7 +357,13 @@ class PluginActivityTools {
                                                                'display' => false,
                                                                'value' => isset($params['entities_id'])? $params['entities_id'] : 0,
                                                                'entity'    => $_SESSION['glpiactiveentities']))
-                           ."&nbsp;".__('Recursive')."&nbsp;<input type='checkbox' name='sons' value=1 ".(isset($params['sons'])? "checked" : "")."></td>";
+                           ."&nbsp;".__('Recursive')."&nbsp;";
+      $form .=Html::showCheckbox([
+                            'name'      => 'sons',
+                            'id'        => 'sons',
+                            'checked'   => $params['sons']
+                         ]);
+      $form .= "</td>";
       $form .= "<th>".__("By year")."</th><td class='tab_bg_2'>"
                . Dropdown::showNumber("year", ['value' => $params['year'],
                                                'min'   => date("Y") - 10,
@@ -406,7 +412,9 @@ class PluginActivityTools {
          $form .= "<tr><th>".__('Begin')."</th><td>".Html::showDateField("begin", array('display' => false,'value' => isset($params['begin'])?$params['begin']:date("Y-01-01")))."</td>";
          $form .= "<th>".__('End')."</th><td>".Html::showDateField("end", array('display' => false,'value' => isset($params['end'])?$params['end']:date("Y-m-d")))."</td></tr>";
       }
-      $form .= "<tr><th colspan='4'><input type='submit' class='btn btn-primary' value='".__("Refresh","activity")."'/></th></tr>";
+      $form .= "<tr><th colspan='4'>";
+      $form .= Html::submit(__("Refresh","activity"), ['name' => 'refresh', 'class' => 'btn btn-primary']);
+      $form .="</th></tr>";
       $form .= "</table>";
       $form .= Html::closeForm(false);
       
@@ -415,7 +423,13 @@ class PluginActivityTools {
    
    private static function showCheck($label,$name,$value){
       $checked = (isset($value)&&$value==1)?"checked":"";
-      $check = "<th>".$label."</th><td class='tab_bg_2'><input type='checkbox' name='$name' value='1'".$checked."/></td>";
+      $check = "<th>".$label."</th><td class='tab_bg_2'>";
+      $check .= Html::showCheckbox([
+                            'name'      => $name,
+                            'id'        => $name,
+                            'checked'   => $checked
+                         ]);
+      $check .= "</td>";
       return $check;
    }
    

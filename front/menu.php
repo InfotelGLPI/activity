@@ -55,7 +55,6 @@ if ($canholiday
    $listActions = PluginActivityHoliday::getActionsOn();
    echo PluginActivityPlanningExternalEvent::menu("PluginActivityHoliday", $listActions);
    echo "</td>";
-
 }
 echo "</tr></table>";
 if (!$can && !$canholiday  && !$canvalidateholiday) {

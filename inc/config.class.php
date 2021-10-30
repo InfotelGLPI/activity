@@ -78,8 +78,9 @@ class PluginActivityConfig extends CommonDBTM {
       echo "</td>";
       echo "</tr>";
 
-      echo "<tr class='tab_bg_1'><td class='center' colspan='3'><input type=\"submit\" name=\"update\" class=\"btn btn-primary\"
-         value=\""._sx('button', 'Save')."\" ></td></tr>";
+      echo "<tr class='tab_bg_1'><td class='center' colspan='3'>";
+      echo Html::submit(_sx('button', 'Save'), ['name' => 'update', 'class' => 'btn btn-primary']);
+      echo "</td></tr>";
 
       echo "</table></div>";
       Html::closeForm();

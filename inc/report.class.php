@@ -154,12 +154,12 @@ class PluginActivityReport extends CommonDBTM {
       echo "<form method='POST' action='cra.php'>\n";
       echo "<table class='tab_cadre'>";
       echo "<tr><td>";
-      echo "<input type='hidden' name='month' value='" . $input['month'] . "'/>";
-      echo "<input type='hidden' name='year' value='" . $input['year'] . "'/>";
-      echo "<input type='hidden' name='users_id' value='" . $input['users_id'] . "'/>";
-      echo "<input type='hidden' name='display_type' value='" . Search::PDF_OUTPUT_LANDSCAPE . "'/>";
-      echo "<input type='hidden' name='snapshot' value='snapshot'/>";
-      echo "<input type='submit' name='submit' class='btn btn-primary' value=' " . __("Take a snapshot of the CRA", "activity") . " '/>";
+      echo Html::hidden('month', ['value' => $input['month']]);
+      echo Html::hidden('year', ['value' => $input['year']]);
+      echo Html::hidden('users_id', ['value' => $input['users_id']]);
+      echo Html::hidden('display_type', ['value' => Search::PDF_OUTPUT_LANDSCAPE]);
+      echo Html::hidden('snapshot', ['value' => 'snapshot']);
+      echo Html::submit(__("Take a snapshot of the CRA", "activity"), ['name' => 'submit', 'class' => 'btn btn-primary']);
       echo "</tr></td>";
       echo "</table>";
 
@@ -221,14 +221,17 @@ class PluginActivityReport extends CommonDBTM {
             echo "<td><a href='" . $CFG_GLPI['root_doc'] . "/front/document.form.php?id=" . $doc->fields['id'] . "' target='_blank'>" . $doc->fields['name'] . "</a></td>";
             echo "<td>" . $doc->getDownloadLink() . "</td>";
             echo "<td>" . Html::convDateTime($doc->fields['date_mod']) . "</td>";
-            echo "<td><input type='submit' class='btn btn-primary' name='delete_snapshot[" . $doc->fields['id'] . "]' value='" . __("Put in trashbin") . "'</td>";
+            echo "<td>";
+            $name = "delete_snapshot[" . $doc->fields['id'] . "]";
+            echo Html::submit(__("Put in trashbin"), ['name' => $name, 'class' => 'btn btn-primary']);
+            echo "</td>";
             echo "</tr>";
          }
          echo "</table>";
          //We copy the input
-         echo "<input type='hidden' name='month' value='" . $input['month'] . "'/>";
-         echo "<input type='hidden' name='year' value='" . $input['year'] . "'/>";
-         echo "<input type='hidden' name='users_id' value='" . $input['users_id'] . "'/>";
+         echo Html::hidden('month', ['value' => $input['month']]);
+         echo Html::hidden('year', ['value' => $input['year']]);
+         echo Html::hidden('users_id', ['value' => $input['users_id']]);
          Html::closeForm();
          echo "</div>";
       }
@@ -382,11 +385,12 @@ class PluginActivityReport extends CommonDBTM {
                             'entity'   => $_SESSION["glpiactiveentities"]]);
 
          } else {
-            echo "<input type='hidden' value='" . $users_id . "' name='users_id'>";
+            echo Html::hidden('users_id', ['value' => $users_id]);
          }
          echo "</td>";
          echo "<td align='center'>";
-         echo "<input type=\"submit\" class='btn btn-primary' id='send_cra' name=\"submit\" Value=\"" . _sx('button', 'Post') . "\" />";
+         echo Html::submit(_sx('button', 'Post'), ['name' => 'submit', 'class' => 'btn btn-primary']);
+//         echo "<input type=\"submit\" class='btn btn-primary' id='send_cra' name=\"submit\" Value=\"" . _sx('button', 'Post') . "\" />";
          echo "</td>";
          echo "</tr>";
          echo "</table>";
@@ -405,14 +409,16 @@ class PluginActivityReport extends CommonDBTM {
          foreach ($_POST as $key => $val) {
             if (is_array($val)) {
                foreach ($val as $k => $v) {
-                  echo "<input type='hidden' name='" . $key . "[$k]' value='$v' >";
+                  $name = "' . $key . '[$k]";
+                  echo Html::hidden($name, ['value' => $v]);
+//                  echo "<input type='hidden' name='" . $key . "[$k]' value='$v' >";
                   if (!empty($param)) {
                      $param .= "&";
                   }
                   $param .= $key . "[" . $k . "]=" . urlencode($v);
                }
             } else {
-               echo "<input type='hidden' name='$key' value='$val' >";
+               echo Html::hidden($key, ['value' => $val]);
                if (!empty($param)) {
                   $param .= "&";
                }

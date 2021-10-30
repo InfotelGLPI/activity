@@ -102,8 +102,9 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
                                                   $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL. "/front/holiday.form.php",
             ['title'         => __('Create a holiday request', 'activity'),
                'reloadonclose' => false,
-               'width'         => 1180,
-               'height'        => 500,
+               'width'         => '1200',
+               'height'        => '600',
+               'dialog_class'  => 'modal-xl',
                'display'       => false,
             ]);
 
@@ -135,7 +136,7 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
             }
             $return .= "<a href=\"" . $action['link'] . "\"";
             if (isset($action['onclick']) && !empty($action['onclick'])) {
-               $return .= "onclick=\"" . $action['onclick'] . "\"";
+               $return .= $action['onclick'];
             }
             $return .= ">";
             $return .= "<i class='" . $action['img'] . " fa-4x'  title='" . $action['label'] . "'></i>";
@@ -238,7 +239,7 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
                echo '</tr>';
 
             } else {
-               echo "<input type='hidden' value='1' name='is_oncra'>";
+               echo Html::hidden('is_oncra', ['value' => 1]);
             }
             break;
       }
