@@ -208,7 +208,7 @@ class PluginActivityReport extends CommonDBTM {
       $result = $DB->query($query);
       if ($result && $DB->numrows($result) > 0) {
          echo "<div id='listSnapshots' style='margin-top:20px'>";
-         echo "<form id='snapshot_form' method='POST' action='" . $CFG_GLPI['root_doc'] . "/plugins/activity/front/cra.php'>";
+         echo "<form id='snapshot_form' method='POST' action='" . $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "/front/cra.php'>";
          echo "<table class='tab_cadre_fixehov'>";
          echo "<tr><th colspan='4'>" . __("Snapshots of the month", "activity") . "</th></tr>";
          echo "<tr><th>" . __("Name") . "</th>"
@@ -1108,7 +1108,8 @@ class PluginActivityReport extends CommonDBTM {
       }
 
       if ($pdfMode && $showPopUp) {
-         echo "<div id='activity_displayPdf' title='" . $filename . "'><IFRAME style='width:1370px;height:810px' src='" . $CFG_GLPI['root_doc'] . "/plugins/activity/front/cra.send.php?file=_plugins/activity/$filename&seefile=1' scrolling=none frameborder=1></IFRAME></div>";
+         echo "<div id='activity_displayPdf' title='" . $filename . "'><IFRAME style='width:1370px;height:810px' 
+         src='" . $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "/front/cra.send.php?file=_plugins/activity/$filename&seefile=1' scrolling=none frameborder=1></IFRAME></div>";
          echo '<script type="text/javascript">
                   $("#activity_displayPdf").dialog({
                      autoOpen: true,

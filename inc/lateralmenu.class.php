@@ -60,7 +60,7 @@ class PluginActivityLateralmenu extends CommonDBTM {
       }
 
       Ajax::createIframeModalWindow('holiday',
-         $CFG_GLPI["root_doc"] . "/plugins/activity/front/holiday.form.php",
+                                    $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "/front/holiday.form.php",
          ['title'         => __('Create a holiday request', 'activity'),
             'reloadonclose' => false,
             'width'         => 1180,

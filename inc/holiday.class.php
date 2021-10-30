@@ -441,7 +441,7 @@ class PluginActivityHoliday extends CommonDBTM {
          ],
 
          PluginActivityActions::LIST_HOLIDAYS    => [
-            'link'   => $CFG_GLPI["root_doc"] . "/plugins/activity/front/holiday.php",
+            'link'   => $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "/front/holiday.php",
             'img'    => "fas fa-search",
             'label'  => __('List of holidays', 'activity'),
             'rights' => Session::haveRight("plugin_activity_can_requestholiday", READ),
@@ -453,7 +453,7 @@ class PluginActivityHoliday extends CommonDBTM {
             'rights' => Session::haveRight("plugin_activity_can_validate", READ) && sizeof($users_id_validate) > 0,
          ],
          PluginActivityActions::HOLIDAY_COUNT    => [
-            'link'   => $CFG_GLPI["root_doc"] . "/plugins/activity/front/holidaycount.php",
+            'link'   => $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "/front/holidaycount.php",
             'img'    => "far fa-clock",
             'label'  => _n('Holiday counter', 'Holiday counters', 2, 'activity'),
             'rights' => Session::haveRight("plugin_activity_can_requestholiday", READ),
@@ -1148,7 +1148,7 @@ class PluginActivityHoliday extends CommonDBTM {
          $params = [
             'name'      => "plugin_activity_holidaytypes_id",
             'value'     => $this->fields["plugin_activity_holidaytypes_id"],
-            'on_change' => "plugin_activity_show_periods(\"" . $CFG_GLPI['root_doc'] . "\", this.value);",
+            'on_change' => "plugin_activity_show_periods(\"" . $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "\", this.value);",
             'comments'  => 1];
          Dropdown::show('PluginActivityHolidayType', $params);
       }
@@ -1174,7 +1174,7 @@ class PluginActivityHoliday extends CommonDBTM {
 
       if (empty($ID)) {
          $params['condition'] = ['archived' => 0];
-         $params['on_change'] = "plugin_activity_show_details(\"" . $CFG_GLPI['root_doc'] . "\", this.value);";
+         $params['on_change'] = "plugin_activity_show_details(\"" . $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "\", this.value);";
       }
 
       Dropdown::show('PluginActivityHolidayPeriod', $params);
@@ -1191,7 +1191,7 @@ class PluginActivityHoliday extends CommonDBTM {
          echo "<input type='hidden' name='is_planned' value='1' />";
          echo "<input type='hidden' name='actiontime' id='actiontime' value='" . ($actionTime / $AllDay) . "' />";
          //$params_begin['value']     = date('d-m-Y', strtotime($begin));
-         $params_begin['on_change'] = "updateDuration(this, '" . $CFG_GLPI['root_doc'] . "');";
+         $params_begin['on_change'] = "updateDuration(this, '" . $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "');";
          Html::showDateField("begin", $params_begin);
       } else {
          echo "<input disabled='disabled' ";
@@ -1245,7 +1245,7 @@ class PluginActivityHoliday extends CommonDBTM {
       echo "<tr><td>" . __('End date') . "</td><td>";
       if (!isset($this->fields['id']) || $this->fields['id'] == '') {
          //$params_end['value'] = date('d-m-Y', strtotime($end));
-         $params_end['on_change'] = "updateDuration(this,\"" . $CFG_GLPI['root_doc'] . "\");";
+         $params_end['on_change'] = "updateDuration(this,\"" . $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "\");";
          Html::showDateField("end", $params_end);
 
       } else {
@@ -1331,7 +1331,7 @@ class PluginActivityHoliday extends CommonDBTM {
                          'value'     => Session::getLoginUserID(),
                          'right'     => "interface",
                          'comment'   => 1,
-                         'on_change' => "plugin_activity_show_details_users(\"" . $CFG_GLPI['root_doc'] . "\", this.value);"
+                         'on_change' => "plugin_activity_show_details_users(\"" . $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "\", this.value);"
                         ]);
       } else if (empty($ID) && !Session::haveRight("plugin_activity_all_users", 1)) {
          echo $dbu->getUserName(Session::getLoginUserID());
@@ -1444,7 +1444,7 @@ class PluginActivityHoliday extends CommonDBTM {
    private function showCbPeriod($params) {
       global $CFG_GLPI;
 
-      $root_doc = json_encode($CFG_GLPI['root_doc']);
+      $root_doc = json_encode($CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL);
 
       if (isset($params['onclick'])) {
          $onclick = $params['onclick'];
@@ -1482,7 +1482,7 @@ class PluginActivityHoliday extends CommonDBTM {
 
    function getBodyMail($dateComplete, $date, $userName, $approverFullName) {
 
-      $rows = file(GLPI_ROOT . '/plugins/activity/files/templates/mail_template.txt');
+      $rows = file(PLUGIN_ACTIVITY_DIR . '/files/templates/mail_template.txt');
 
       $finalRows = '';
 
@@ -1524,7 +1524,7 @@ class PluginActivityHoliday extends CommonDBTM {
       $userName         = (isset($user->fields['firstname']) ? ucfirst($user->fields['firstname']) : '') . " " . (isset($user->fields['realname']) ? strtoupper($user->fields['realname']) : '');
       $approverFullname = (isset($_SESSION['glpifirstname']) ? ucfirst($_SESSION['glpifirstname']) : '') . " " . (isset($_SESSION['glpirealname']) ? strtoupper($_SESSION['glpirealname']) : '');
 
-      $url = $CFG_GLPI['root_doc'] . "/plugins/activity/front/generateTXTFile.php?holidays_id=$holidaysId";
+      $url = $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "/front/generateTXTFile.php?holidays_id=$holidaysId";
 
       if (PluginActivityHolidayValidation::canValidate($holidaysId)) {
          echo "<table class='tab_cadre_fixe'>";
@@ -1558,7 +1558,7 @@ class PluginActivityHoliday extends CommonDBTM {
                         
                         function send(){
                            $.ajax({
-                              url:  '" . $CFG_GLPI['root_doc'] . "/plugins/activity/ajax/sendmail.php?holidays_id=$holidaysId',
+                              url:  '" . $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "/ajax/sendmail.php?holidays_id=$holidaysId',
                               type: 'GET'
                               
                      
@@ -1595,7 +1595,7 @@ class PluginActivityHoliday extends CommonDBTM {
 
       $out .= self::getTypeName() . ' : ' . Html::convDateTime($val["begin"]) . ' -> ' .
               Html::convDateTime($val["end"]) . ' : ';
-      $out .= "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/activity/front/holiday.form.php?id=" .
+      $out .= "<a href='" . $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "/front/holiday.form.php?id=" .
               $val["id"] . "'>";
       $out .= Html::resume_text($val["name"], 80) . '</a>';
 
@@ -1718,7 +1718,7 @@ class PluginActivityHoliday extends CommonDBTM {
             $interv[$key]["status"]  = $data["global_validation"];
             $interv[$key]["content"] = Html::resume_text($data["comment"],
                                                          $CFG_GLPI["cut"]);
-            $interv[$key]["url"]     = $CFG_GLPI["root_doc"] . "/plugins/activity/front/holiday.form.php?id=" .
+            $interv[$key]["url"]     = $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "/front/holiday.form.php?id=" .
                                        $data['id'];
             $interv[$key]["ajaxurl"] = $CFG_GLPI["root_doc"] . "/ajax/planning.php" .
                                        "?action=edit_event_form" .

@@ -99,7 +99,7 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
       $return = "";
       if ($number > 0) {
          $return .= Ajax::createIframeModalWindow('holiday',
-            $CFG_GLPI["root_doc"] . "/plugins/activity/front/holiday.form.php",
+                                                  $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL. "/front/holiday.form.php",
             ['title'         => __('Create a holiday request', 'activity'),
                'reloadonclose' => false,
                'width'         => 1180,
@@ -181,19 +181,19 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
 
       $listActions = [
          PluginActivityActions::ADD_ACTIVITY    => [
-            'link'   => $CFG_GLPI["root_doc"] . "/front/planning.php",//plugins/activity/front/activity.form.php
+            'link'   => $CFG_GLPI["root_doc"] . "/front/planning.php",
             'img'    => "far fa-calendar-plus",
             'label'  => __('Add an activity', 'activity'),
             'rights' => Session::haveRight("plugin_activity", CREATE),
          ],
          PluginActivityActions::LIST_ACTIVITIES => [
-            'link'   => $CFG_GLPI["root_doc"] . "/plugins/activity/front/planningexternalevent.php",
+            'link'   => $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "/front/planningexternalevent.php",
             'img'    => "far fa-calendar-alt",
             'label'  => __('List of activities', 'activity'),
             'rights' => Session::haveRight("plugin_activity", READ),
          ],
          PluginActivityActions::CRA             => [
-            'link'   => $CFG_GLPI["root_doc"] . "/plugins/activity/front/cra.php",
+            'link'   => $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "/front/cra.php",
             'img'    => "far fa-calendar-check",
             'label'  => __('CRA', 'activity'),
             'rights' => Session::haveRight("plugin_activity_statistics", 1),

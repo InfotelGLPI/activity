@@ -158,9 +158,6 @@ class PluginActivityNotificationTargetHoliday extends NotificationTarget {
       $this->data['##activity.url##']      = urldecode($CFG_GLPI["url_base"] . "/index.php?redirect=PluginActivityHoliday_" .
                                                        $this->obj->getField("id"));
 
-      //      $this->data['##activity.url##'] = urldecode($CFG_GLPI["url_base"]."/plugins/activity/ajax/generateTXTFile.php?holidays_id=".
-      //                                 $holiday->getField("id"));
-
       $this->data['##holidayvalidation.id##'] = sprintf("%07d", $this->obj->getField("id"));
       $this->data['##holiday.id##']           = sprintf("%07d", $this->obj->getField("id"));
 

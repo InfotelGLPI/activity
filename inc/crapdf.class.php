@@ -29,8 +29,8 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
-require_once(GLPI_ROOT."/plugins/activity/lib/fpdf/fpdf.php");
-require_once(GLPI_ROOT."/plugins/activity/lib/fpdf/font/arial.php");
+require_once(PLUGIN_ACTIVITY_DIR . "/lib/fpdf/fpdf.php");
+require_once(PLUGIN_ACTIVITY_DIR . "/lib/fpdf/font/arial.php");
 
 class PluginActivityCraPDF extends FPDF {
    /* Attributs d'un rapport envoyés par l'utilisateur avant la génération. */

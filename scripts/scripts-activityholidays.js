@@ -47,7 +47,7 @@ function getActionTime(beginDate,endDate,actiontime,input,format,root_doc){
 
    document.getElementById('div_duration').innerHTML = '';
    var img = document.createElement('img');
-   img.setAttribute('src',root_doc + '/plugins/activity/pics/loading.gif');
+   img.setAttribute('src',root_doc + '/pics/loading.gif');
    document.getElementById('div_duration').appendChild(img);
 
 
@@ -65,7 +65,7 @@ function getActionTime(beginDate,endDate,actiontime,input,format,root_doc){
       args="begin="+beginDate+"&end="+endDate+"&actiontime="+actiontime;
 
       xhr_object = getXHRObject();
-      xhr_object.open("POST",root_doc + '/plugins/activity/ajax/duration.php', true);
+      xhr_object.open("POST",root_doc + '/ajax/duration.php', true);
       xhr_object.onreadystatechange = function() {
          if (xhr_object.readyState == 4) {
             var jsondata = JSON.parse(xhr_object.responseText);
@@ -187,7 +187,7 @@ function plugin_activity_show_details(root_doc, holidayperiod_id) {
    }
    $('#tr_plugin_activity_details').closest('tr').remove();
    $.ajax({
-      url: root_doc + '/plugins/activity/ajax/activityholidays.php',
+      url: root_doc + '/ajax/activityholidays.php',
       type: 'POST',
       data: '&load_holiday_details&users_id=' + users_id + '&holiday_period_id=' + holidayperiod_id,
       dataType: 'html',
@@ -206,7 +206,7 @@ function plugin_activity_show_details_users(root_doc, users_id) {
    holidayperiod_id = $('input[name="plugin_activity_holidayperiods_id"]').val();
    $('#tr_plugin_activity_details').closest('tr').remove();
    $.ajax({
-      url: root_doc + '/plugins/activity/ajax/activityholidays.php',
+      url: root_doc + '/ajax/activityholidays.php',
       type: 'POST',
       data: '&load_holiday_details&users_id=' + users_id + '&holiday_period_id=' + holidayperiod_id,
       dataType: 'html',
@@ -223,7 +223,7 @@ function plugin_activity_show_details_users(root_doc, users_id) {
  */
 function plugin_activity_show_periods(root_doc, plugin_activity_holidaytypes_id) {
    $.ajax({
-      url: root_doc + '/plugins/activity/ajax/activitytypes.php',
+      url: root_doc + '/ajax/activitytypes.php',
       type: 'POST',
       data: '&load_holiday_period&holiday_type_id=' + plugin_activity_holidaytypes_id,
       dataType: 'html',

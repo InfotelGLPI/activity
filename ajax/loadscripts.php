@@ -45,7 +45,7 @@ if (isset($_POST['action'])) {
              'showLateralMenu',
              [
                  'title'     => _n('Activity', 'Activities', 1, 'activity'),
-                 'url'       => $CFG_GLPI['root_doc'] . '/plugins/activity/ajax/lateralmenu.php'
+                 'url'       => $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . '/ajax/lateralmenu.php'
              ]
          );
 

@@ -94,7 +94,7 @@ class PluginActivityStats extends CommonDBTM {
    public static function listStatClasses() {
       $classnames = [];
 
-      foreach (glob(GLPI_ROOT . '/plugins/activity/inc/*.class.php') as $file) {
+      foreach (glob(PLUGIN_ACTIVITY_DIR . '/inc/*.class.php') as $file) {
 
          $clean = str_replace(".class.php", "", basename($file));
 

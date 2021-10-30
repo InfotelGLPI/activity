@@ -27,6 +27,11 @@
 
 define('PLUGIN_ACTIVITY_VERSION', '3.0.1');
 
+if (!defined("PLUGIN_ACTIVITY_DIR")) {
+   define("PLUGIN_ACTIVITY_DIR", Plugin::getPhpDir("activity"));
+   define("PLUGIN_ACTIVITY_DIR_NOFULL", Plugin::getPhpDir("activity",false));
+}
+
 // Init the hooks of the plugins -Needed
 function plugin_init_activity() {
    global $PLUGIN_HOOKS, $CFG_GLPI;
@@ -36,7 +41,7 @@ function plugin_init_activity() {
    if (isset($_SESSION["glpiactiveprofile"]["interface"])
        && $_SESSION["glpiactiveprofile"]["interface"] != "helpdesk") {
       $PLUGIN_HOOKS['add_css']['activity']      = ['activity.css'];
-      $PLUGIN_HOOKS['javascript']['activity'][] = '/plugins/activity/lib/sdashboard/lib/flotr2/flotr2.js';
+      $PLUGIN_HOOKS['javascript']['activity'][] = PLUGIN_ACTIVITY_DIR_NOFULL.'/lib/sdashboard/lib/flotr2/flotr2.js';
       $PLUGIN_HOOKS['add_javascript']['activity'] = ['/lib/jquery/js/jquery.ui.touch-punch.min.js'];
 
    }
@@ -49,9 +54,9 @@ function plugin_init_activity() {
 
       $PLUGIN_HOOKS['add_javascript']['activity'] = ['scripts/scripts-activityholidays.js',
                                                      'scripts/activity_load_scripts.js'];
-      $PLUGIN_HOOKS['javascript']['activity']     = ["/plugins/activity/scripts/scripts-activitydate.js",
-                                                     "/plugins/activity/scripts/scripts-activityholidays.js",
-                                                     "/plugins/activity/scripts/activity_load_scripts.js"];
+      $PLUGIN_HOOKS['javascript']['activity']     = [PLUGIN_ACTIVITY_DIR_NOFULL."/scripts/scripts-activitydate.js",
+                                                     PLUGIN_ACTIVITY_DIR_NOFULL."/scripts/scripts-activityholidays.js",
+                                                     PLUGIN_ACTIVITY_DIR_NOFULL."/scripts/activity_load_scripts.js"];
    }
 
    if (Session::haveRight("plugin_activity_statistics", 1)) {
@@ -107,9 +112,7 @@ function plugin_init_activity() {
 
             $PLUGIN_HOOKS['redirect_page']['activity'] = 'front/holiday.form.php';
          }
-         if (class_exists('PluginMydashboardMenu')) {
-            $PLUGIN_HOOKS['mydashboard']['activity'] = ["PluginActivityDashboard"];
-         }
+         $PLUGIN_HOOKS['mydashboard']['activity'] = ["PluginActivityDashboard"];
 
          if (Session::haveRight("plugin_activity", UPDATE) && class_exists('PluginActivityProfile')) {
 

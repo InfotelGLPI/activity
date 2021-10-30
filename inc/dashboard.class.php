@@ -79,12 +79,24 @@ class PluginActivityDashboard extends CommonGLPI {
    }
 
    function getWidgetsForItem() {
-      return array(
-         $this->getType() . "1" => __('Activity in the month', 'activity') . "&nbsp;<i class='fa fa-pie-chart'></i>",
-         //         $this->getType()."2" => __('Planning access', 'activity'),
-         $this->getType() . "3" => __("Activity Menu", 'activity') . "&nbsp;<i class='fa fa-info-circle'></i>",
-         $this->getType() . "4" => __("Interventions not in CRA", "activity") . "&nbsp;<i class='fa fa-table'></i>",
-      );
+
+      $widgets = [
+         __('Tables', 'mydashboard') => [
+            $this->getType() . "3" => ["title"   =>  __("Activity Menu", 'activity'),
+                                       "icon"    => "fas fa-info-circle",
+                                       "comment" => ""],
+            $this->getType() . "4" => ["title"   => __("Interventions not in CRA", "activity"),
+                                       "icon"    => "fas fa-table",
+                                       "comment" => ""],
+         ],
+         __('Pie charts', "mydashboard") => [
+            $this->getType() . "1" => ["title"   => __('Activity in the month', 'activity'),
+                                       "icon"    => "fas fa-chart-pie",
+                                       "comment" => __("Display of activity by month for a user (tickets, activity, holidays, others)", "activity")],
+         ]
+      ];
+      return $widgets;
+
    }
 
    function getWidgetContentForItem($widgetId, $opt = []) {
@@ -234,7 +246,7 @@ class PluginActivityDashboard extends CommonGLPI {
             foreach ($lang_days as $day) {
                $lang_days_short[] = substr($day, 0, 3);
             }
-            $widget->setWidgetTitle("<a href='" . $CFG_GLPI['root_doc'] . "/plugins/activity/front/activity.form.php'>" . __('Planning access', 'activity') . "</a>");
+            $widget->setWidgetTitle("<a href='" . $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "/front/activity.form.php'>" . __('Planning access', 'activity') . "</a>");
 
             $activities = "{}";
             $activities = json_encode($this->getActivities($this->datas['users_id']));
@@ -330,7 +342,11 @@ class PluginActivityDashboard extends CommonGLPI {
 
             $widget  = PluginMydashboardHelper::getWidgetsFromDBQuery('table', $query);
             $datas   = [];
-            $headers = [__('Creation date'), __('Client'), __('Ticket'), __('Description'), __('Total duration')];
+            $headers = [__('Creation date'),
+                        __('Client'),
+                        __('Ticket'),
+                        __('Description'),
+                        __('Total duration')];
             $widget->setTabNames($headers);
 
             $result      = $DB->query($query);
@@ -352,7 +368,7 @@ class PluginActivityDashboard extends CommonGLPI {
                   $name_ticket               .= $data['tickets_name'] . "</a>";
                   $datas[$i]["tickets_name"] = $name_ticket;
 
-                  $datas[$i]["content"] = $data['content'];
+                  $datas[$i]["content"] =  htmlspecialchars_decode(stripslashes($data['content']));
 
                   $datas[$i]["actiontime"] = Html::timestampToString($data["actiontime"], 0);
                   $i++;

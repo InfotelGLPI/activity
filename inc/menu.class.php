@@ -33,7 +33,8 @@ class PluginActivityMenu extends CommonGLPI {
    }
 
    static function getMenuContent() {
-      $plugin_page              = "/plugins/activity/front/menu.php";
+
+      $plugin_page              = PLUGIN_ACTIVITY_DIR_NOFULL. "/front/menu.php";
       $menu                     = [];
       //Menu entry in tools
       $menu['title']            = self::getMenuName();
@@ -48,9 +49,9 @@ class PluginActivityMenu extends CommonGLPI {
          $menu['config_page']                          = PluginActivityConfig::getFormURL(false);
 
          $menu['options']['holidaycount']['title']           = _n('Holiday counter', 'Holiday counters', 2, 'activity');;
-         $menu['options']['holidaycount']['page']            = '/plugins/activity/front/holidaycount.php';
-         $menu['options']['holidaycount']['links']['add']    = '/plugins/activity/front/holidaycount.form.php';
-         $menu['options']['holidaycount']['links']['search'] = '/plugins/activity/front/holidaycount.php';
+         $menu['options']['holidaycount']['page']            = PLUGIN_ACTIVITY_DIR_NOFULL.'/front/holidaycount.php';
+         $menu['options']['holidaycount']['links']['add']    = PLUGIN_ACTIVITY_DIR_NOFULL.'/front/holidaycount.form.php';
+         $menu['options']['holidaycount']['links']['search'] = PLUGIN_ACTIVITY_DIR_NOFULL.'/front/holidaycount.php';
          $menu['icon']                                       = self::getIcon();
       }
 
