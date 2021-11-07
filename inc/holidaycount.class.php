@@ -215,7 +215,7 @@ class PluginActivityHolidaycount extends CommonDBTM {
 
       echo "<td>" . __('Counter', 'activity') . "</td>";
       echo "<td>";
-      Html::input('count', ['value' => Html::formatNumber($this->fields["count"], true), 'size' => 14]);
+      echo Html::input('count', ['value' => Html::formatNumber($this->fields["count"], true), 'size' => 14]);
       echo "</td>";
       echo "</tr>";
 

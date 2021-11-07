@@ -111,13 +111,13 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
          $return .= "<div align='center'>";
 
          if (!$widget) {
-            $return .= "<table class='tab_cadre' cellpadding='5'>";
+            $return .= "<table class='tab_cadre_fixe activity_menu' style='width: 400px;'>";
          }
 
          if (!$widget) {
             $return .= "<tr><th colspan='4'>" . $class::getTypeName(2) . "</th></tr>";
          } else {
-            $return .= "<div class=\"tickets-stats\">";
+            $return .= "<div>";
          }
 
          foreach ($allactions as $action) {
@@ -139,7 +139,7 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
                $return .= $action['onclick'];
             }
             $return .= ">";
-            $return .= "<i class='" . $action['img'] . " fa-4x'  title='" . $action['label'] . "'></i>";
+            $return .= "<i class='" . $action['img'] . " fa-3x'  title='" . $action['label'] . "'></i>";
             $return .= "<br><br>" . $action['label'] . "</a>";
 
             if (!$widget) {
@@ -225,19 +225,23 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
             }
 
             if (Session::haveRight("plugin_activity_statistics", 1)) {
-               echo "<tr class='tab_bg_1'>";
-               echo "<td colspan='1'></td>";
-               echo '<td>';
-               echo "<div id='is_oncra_" . $item->getID() . "' class='fa-label'>
-               <i class='far fa-flag fa-fw'
-                  title='" . __('Use in CRA', 'activity') . "'></i>";
+               echo "<table class='tab_cadre_fixe'>";
+               echo "<tr class='tab_bg_2'>";
+               echo "<td>";
+               echo __('Use in CRA', 'activity');
+               echo "</td>";
+               echo "<td>";
+//               echo "<div id='is_oncra_" . $item->getID() . "' class='fa-label'>";
                Dropdown::showYesNo('is_oncra',
                   (isset($self->fields['id']) && $self->fields['id']) > 0 ? $self->fields['is_oncra'] : $is_cra_default,
                   -1,
                   ['value' => 1]);
-               echo '</div></td>';
-               echo '</tr>';
-
+//               echo "</div>";
+               echo "</td>";
+               echo "<td colspan='2' width='250px'>";
+               echo "</td>";
+               echo "</tr>";
+               echo "</table>";
             } else {
                echo Html::hidden('is_oncra', ['value' => 1]);
             }
