@@ -303,11 +303,9 @@ class PluginActivityTicketTask extends CommonDBTM {
             $interv[$key]["users_id"]           = $who;
             $interv[$key]["begin"]           = $int["start"];
             $interv[$key]["end"]             = $int["end"];
-            $interv[$key]["name"]               = Html::resume_text($int["title"], $CFG_GLPI["cut"]);
             $interv[$key]["editable"]         = false;
-            $interv[$key]["content"]
-               = Html::resume_text(Glpi\Toolbox\RichText::getSafeHtml($int["description"]),
-                                   $CFG_GLPI["cut"]);
+            $interv[$key]["name"]     = Glpi\Toolbox\Sanitizer::unsanitize(Html::resume_text($int["title"], $CFG_GLPI["cut"])); // name is re-encoded on JS side
+            $interv[$key]["content"]  = Glpi\Toolbox\RichText::getSafeHtml(Html::resume_text($int["description"],$CFG_GLPI["cut"]));
 
          }
       }

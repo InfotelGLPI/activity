@@ -1096,7 +1096,7 @@ class PluginActivityReport extends CommonDBTM {
                      $comment .= $datat["text"] . " (" . (self::TotalTpsPassesArrondis($datat["actiontime"] / $AllDay)) . ")<br>";
                   }
                }
-               echo Search::showItem($output_type, nl2br(Glpi\Toolbox\RichText::getSafeHtml($comment)), $num, $row_num);
+               echo Search::showItem($output_type, nl2br(Glpi\Toolbox\RichText::getTextFromHtml($comment)), $num, $row_num);
                $total_ouvres = self::TotalTpsPassesArrondis($data["total_actiontime"] / $AllDay);
                echo Search::showItem($output_type, Html::formatNumber($total_ouvres, false, 3), $num, $row_num);
                echo Search::showItem($output_type, Html::formatNumber($percent) . "%", $num, $row_num);
@@ -1114,17 +1114,13 @@ class PluginActivityReport extends CommonDBTM {
       }
 
       if ($pdfMode && $showPopUp) {
-         echo "<div id='activity_displayPdf' title='" . $filename . "'><IFRAME style='width:1370px;height:810px' 
-         src='" . $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "/front/cra.send.php?file=_plugins/activity/$filename&seefile=1' scrolling=none frameborder=1></IFRAME></div>";
-         echo '<script type="text/javascript">
-                  $("#activity_displayPdf").dialog({
-                     autoOpen: true,
-                     height: 870,
-                     width: 1400,
-                     overflow: "none",
-                     dialogClass:"activity-ui-dialog"
-                  });
-               </script>';
+
+         echo Ajax::createIframeModalWindow('activity_displayPdf',
+                                            $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "/front/cra.send.php?file=_plugins/activity/$filename&seefile=1",
+                                            ['title'   => 'test',
+                                             'display' => false,
+                                             'autoopen' => true]);
+
       }
    }
 
