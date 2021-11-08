@@ -36,7 +36,7 @@ function plugin_activity_install() {
    // version 3.0.0
    if (!$DB->tableExists("glpi_plugin_activity_holidays")) {
       $install  = true;
-      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/empty-3.0.0.sql");
+      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/empty-3.1.0.sql");
    }
 
    if (!$DB->tableExists('glpi_plugin_activity_holidays')) {
