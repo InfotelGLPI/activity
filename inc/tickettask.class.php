@@ -53,6 +53,7 @@ class PluginActivityTicketTask extends CommonDBTM {
 
 
    static public function postForm($params) {
+
       $item       = $params['item'];
       switch ($item->getType()) {
          case 'TicketTask':
@@ -74,7 +75,7 @@ class PluginActivityTicketTask extends CommonDBTM {
                echo "<tr class='tab_bg_1'>";
                echo "<td colspan='3'></td>";
                echo '<td>';
-               echo "<div id='is_oncra_" . $item->getID() . "' class='fa-label'>
+               echo "<div id='is_oncra_" . $item->getID() . "' class='fa-label right'>
                <i class='far fa-flag fa-fw'
                   title='" . __('Use in CRA', 'activity') . "'></i>";
                Dropdown::showYesNo('is_oncra',

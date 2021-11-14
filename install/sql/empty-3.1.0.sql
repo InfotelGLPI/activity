@@ -1,13 +1,13 @@
 DROP TABLE IF EXISTS `glpi_plugin_activity_holidays`;
 CREATE TABLE `glpi_plugin_activity_holidays` (
    `id` int(11) NOT NULL auto_increment,
-   `name` varchar(255) collate utf8_unicode_ci NOT NULL default '',
+   `name` varchar(255) collate utf8mb4_unicode_ci NOT NULL default '',
    `date_mod` timestamp NULL DEFAULT NULL,
    `begin` timestamp NULL DEFAULT NULL,
    `end`  timestamp NULL DEFAULT NULL,
    `is_planned` tinyint(1) NOT NULL DEFAULT '0',
    `global_validation` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1 -> NONE ; 2 -> Waiting ; 3 -> accepted ; 4 -> rejected',
-   `comment` text COLLATE utf8_unicode_ci default NULL,
+   `comment` text COLLATE utf8mb4_unicode_ci default NULL,
    `actiontime` int(11) NOT NULL DEFAULT '0',
    `plugin_activity_holidaytypes_id` int(4) NOT NULL default '0',
    `users_id` int(11) NOT NULL default '0',
@@ -22,9 +22,9 @@ CREATE TABLE `glpi_plugin_activity_holidays` (
 DROP TABLE IF EXISTS `glpi_plugin_activity_holidaytypes`;
 CREATE TABLE `glpi_plugin_activity_holidaytypes` (
    `id` int(11) NOT NULL auto_increment,
-   `name` varchar(255)  collate utf8_unicode_ci NOT NULL default '',
-   `comment` text collate utf8_unicode_ci,
-   `short_name` varchar(255) collate utf8_unicode_ci default NULL,
+   `name` varchar(255)  collate utf8mb4_unicode_ci NOT NULL default '',
+   `comment` text collate utf8mb4_unicode_ci,
+   `short_name` varchar(255) collate utf8mb4_unicode_ci default NULL,
    `mandatory_comment` tinyint(1) NOT NULL default '0',
    `auto_validated` tinyint(1) default '0',
    `is_holiday` tinyint(1) default '1',
@@ -40,7 +40,7 @@ CREATE TABLE `glpi_plugin_activity_holidaytypes` (
 DROP TABLE IF EXISTS `glpi_plugin_activity_configs`;
 CREATE TABLE `glpi_plugin_activity_configs` (
    `id` int(11) NOT NULL auto_increment,
-   `name` varchar(255)  collate utf8_unicode_ci NOT NULL default '',
+   `name` varchar(255)  collate utf8mb4_unicode_ci NOT NULL default '',
    `entities_id` int(11) NOT NULL,
    `use_mandaydisplay` tinyint(1) DEFAULT '0',
    `use_integerschedules` tinyint(1) DEFAULT '0',
@@ -50,9 +50,9 @@ CREATE TABLE `glpi_plugin_activity_configs` (
 DROP TABLE IF EXISTS `glpi_plugin_activity_options`;
 CREATE TABLE `glpi_plugin_activity_options` (
    `id` int(11) NOT NULL auto_increment,
-   `principal_client` varchar(255)  collate utf8_unicode_ci NOT NULL default '',
-   `cra_footer` text collate utf8_unicode_ci,
-   `used_mail_for_holidays` varchar(255)  collate utf8_unicode_ci NOT NULL default '',
+   `principal_client` varchar(255)  collate utf8mb4_unicode_ci NOT NULL default '',
+   `cra_footer` text collate utf8mb4_unicode_ci,
+   `used_mail_for_holidays` varchar(255)  collate utf8mb4_unicode_ci NOT NULL default '',
    `use_type_as_name` tinyint(1) default '0',
    `use_timerepartition` tinyint(1) default '0',
    `use_mandaydisplay` tinyint(1) default '0',
@@ -92,7 +92,7 @@ CREATE TABLE IF NOT EXISTS `glpi_plugin_activity_holidayvalidations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `plugin_activity_holidays_id` int(11) NOT NULL DEFAULT '0',
   `users_id_validate` int(11) NOT NULL DEFAULT '0',
-  `comment_validation` text COLLATE utf8_unicode_ci,
+  `comment_validation` text COLLATE utf8mb4_unicode_ci,
   `status` tinyint (1) NOT NULL DEFAULT 2 COMMENT '1 -> NONE ; 2 -> Waiting ; 3 -> accepted ; 4 -> rejected',
   `submission_date` timestamp NULL DEFAULT NULL,
   `validation_date` timestamp NULL DEFAULT NULL,
@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS `glpi_plugin_activity_holidayvalidations` (
 DROP TABLE IF EXISTS `glpi_plugin_activity_holidaycounts`;
 CREATE TABLE `glpi_plugin_activity_holidaycounts` (
    `id` int(11) NOT NULL auto_increment,
-   `name` varchar(255) collate utf8_unicode_ci NOT NULL default '',
+   `name` varchar(255) collate utf8mb4_unicode_ci NOT NULL default '',
    `date_mod` timestamp NULL DEFAULT NULL,
    `count` decimal(20,1) NOT NULL DEFAULT '0.00',
    `plugin_activity_holidayperiods_id` int(4) NOT NULL default '0',
@@ -118,9 +118,9 @@ CREATE TABLE `glpi_plugin_activity_holidaycounts` (
 DROP TABLE IF EXISTS `glpi_plugin_activity_holidayperiods`;
 CREATE TABLE `glpi_plugin_activity_holidayperiods` (
    `id` int(11) NOT NULL auto_increment,
-   `name` varchar(255)  collate utf8_unicode_ci NOT NULL default '',
-   `short_name` varchar(255) collate utf8_unicode_ci default NULL,
-   `comment` text collate utf8_unicode_ci,
+   `name` varchar(255)  collate utf8mb4_unicode_ci NOT NULL default '',
+   `short_name` varchar(255) collate utf8mb4_unicode_ci default NULL,
+   `comment` text collate utf8mb4_unicode_ci,
    `begin` timestamp NULL DEFAULT NULL,
    `end`  timestamp NULL DEFAULT NULL,
    `archived` tinyint (1) NOT NULL DEFAULT 0,

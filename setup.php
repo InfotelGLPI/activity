@@ -157,8 +157,7 @@ function plugin_init_activity() {
       }
 
       // Ticket task cra
-      if (Session::haveRight("plugin_activity", READ) && strpos($_SERVER['REQUEST_URI'],"TicketTask")
-               || strpos($_SERVER['REQUEST_URI'],"timeline")) {
+      if (Session::haveRight("plugin_activity", READ)) {
          $PLUGIN_HOOKS['post_item_form']['activity'] = ['PluginActivityTicketTask', 'postForm'];
       }
 
