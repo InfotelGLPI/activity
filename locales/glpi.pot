@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-08 09:39+0000\n"
+"POT-Creation-Date: 2021-11-14 16:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: setup.php:177 ajax/loadscripts.php:47 front/menu.php:46
+#: setup.php:176 ajax/loadscripts.php:47 front/menu.php:46
 #: inc/config.class.php:38 inc/menu.class.php:32 inc/option.class.php:38
 #: inc/preference.class.php:42 inc/profile.class.php:43
 #: inc/profile.class.php:138 inc/report.class.php:866
@@ -577,7 +577,7 @@ msgid "CRA"
 msgstr ""
 
 #: inc/planningexternalevent.class.php:231 inc/projecttask.class.php:126
-#: inc/tickettask.class.php:79
+#: inc/tickettask.class.php:80
 msgid "Use in CRA"
 msgstr ""
 
