@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-08 07:28+0000\n"
+"POT-Creation-Date: 2021-11-08 09:39+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,6 +24,12 @@ msgstr ""
 #: inc/profile.class.php:138 inc/report.class.php:866
 msgid "Activity"
 msgid_plural "Activities"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ajax/lateralmenu.php:36 inc/holiday.class.php:54
+msgid "Private holiday"
+msgid_plural "Private holidays"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -92,15 +98,15 @@ msgid "Project / activity"
 msgstr ""
 
 #: inc/crapdf.class.php:465 inc/holidaytype.class.php:89
-#: inc/report.class.php:1509
+#: inc/report.class.php:1505
 msgid "Part time"
 msgstr ""
 
-#: inc/crapdf.class.php:466 inc/report.class.php:1507
+#: inc/crapdf.class.php:466 inc/report.class.php:1503
 msgid "Holidays or exceptional absences"
 msgstr ""
 
-#: inc/crapdf.class.php:467 inc/report.class.php:1511
+#: inc/crapdf.class.php:467 inc/report.class.php:1507
 msgid "Sickness or maternity"
 msgstr ""
 
@@ -165,12 +171,6 @@ msgstr ""
 msgid "No defined type"
 msgstr ""
 
-#: inc/holiday.class.php:54
-msgid "Private holiday"
-msgid_plural "Private holidays"
-msgstr[0] ""
-msgstr[1] ""
-
 #: inc/holiday.class.php:146 inc/holidayperiod.class.php:70
 msgid "Please fill a begin date"
 msgstr ""
@@ -228,7 +228,7 @@ msgstr ""
 msgid "List of holidays"
 msgstr ""
 
-#: inc/holiday.class.php:452 inc/holiday.class.php:2122
+#: inc/holiday.class.php:452 inc/holiday.class.php:2121
 msgid "Approve holiday"
 msgid_plural "Approve holidays"
 msgstr[0] ""
@@ -287,53 +287,53 @@ msgstr ""
 msgid "Send the mail for this holiday"
 msgstr ""
 
-#: inc/holiday.class.php:2088
+#: inc/holiday.class.php:2087
 msgid "Close without clearing"
 msgstr ""
 
-#: inc/holiday.class.php:2089
+#: inc/holiday.class.php:2088
 msgid "See previous month"
 msgstr ""
 
-#: inc/holiday.class.php:2090
+#: inc/holiday.class.php:2089
 msgid "See next month"
 msgstr ""
 
-#: inc/holiday.class.php:2091
+#: inc/holiday.class.php:2090
 msgid "See current month"
 msgstr ""
 
-#: inc/holiday.class.php:2094
+#: inc/holiday.class.php:2093
 msgid "See another month"
 msgstr ""
 
-#: inc/holiday.class.php:2094
+#: inc/holiday.class.php:2093
 msgid "See another year"
 msgstr ""
 
-#: inc/holiday.class.php:2099
+#: inc/holiday.class.php:2098
 msgid "Use DD as first day of week"
 msgstr ""
 
-#: inc/holiday.class.php:2099
+#: inc/holiday.class.php:2098
 msgid "Choose the DD, MM d"
 msgstr ""
 
-#: inc/holiday.class.php:2101
+#: inc/holiday.class.php:2100
 msgid "Choose the date"
 msgstr ""
 
-#: inc/holiday.class.php:2150
+#: inc/holiday.class.php:2149
 msgid "Comment"
 msgid_plural "Comments"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/holiday.class.php:2392
+#: inc/holiday.class.php:2391
 msgid "Remaining holidays for the period"
 msgstr ""
 
-#: inc/holiday.class.php:2393
+#: inc/holiday.class.php:2392
 msgid "Leave awaiting validation"
 msgstr ""
 
