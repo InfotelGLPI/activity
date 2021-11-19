@@ -1363,11 +1363,13 @@ class PluginActivityHoliday extends CommonDBTM {
       echo "<td>" . __('Description') . "</td>";
       echo "</tr>";
       echo "<tr>";
-      echo "<td><textarea cols='75' rows='7' ";
-      if (isset($this->fields['id']) && $this->fields['id'] != '') {
-         echo " disabled='disabled' ";
-      }
-      echo "name='comment' >" . $this->fields["comment"] . "</textarea>";
+      echo "<td>";
+      Html::textarea(['name'            => 'comment',
+                      'value'           => $this->fields["comment"],
+                      'disabled'           => (isset($this->fields['id']) && $this->fields['id'] != '')?'disabled':'',
+                      'cols'       => 75,
+                      'rows'       => 7,
+                      'enable_richtext' => false]);
       echo "</td>";
       echo "</tr>";
       echo "</table>";
@@ -2146,9 +2148,15 @@ class PluginActivityHoliday extends CommonDBTM {
             echo "   </tr>";
 
             echo "   <tr class='tab_bg_1'>";
-            echo "      <td >" . _n('Comment', 'Comments', 1, 'activity') . "</td>";
-            echo "      <td ><textarea name='comment_validation' id='comment_validation' cols='30' rows='8'></textarea></td>";
-            echo "   </tr>";
+            echo "      <td>" . _n('Comment', 'Comments', 1, 'activity') . "</td>";
+            echo "      <td>";
+            Html::textarea(['name'            => 'comment_validation',
+                            'id'           => 'comment_validation',
+                            'cols'       => 30,
+                            'rows'       => 8,
+                            'enable_richtext' => false]);
+            echo "</td>";
+            echo " </tr>";
             echo "</table>";
             break;
       }

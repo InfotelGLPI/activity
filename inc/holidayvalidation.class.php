@@ -497,8 +497,12 @@ class PluginActivityHolidayValidation extends CommonDBChild {
          if ($validator) {
             echo "<tr class='tab_bg_1'>";
             echo "<td>" . __('Approval comments') . "<br>(" . __('Optional when approved') . ")</td>";
-            echo "<td colspan='2'><textarea cols='100' rows='3' name='comment_validation'>" .
-                 $this->fields["comment_validation"] . "</textarea>";
+            echo "<td colspan='2'>";
+            Html::textarea(['name'            => 'comment_validation',
+                            'value'           => $this->fields["comment_validation"],
+                            'cols'       => 100,
+                            'rows'       => 3,
+                            'enable_richtext' => false]);
             echo "</td></tr>";
 
          } else {

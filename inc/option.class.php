@@ -135,10 +135,12 @@ class PluginActivityOption extends CommonDBTM {
       echo "<tr class='tab_bg_1'>";
       echo "<td>".__('CRA Footer', 'activity')."</td>";
       echo "<td>";
-      echo "<textarea cols='80' rows='8' name='cra_footer'>";
-
-      echo $this->fields['cra_footer'];
-      echo "</textarea></td></tr>\n";
+      Html::textarea(['name'            => 'cra_footer',
+                      'value'           => $this->fields["cra_footer"],
+                      'cols'       => 80,
+                      'rows'       => 8,
+                      'enable_richtext' => false]);
+      echo "</td></tr>\n";
 
       echo "</td>";
       echo "</tr>";
