@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-14 16:10+0000\n"
+"POT-Creation-Date: 2021-11-19 10:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -228,7 +228,7 @@ msgstr ""
 msgid "List of holidays"
 msgstr ""
 
-#: inc/holiday.class.php:452 inc/holiday.class.php:2121
+#: inc/holiday.class.php:452 inc/holiday.class.php:2123
 msgid "Approve holiday"
 msgid_plural "Approve holidays"
 msgstr[0] ""
@@ -269,71 +269,71 @@ msgstr ""
 msgid "Only on morning"
 msgstr ""
 
-#: inc/holiday.class.php:1477
+#: inc/holiday.class.php:1479
 msgid ""
 "You must fill a registration number for this user before generating the TXT "
 "file."
 msgstr ""
 
-#: inc/holiday.class.php:1479
+#: inc/holiday.class.php:1481
 msgid "See this page"
 msgstr ""
 
-#: inc/holiday.class.php:1537
+#: inc/holiday.class.php:1539
 msgid "Generate TXT file for this holiday"
 msgstr ""
 
-#: inc/holiday.class.php:1555
+#: inc/holiday.class.php:1557
 msgid "Send the mail for this holiday"
 msgstr ""
 
-#: inc/holiday.class.php:2087
+#: inc/holiday.class.php:2089
 msgid "Close without clearing"
 msgstr ""
 
-#: inc/holiday.class.php:2088
+#: inc/holiday.class.php:2090
 msgid "See previous month"
 msgstr ""
 
-#: inc/holiday.class.php:2089
+#: inc/holiday.class.php:2091
 msgid "See next month"
 msgstr ""
 
-#: inc/holiday.class.php:2090
+#: inc/holiday.class.php:2092
 msgid "See current month"
 msgstr ""
 
-#: inc/holiday.class.php:2093
+#: inc/holiday.class.php:2095
 msgid "See another month"
 msgstr ""
 
-#: inc/holiday.class.php:2093
+#: inc/holiday.class.php:2095
 msgid "See another year"
 msgstr ""
 
-#: inc/holiday.class.php:2098
+#: inc/holiday.class.php:2100
 msgid "Use DD as first day of week"
 msgstr ""
 
-#: inc/holiday.class.php:2098
+#: inc/holiday.class.php:2100
 msgid "Choose the DD, MM d"
 msgstr ""
 
-#: inc/holiday.class.php:2100
+#: inc/holiday.class.php:2102
 msgid "Choose the date"
 msgstr ""
 
-#: inc/holiday.class.php:2149
+#: inc/holiday.class.php:2151
 msgid "Comment"
 msgid_plural "Comments"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/holiday.class.php:2391
+#: inc/holiday.class.php:2399
 msgid "Remaining holidays for the period"
 msgstr ""
 
-#: inc/holiday.class.php:2392
+#: inc/holiday.class.php:2400
 msgid "Leave awaiting validation"
 msgstr ""
 
@@ -548,19 +548,19 @@ msgstr ""
 msgid "CRA Footer"
 msgstr ""
 
-#: inc/option.class.php:147
+#: inc/option.class.php:149
 msgid "Use group manager as holiday manager"
 msgstr ""
 
-#: inc/option.class.php:154
+#: inc/option.class.php:156
 msgid "Default validation percent"
 msgstr ""
 
-#: inc/option.class.php:163 inc/option.class.php:193
+#: inc/option.class.php:165 inc/option.class.php:195
 msgid "is on CRA by default"
 msgstr ""
 
-#: inc/option.class.php:170
+#: inc/option.class.php:172
 msgid "Use projects"
 msgstr ""
 
