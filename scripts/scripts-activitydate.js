@@ -139,7 +139,7 @@ function monthsListActivity(element, year, monthNames) {
 // *********************** report.class.php ***********************//
 // *********** button previous month and next month ****************//
 function monthActivityButton(element, title) {
-   var monthClass = 'fc-button fc-button-agendaWeek fc-state-default';
+   var monthClass = 'btn fc-button fc-button-agendaWeek fc-state-default';
    $('<a class=\"' + monthClass + ' activity_href\"  >' + title + '</a>').click(function () {
       if (!$(this).hasClass('fc-state-disabled')) {
          $(this).removeClass('fc-state-hover');

@@ -54,6 +54,10 @@ class PluginActivityHoliday extends CommonDBTM {
       return _n('Private holiday', 'Private holidays', $nb, 'activity');
    }
 
+   static function getIcon() {
+      return "ti ti-calendar-event";
+   }
+
    static function canView() {
       return Session::haveRight('plugin_activity_can_requestholiday', 1);
    }
@@ -435,26 +439,26 @@ class PluginActivityHoliday extends CommonDBTM {
          PluginActivityActions::HOLIDAY_REQUEST => [
             'link'    => "#",
             'onclick' => "data-bs-toggle='modal' data-bs-target='#holiday'",
-            'img'     => "fas fa-user-clock",
+            'img'     => "ti ti-calendar-off",
             'label'   => __('Create a holiday request', 'activity'),
             'rights'  => Session::haveRight("plugin_activity_can_requestholiday", READ) && sizeof($have_manager) > 0,
          ],
 
          PluginActivityActions::LIST_HOLIDAYS    => [
             'link'   => $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "/front/holiday.php",
-            'img'    => "fas fa-search",
+            'img'    => "ti ti-search",
             'label'  => __('List of holidays', 'activity'),
             'rights' => Session::haveRight("plugin_activity_can_requestholiday", READ),
          ],
          PluginActivityActions::APPROVE_HOLIDAYS => [
             'link'   => $url,
-            'img'    => "fas fa-user-check",
+            'img'    => "ti ti-calendar-time",
             'label'  => _n('Approve holiday', 'Approve holidays', 2, 'activity'),
             'rights' => Session::haveRight("plugin_activity_can_validate", READ) && sizeof($users_id_validate) > 0,
          ],
          PluginActivityActions::HOLIDAY_COUNT    => [
             'link'   => $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "/front/holidaycount.php",
-            'img'    => "far fa-clock",
+            'img'    => "ti ti-clock",
             'label'  => _n('Holiday counter', 'Holiday counters', 2, 'activity'),
             'rights' => Session::haveRight("plugin_activity_can_requestholiday", READ),
          ]
@@ -465,7 +469,7 @@ class PluginActivityHoliday extends CommonDBTM {
          $add = [
             PluginActivityActions::MANAGER => [
                'link'   => $CFG_GLPI["root_doc"] . "/front/preference.php?glpi_tab=PluginActivityPreference$1",
-               'img'    => "fas fa-user-tie",
+               'img'    => "ti ti-user-plus",
                'label'  => __('Add a manager', 'activity'),
                'rights' => Session::haveRight("plugin_activity_can_requestholiday", READ),
             ]
@@ -1139,10 +1143,13 @@ class PluginActivityHoliday extends CommonDBTM {
 
       echo "<tr><td>" . PluginActivityHolidayType::getTypeName(1) . "</td><td>";
 
-      if (isset($this->fields['id']) && $this->fields['id'] != 0) {
+      if (isset($this->fields['id']) && $this->fields['id'] > 0) {
          $htype = new PluginActivityHolidayType();
-         $htype->getFromDB($this->fields["plugin_activity_holidaytypes_id"]);
-         echo $htype->fields['name'];
+         if (isset($this->fields['plugin_activity_holidaytypes_id'])
+             && $this->fields['plugin_activity_holidaytypes_id'] > 0) {
+            $htype->getFromDB($this->fields["plugin_activity_holidaytypes_id"]);
+            echo $htype->fields['name'];
+         }
       } else {
          $params = [
             'name'      => "plugin_activity_holidaytypes_id",
@@ -1476,7 +1483,7 @@ class PluginActivityHoliday extends CommonDBTM {
       echo "<table class='tab_cadre_fixe'>";
       echo "<tr class='tab_bg_1'>";
       echo "<td>\n";
-      echo "<i class='fas fa-info-circle fa-1x'></i>&nbsp;" . __("You must fill a registration number for this user before generating the TXT file.", "activity");
+      echo "<i class='ti ti-info-circle'></i>&nbsp;" . __("You must fill a registration number for this user before generating the TXT file.", "activity");
       echo "<br/>";
       echo __("See this page", "activity") . " - <a href='" . $user->getLinkURL() . "' target='_blank'>" . $dbu->getUserName($user->fields['id']) . " </a>";
       echo "</td></tr></table>";
@@ -1536,7 +1543,7 @@ class PluginActivityHoliday extends CommonDBTM {
 
          echo "<ul style='list-style: none' >";
          echo "<li style='margin-left:16px'><a href='$url' target='_blank' style='cursor:pointer;'>";
-         echo "<i class='far fa-file-alt fa-2x'></i>&nbsp;" . __('Generate TXT file for this holiday', 'activity');
+         echo "<i class='ti ti-file fa-2x'></i>&nbsp;" . __('Generate TXT file for this holiday', 'activity');
          echo "</a></li>";
 
          $used_mail_for_holidays = "";
@@ -1551,10 +1558,10 @@ class PluginActivityHoliday extends CommonDBTM {
          //            echo "&Body=" . $this->getBodyMail($dateBegin, date("d/m/Y", strtotime($holiday->fields['begin'])), $userName, $approverFullname);
          //
          //            echo "'>";
-         //            echo "<i class='far fa-envelope fa-2x'></i>&nbsp;" . __('Generate mail for this holiday', 'activity');
+         //            echo "<i class='ti ti-mail fa-2x'></i>&nbsp;" . __('Generate mail for this holiday', 'activity');
          //            echo "</a></li>";
          //         }
-         echo "<li style='margin-left:16px;'><a href ='javascript:send()' id='send'><i class='far fa-envelope fa-2x'></i>&nbsp;" . __('Send the mail for this holiday', 'activity') . "</a>";
+         echo "<li style='margin-left:16px;'><a href ='javascript:send()' id='send'><i class='ti ti-mail fa-2x'></i>&nbsp;" . __('Send the mail for this holiday', 'activity') . "</a>";
 
          echo "</li>";
          echo Html::scriptBlock("
@@ -2053,7 +2060,7 @@ class PluginActivityHoliday extends CommonDBTM {
       echo "$(document).ready(function() {
                $('#" . $id . "').datepicker({
                        showOn: 'both',
-                       buttonText: '<i class=\"far fa-calendar-alt\"></i>',
+                       buttonText: '<i class=\"ti ti-calendar\"></i>',
                        width : 2,
                        height : 2,
                        dateFormat: 'dd-mm-yy',

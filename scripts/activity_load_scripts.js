@@ -32,7 +32,7 @@
             }
          });
          if($("#showLateralMenuLink").length === 0) {
-            $('.ms-md-4').before("\<a class='fas fa-1x fa-calendar-alt' href='#' id='showLateralMenuLink'></a>");
+            $('.ms-md-4').before("\<a class='ti fa-1x ti-calendar-event' href='#' id='showLateralMenuLink'></a>");
          }
 
          //            });

@@ -83,15 +83,15 @@ class PluginActivityDashboard extends CommonGLPI {
       $widgets = [
          __('Tables', 'mydashboard') => [
             $this->getType() . "3" => ["title"   =>  __("Activity Menu", 'activity'),
-                                       "icon"    => "fas fa-info-circle",
+                                       "icon"    => "ti ti-info-circle",
                                        "comment" => ""],
             $this->getType() . "4" => ["title"   => __("Interventions not in CRA", "activity"),
-                                       "icon"    => "fas fa-table",
+                                       "icon"    => "ti ti-table",
                                        "comment" => ""],
          ],
          __('Pie charts', "mydashboard") => [
             $this->getType() . "1" => ["title"   => __('Activity in the month', 'activity'),
-                                       "icon"    => "fas fa-chart-pie",
+                                       "icon"    => "ti ti-chart-pie",
                                        "comment" => __("Display of activity by month for a user (tickets, activity, holidays, others)", "activity")],
          ]
       ];

@@ -42,7 +42,7 @@ $canholiday = Session::haveRight("plugin_activity_can_requestholiday", 1);
 $canvalidateholiday = Session::haveRight("plugin_activity_can_validate", 1);
 
 echo "<h3><div class='alert alert-secondary' role='alert'>";
-echo "<i class='far fa-calendar-alt'></i>&nbsp;";
+echo "<i class='ti ti-calendar'></i>&nbsp;";
 echo _n('Activity', 'Activities', 2, 'activity');
 echo "</div></h3>";
 

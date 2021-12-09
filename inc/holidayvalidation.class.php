@@ -411,11 +411,11 @@ class PluginActivityHolidayValidation extends CommonDBChild {
             echo "<tr class='tab_bg_1'>";
             echo "<td class='center'>";
             if ($data['status'] == PluginActivityCommonValidation::ACCEPTED) {
-               echo "<div style='color:forestgreen'><i class='far fa-check-circle fa-4x'></i><br>" . $status . "</div>";
+               echo "<div style='color:forestgreen;'><i style='font-size: 3.5em;' class='ti ti-circle-check'></i><br>" . $status . "</div>";
             } else if ($data['status'] == PluginActivityCommonValidation::REFUSED) {
-               echo "<div style='color:darkred'><i class='far fa-times-circle fa-4x'></i><br>" . $status . "</div>";
+               echo "<div style='color:darkred;'><i style='font-size: 3.5em;' class='ti ti-circle-x'></i><br>" . $status . "</div>";
             } else {
-               echo "<div style='color:orange'><i class='far fa-question-circle fa-4x'></i><br>" . $status . "</div>";
+               echo "<div style='color:orange;'><i style='font-size: 3.5em;' class='ti ti-question-mark'></i><br>" . $status . "</div>";
             }
             echo "</td>";
 
@@ -470,11 +470,11 @@ class PluginActivityHolidayValidation extends CommonDBChild {
          echo "<tr class='tab_bg_1'>";
          echo "<td>" . __('Status of the approval request') . "</td>";
          echo "<td class='center'>";
-         echo "<div style='color:forestgreen'><i id='accept_holiday' class='question far fa-check-circle fa-4x'></i><br>" . __('Accept holiday', 'activity') . "</div>";
+         echo "<div style='color:forestgreen;'><i id='accept_holiday' style='font-size: 3.5em;' class='question ti ti-circle-check'></i><br>" . __('Accept holiday', 'activity') . "</div>";
          echo Html::hidden('accept_holiday', ['value' => 0]);
          echo "</td>";
          echo "<td class='center'>";
-         echo "<div style='color:darkred'><i id='refuse_holiday' class='question far fa-times-circle fa-4x'></i><br>" . __('Refuse holiday', 'activity') . "</div>";
+         echo "<div style='color:darkred;'><i id='refuse_holiday' style='font-size: 3.5em;' class='question ti ti-circle-x'></i><br>" . __('Refuse holiday', 'activity') . "</div>";
          echo Html::hidden('refuse_holiday', ['value' => 0]);
          echo Html::hidden('validation_date', ['value' => date('Y-m-d H:i:s')]);
          echo Html::hidden('id', ['value' => $this->fields['id']]);

@@ -52,14 +52,10 @@ class PluginActivityMenu extends CommonGLPI {
          $menu['options']['holidaycount']['page']            = PLUGIN_ACTIVITY_DIR_NOFULL.'/front/holidaycount.php';
          $menu['options']['holidaycount']['links']['add']    = PLUGIN_ACTIVITY_DIR_NOFULL.'/front/holidaycount.form.php';
          $menu['options']['holidaycount']['links']['search'] = PLUGIN_ACTIVITY_DIR_NOFULL.'/front/holidaycount.php';
-         $menu['icon']                                       = self::getIcon();
+         $menu['icon']                                       = PluginActivityHoliday::getIcon();
       }
 
       return $menu;
-   }
-
-   static function getIcon() {
-      return "far fa-calendar-alt";
    }
 
    static function removeRightsFromSession() {

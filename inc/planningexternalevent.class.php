@@ -139,7 +139,7 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
                $return .= $action['onclick'];
             }
             $return .= ">";
-            $return .= "<i class='" . $action['img'] . " fa-3x'  title='" . $action['label'] . "'></i>";
+            $return .= "<i class='" . $action['img'] . "' style='font-size: 3.5em;' title='" . $action['label'] . "'></i>";
             $return .= "<br><br>" . $action['label'] . "</a>";
 
             if (!$widget) {
@@ -183,19 +183,19 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
       $listActions = [
          PluginActivityActions::ADD_ACTIVITY    => [
             'link'   => $CFG_GLPI["root_doc"] . "/front/planning.php",
-            'img'    => "far fa-calendar-plus",
+            'img'    => "ti ti-calendar-plus",
             'label'  => __('Add an activity', 'activity'),
             'rights' => Session::haveRight("plugin_activity", CREATE),
          ],
          PluginActivityActions::LIST_ACTIVITIES => [
             'link'   => $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "/front/planningexternalevent.php",
-            'img'    => "far fa-calendar-alt",
+            'img'    => "ti ti-calendar",
             'label'  => __('List of activities', 'activity'),
             'rights' => Session::haveRight("plugin_activity", READ),
          ],
          PluginActivityActions::CRA             => [
             'link'   => $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "/front/cra.php",
-            'img'    => "far fa-calendar-check",
+            'img'    => "ti ti-calendar-stats",
             'label'  => __('CRA', 'activity'),
             'rights' => Session::haveRight("plugin_activity_statistics", 1),
          ]

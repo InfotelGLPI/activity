@@ -310,7 +310,7 @@ class PluginActivityReport extends CommonDBTM {
       echo "</select>&nbsp;";
       echo "<button type='submit' name='export' class='btn btn-primary unstyled pointer' " .
            " title=\"" . _sx('button', 'Export') . "\">" .
-           "<i class='far fa-save'></i><span class='sr-only'>" . _sx('button', 'Export') . "<span>";
+           "<i class='ti ti-device-floppy'></i><span class='sr-only'>" . _sx('button', 'Export') . "<span>";
    }
 
    function showGenericSearch($input) {
@@ -337,7 +337,6 @@ class PluginActivityReport extends CommonDBTM {
          $users_id = $_POST["users_id"];
       }
       if ($output_type == Search::HTML_OUTPUT) {
-
 
          Html::header(PluginActivityPlanningExternalEvent::getTypeName(2));
 

@@ -76,7 +76,7 @@ class PluginActivityTicketTask extends CommonDBTM {
                echo "<td colspan='3'></td>";
                echo '<td>';
                echo "<div id='is_oncra_" . $item->getID() . "' class='fa-label right'>
-               <i class='far fa-flag fa-fw'
+               <i class='ti ti-flag fa-fw'
                   title='" . __('Use in CRA', 'activity') . "'></i>";
                Dropdown::showYesNo('is_oncra',
                                    (isset($self->fields['id']) && $self->fields['id']) > 0 ? $self->fields['is_oncra'] : $is_cra_default,

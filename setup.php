@@ -59,21 +59,21 @@ function plugin_init_activity() {
                                                      PLUGIN_ACTIVITY_DIR_NOFULL."/scripts/activity_load_scripts.js"];
    }
 
-   if (Session::haveRight("plugin_activity_statistics", 1)) {
-      /* Show Stats in standard stats page */
-      if (class_exists('PluginActivityStats')) {
-         $common = new PluginActivityStats();
-         $stats  = $common->getAllStats();
-
-         if ($stats !== false) {
-            foreach ($stats as $stat) {
-               foreach ($stat['funct'] as $func) {
-                  $PLUGIN_HOOKS['stats']['activity'] = ['front/stats.php?stat_id=' . $func['id'] => $func['title']];
-               }
-            }
-         }
-      }
-   }
+//   if (Session::haveRight("plugin_activity_statistics", 1)) {
+//      /* Show Stats in standard stats page */
+//      if (class_exists('PluginActivityStats')) {
+//         $common = new PluginActivityStats();
+//         $stats  = $common->getAllStats();
+//
+//         if ($stats !== false) {
+//            foreach ($stats as $stat) {
+//               foreach ($stat['funct'] as $func) {
+//                  $PLUGIN_HOOKS['stats']['activity'] = ['front/stats.php?stat_id=' . $func['id'] => $func['title']];
+//               }
+//            }
+//         }
+//      }
+//   }
    $PLUGIN_HOOKS['post_init']['activity'] = 'plugin_activity_postinit';
 
    $plugin = new Plugin();
