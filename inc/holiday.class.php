@@ -1724,7 +1724,7 @@ class PluginActivityHoliday extends CommonDBTM {
                $interv[$key]["end"] = $data["end"];
             }
             $interv[$key]["name"]     = Glpi\Toolbox\Sanitizer::unsanitize(Html::resume_text($data["name"], $CFG_GLPI["cut"])); // name is re-encoded on JS side
-            $interv[$key]["content"]  = Glpi\Toolbox\RichText::getSafeHtml(Html::resume_text($data["comment"],$CFG_GLPI["cut"]));
+            $interv[$key]["content"]  = Glpi\RichText\RichText::getSafeHtml(Html::resume_text($data["comment"],$CFG_GLPI["cut"]));
             $interv[$key]["type"]    = $data["type"];
             $interv[$key]["status"]  = $data["global_validation"];
             $interv[$key]["url"]     = $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "/front/holiday.form.php?id=" .

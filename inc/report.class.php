@@ -1095,7 +1095,7 @@ class PluginActivityReport extends CommonDBTM {
                      $comment .= $datat["text"] . " (" . (self::TotalTpsPassesArrondis($datat["actiontime"] / $AllDay)) . ")<br>";
                   }
                }
-               echo Search::showItem($output_type, nl2br(Glpi\Toolbox\RichText::getTextFromHtml($comment)), $num, $row_num);
+               echo Search::showItem($output_type, nl2br(Glpi\RichText\RichText::getTextFromHtml($comment)), $num, $row_num);
                $total_ouvres = self::TotalTpsPassesArrondis($data["total_actiontime"] / $AllDay);
                echo Search::showItem($output_type, Html::formatNumber($total_ouvres, false, 3), $num, $row_num);
                echo Search::showItem($output_type, Html::formatNumber($percent) . "%", $num, $row_num);
