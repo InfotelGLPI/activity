@@ -1,6 +1,11 @@
-/**
- *  Load plugin scripts on page start
- */
+<?php
+use Glpi\Event;
+include('../../../inc/includes.php');
+header('Content-Type: text/javascript');
+
+?>
+
+var rootDoc = "<?php echo PLUGIN_ACTIVITY_WEBDIR; ?>";
 (function ($) {
    $.fn.activity_load_scripts = function () {
 
@@ -8,19 +13,10 @@
 
       // Start the plugin
       function init() {
-         //            $(document).ready(function () {
-         var path = 'plugins/activity/';
-         var url = window.location.href.replace(/front\/.*/, path);
-         if (window.location.href.indexOf('plugins') > 0) {
-            url = window.location.href.replace(/plugins\/.*/, path);
-         }
-         if (window.location.href.indexOf('marketplace') > 0) {
-            url = window.location.href.replace(/marketplace\/.*/, path);
-         }
 
          // Send data
          $.ajax({
-            url: url+'ajax/loadscripts.php',
+            url: rootDoc + '/ajax/loadscripts.php',
             type: "POST",
             dataType: "html",
             data: 'action=load',

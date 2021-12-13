@@ -208,7 +208,7 @@ class PluginActivityReport extends CommonDBTM {
       $result = $DB->query($query);
       if ($result && $DB->numrows($result) > 0) {
          echo "<div id='listSnapshots' style='margin-top:20px'>";
-         echo "<form id='snapshot_form' method='POST' action='" . $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "/front/cra.php'>";
+         echo "<form id='snapshot_form' method='POST' action='" . PLUGIN_ACTIVITY_WEBDIR . "/front/cra.php'>";
          echo "<table class='tab_cadre_fixehov'>";
          echo "<tr><th colspan='4'>" . __("Snapshots of the month", "activity") . "</th></tr>";
          echo "<tr><th>" . __("Name") . "</th>"
@@ -389,7 +389,6 @@ class PluginActivityReport extends CommonDBTM {
          echo "</td>";
          echo "<td align='center'>";
          echo Html::submit(_sx('button', 'Post'), ['name' => 'submit', 'class' => 'btn btn-primary']);
-//         echo "<input type=\"submit\" class='btn btn-primary' id='send_cra' name=\"submit\" Value=\"" . _sx('button', 'Post') . "\" />";
          echo "</td>";
          echo "</tr>";
          echo "</table>";
@@ -1115,7 +1114,7 @@ class PluginActivityReport extends CommonDBTM {
       if ($pdfMode && $showPopUp) {
 
          echo Ajax::createIframeModalWindow('activity_displayPdf',
-                                            $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "/front/cra.send.php?file=_plugins/activity/$filename&seefile=1",
+                                            PLUGIN_ACTIVITY_WEBDIR . "/front/cra.send.php?file=_plugins/activity/$filename&seefile=1",
                                             ['title'   => 'test',
                                              'display' => false,
                                              'autoopen' => true]);

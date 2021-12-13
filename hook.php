@@ -28,7 +28,7 @@
 function plugin_activity_install() {
    global $DB;
 
-   include_once (GLPI_ROOT . "/plugins/activity/inc/profile.class.php");
+   include_once (PLUGIN_ACTIVITY_DIR . "/inc/profile.class.php");
 
    $install = false;
    $update200 = false;
@@ -36,11 +36,11 @@ function plugin_activity_install() {
    // version 3.0.0
    if (!$DB->tableExists("glpi_plugin_activity_holidays")) {
       $install  = true;
-      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/empty-3.1.0.sql");
+      $DB->runFile(PLUGIN_ACTIVITY_DIR . "/install/sql/empty-3.1.0.sql");
    }
 
    if (!$DB->tableExists('glpi_plugin_activity_holidays')) {
-      $DB->runFile(GLPI_ROOT."/plugins/activity/install/sql/update-2.0.0.sql");
+      $DB->runFile(PLUGIN_ACTIVITY_DIR."/install/sql/update-2.0.0.sql");
       $update200 = true;
    }
 
@@ -100,62 +100,62 @@ function plugin_activity_install() {
    }
 
    if (!$DB->tableExists("glpi_plugin_activity_snapshots")) {
-      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/update-2.0.1.sql");
+      $DB->runFile(PLUGIN_ACTIVITY_DIR."/install/sql/update-2.0.1.sql");
    }
    if (!$DB->fieldExists("glpi_plugin_activity_holidaytypes", "is_holiday")) {
-      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/update-2.0.2.sql");
+      $DB->runFile(PLUGIN_ACTIVITY_DIR."/install/sql/update-2.0.2.sql");
    }
    if (!$DB->fieldExists("glpi_plugin_activity_holidaytypes", "auto_validated")) {
-      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/update-2.0.3.sql");
+      $DB->runFile(PLUGIN_ACTIVITY_DIR."/y/install/sql/update-2.0.3.sql");
    }
    if (!$DB->fieldExists("glpi_plugin_activity_holidays", "date_mod")) {
-      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/update-2.0.4.sql");
+      $DB->runFile(PLUGIN_ACTIVITY_DIR."/install/sql/update-2.0.4.sql");
    }
    if (!$DB->fieldExists("glpi_plugin_activity_options", "use_groupmanager")) {
-      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/update-2.1.4.sql");
+      $DB->runFile(PLUGIN_ACTIVITY_DIR."/install/sql/update-2.1.4.sql");
    }
    if (!$DB->tableExists('glpi_plugin_activity_holidaycounts')) {
-      $DB->runFile(GLPI_ROOT."/plugins/activity/install/sql/update-2.2.1.sql");
+      $DB->runFile(PLUGIN_ACTIVITY_DIR."/install/sql/update-2.2.1.sql");
    }
    if (!$DB->fieldExists("glpi_plugin_activity_options", "use_type_as_name")) {
-      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/update-2.2.2.sql");
+      $DB->runFile(PLUGIN_ACTIVITY_DIR."/install/sql/update-2.2.2.sql");
    }
 
    //version 2.2.4
    if (!$DB->fieldExists("glpi_plugin_activity_holidaytypes", "is_holiday_counter")) {
-      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/update-2.2.4.sql");
+      $DB->runFile(PLUGIN_ACTIVITY_DIR."/install/sql/update-2.2.4.sql");
 
-      include(GLPI_ROOT."/plugins/activity/install/update_223_224.php");
+      include(PLUGIN_ACTIVITY_DIR."/install/update_223_224.php");
       update223to224();
    }
    if (!$DB->fieldExists("glpi_plugin_activity_holidayperiods", "archived")) {
-      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/update-2.2.5.sql");
+      $DB->runFile(PLUGIN_ACTIVITY_DIR."/install/sql/update-2.2.5.sql");
    }
    //version 2.2.6
    if (!$DB->fieldExists("glpi_plugin_activity_options", "is_cra_default")) {
-      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/update-2.2.6.sql");
+      $DB->runFile(PLUGIN_ACTIVITY_DIR."/install/sql/update-2.2.6.sql");
    }
    //version 2.2.7
    if (!$DB->fieldExists("glpi_plugin_activity_options", "use_mandaydisplay")) {
-      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/update-2.2.7.sql");
+      $DB->runFile(PLUGIN_ACTIVITY_DIR."/install/sql/update-2.2.7.sql");
    }
 
    //version 2.3.0
    if (!$DB->fieldExists("glpi_plugin_activity_options", "use_project")) {
-      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/update-2.3.0.sql");
+      $DB->runFile(PLUGIN_ACTIVITY_DIR."/install/sql/update-2.3.0.sql");
    }
 
    //version 2.5.1
    if (!$DB->fieldExists("glpi_plugin_activity_options", "use_weekend")) {
-      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/update-2.5.1.sql");
+      $DB->runFile(PLUGIN_ACTIVITY_DIR."/install/sql/update-2.5.1.sql");
    }
 
    //version 3.0.0
    if ($DB->tableExists("glpi_planningexternalevents")
        && !$DB->tableExists('glpi_plugin_activity_planningexternalevents')
        && $DB->tableExists('glpi_plugin_activity_activities')) {
-      include(GLPI_ROOT."/plugins/activity/install/update_251_300.php");
-      $DB->runFile(GLPI_ROOT . "/plugins/activity/install/sql/update-3.0.0.sql");
+      include(PLUGIN_ACTIVITY_DIR."/install/update_251_300.php");
+      $DB->runFile(PLUGIN_ACTIVITY_DIR."/install/sql/update-3.0.0.sql");
       update251to300();
    }
 
@@ -173,8 +173,8 @@ function plugin_activity_install() {
 function plugin_activity_uninstall() {
    global $DB;
 
-   include_once (GLPI_ROOT."/plugins/activity/inc/profile.class.php");
-   include_once (GLPI_ROOT."/plugins/activity/inc/menu.class.php");
+   include_once (PLUGIN_ACTIVITY_DIR."/inc/profile.class.php");
+   include_once (PLUGIN_ACTIVITY_DIR."/inc/menu.class.php");
 
    // Plugin tables deletion
    $tables = ["glpi_plugin_activity_holidaytypes",

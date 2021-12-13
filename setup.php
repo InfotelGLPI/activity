@@ -1,5 +1,4 @@
 <?php
-
 /*
  -------------------------------------------------------------------------
  Activity plugin for GLPI
@@ -30,6 +29,7 @@ define('PLUGIN_ACTIVITY_VERSION', '3.1.0');
 if (!defined("PLUGIN_ACTIVITY_DIR")) {
    define("PLUGIN_ACTIVITY_DIR", Plugin::getPhpDir("activity"));
    define("PLUGIN_ACTIVITY_DIR_NOFULL", Plugin::getPhpDir("activity",false));
+   define("PLUGIN_ACTIVITY_WEBDIR", Plugin::getWebDir("activity"));
 }
 
 // Init the hooks of the plugins -Needed
@@ -53,10 +53,10 @@ function plugin_init_activity() {
        || Session::haveRight("plugin_activity_all_users", 1)) {
 
       $PLUGIN_HOOKS['add_javascript']['activity'] = ['scripts/scripts-activityholidays.js',
-                                                     'scripts/activity_load_scripts.js'];
+                                                     'scripts/activity_load_scripts.js.php'];
       $PLUGIN_HOOKS['javascript']['activity']     = [PLUGIN_ACTIVITY_DIR_NOFULL."/scripts/scripts-activitydate.js",
                                                      PLUGIN_ACTIVITY_DIR_NOFULL."/scripts/scripts-activityholidays.js",
-                                                     PLUGIN_ACTIVITY_DIR_NOFULL."/scripts/activity_load_scripts.js"];
+                                                     PLUGIN_ACTIVITY_DIR_NOFULL."/scripts/activity_load_scripts.js.php"];
    }
 
 //   if (Session::haveRight("plugin_activity_statistics", 1)) {

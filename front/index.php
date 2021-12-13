@@ -1,5 +1,4 @@
 <?php
-
 /*
  -------------------------------------------------------------------------
  Activity plugin for GLPI
@@ -24,33 +23,3 @@
  along with Activity. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
 */
-
-include ('../../../inc/includes.php');
-
-Html::header_nocache();
-Session::checkLoginUser();
-header("Content-Type: text/html; charset=UTF-8");
-
-if (isset($_POST['action'])) {
-   switch ($_POST['action']) {
-      case "load" :
-         //TODO comment For ?
-         if (Session::getCurrentInterface() == "central"
-               && (strpos($_SERVER['REQUEST_URI'], "cra.php") !== false)) {
-            $lang_month  = array_values(Toolbox::getMonthsOfYearArray());
-            echo "<script type='text/javascript'>changeClickTodayActivity(".json_encode(['lang_month' => $lang_month]).");</script>";
-         }
-
-         PluginActivityLateralmenu::createSlidePanel(
-             'showLateralMenu',
-             [
-                 'title'     => _n('Activity', 'Activities', 1, 'activity'),
-                 'url'       => PLUGIN_ACTIVITY_WEBDIR . '/ajax/lateralmenu.php'
-             ]
-         );
-
-         break;
-   }
-} else {
-   exit;
-}

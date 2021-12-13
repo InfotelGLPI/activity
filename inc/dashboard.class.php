@@ -246,7 +246,7 @@ class PluginActivityDashboard extends CommonGLPI {
             foreach ($lang_days as $day) {
                $lang_days_short[] = substr($day, 0, 3);
             }
-            $widget->setWidgetTitle("<a href='" . $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "/front/activity.form.php'>" . __('Planning access', 'activity') . "</a>");
+            $widget->setWidgetTitle("<a href='" . PLUGIN_ACTIVITY_WEBDIR . "/front/activity.form.php'>" . __('Planning access', 'activity') . "</a>");
 
             $activities = "{}";
             $activities = json_encode($this->getActivities($this->datas['users_id']));

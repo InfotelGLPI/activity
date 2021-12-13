@@ -99,7 +99,7 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
       $return = "";
       if ($number > 0) {
          $return .= Ajax::createIframeModalWindow('holiday',
-                                                  $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL. "/front/holiday.form.php",
+                                                  PLUGIN_ACTIVITY_WEBDIR. "/front/holiday.form.php",
             ['title'         => __('Create a holiday request', 'activity'),
                'reloadonclose' => false,
                'width'         => '1200',
@@ -188,13 +188,13 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
             'rights' => Session::haveRight("plugin_activity", CREATE),
          ],
          PluginActivityActions::LIST_ACTIVITIES => [
-            'link'   => $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "/front/planningexternalevent.php",
+            'link'   => PLUGIN_ACTIVITY_WEBDIR . "/front/planningexternalevent.php",
             'img'    => "ti ti-calendar",
             'label'  => __('List of activities', 'activity'),
             'rights' => Session::haveRight("plugin_activity", READ),
          ],
          PluginActivityActions::CRA             => [
-            'link'   => $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "/front/cra.php",
+            'link'   => PLUGIN_ACTIVITY_WEBDIR . "/front/cra.php",
             'img'    => "ti ti-calendar-stats",
             'label'  => __('CRA', 'activity'),
             'rights' => Session::haveRight("plugin_activity_statistics", 1),
