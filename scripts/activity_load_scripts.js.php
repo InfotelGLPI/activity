@@ -5,7 +5,7 @@ header('Content-Type: text/javascript');
 
 ?>
 
-var rootDoc = "<?php echo PLUGIN_ACTIVITY_WEBDIR; ?>";
+var root_activity_doc = "<?php echo PLUGIN_ACTIVITY_WEBDIR; ?>";
 (function ($) {
    $.fn.activity_load_scripts = function () {
 
@@ -16,7 +16,7 @@ var rootDoc = "<?php echo PLUGIN_ACTIVITY_WEBDIR; ?>";
 
          // Send data
          $.ajax({
-            url: rootDoc + '/ajax/loadscripts.php',
+            url: root_activity_doc + '/ajax/loadscripts.php',
             type: "POST",
             dataType: "html",
             data: 'action=load',
