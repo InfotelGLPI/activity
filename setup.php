@@ -107,7 +107,7 @@ function plugin_init_activity() {
 
             if (Session::haveRight('plugin_activity', READ)) {
                $PLUGIN_HOOKS["menu_toadd"]['activity']          = ['tools' => 'PluginActivityMenu'];
-               $PLUGIN_HOOKS['helpdesk_menu_entry']['activity'] = '/front/menu.php';
+               $PLUGIN_HOOKS['helpdesk_menu_entry']['activity'] = PLUGIN_ACTIVITY_DIR_NOFULL.'/front/menu.php';
             }
 
             $PLUGIN_HOOKS['redirect_page']['activity'] = 'front/holiday.form.php';
