@@ -118,8 +118,8 @@ class PluginActivityDashboard extends CommonGLPI {
 
             //            $widget->setTabDatas($this->showActivityGraph($this->datas));
 
-            $mois_courant   = intval(strftime("%m"));
-            $annee_courante = strftime("%Y");
+            $mois_courant   = intval(date('m', time()));
+            $annee_courante = date('Y', time());
 
             if (isset($opt['users_id']) && Session::haveRight("plugin_activity_all_users", 1)) {
                $users_id = $opt['users_id'];
@@ -149,7 +149,7 @@ class PluginActivityDashboard extends CommonGLPI {
 
             $activities = $this->showActivityGraph($this->datas);
             $widget     = new PluginMydashboardHtml();
-            $title      = __('Activity in the month', 'activity') . " (" . __(strftime("%B")) . ")";
+            $title      = __('Activity in the month', 'activity') . " (" . __(date('B', time())) . ")";
             $widget->setWidgetTitle($title);
             $widget->setWidgetComment(__("Display of activity by month for a user (tickets, activity, holidays, others)", "activity"));
             $datas = [];
@@ -314,11 +314,11 @@ class PluginActivityDashboard extends CommonGLPI {
 
             $widget = new PluginMydashboardHtml();
 
-            $mois  = intval(strftime("%m") - 6);
-            $annee = intval(strftime("%Y") - 1);
+            $mois  = intval(date('m', time()) - 6);
+            $annee = intval(date('Y', time()) - 1);
 
             if ($mois > 0) {
-               $annee = strftime("%Y");
+               $annee = date('Y', time());
             } else {
                $mois = 12;
             }
@@ -610,7 +610,7 @@ class PluginActivityDashboard extends CommonGLPI {
       $holiday = new PluginActivityHoliday();
       $holiday->setHolidays();
 
-      $month = strftime("%m");
+      $month = date('m', time());
 
       $queryMinDate = "SELECT MIN(`date`)
                   FROM `glpi_tickettasks`";

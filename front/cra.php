@@ -44,11 +44,11 @@ if (isset($_GET['itemtype'])) {
 } else {
    Html::header(__('Report of Activities', 'activity'), '', "tools", "pluginactivitymenu");
    if (empty($_POST["month"])) {
-      $_POST["month"] = intval(strftime("%m"));
+      $_POST["month"] = date('m', time());
    }
 
    if (empty($_POST["year"])) {
-      $_POST["year"] = intval(strftime("%Y"));
+      $_POST["year"] = date('Y', time());
    }
 
    if (!isset($_POST["users_id"])

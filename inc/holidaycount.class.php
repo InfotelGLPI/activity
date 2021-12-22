@@ -231,12 +231,12 @@ class PluginActivityHolidaycount extends CommonDBTM {
 
       $count = 0;
       // Current year
-      $old_annee  = intval(strftime("%Y") - 1);
+      $old_annee  = intval(date('Y', time()) - 1);
       $next_annee = date('Y');
       // Next year
       if (time() > strtotime(date('Y') . "-05-31")) {
-         $old_annee  = intval(strftime("%Y"));
-         $next_annee = intval(strftime("%Y") + 1);
+         $old_annee  = intval(date('Y', time()));
+         $next_annee = intval(date('Y', time()) + 1);
       }
 
       $query = " SELECT `glpi_plugin_activity_holidaycounts`.*

@@ -113,7 +113,7 @@ if (isset($_GET['checkavailability'])) {
    Session::checkRight('plugin_activity', CREATE);
 
    if (!isset($_GET["date"]) || empty($_GET["date"])) {
-      $_GET["date"] = strftime("%Y-%m-%d");
+      $_GET["date"] = date('Y-m-d', time());
    }
    if (!isset($_GET["type"])) {
       $_GET["type"] = "week";

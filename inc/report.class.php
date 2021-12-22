@@ -174,12 +174,12 @@ class PluginActivityReport extends CommonDBTM {
       } else {
          $users_id = $input["users_id"];
       }
-      $mois_courant = intval(strftime("%m"));
+      $mois_courant = intval(date('m', time()));
       if (isset($input["month"])
           && $input["month"] > 0) {
          $mois_courant = $input["month"];
       }
-      $annee_courante = strftime("%Y");
+      $annee_courante = date('Y', time());
       if (isset($input["year"])
           && $input["year"] > 0) {
          $annee_courante = $input["year"];
@@ -352,14 +352,14 @@ class PluginActivityReport extends CommonDBTM {
          echo "<td align='right'>";
          echo __('Date') . "</td>";
          echo "<td>";
-         $mois_courant = intval(strftime("%m"));
+         $mois_courant = intval(date('m', time()));
          if (isset($input["month"])
              && $input["month"] > 0) {
             $mois_courant = $input["month"];
          }
          echo self::monthDropdown("month", $mois_courant);
          echo "&nbsp;";
-         $annee_courante = strftime("%Y");
+         $annee_courante = date('Y', time());
          if (isset($input["year"])
              && $input["year"] > 0) {
             $annee_courante = $input["year"];

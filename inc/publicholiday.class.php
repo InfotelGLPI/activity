@@ -85,7 +85,7 @@ class PluginActivityPublicHoliday extends CommonDBTM {
          foreach ($holidays as $k => $holiday) {
             if ($holiday['is_perpetual'] == 1) {
                for ($i = 0; $i <= 100; $i++) {
-                  $annee_courante = strftime("%Y") - 10;
+                  $annee_courante = date('Y', time()) - 10;
                   $year[$i]       = ($annee_courante + $i);
                   $hb             = date('m-d', strtotime($holiday['begin']));
                   $he             = date('m-d', strtotime($holiday['end']));
