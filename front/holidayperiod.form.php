@@ -3,7 +3,7 @@
 /*
  -------------------------------------------------------------------------
  Activity plugin for GLPI
- Copyright (C) 2019 by the Activity Development Team.
+ Copyright (C) 2019-2022 by the Activity Development Team.
  -------------------------------------------------------------------------
 
  LICENSE
