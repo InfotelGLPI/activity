@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-14 08:17+0000\n"
+"POT-Creation-Date: 2022-02-03 17:23+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,10 +18,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: setup.php:176 ajax/loadscripts.php:47 front/menu.php:46
+#: setup.php:178 ajax/loadscripts.php:47 front/menu.php:46
 #: inc/config.class.php:38 inc/menu.class.php:32 inc/option.class.php:38
 #: inc/preference.class.php:42 inc/profile.class.php:43
-#: inc/profile.class.php:138 inc/report.class.php:864
+#: inc/profile.class.php:138 inc/report.class.php:866
 msgid "Activity"
 msgid_plural "Activities"
 msgstr[0] ""
@@ -65,7 +65,7 @@ msgstr ""
 msgid "Please activate the plugin"
 msgstr ""
 
-#: front/cra.php:45 inc/crapdf.class.php:246
+#: front/cra.php:45 inc/crapdf.class.php:243
 msgid "Report of Activities"
 msgstr ""
 
@@ -77,58 +77,58 @@ msgstr ""
 msgid "Show internal helpdesk"
 msgstr ""
 
-#: inc/crapdf.class.php:274
+#: inc/crapdf.class.php:271
 msgid "during"
 msgstr ""
 
-#: inc/crapdf.class.php:279
+#: inc/crapdf.class.php:276
 msgid "Year"
 msgstr ""
 
-#: inc/crapdf.class.php:283
+#: inc/crapdf.class.php:280
 msgid "for"
 msgstr ""
 
-#: inc/crapdf.class.php:287
+#: inc/crapdf.class.php:284
 msgid "Client"
 msgstr ""
 
-#: inc/crapdf.class.php:339
+#: inc/crapdf.class.php:336
 msgid "Project / activity"
 msgstr ""
 
-#: inc/crapdf.class.php:465 inc/holidaytype.class.php:89
-#: inc/report.class.php:1503
+#: inc/crapdf.class.php:462 inc/holidaytype.class.php:89
+#: inc/report.class.php:1505
 msgid "Part time"
 msgstr ""
 
-#: inc/crapdf.class.php:466 inc/report.class.php:1501
+#: inc/crapdf.class.php:463 inc/report.class.php:1503
 msgid "Holidays or exceptional absences"
 msgstr ""
 
-#: inc/crapdf.class.php:467 inc/report.class.php:1505
+#: inc/crapdf.class.php:464 inc/report.class.php:1507
 msgid "Sickness or maternity"
 msgstr ""
 
-#: inc/crapdf.class.php:496 inc/report.class.php:983
+#: inc/crapdf.class.php:493 inc/report.class.php:985
 msgid "Absences"
 msgstr ""
 
-#: inc/crapdf.class.php:529
+#: inc/crapdf.class.php:526
 msgid ""
 "Entry except in the month, the total must be equal to the number of working "
 "days this month"
 msgstr ""
 
-#: inc/crapdf.class.php:538
+#: inc/crapdf.class.php:535
 msgid "Total incorrect"
 msgstr ""
 
-#: inc/crapdf.class.php:540
+#: inc/crapdf.class.php:537
 msgid "Total OK"
 msgstr ""
 
-#: inc/crapdf.class.php:582
+#: inc/crapdf.class.php:579
 msgid "Generated with GLPI on"
 msgstr ""
 
@@ -167,7 +167,7 @@ msgid "All day"
 msgstr ""
 
 #: inc/dashboard.class.php:472 inc/dashboard.class.php:505
-#: inc/report.class.php:577 inc/report.class.php:619 inc/report.class.php:672
+#: inc/report.class.php:579 inc/report.class.php:621 inc/report.class.php:674
 msgid "No defined type"
 msgstr ""
 
@@ -650,43 +650,43 @@ msgstr ""
 msgid "Snapshots of the month"
 msgstr ""
 
-#: inc/report.class.php:270
+#: inc/report.class.php:272
 msgid "Snapshot taken in"
 msgstr ""
 
-#: inc/report.class.php:308
+#: inc/report.class.php:310
 msgid "Export CRA"
 msgstr ""
 
-#: inc/report.class.php:346
+#: inc/report.class.php:348
 msgid "Activity report"
 msgstr ""
 
-#: inc/report.class.php:371
+#: inc/report.class.php:373
 msgid "Next month"
 msgstr ""
 
-#: inc/report.class.php:372
+#: inc/report.class.php:374
 msgid "Previous month"
 msgstr ""
 
-#: inc/report.class.php:696
+#: inc/report.class.php:698
 msgid "Unbilled"
 msgstr ""
 
-#: inc/report.class.php:863
+#: inc/report.class.php:865
 msgid "Project"
 msgstr ""
 
-#: inc/report.class.php:1050
+#: inc/report.class.php:1052
 msgid "Activities detail"
 msgstr ""
 
-#: inc/report.class.php:1058
+#: inc/report.class.php:1060
 msgid "Percent"
 msgstr ""
 
-#: inc/report.class.php:1109
+#: inc/report.class.php:1111
 msgid "No activity found"
 msgstr ""
 
