@@ -101,7 +101,7 @@ class PluginActivityConfig extends CommonDBTM {
       $rand = mt_rand();
       $number = count($fields);
 
-      echo "<div class='center'>";
+      echo "<div class='left'>";
 
       if ($canedit && $number) {
          Html::openMassiveActionsForm('mass'.__CLASS__.$rand);
@@ -137,7 +137,7 @@ class PluginActivityConfig extends CommonDBTM {
          echo "</td>";
          echo "</tr>";
       }
-
+      echo "</table>";
       if ($canedit && $number) {
          $massiveactionparams['ontop'] = false;
          Html::showMassiveActions($massiveactionparams);

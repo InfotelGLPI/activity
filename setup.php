@@ -32,6 +32,8 @@ if (!defined("PLUGIN_ACTIVITY_DIR")) {
    define("PLUGIN_ACTIVITY_WEBDIR", Plugin::getWebDir("activity"));
 }
 
+include_once PLUGIN_ACTIVITY_DIR . "/vendor/autoload.php";
+
 // Init the hooks of the plugins -Needed
 function plugin_init_activity() {
    global $PLUGIN_HOOKS, $CFG_GLPI;
@@ -110,7 +112,7 @@ function plugin_init_activity() {
                $PLUGIN_HOOKS['helpdesk_menu_entry']['activity'] = PLUGIN_ACTIVITY_DIR_NOFULL.'/front/menu.php';
             }
 
-            $PLUGIN_HOOKS['redirect_page']['activity'] = 'front/holiday.form.php';
+            $PLUGIN_HOOKS['redirect_page']['activity'] = PLUGIN_ACTIVITY_DIR_NOFULL.'/front/holiday.form.php';
          }
          $PLUGIN_HOOKS['mydashboard']['activity'] = ["PluginActivityDashboard"];
 

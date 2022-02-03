@@ -238,6 +238,7 @@ class PluginActivityReport extends CommonDBTM {
 
    }
 
+
    static function takeASnapshot($crit, $input, $PDF) {
 
       $dbu = new DbUtils();
@@ -257,6 +258,7 @@ class PluginActivityReport extends CommonDBTM {
 
       $doc = new Document();
 
+      $input['month'] = ltrim($input['month'], '0');
       $months    = Toolbox::getMonthsOfYearArray();
       $monthname = $months[$input['month']];
 
@@ -308,7 +310,7 @@ class PluginActivityReport extends CommonDBTM {
       echo "<option value='" . Search::PDF_OUTPUT_LANDSCAPE . "'>" . __('Export CRA', 'activity') .
            "</option>";
       echo "</select>&nbsp;";
-      echo "<button type='submit' name='export' class='btn btn-primary unstyled pointer' " .
+      echo "<button type='submit' name='export' class='submit btn btn-primary unstyled pointer' " .
            " title=\"" . _sx('button', 'Export') . "\">" .
            "<i class='ti ti-device-floppy'></i><span class='sr-only'>" . _sx('button', 'Export') . "<span>";
    }
