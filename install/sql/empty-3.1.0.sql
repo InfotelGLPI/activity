@@ -9,11 +9,11 @@ CREATE TABLE `glpi_plugin_activity_holidays` (
    `global_validation` tinyint NOT NULL DEFAULT '0' COMMENT '1 -> NONE ; 2 -> Waiting ; 3 -> accepted ; 4 -> rejected',
    `comment` text COLLATE utf8mb4_unicode_ci default NULL,
    `actiontime` int unsigned NOT NULL DEFAULT '0',
-   `plugin_activity_holidaytypes_id` int(4) NOT NULL default '0',
+   `plugin_activity_holidaytypes_id` int unsigned NOT NULL default '0',
    `users_id` int unsigned NOT NULL default '0',
    `allDay` tinyint NOT NULL DEFAULT '0',
    `validation_percent` int unsigned NOT NULL DEFAULT '0',
-   `plugin_activity_holidayperiods_id` int(4) default '0',
+   `plugin_activity_holidayperiods_id` int unsigned default '0',
    PRIMARY KEY  (`id`),
    KEY `users_id` (`users_id`),
    KEY `plugin_activity_holidaytypes_id` (`plugin_activity_holidaytypes_id`)
@@ -105,8 +105,8 @@ CREATE TABLE `glpi_plugin_activity_holidaycounts` (
    `name` varchar(255) collate utf8mb4_unicode_ci NOT NULL default '',
    `date_mod` timestamp NULL DEFAULT NULL,
    `count` decimal(20,1) NOT NULL DEFAULT '0.00',
-   `plugin_activity_holidayperiods_id` int(4) NOT NULL default '0',
-   `plugin_activity_holidaytypes_id` int(4) NOT NULL default '0',
+   `plugin_activity_holidayperiods_id` int unsigned NOT NULL default '0',
+   `plugin_activity_holidaytypes_id` int unsigned NOT NULL default '0',
    `users_id` int unsigned NOT NULL default '0',
    PRIMARY KEY  (`id`),
    KEY `users_id` (`users_id`),
@@ -132,8 +132,8 @@ CREATE TABLE `glpi_plugin_activity_snapshots` (
    `id` int unsigned NOT NULL auto_increment,
    `documents_id` int unsigned NOT NULL,
    `date` timestamp NULL DEFAULT NULL,
-   `month` int(2) NOT NULL,
-   `year` int(5) NOT NULL,
+   `month` int unsigned NOT NULL,
+   `year` int unsigned NOT NULL,
    PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
