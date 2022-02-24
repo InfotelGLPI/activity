@@ -1143,7 +1143,7 @@ class PluginActivityHoliday extends CommonDBTM {
       if (isset($this->fields['id']) && $this->fields['id'] != 0) {
          $htype = new PluginActivityHolidayType();
          $htype->getFromDB($this->fields["plugin_activity_holidaytypes_id"]);
-         echo $htype->fields['name'];
+         echo isset($htype->fields['name']) ?? "";
       } else {
          $params = [
             'name'      => "plugin_activity_holidaytypes_id",
@@ -1191,7 +1191,7 @@ class PluginActivityHoliday extends CommonDBTM {
          echo "<input type='hidden' name='is_planned' value='1' />";
          echo "<input type='hidden' name='actiontime' id='actiontime' value='" . ($actionTime / $AllDay) . "' />";
          //$params_begin['value']     = date('d-m-Y', strtotime($begin));
-         $params_begin['on_change'] = "updateDuration(this, '" . $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "');";
+         $params_begin['on_change'] = "updateDuration(this, \"" . $CFG_GLPI["root_doc"] .PLUGIN_ACTIVITY_DIR_NOFULL . "\");";
          Html::showDateField("begin", $params_begin);
       } else {
          echo "<input disabled='disabled' ";
@@ -1254,6 +1254,7 @@ class PluginActivityHoliday extends CommonDBTM {
       }
 
       echo "</td></tr>";
+
       if ($ID <= 0) {
          echo "<tr><td>&nbsp;</td><td>";
 
@@ -1459,8 +1460,8 @@ class PluginActivityHoliday extends CommonDBTM {
       echo "      " . ($params['disabled'] == true ? " disabled='disabled' " : '');
       echo "      onclick='" . $onclick . "'";
       echo "   />";
-      echo "   &nbsp" . $params['title'];
-      echo "</label>&nbsp&nbsp;";
+      echo "   &nbsp;" . $params['title'];
+      echo "</label>&nbsp;&nbsp;";
    }
 
 

@@ -66,6 +66,7 @@ function getActionTime(beginDate,endDate,actiontime,input,format,root_doc){
 
       xhr_object = getXHRObject();
       xhr_object.open("POST",root_doc + '/ajax/duration.php', true);
+      xhr_object.setRequestHeader('X-Glpi-Csrf-Token', getAjaxCsrfToken());
       xhr_object.onreadystatechange = function() {
          if (xhr_object.readyState == 4) {
             var jsondata = JSON.parse(xhr_object.responseText);
