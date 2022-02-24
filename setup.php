@@ -110,6 +110,7 @@ function plugin_init_activity() {
             if (Session::haveRight('plugin_activity', READ)) {
                $PLUGIN_HOOKS["menu_toadd"]['activity']          = ['tools' => 'PluginActivityMenu'];
                $PLUGIN_HOOKS['helpdesk_menu_entry']['activity'] = PLUGIN_ACTIVITY_DIR_NOFULL.'/front/menu.php';
+               $PLUGIN_HOOKS['helpdesk_menu_entry_icon']['activity'] = PluginActivityHoliday::getIcon();
             }
 
             $PLUGIN_HOOKS['redirect_page']['activity'] = PLUGIN_ACTIVITY_DIR_NOFULL.'/front/holiday.form.php';
@@ -187,4 +188,17 @@ function plugin_version_activity() {
             'dev' => false
          ]
       ]];
+}
+
+/**
+ * @return bool
+ */
+function plugin_activity_check_prerequisites() {
+
+   if (!is_readable(__DIR__ . '/vendor/autoload.php') || !is_file(__DIR__ . '/vendor/autoload.php')) {
+      echo "Run composer install --no-dev in the plugin directory<br>";
+      return false;
+   }
+
+   return true;
 }

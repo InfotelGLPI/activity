@@ -1100,7 +1100,8 @@ class PluginActivityHoliday extends CommonDBTM {
       $this->showFormHeader($options);
 
       if (!empty($ID)) {
-         if ($this->fields["users_id"] != Session::getLoginUserID() && !Session::haveRight("plugin_activity_all_users", 1)) {
+         if ($this->fields["users_id"] != Session::getLoginUserID()
+             && !Session::haveRight("plugin_activity_all_users", 1)) {
             return false;
          }
       }
@@ -1195,8 +1196,7 @@ class PluginActivityHoliday extends CommonDBTM {
       echo "<tr><td>" . __('Start date') . "</td><td>";
       if (!isset($this->fields['id']) || $this->fields['id'] == '') {
          echo Html::hidden('is_planned', ['value' => '1']);
-         echo Html::hidden('actiontime', ['value' => ($actionTime / $AllDay)]);
-//         echo "<input type='hidden' name='actiontime' id='actiontime' value='" . ($actionTime / $AllDay) . "' />";
+         echo Html::hidden('actiontime', ['value' => ($actionTime / $AllDay), 'id' => 'actiontime']);
          //$params_begin['value']     = date('d-m-Y', strtotime($begin));
          $params_begin['on_change'] = "updateDuration(this, '" . PLUGIN_ACTIVITY_WEBDIR . "');";
          Html::showDateField("begin", $params_begin);
@@ -1953,7 +1953,7 @@ class PluginActivityHoliday extends CommonDBTM {
 
       $holidays = [];
 
-      $calendars_id = Entity::getUsedConfig('calendars_id', $entities_id);
+      $calendars_id = Entity::getUsedConfig('calendars_strategy', $entities_id, 'calendars_id', 0);
       if ($calendars_id > 0) {
 
          $query = "SELECT `glpi_holidays`.*

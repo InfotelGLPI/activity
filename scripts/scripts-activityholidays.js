@@ -1,30 +1,4 @@
-function updateDuration(input,root_doc){
-   var hiddenDuration = document.getElementById('actiontime');
-
-   var beginDate = $("input[name='begin']").val();
-   var endDate = $("input[name='end']").val()
-
-   var tmp = beginDate.split('-');
-   var objDateDeb = new Date(tmp[2],tmp[1]-1,tmp[0]);
-   if(endDate.length <= 0){
-      endDate = beginDate;
-   }
-
-   tmp = endDate.split('-');
-   var objDateEnd  = new Date(tmp[2],tmp[1]-1,tmp[0]);
-
-
-   // if (dateDiff(objDateDeb,objDateEnd).day < 0) {
-   //    objDateEnd = objDateDeb;
-   //    endDate = beginDate;
-   // }
-   //console.log(beginDate)
-   //console.log(endDate)
-   getActionTime(beginDate,endDate,Math.abs(dateDiff(objDateEnd, objDateDeb).day),input,'day',root_doc);
-}
-
-
-function getXHRObject(){
+function getXHRObject() {
    if (window.XMLHttpRequest) {
       xhr_object = new XMLHttpRequest();
    } else if (window.ActiveXObject) {
@@ -35,78 +9,20 @@ function getXHRObject(){
 
    return xhr_object;
 }
-function getActionTime(beginDate,endDate,actiontime,input,format,root_doc){
-   var xhr_object = null;
 
-   var cbAmBegin  = document.getElementById('cb_begindate_am');
-   var cbPmBegin  = document.getElementById('cb_begindate_pm');
-   var cbAllDayBegin  = document.getElementById('cb_begindate_allday');
-   var cbAmEnd  = document.getElementById('cb_enddate_am');
-   var cbPmEnd  = document.getElementById('cb_enddate_pm');
-   var cbAllDayEnd  = document.getElementById('cb_enddate_allday');
-
-   document.getElementById('div_duration').innerHTML = '';
-   var img = document.createElement('img');
-   img.setAttribute('src',root_doc + '/pics/loading.gif');
-   document.getElementById('div_duration').appendChild(img);
-
-
-   if (beginDate == endDate) {
-      if (cbAllDayBegin.checked==true) {
-         finalDuration = 1;
-      } else {
-         finalDuration = 0.5;
-      }
-
-      document.getElementById('actiontime').value = finalDuration;
-      document.getElementById('div_duration').innerHTML = finalDuration;
-      updateRadioBtnDate(beginDate, endDate, input,finalDuration);
-   } else {
-      args="begin="+beginDate+"&end="+endDate+"&actiontime="+actiontime;
-
-      xhr_object = getXHRObject();
-      xhr_object.open("POST",root_doc + '/ajax/duration.php', true);
-      xhr_object.onreadystatechange = function() {
-         if (xhr_object.readyState == 4) {
-            var jsondata = JSON.parse(xhr_object.responseText);
-            var finalDuration =  jsondata['actiontime']-1;
-
-            if (cbAmBegin.checked == true ||cbPmBegin.checked) {
-               finalDuration+=0.5;
-            } else if (cbAllDayBegin.checked == true ) {
-               finalDuration+=1;
-            }
-            if (cbAmEnd.checked == true ||cbPmEnd.checked) {
-               finalDuration-=0.5;
-            }
-
-            updateRadioBtnDate(beginDate, endDate, input,finalDuration);
-
-            if (!isNaN(finalDuration)) {
-               document.getElementById('div_duration').innerHTML = finalDuration;
-               document.getElementById('actiontime').value = finalDuration;
-            }
-         }
-         return xhr_object.readyState;
-      };
-      xhr_object.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      xhr_object.send(args);
-   }
-}
-
-function updateRadioBtnDate(beginDate, endDate, input,tmpDuration){
+function updateRadioBtnDate(beginDate, endDate, input, tmpDuration) {
    // var beginDate = document.getElementById('begin');
    // var endDate = document.getElementById('end');
 
-   var cbAmBegin     = document.getElementById('cb_begindate_am');
-   var cbPmBegin     = document.getElementById('cb_begindate_pm');
+   var cbAmBegin = document.getElementById('cb_begindate_am');
+   var cbPmBegin = document.getElementById('cb_begindate_pm');
    var cbAllDayBegin = document.getElementById('cb_begindate_allday');
 
    var cbAmEnd = document.getElementById('cb_enddate_am');
    var cbPmEnd = document.getElementById('cb_enddate_pm');
    var cbAllDayEnd = document.getElementById('cb_enddate_allday');
 
-   if (tmpDuration == 0) {
+   if (tmpDuration === 0) {
       cbAmEnd.disabled = true;
       cbPmEnd.disabled = true;
       cbAllDayEnd.disabled = true;
@@ -114,7 +30,7 @@ function updateRadioBtnDate(beginDate, endDate, input,tmpDuration){
       // same date
 
 
-      if (beginDate == endDate) {
+      if (beginDate === endDate) {
 
          cbAmBegin.disabled = false;
          cbPmBegin.disabled = false;
@@ -138,14 +54,14 @@ function updateRadioBtnDate(beginDate, endDate, input,tmpDuration){
          cbPmEnd.disabled = true;
          cbAllDayEnd.disabled = false;
 
-         if (cbAmBegin.checked == true) {
+         if (cbAmBegin.checked === true) {
             cbPmBegin.checked = true;
 
          }
-         if (cbPmEnd.checked == true) {
+         if (cbPmEnd.checked === true) {
             cbAmEnd.checked = true;
 
-         } else if (cbPmEnd.checked == false && cbAmEnd.checked == false && cbAllDayEnd.checked == false) {
+         } else if (cbPmEnd.checked === false && cbAmEnd.checked === false && cbAllDayEnd.checked === false) {
             cbAllDayEnd.checked = true;
 
          }
@@ -155,25 +71,111 @@ function updateRadioBtnDate(beginDate, endDate, input,tmpDuration){
 }
 
 
-function dateDiff(date1, date2){
+function dateDiff(date1, date2) {
    var diff = {};                           // Initialisation du retour
    var tmp = date2 - date1;
 
-   tmp = Math.floor(tmp/1000);             // Nombre de secondes entre les 2 dates
+   tmp = Math.floor(tmp / 1000);             // Nombre de secondes entre les 2 dates
    diff.sec = tmp % 60;                    // Extraction du nombre de secondes
 
-   tmp = Math.floor((tmp-diff.sec)/60);    // Nombre de minutes (partie entière)
+   tmp = Math.floor((tmp - diff.sec) / 60);    // Nombre de minutes (partie entière)
    diff.min = tmp % 60;                    // Extraction du nombre de minutes
 
-   tmp = Math.floor((tmp-diff.min)/60);    // Nombre d'heures (entières)
+   tmp = Math.floor((tmp - diff.min) / 60);    // Nombre d'heures (entières)
    diff.hour = tmp % 24;                   // Extraction du nombre d'heures
 
-   tmp = Math.floor((tmp-diff.hour)/24);   // Nombre de jours restants
+   tmp = Math.floor((tmp - diff.hour) / 24);   // Nombre de jours restants
    diff.day = tmp;
 
    return diff;
 }
 
+
+function updateDuration(input, root_doc) {
+   var hiddenDuration = document.getElementById('actiontime');
+
+   var beginDate = $("input[name='begin']").val();
+   var endDate = $("input[name='end']").val();
+
+   var tmp = beginDate.split('-');
+   var objDateDeb = new Date(tmp[2], tmp[1] - 1, tmp[0]);
+   if (endDate.length <= 0) {
+      endDate = beginDate;
+   }
+
+   tmp = endDate.split('-');
+   var objDateEnd = new Date(tmp[2], tmp[1] - 1, tmp[0]);
+
+
+   // if (dateDiff(objDateDeb,objDateEnd).day < 0) {
+   //    objDateEnd = objDateDeb;
+   //    endDate = beginDate;
+   // }
+   //console.log(beginDate)
+   //console.log(endDate)
+   getActionTime(beginDate, endDate, Math.abs(dateDiff(objDateEnd, objDateDeb).day), input, 'day', root_doc);
+}
+
+
+function getActionTime(beginDate, endDate, actiontime, input, format, root_doc) {
+   var xhr_object = null;
+
+   var cbAmBegin = document.getElementById('cb_begindate_am');
+   var cbPmBegin = document.getElementById('cb_begindate_pm');
+   var cbAllDayBegin = document.getElementById('cb_begindate_allday');
+   var cbAmEnd = document.getElementById('cb_enddate_am');
+   var cbPmEnd = document.getElementById('cb_enddate_pm');
+   var cbAllDayEnd = document.getElementById('cb_enddate_allday');
+
+   document.getElementById('div_duration').innerHTML = '';
+   var img = document.createElement('img');
+   img.setAttribute('src', root_doc + '/pics/loading.gif');
+   document.getElementById('div_duration').appendChild(img);
+
+
+   if (beginDate === endDate) {
+      if (cbAllDayBegin.checked === true) {
+         finalDuration = 1;
+      } else {
+         finalDuration = 0.5;
+      }
+
+      document.getElementById('actiontime').value = finalDuration;
+      document.getElementById('div_duration').innerHTML = finalDuration;
+      updateRadioBtnDate(beginDate, endDate, input, finalDuration);
+   } else {
+      args = "begin=" + beginDate + "&end=" + endDate + "&actiontime=" + actiontime;
+
+      xhr_object = getXHRObject();
+      xhr_object.open("POST", root_doc + '/ajax/duration.php', true);
+      xhr_object.setRequestHeader('X-Glpi-Csrf-Token', getAjaxCsrfToken());
+      xhr_object.onreadystatechange = function () {
+         if (xhr_object.readyState === 4) {
+            var jsondata = JSON.parse(xhr_object.responseText);
+            var finalDuration = jsondata['actiontime'] - 1;
+
+            if (cbAmBegin.checked === true || cbPmBegin.checked) {
+               finalDuration += 0.5;
+            } else if (cbAllDayBegin.checked === true) {
+               finalDuration += 1;
+            }
+            if (cbAmEnd.checked === true || cbPmEnd.checked) {
+               finalDuration -= 0.5;
+            }
+
+            updateRadioBtnDate(beginDate, endDate, input, finalDuration);
+
+            if (!isNaN(finalDuration)) {
+               document.getElementById('div_duration').innerHTML = finalDuration;
+               document.getElementById('actiontime').value = finalDuration;
+            }
+         }
+         return xhr_object.readyState;
+      };
+      xhr_object.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xhr_object.send(args);
+   }
+}
 
 /**
  *
