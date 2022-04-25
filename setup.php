@@ -24,7 +24,7 @@
  --------------------------------------------------------------------------
 */
 
-define('PLUGIN_ACTIVITY_VERSION', '3.1.0-rc3');
+define('PLUGIN_ACTIVITY_VERSION', '3.1.0');
 
 if (!defined("PLUGIN_ACTIVITY_DIR")) {
    define("PLUGIN_ACTIVITY_DIR", Plugin::getPhpDir("activity"));
