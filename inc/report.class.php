@@ -1116,8 +1116,8 @@ class PluginActivityReport extends CommonDBTM {
       if ($pdfMode && $showPopUp) {
 
          echo Ajax::createIframeModalWindow('activity_displayPdf',
-                                            PLUGIN_ACTIVITY_WEBDIR . "/front/cra.send.php?file=_plugins/activity/$filename&seefile=1",
-                                            ['title'   => 'test',
+                                            PLUGIN_ACTIVITY_WEBDIR . "/front/cra.send.php?file=_plugins/activity/$filename",
+                                            ['title'   => 'cra',
                                              'display' => false,
                                              'autoopen' => true]);
 

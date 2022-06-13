@@ -33,19 +33,20 @@ if (isset($_GET["file"])) { // for other file
    $splitter = explode("/", $_GET["file"]);
 
    if (count($splitter) == 3) {
-
-      if (file_exists(GLPI_DOC_DIR."/".$_GET["file"])) {
-         if (!isset($_GET["seefile"])) {
-            Toolbox::sendFile(GLPI_DOC_DIR."/".$_GET["file"], $splitter[2]);
-         } else {
-            $doc = new Document();
-            $doc->fields['filepath'] = $_GET["file"];
-            $doc->fields['mime'] = 'application/pdf';
-            $doc->fields['filename'] = $splitter[2];
-
-            $report = new PluginActivityReport();
-            $report->send($doc);
-         }
+      $send = false;
+      if (
+         ($splitter[1] == "activity")
+         && Session::haveRight("plugin_activity_statistics", READ)
+      ) {
+         $send = GLPI_DOC_DIR . "/" . $_GET["file"];
+      }
+      if ($send && file_exists($send)) {
+         $doc = new Document();
+         $doc->fields['filepath'] = $_GET["file"];
+         $doc->fields['mime'] = 'application/pdf';
+         $doc->fields['filename'] = $splitter[2];
+         $report = new PluginActivityReport();
+         $report->send($doc);
       } else {
          Html::displayErrorAndDie(__('Unauthorized access to this file'), true);
       }
