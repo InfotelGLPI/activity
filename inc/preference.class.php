@@ -104,8 +104,9 @@ class PluginActivityPreference extends CommonDBTM {
          foreach ($groupusers as $groupuser) {
             $groups[] = $groupuser["id"];
          }
+
          $dbu = new DbUtils();
-         $restrict = ["groups_id" => [implode(',', $groups)],
+         $restrict = ["groups_id" => $groups,
                      "is_manager" => 1,
                       "NOT" => ["users_id"  => $user_id]];
          $managers = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
@@ -117,7 +118,7 @@ class PluginActivityPreference extends CommonDBTM {
 
          if (sizeof($managers) <= 0) {
             echo "<tr class='tab_bg_1' id='no_manager_left'>";
-            echo "<td colspan='2'>".__('You have not declared any manager yet.', 'activity')."</td>";
+            echo "<td colspan='2'>".__('There is no manager for your groups', 'activity')."</td>";
             echo "</tr>";
          } else {
             echo "<tr class='tab_bg_1'>";
