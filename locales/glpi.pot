@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-14 11:20+0000\n"
+"POT-Creation-Date: 2022-06-24 06:32+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -241,7 +241,7 @@ msgid_plural "Holiday counters"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/holiday.class.php:473 inc/preference.class.php:155
+#: inc/holiday.class.php:473 inc/preference.class.php:156
 msgid "Add a manager"
 msgstr ""
 
@@ -608,12 +608,16 @@ msgstr ""
 msgid "The chosen end date is on weekend"
 msgstr ""
 
-#: inc/preference.class.php:77 inc/preference.class.php:115
+#: inc/preference.class.php:77 inc/preference.class.php:116
 msgid "List of my managers"
 msgstr ""
 
-#: inc/preference.class.php:81 inc/preference.class.php:120
+#: inc/preference.class.php:81
 msgid "You have not declared any manager yet."
+msgstr ""
+
+#: inc/preference.class.php:121
+msgid "There is no manager for your groups"
 msgstr ""
 
 #: inc/profile.class.php:37
