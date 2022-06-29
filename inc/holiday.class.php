@@ -267,7 +267,7 @@ class PluginActivityHoliday extends CommonDBTM {
             $groups[] = $groupuser["id"];
          }
 
-         $restrict = ["groups_id"  => [implode(',', $groups)],
+         $restrict = ["groups_id"  => $groups,
                       "is_manager" => 1,
                       "NOT"        => ["users_id" => $user_id]];
          $managers = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
@@ -403,12 +403,12 @@ class PluginActivityHoliday extends CommonDBTM {
             $groups[] = $groupuser["id"];
          }
 
-         $restrict          = ["groups_id"  => [implode(',', $groups)],
+         $restrict          = ["groups_id"  => $groups,
                                "is_manager" => 1,
                                "users_id"   => $user_id];
          $users_id_validate = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
 
-         $restrict     = ["groups_id"  => [implode(',', $groups)],
+         $restrict     = ["groups_id"  => $groups,
                           "is_manager" => 1,
                           "NOT"        => ["users_id" => $user_id]];
          $have_manager = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
@@ -722,7 +722,7 @@ class PluginActivityHoliday extends CommonDBTM {
             $groups[] = $groupuser["id"];
          }
 
-         $restrict = ["groups_id"  => [implode(',', $groups)],
+         $restrict = ["groups_id"  => $groups,
                       "is_manager" => 1,
                       "NOT"        => ["users_id" => $user_id]];
          $managers = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
@@ -826,7 +826,7 @@ class PluginActivityHoliday extends CommonDBTM {
             $groups[] = $groupuser["id"];
          }
 
-         $restrict = ["groups_id"  => [implode(',', $groups)],
+         $restrict = ["groups_id"  => $groups,
                       "is_manager" => 1];
          $managers = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
 
@@ -867,7 +867,7 @@ class PluginActivityHoliday extends CommonDBTM {
             $groups[] = $groupuser["id"];
          }
 
-         $restrict = ["groups_id"  => [implode(',', $groups)],
+         $restrict = ["groups_id"  => $groups,
                       "is_manager" => 1,
                       "NOT"        => ["users_id" => $user_id]];
          $managers = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
