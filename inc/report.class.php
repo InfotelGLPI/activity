@@ -964,10 +964,10 @@ class PluginActivityReport extends CommonDBTM {
                         }
                      } else if ($type == self::$HOLIDAY) {
                         if (!isset($time[$type][$holiday_type_type][$date_act]['values'])) {
-                           $time[$type][$holiday_type_type][$date_act]['values'] = $value;
+                           $time[$type][$holiday_type_type][$date_act]['values'] = (int)$value;
                         } else {
                            if ($value > 0) {
-                              $time[$type][$holiday_type_type][$date_act]['values'] += $value;
+                              $time[$type][$holiday_type_type][$date_act]['values'] += (int)$value;
                            }
                         }
                      }
