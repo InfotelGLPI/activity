@@ -115,7 +115,7 @@ class PluginActivityTicketTask extends CommonDBTM {
 
       if (self::canCreate()) {
          $tickettask = new PluginActivityTicketTask();
-         $is_exist   = $tickettask->getFromDBByCrit(["tickettasks_id=" . $item->getID()]);
+         $is_exist   = $tickettask->getFromDBByCrit(["tickettasks_id" => $item->getID()]);
 
 
 
