@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-06 14:11+0000\n"
+"POT-Creation-Date: 2022-07-26 13:52+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,10 +18,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: setup.php:179 ajax/loadscripts.php:47 front/menu.php:46
+#: setup.php:177 ajax/loadscripts.php:47 front/menu.php:46
 #: inc/config.class.php:38 inc/menu.class.php:32 inc/option.class.php:38
-#: inc/preference.class.php:42 inc/profile.class.php:43
-#: inc/profile.class.php:138 inc/report.class.php:866
+#: inc/preference.class.php:57 inc/profile.class.php:43
+#: inc/profile.class.php:138 inc/report.class.php:865
 msgid "Activity"
 msgid_plural "Activities"
 msgstr[0] ""
@@ -61,7 +61,7 @@ msgstr ""
 msgid "of"
 msgstr ""
 
-#: front/config.form.php:65
+#: front/config.form.php:63
 msgid "Please activate the plugin"
 msgstr ""
 
@@ -98,19 +98,19 @@ msgid "Project / activity"
 msgstr ""
 
 #: inc/crapdf.class.php:462 inc/holidaytype.class.php:89
-#: inc/report.class.php:1505
+#: inc/report.class.php:1504
 msgid "Part time"
 msgstr ""
 
-#: inc/crapdf.class.php:463 inc/report.class.php:1503
+#: inc/crapdf.class.php:463 inc/report.class.php:1502
 msgid "Holidays or exceptional absences"
 msgstr ""
 
-#: inc/crapdf.class.php:464 inc/report.class.php:1507
+#: inc/crapdf.class.php:464 inc/report.class.php:1506
 msgid "Sickness or maternity"
 msgstr ""
 
-#: inc/crapdf.class.php:493 inc/report.class.php:985
+#: inc/crapdf.class.php:493 inc/report.class.php:984
 msgid "Absences"
 msgstr ""
 
@@ -166,8 +166,8 @@ msgstr ""
 msgid "All day"
 msgstr ""
 
-#: inc/dashboard.class.php:472 inc/dashboard.class.php:505
-#: inc/report.class.php:579 inc/report.class.php:621 inc/report.class.php:674
+#: inc/dashboard.class.php:471 inc/dashboard.class.php:504
+#: inc/report.class.php:578 inc/report.class.php:620 inc/report.class.php:673
 msgid "No defined type"
 msgstr ""
 
@@ -241,7 +241,7 @@ msgid_plural "Holiday counters"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/holiday.class.php:473 inc/preference.class.php:156
+#: inc/holiday.class.php:473 inc/preference.class.php:189
 msgid "Add a manager"
 msgstr ""
 
@@ -608,15 +608,15 @@ msgstr ""
 msgid "The chosen end date is on weekend"
 msgstr ""
 
-#: inc/preference.class.php:77 inc/preference.class.php:116
+#: inc/preference.class.php:106 inc/preference.class.php:145
 msgid "List of my managers"
 msgstr ""
 
-#: inc/preference.class.php:81
+#: inc/preference.class.php:110
 msgid "You have not declared any manager yet."
 msgstr ""
 
-#: inc/preference.class.php:121
+#: inc/preference.class.php:150
 msgid "There is no manager for your groups"
 msgstr ""
 
@@ -674,23 +674,23 @@ msgstr ""
 msgid "Previous month"
 msgstr ""
 
-#: inc/report.class.php:698
+#: inc/report.class.php:697
 msgid "Unbilled"
 msgstr ""
 
-#: inc/report.class.php:865
+#: inc/report.class.php:864
 msgid "Project"
 msgstr ""
 
-#: inc/report.class.php:1052
+#: inc/report.class.php:1051
 msgid "Activities detail"
 msgstr ""
 
-#: inc/report.class.php:1060
+#: inc/report.class.php:1059
 msgid "Percent"
 msgstr ""
 
-#: inc/report.class.php:1111
+#: inc/report.class.php:1110
 msgid "No activity found"
 msgstr ""
 
