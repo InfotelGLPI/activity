@@ -420,9 +420,8 @@ class PluginActivityDashboard extends CommonGLPI {
 
 
       # 1.2 Plugin Manageentities
-      $plugin  = new Plugin();
       $numberm = 0;
-      if ($plugin->isActivated('manageentities')) {
+      if (Plugin::isPluginActive('manageentities')) {
          $config = new PluginManageentitiesConfig();
          $config->GetFromDB(1);
 
@@ -560,7 +559,7 @@ class PluginActivityDashboard extends CommonGLPI {
 
 
          //         # 2.4 Plugin Manageentities
-         if ($plugin->isActivated('manageentities')) {
+         if (Plugin::isPluginActive('manageentities')) {
             if ($numberm != "0") {
                while ($datam = $DB->fetchArray($resultm)) {
 

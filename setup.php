@@ -78,9 +78,7 @@ function plugin_init_activity() {
 //   }
    $PLUGIN_HOOKS['post_init']['activity'] = 'plugin_activity_postinit';
 
-   $plugin = new Plugin();
-
-   if ($plugin->isActivated("activity")) {
+   if (Plugin::isPluginActive("activity")) {
 
       Plugin::registerClass('PluginActivityProfile', ['addtabon' => 'Profile']);
       Plugin::registerClass('PluginActivityPublicHoliday', ['planning_types' => true]);
@@ -89,7 +87,7 @@ function plugin_init_activity() {
       $opt = new PluginActivityOption();
       $opt->getFromDB(1);
 
-      if ($plugin->isActivated("manageentities")
+      if (Plugin::isPluginActive("manageentities")
           || $opt->fields['use_timerepartition']) {
          unset($CFG_GLPI['planning_types'][3]);
          unset($_SESSION['glpi_plannings']['filters']['TicketTask']);

@@ -29,8 +29,6 @@ include ('../../../inc/includes.php');
 
 Session::checkLoginUser();
 
-$plugin = new Plugin();
-
 $pref = new PluginActivityPreference();
 
 if (isset($_POST["add"])) {

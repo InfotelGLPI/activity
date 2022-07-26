@@ -257,9 +257,7 @@ function plugin_activity_uninstall() {
 // Define database relations
 function plugin_activity_getDatabaseRelations() {
 
-   $plugin = new Plugin();
-
-   if ($plugin->isActivated("activity")) {
+   if (Plugin::isPluginActive("activity")) {
       return ["glpi_tickettasks" => ["glpi_plugin_activity_tickettasks" => "tickettasks_id"],
                   "glpi_planningexternalevents" => ["glpi_plugin_activity_planningexternalevents" => "planningexternalevents_id"],
                      "glpi_plugin_activity_holidaytypes" => ["glpi_plugin_activity_holidays"    => "plugin_activity_holidaytypes_id",
@@ -272,9 +270,7 @@ function plugin_activity_getDatabaseRelations() {
 // Define Dropdown tables to be manage in GLPI
 function plugin_activity_getDropdown() {
 
-   $plugin = new Plugin();
-
-   if ($plugin->isActivated("activity")) {
+   if (Plugin::isPluginActive("activity")) {
       return ['PluginActivityHolidayType' => PluginActivityHolidayType::getTypeName(2),
                  'PluginActivityHolidayPeriod' => PluginActivityHolidayPeriod::getTypeName(2)];
    } else {

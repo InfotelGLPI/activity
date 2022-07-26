@@ -634,8 +634,6 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
 
    static function queryTickets($criteria) {
 
-      $plugin = new Plugin();
-
       $query = "SELECT    `glpi_tickettasks`.*,
                           `glpi_plugin_activity_tickettasks`.`is_oncra`,
                           `glpi_entities`.`name` AS entity,
@@ -648,7 +646,7 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM {
                      LEFT JOIN `glpi_plugin_activity_tickettasks` 
                         ON (`glpi_tickettasks`.`id` = `glpi_plugin_activity_tickettasks`.`tickettasks_id`) ";
       $query .= "WHERE ";
-      if ($plugin->isActivated('manageentities')) {
+      if (Plugin::isPluginActive('manageentities')) {
          $query .= "`glpi_tickettasks`.`tickets_id` 
                      NOT IN (SELECT `tickets_id` 
                               FROM `glpi_plugin_manageentities_cridetails`) AND ";

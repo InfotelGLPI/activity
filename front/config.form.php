@@ -29,9 +29,7 @@ include ('../../../inc/includes.php');
 
 Session::checkLoginUser();
 
-$plugin = new Plugin();
-
-if ($plugin->isActivated("activity")) {
+if (Plugin::isPluginActive("activity")) {
    Session::checkRight("config", UPDATE);
    $config = new PluginActivityConfig();
    $opt = new PluginActivityOption();
