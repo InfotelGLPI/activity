@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-26 13:52+0000\n"
+"POT-Creation-Date: 2022-09-23 07:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -136,11 +136,11 @@ msgstr ""
 msgid "Tables"
 msgstr ""
 
-#: inc/dashboard.class.php:85 inc/dashboard.class.php:307
+#: inc/dashboard.class.php:85 inc/dashboard.class.php:271
 msgid "Activity Menu"
 msgstr ""
 
-#: inc/dashboard.class.php:88 inc/dashboard.class.php:381
+#: inc/dashboard.class.php:88 inc/dashboard.class.php:345
 msgid "Interventions not in CRA"
 msgstr ""
 
@@ -148,7 +148,7 @@ msgstr ""
 msgid "Pie charts"
 msgstr ""
 
-#: inc/dashboard.class.php:93 inc/dashboard.class.php:152
+#: inc/dashboard.class.php:93 inc/dashboard.class.php:153
 msgid "Activity in the month"
 msgstr ""
 
@@ -157,16 +157,16 @@ msgid ""
 "Display of activity by month for a user (tickets, activity, holidays, others)"
 msgstr ""
 
-#: inc/dashboard.class.php:249
+#: inc/dashboard.class.php:213
 msgid "Planning access"
 msgstr ""
 
-#: inc/dashboard.class.php:269 inc/holiday.class.php:1239
+#: inc/dashboard.class.php:233 inc/holiday.class.php:1239
 #: inc/holiday.class.php:1294
 msgid "All day"
 msgstr ""
 
-#: inc/dashboard.class.php:471 inc/dashboard.class.php:504
+#: inc/dashboard.class.php:437 inc/dashboard.class.php:470
 #: inc/report.class.php:578 inc/report.class.php:620 inc/report.class.php:673
 msgid "No defined type"
 msgstr ""
