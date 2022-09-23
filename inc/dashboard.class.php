@@ -149,78 +149,42 @@ class PluginActivityDashboard extends CommonGLPI {
 
             $activities = $this->showActivityGraph($this->datas);
             $widget     = new PluginMydashboardHtml();
+             $name = 'MonthActivityPieChart';
             $title      = __('Activity in the month', 'activity') . " (" . __(date('B', time())) . ")";
+             $comment = __("Display of activity by month for a user (tickets, activity, holidays, others)", "activity");
             $widget->setWidgetTitle($title);
-            $widget->setWidgetComment(__("Display of activity by month for a user (tickets, activity, holidays, others)", "activity"));
+            $widget->setWidgetComment($comment);
             $datas = [];
-            $name  = [];
+            $nameact  = [];
             $i     = 0;
             foreach ($activities as $actname => $times) {
                $i++;
-               $datas[] = $times;
-               $name[]  = $actname;
+//               $datas[] = $times;
+                $datas[] = ['value' => $times,
+                             'name' =>  $actname];
+                $nameact[]  = $actname;
             }
-
-            $palette = PluginMydashboardColor::getColors($i);
-
             $dataPieset         = json_encode($datas);
-            $backgroundPieColor = json_encode($palette);
-            $labelsPie          = json_encode($name);
+            $labelsPie          = json_encode($nameact);
 
 
-            $graph = "<script type='text/javascript'>
-         
-            var dataPieActivity = {
-              datasets: [{
-                data: $dataPieset,
-                backgroundColor: $backgroundPieColor
-              }],
-              labels: $labelsPie
-            };
-            
-            $(document).ready(
-              function() {
-                var isChartRendered = false;
-                var canvas = document.getElementById('MonthActivityPieChart');
-                var ctx = canvas.getContext('2d');
-                ctx.canvas.width = 700;
-                ctx.canvas.height = 400;
-                var myNewChart = new Chart(ctx, {
-                  type: 'pie',
-                  data: dataPieActivity,
-                  options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    animation: {
-                        onComplete: function() {
-                          isChartRendered = true
-                        }
-                      }
-                   }
-                });
-            
-      //          canvas.onclick = function(evt) {
-      //            var activePoints = myNewChart.getElementsAtEvent(evt);
-      //            if (activePoints[0]) {
-      //              var chartData = activePoints[0]['_chart'].config.data;
-      //              var idx = activePoints[0]['_index'];
-      //      
-      //              var label = chartData.labels[idx];
-      //              var value = chartData.datasets[0].data[idx];
-      //      
-      //              var url = \"http://example.com/?label=\" + label + \"&value=\" + value;
-      //              console.log(url);
-      //              alert(url);
-      //            }
-      //          };
-              }
-            );
-                
-             </script>";
+             $graph_datas = ['title'   => $title,
+                             'comment' => $comment,
+                             'name'            => $name,
+                             'ids'             => json_encode([]),
+                             'data'            => $dataPieset,
+                             'labels'          => $labelsPie,
+                             'label'           => $title];
+
+             //            if ($onclick == 1) {
+             $graph_criterias = ['widget' => $widgetId];
+             //            }
+
+             $graph = PluginMydashboardPieChart::launchPieGraph($graph_datas, $graph_criterias);
 
             $criterias = ['users_id', 'month', 'year'];
             $params    = ["widgetId"  => $widgetId,
-                          "name"      => 'MonthActivityPieChart',
+                          "name"      => $name,
                           "onsubmit"  => false,
                           "opt"       => $params,
                           "criterias" => $criterias,
@@ -464,8 +428,10 @@ class PluginActivityDashboard extends CommonGLPI {
                   $percent = 0;
                }
 
-               $parents = $dbu->getAncestorsOf("glpi_plugin_activity_activitytypes", $data["type"]);
-               $last    = end($parents);
+//               $parents = $dbu->getAncestorsOf("glpi_plugin_activity_activitytypes", $data["type"]);
+//               $last    = end($parents);
+                                     $parents = $dbu->getAncestorsOf("glpi_planningeventcategories", $data["type"]);
+                                     $last = end($parents);
 
                if (empty($data["type"])) {
                   $type = $data["entity"] . " > " . __('No defined type', 'activity');
