@@ -150,7 +150,7 @@ class PluginActivityDashboard extends CommonGLPI {
             $activities = $this->showActivityGraph($this->datas);
             $widget     = new PluginMydashboardHtml();
              $name = 'MonthActivityPieChart';
-            $title      = __('Activity in the month', 'activity') . " (" . __(date('B', time())) . ")";
+            $title      = __('Activity in the month', 'activity');
              $comment = __("Display of activity by month for a user (tickets, activity, holidays, others)", "activity");
             $widget->setWidgetTitle($title);
             $widget->setWidgetComment($comment);
@@ -350,7 +350,7 @@ class PluginActivityDashboard extends CommonGLPI {
    }
 
    function showActivityGraph($input) {
-      global $CFG_GLPI, $DB;
+      global $DB;
 
       $dbu    = new DbUtils();
       $AllDay = PluginActivityReport::getAllDay();
@@ -430,20 +430,20 @@ class PluginActivityDashboard extends CommonGLPI {
 
 //               $parents = $dbu->getAncestorsOf("glpi_plugin_activity_activitytypes", $data["type"]);
 //               $last    = end($parents);
-                                     $parents = $dbu->getAncestorsOf("glpi_planningeventcategories", $data["type"]);
-                                     $last = end($parents);
+//                                     $parents = $dbu->getAncestorsOf("glpi_planningeventcategories", $data["type"]);
+//                                     $last = end($parents);
 
                if (empty($data["type"])) {
                   $type = $data["entity"] . " > " . __('No defined type', 'activity');
                } else {
                   $dropdown = new PlanningEventCategory();
-                  if (count($parents) > 1) {
-                     $dropdown->getFromDB($last);
-                     $type = $dropdown->fields['name'];
-                  } else {
+//                  if (count($parents) > 1) {
+//                     $dropdown->getFromDB($last);
+//                     $type = $dropdown->fields['name'];
+//                  } else {
                      $dropdown->getFromDB($data["type"]);
                      $type = $dropdown->fields['name'];
-                  }
+//                  }
                }
 
                $values[$type][] = $data["total_actiontime"] / $AllDay;
