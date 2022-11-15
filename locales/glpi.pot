@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-08 12:40+0000\n"
+"POT-Creation-Date: 2022-11-15 10:27+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,10 +18,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: setup.php:177 ajax/loadscripts.php:47 front/menu.php:46
+#: setup.php:173 ajax/loadscripts.php:47 front/menu.php:46
 #: inc/config.class.php:38 inc/menu.class.php:32 inc/option.class.php:38
-#: inc/preference.class.php:57 inc/profile.class.php:43
-#: inc/profile.class.php:138 inc/report.class.php:865
+#: inc/preference.class.php:57 inc/profile.class.php:45
+#: inc/profile.class.php:142 inc/report.class.php:865
 msgid "Activity"
 msgid_plural "Activities"
 msgstr[0] ""
@@ -132,41 +132,33 @@ msgstr ""
 msgid "Generated with GLPI on"
 msgstr ""
 
-#: inc/dashboard.class.php:84
-msgid "Tables"
-msgstr ""
-
-#: inc/dashboard.class.php:85 inc/dashboard.class.php:271
-msgid "Activity Menu"
-msgstr ""
-
-#: inc/dashboard.class.php:88 inc/dashboard.class.php:345
-msgid "Interventions not in CRA"
-msgstr ""
-
-#: inc/dashboard.class.php:92
-msgid "Pie charts"
-msgstr ""
-
-#: inc/dashboard.class.php:93 inc/dashboard.class.php:153
+#: inc/dashboard.class.php:93 inc/dashboard.class.php:160
 msgid "Activity in the month"
 msgstr ""
 
-#: inc/dashboard.class.php:95 inc/dashboard.class.php:154
+#: inc/dashboard.class.php:95 inc/dashboard.class.php:161
 msgid ""
 "Display of activity by month for a user (tickets, activity, holidays, others)"
 msgstr ""
 
-#: inc/dashboard.class.php:213
+#: inc/dashboard.class.php:96 inc/dashboard.class.php:278
+msgid "Activity Menu"
+msgstr ""
+
+#: inc/dashboard.class.php:99 inc/dashboard.class.php:352
+msgid "Interventions not in CRA"
+msgstr ""
+
+#: inc/dashboard.class.php:220
 msgid "Planning access"
 msgstr ""
 
-#: inc/dashboard.class.php:233 inc/holiday.class.php:1239
+#: inc/dashboard.class.php:240 inc/holiday.class.php:1239
 #: inc/holiday.class.php:1294
 msgid "All day"
 msgstr ""
 
-#: inc/dashboard.class.php:437 inc/dashboard.class.php:470
+#: inc/dashboard.class.php:443 inc/dashboard.class.php:476
 #: inc/report.class.php:578 inc/report.class.php:620 inc/report.class.php:673
 msgid "No defined type"
 msgstr ""
@@ -219,8 +211,8 @@ msgid "The user don't have any manager filled in his personal settings."
 msgstr ""
 
 #: inc/holiday.class.php:443 inc/lateralmenu.class.php:64
-#: inc/planningexternalevent.class.php:103 inc/profile.class.php:95
-#: inc/profile.class.php:145
+#: inc/planningexternalevent.class.php:103 inc/profile.class.php:98
+#: inc/profile.class.php:149
 msgid "Create a holiday request"
 msgstr ""
 
@@ -620,23 +612,23 @@ msgstr ""
 msgid "There is no manager for your groups"
 msgstr ""
 
-#: inc/profile.class.php:37
+#: inc/profile.class.php:38
 msgid "Right management"
 msgid_plural "Rights management"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/profile.class.php:102 inc/profile.class.php:149
+#: inc/profile.class.php:105 inc/profile.class.php:153
 msgid "Validate holiday"
 msgid_plural "Validate holidays"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/profile.class.php:109 inc/profile.class.php:153
+#: inc/profile.class.php:112 inc/profile.class.php:157
 msgid "Statistics and reports"
 msgstr ""
 
-#: inc/profile.class.php:116 inc/profile.class.php:157
+#: inc/profile.class.php:119 inc/profile.class.php:161
 msgid "Display activities of all"
 msgstr ""
 
