@@ -388,7 +388,7 @@ class PluginActivityTools {
          }
          
          if($key == "groups_id") {
-            $tmp = "<th>".__("Group")."</th><td class='tab_bg_2'>".Group::dropdown(array('display' => false,'value' => $value))."</td>";
+            $tmp = "<th>".__("Group")."</th><td class='tab_bg_2'>".Group::dropdown(['display' => false,'value' => $value])."</td>";
             $validparam = true;
          }
          

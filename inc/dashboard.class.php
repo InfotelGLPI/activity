@@ -25,19 +25,22 @@
  --------------------------------------------------------------------------
 */
 
-class PluginActivityDashboard extends CommonGLPI {
+class PluginActivityDashboard extends CommonGLPI
+{
+    public $widgets = [];
+    private $options;
+    private $datas;
+    private $form;
 
-   public  $widgets = [];
-   private $options;
-   private $datas, $form;
+    public function __construct($options = [])
+    {
+        $this->options    = $options;
+        $this->interfaces = ["central"];
+    }
 
-   function __construct($options = []) {
-      $this->options    = $options;
-      $this->interfaces = ["central"];
-   }
-
-   function init() {
-      global $CFG_GLPI;
+    public function init()
+    {
+        global $CFG_GLPI;
 
       //      $mois_courant   = intval(strftime("%m"));
       //      $annee_courante = strftime("%Y");
@@ -76,39 +79,43 @@ class PluginActivityDashboard extends CommonGLPI {
       //                                          'display'  => false));
       //      $this->form .= "</label>";
       //      $this->form .= "</form>";
-   }
-
-   function getWidgetsForItem() {
-
-      $widgets = [
-         __('Tables', 'mydashboard') => [
-            $this->getType() . "3" => ["title"   =>  __("Activity Menu", 'activity'),
-                                       "icon"    => "ti ti-info-circle",
-                                       "comment" => ""],
-            $this->getType() . "4" => ["title"   => __("Interventions not in CRA", "activity"),
-                                       "icon"    => "ti ti-table",
-                                       "comment" => ""],
-         ],
-         __('Pie charts', "mydashboard") => [
-            $this->getType() . "1" => ["title"   => __('Activity in the month', 'activity'),
-                                       "icon"    => "ti ti-chart-pie",
-                                       "comment" => __("Display of activity by month for a user (tickets, activity, holidays, others)", "activity")],
-         ]
-      ];
-      return $widgets;
-
-   }
-
-   function getWidgetContentForItem($widgetId, $opt = []) {
-      global $CFG_GLPI, $DB;
-
-      $dbu = new DbUtils();
-      if (empty($this->form))
-         $this->init();
-      switch ($widgetId) {
+    }
 
 
-         case $this->getType() . "1" :
+    /**
+     * @return \array[][]
+     */
+    public function getWidgetsForItem()
+    {
+
+        $widgets = [
+            PluginMydashboardMenu::$TOOLS => [
+                $this->getType() . "1" => ["title"   => __('Activity in the month', 'activity'),
+                                           "type"    => PluginMydashboardWidget::$PIE,
+                                           "comment" => __("Display of activity by month for a user (tickets, activity, holidays, others)", "activity")],
+                $this->getType() . "3" => ["title"   =>  __("Activity Menu", 'activity'),
+                                           "type"    => PluginMydashboardWidget::$TABLE,
+                                           "comment" => ""],
+                $this->getType() . "4" => ["title"   => __("Interventions not in CRA", "activity"),
+                                           "type"    => PluginMydashboardWidget::$TABLE,
+                                           "comment" => ""],
+            ],
+        ];
+
+        return $widgets;
+    }
+
+
+    public function getWidgetContentForItem($widgetId, $opt = [])
+    {
+        global $CFG_GLPI, $DB;
+
+        $dbu = new DbUtils();
+        if (empty($this->form)) {
+            $this->init();
+        }
+        switch ($widgetId) {
+            case $this->getType() . "1":
             //            $widget = new PluginMydashboardPieChart();
             //            $widget->setWidgetId($widgetId);
             //            $widget->setWidgetTitle(__('Activity in the month', 'activity')." (".__(strftime("%B")).")");
@@ -118,104 +125,104 @@ class PluginActivityDashboard extends CommonGLPI {
 
             //            $widget->setTabDatas($this->showActivityGraph($this->datas));
 
-            $mois_courant   = intval(date('m', time()));
-            $annee_courante = date('Y', time());
+                $mois_courant   = intval(date('m', time()));
+                $annee_courante = date('Y', time());
 
-            if (isset($opt['users_id']) && Session::haveRight("plugin_activity_all_users", 1)) {
-               $users_id = $opt['users_id'];
-            } else {
-               $users_id = $_SESSION['glpiID'];
-            }
+                if (isset($opt['users_id']) && Session::haveRight("plugin_activity_all_users", 1)) {
+                    $users_id = $opt['users_id'];
+                } else {
+                    $users_id = $_SESSION['glpiID'];
+                }
 
-            if (isset($opt["month"])
-                && $opt["month"] > 0) {
-               $mois_courant = $opt["month"];
-            }
+                if (isset($opt["month"])
+                    && $opt["month"] > 0) {
+                    $mois_courant = $opt["month"];
+                }
 
-            if (isset($opt["year"])
-                && $opt["year"] > 0) {
-               $annee_courante = $opt["year"];
-            }
+                if (isset($opt["year"])
+                    && $opt["year"] > 0) {
+                    $annee_courante = $opt["year"];
+                }
 
-            $params["month"] = $mois_courant;
-            $params["users_id"] = $users_id;
-            $params["year"] = $annee_courante;
+                $params["month"] = $mois_courant;
+                $params["users_id"] = $users_id;
+                $params["year"] = $annee_courante;
 
-            $this->datas = [
-               "year"     => $annee_courante,
-               "month"    => $mois_courant,
-               "users_id" => $users_id
-            ];
+                $this->datas = [
+                   "year"     => $annee_courante,
+                   "month"    => $mois_courant,
+                   "users_id" => $users_id
+                ];
 
-            $activities = $this->showActivityGraph($this->datas);
-            $widget     = new PluginMydashboardHtml();
-             $name = 'MonthActivityPieChart';
-            $title      = __('Activity in the month', 'activity');
-             $comment = __("Display of activity by month for a user (tickets, activity, holidays, others)", "activity");
-            $widget->setWidgetTitle($title);
-            $widget->setWidgetComment($comment);
-            $datas = [];
-            $nameact  = [];
-            $i     = 0;
-            foreach ($activities as $actname => $times) {
-               $i++;
+                $activities = $this->showActivityGraph($this->datas);
+                $widget     = new PluginMydashboardHtml();
+                $name = 'MonthActivityPieChart';
+                $title      = __('Activity in the month', 'activity');
+                $comment = __("Display of activity by month for a user (tickets, activity, holidays, others)", "activity");
+                $widget->setWidgetTitle($title);
+                $widget->setWidgetComment($comment);
+                $datas = [];
+                $nameact  = [];
+                $i     = 0;
+                foreach ($activities as $actname => $times) {
+                    $i++;
 //               $datas[] = $times;
-                $datas[] = ['value' => $times,
-                             'name' =>  $actname];
-                $nameact[]  = $actname;
-            }
-            $dataPieset         = json_encode($datas);
-            $labelsPie          = json_encode($nameact);
+                    $datas[] = ['value' => $times,
+                                 'name' =>  $actname];
+                    $nameact[]  = $actname;
+                }
+                $dataPieset         = json_encode($datas);
+                $labelsPie          = json_encode($nameact);
 
 
-             $graph_datas = ['title'   => $title,
-                             'comment' => $comment,
-                             'name'            => $name,
-                             'ids'             => json_encode([]),
-                             'data'            => $dataPieset,
-                             'labels'          => $labelsPie,
-                             'label'           => $title];
+                $graph_datas = ['title'   => $title,
+                                'comment' => $comment,
+                                'name'            => $name,
+                                'ids'             => json_encode([]),
+                                'data'            => $dataPieset,
+                                'labels'          => $labelsPie,
+                                'label'           => $title];
 
              //            if ($onclick == 1) {
-             $graph_criterias = ['widget' => $widgetId];
+                $graph_criterias = ['widget' => $widgetId];
              //            }
 
-             $graph = PluginMydashboardPieChart::launchPieGraph($graph_datas, $graph_criterias);
+                $graph = PluginMydashboardPieChart::launchPieGraph($graph_datas, $graph_criterias);
 
-            $criterias = ['users_id', 'month', 'year'];
-            $params    = ["widgetId"  => $widgetId,
-                          "name"      => $name,
-                          "onsubmit"  => false,
-                          "opt"       => $params,
-                          "criterias" => $criterias,
-                          "export"    => true,
-                          "canvas"    => true,
-                          "nb"        => $i];
-            $graph     .= PluginMydashboardHelper::getGraphHeader($params);
-            $widget->setWidgetHtmlContent(
-               $graph
-            );
+                $criterias = ['users_id', 'month', 'year'];
+                $params    = ["widgetId"  => $widgetId,
+                              "name"      => $name,
+                              "onsubmit"  => false,
+                              "opt"       => $params,
+                              "criterias" => $criterias,
+                              "export"    => true,
+                              "canvas"    => true,
+                              "nb"        => $i];
+                $graph     .= PluginMydashboardHelper::getGraphHeader($params);
+                $widget->setWidgetHtmlContent(
+                    $graph
+                );
 
-            return $widget;
+                return $widget;
 
 
-         case $this->getType() . "2" :
-            $widget = new PluginMydashboardHtml();
-            $widget->setWidgetId($widgetId);
-            $lang_month = array_values(Toolbox::getMonthsOfYearArray());
-            $lang_days  = array_values(Toolbox::getDaysOfWeekArray());
-            foreach ($lang_month as $month) {
-               $lang_month_short[] = substr($month, 0, 4);
-            }
-            foreach ($lang_days as $day) {
-               $lang_days_short[] = substr($day, 0, 3);
-            }
-            $widget->setWidgetTitle("<a href='" . PLUGIN_ACTIVITY_WEBDIR . "/front/activity.form.php'>" . __('Planning access', 'activity') . "</a>");
+            case $this->getType() . "2":
+                $widget = new PluginMydashboardHtml();
+                $widget->setWidgetId($widgetId);
+                $lang_month = array_values(Toolbox::getMonthsOfYearArray());
+                $lang_days  = array_values(Toolbox::getDaysOfWeekArray());
+                foreach ($lang_month as $month) {
+                    $lang_month_short[] = substr($month, 0, 4);
+                }
+                foreach ($lang_days as $day) {
+                    $lang_days_short[] = substr($day, 0, 3);
+                }
+                $widget->setWidgetTitle("<a href='" . PLUGIN_ACTIVITY_WEBDIR . "/front/activity.form.php'>" . __('Planning access', 'activity') . "</a>");
 
-            $activities = "{}";
-            $activities = json_encode($this->getActivities($this->datas['users_id']));
-            $rand       = mt_rand();
-            $html       = '<script type="text/javascript">$("#calendarwidget' . $rand . '").fullCalendar({header: {
+                $activities = "{}";
+                $activities = json_encode($this->getActivities($this->datas['users_id']));
+                $rand       = mt_rand();
+                $html       = '<script type="text/javascript">$("#calendarwidget' . $rand . '").fullCalendar({header: {
                                                                                                    left:"",
                                                                                                    center: "",
                                                                                                    right:""
@@ -248,46 +255,46 @@ class PluginActivityDashboard extends CommonGLPI {
                                                                                                eventMouseout: function(event, jsEvent, view) {
                                                                                                    $("#"+event.id).remove();
                                                                                                },'
-                          . 'eventClick: function(event, jsEvent, view){
+                              . 'eventClick: function(event, jsEvent, view){
                                                                                                   if(event.editable) {
                                                                                                      callActivityModalUpdate(event, event.start, event.end, event.allDay, calendar);
                                                                                                   }
                                                                                                },'
-                          . 'events:' . $activities . '});';
-            $html       .= "onMaximize['" . $widgetId . "'] = function() { $('#calendarwidget" . $rand . "').fullCalendar('render'); }; ";
-            $html       .= "onMinimize['" . $widgetId . "'] = onMaximize['" . $widgetId . "'];";
-            $html       .= "</script>
+                              . 'events:' . $activities . '});';
+                $html       .= "onMaximize['" . $widgetId . "'] = function() { $('#calendarwidget" . $rand . "').fullCalendar('render'); }; ";
+                $html       .= "onMinimize['" . $widgetId . "'] = onMaximize['" . $widgetId . "'];";
+                $html       .= "</script>
                                <div id='calendarwidget" . $rand . "' ></div>";
-            $widget->setWidgetHtmlContent($html);
+                $widget->setWidgetHtmlContent($html);
             //                    Form to choose user, and then see user's planning, toggleRefresh to enable the automatic refresh
-            if (Session::haveRight("plugin_activity_all_users", 1)) {
-               $widget->appendWidgetHtmlContent(PluginMydashboardHelper::getFormHeader($this->getType() . "2") . $this->form);
-               $widget->toggleWidgetRefresh();
-            }
-            return $widget;
-            break;
-         case $this->getType() . "3":
-            $widgetHTML = new PluginMydashboardHtml();
-            $widgetHTML->setWidgetTitle(__("Activity Menu", 'activity'));
-            $listActions = array_merge(PluginActivityPlanningExternalEvent::getActionsOn(), PluginActivityPlanningExternalEvent::getActionsOn());
-            $widgetHTML->setWidgetHtmlContent(PluginActivityPlanningExternalEvent::menu("PluginActivityPlanningExternalEvent", $listActions, true));
-            return $widgetHTML;
-            break;
-         case $this->getType() . "4":
+                if (Session::haveRight("plugin_activity_all_users", 1)) {
+                    $widget->appendWidgetHtmlContent(PluginMydashboardHelper::getFormHeader($this->getType() . "2") . $this->form);
+                    $widget->toggleWidgetRefresh();
+                }
+                return $widget;
+                break;
+            case $this->getType() . "3":
+                $widgetHTML = new PluginMydashboardHtml();
+                $widgetHTML->setWidgetTitle(__("Activity Menu", 'activity'));
+                $listActions = array_merge(PluginActivityPlanningExternalEvent::getActionsOn(), PluginActivityPlanningExternalEvent::getActionsOn());
+                $widgetHTML->setWidgetHtmlContent(PluginActivityPlanningExternalEvent::menu("PluginActivityPlanningExternalEvent", $listActions, true));
+                return $widgetHTML;
+                break;
+            case $this->getType() . "4":
 
 
-            $widget = new PluginMydashboardHtml();
+                $widget = new PluginMydashboardHtml();
 
-            $mois  = intval(date('m', time()) - 6);
-            $annee = intval(date('Y', time()) - 1);
+                $mois  = intval(date('m', time()) - 6);
+                $annee = intval(date('Y', time()) - 1);
 
-            if ($mois > 0) {
-               $annee = date('Y', time());
-            } else {
-               $mois = 12;
-            }
-            $entity = $_SESSION['glpiactive_entity'];
-            $query  = "SELECT `glpi_tickettasks`.`date`, 
+                if ($mois > 0) {
+                    $annee = date('Y', time());
+                } else {
+                    $mois = 12;
+                }
+                $entity = $_SESSION['glpiactive_entity'];
+                $query  = "SELECT `glpi_tickettasks`.`date`, 
                               `glpi_tickets`.`entities_id`,
                               `glpi_tickettasks`.`tickets_id`, 
                               `glpi_tickets`.`name` AS tickets_name, 
@@ -304,232 +311,230 @@ class PluginActivityDashboard extends CommonGLPI {
                         AND `glpi_tickets`.`entities_id` IN  (" . implode(",", $dbu->getSonsOf("glpi_entities", $entity)) . ") ORDER BY `glpi_tickettasks`.`date` ";
 
 
-            $widget  = PluginMydashboardHelper::getWidgetsFromDBQuery('table', $query);
-            $datas   = [];
-            $headers = [__('Creation date'),
-                        __('Client'),
-                        __('Ticket'),
-                        __('Description'),
-                        __('Total duration')];
-            $widget->setTabNames($headers);
+                $widget  = PluginMydashboardHelper::getWidgetsFromDBQuery('table', $query);
+                $datas   = [];
+                $headers = [__('Creation date'),
+                            __('Client'),
+                            __('Ticket'),
+                            __('Description'),
+                            __('Total duration')];
+                $widget->setTabNames($headers);
 
-            $result      = $DB->query($query);
-            $nb          = $DB->numrows($result);
-            $link_ticket = Toolbox::getItemTypeFormURL("Ticket");
+                $result      = $DB->query($query);
+                $nb          = $DB->numrows($result);
+                $link_ticket = Toolbox::getItemTypeFormURL("Ticket");
 
-            $i = 0;
-            if ($nb) {
-               while ($data = $DB->fetchAssoc($result)) {
+                $i = 0;
+                if ($nb) {
+                    while ($data = $DB->fetchAssoc($result)) {
+                        $datas[$i]["date"] = Html::convDateTime($data['date']);
+
+                        $datas[$i]["entity"] = Dropdown::getDropdownName(
+                            "glpi_entities",
+                            $data['entities_id']
+                        );
 
 
-                  $datas[$i]["date"] = Html::convDateTime($data['date']);
+                        $name_ticket               = "<a href='" . $link_ticket . "?id=" . $data['tickets_id'] . "' target='_blank'>";
+                        $name_ticket               .= $data['tickets_name'] . "</a>";
+                        $datas[$i]["tickets_name"] = $name_ticket;
 
-                  $datas[$i]["entity"] = Dropdown::getDropdownName("glpi_entities",
-                                                                   $data['entities_id']);
+                        $datas[$i]["content"] =  htmlspecialchars_decode(stripslashes($data['content']));
 
+                        $datas[$i]["actiontime"] = Html::timestampToString($data["actiontime"], 0);
+                        $i++;
+                    }
+                }
+                $widget->setTabDatas($datas);
+                $widget->setOption("bSort", false);
+                $widget->toggleWidgetRefresh();
 
-                  $name_ticket               = "<a href='" . $link_ticket . "?id=" . $data['tickets_id'] . "' target='_blank'>";
-                  $name_ticket               .= $data['tickets_name'] . "</a>";
-                  $datas[$i]["tickets_name"] = $name_ticket;
+                $widget->setWidgetTitle(__("Interventions not in CRA", "activity"));
 
-                  $datas[$i]["content"] =  htmlspecialchars_decode(stripslashes($data['content']));
+                return $widget;
+                break;
+        }
+    }
 
-                  $datas[$i]["actiontime"] = Html::timestampToString($data["actiontime"], 0);
-                  $i++;
-               }
-            }
-            $widget->setTabDatas($datas);
-            $widget->setOption("bSort", false);
-            $widget->toggleWidgetRefresh();
+    public function showActivityGraph($input)
+    {
+        global $DB;
 
-            $widget->setWidgetTitle(__("Interventions not in CRA", "activity"));
+        $dbu    = new DbUtils();
+        $AllDay = PluginActivityReport::getAllDay();
 
-            return $widget;
-            break;
-      }
-   }
-
-   function showActivityGraph($input) {
-      global $DB;
-
-      $dbu    = new DbUtils();
-      $AllDay = PluginActivityReport::getAllDay();
-
-      $holiday = new PluginActivityHoliday();
-      $holiday->setHolidays();
+        $holiday = new PluginActivityHoliday();
+        $holiday->setHolidays();
       //      $input["month"] = "02";
-      $crit["begin"]             = $input["year"] . "-" . $input["month"] . "-01 00:00:00";
-      $lastday                   = cal_days_in_month(CAL_GREGORIAN, $input["month"], $input["year"]);
-      $crit["end"]               = $input["year"] . "-" . $input["month"] . "-" . $lastday . " 23:59:59";
-      $crit["users_id"]          = $input["users_id"];
-      $crit["global_validation"] = PluginActivityCommonValidation::ACCEPTED;
+        $crit["begin"]             = $input["year"] . "-" . $input["month"] . "-01 00:00:00";
+        $lastday                   = cal_days_in_month(CAL_GREGORIAN, $input["month"], $input["year"]);
+        $crit["end"]               = $input["year"] . "-" . $input["month"] . "-" . $lastday . " 23:59:59";
+        $crit["users_id"]          = $input["users_id"];
+        $crit["global_validation"] = PluginActivityCommonValidation::ACCEPTED;
 
-      # 1.1 Plugin Activity
-      $query  = PluginActivityPlanningExternalEvent::queryAllExternalEvents($crit);
-      $result = $DB->query($query);
-      $number = $DB->numrows($result);
-      $total  = 0;
+        # 1.1 Plugin Activity
+        $query  = PluginActivityPlanningExternalEvent::queryAllExternalEvents($crit);
+        $result = $DB->query($query);
+        $number = $DB->numrows($result);
+        $total  = 0;
 
-      $query1 = "SELECT SUM(`glpi_plugin_activity_planningexternalevents`.`actiontime`) AS total 
+        $query1 = "SELECT SUM(`glpi_plugin_activity_planningexternalevents`.`actiontime`) AS total 
                   FROM `glpi_plugin_activity_planningexternalevents`
                    LEFT JOIN `glpi_planningexternalevents` 
                      ON (`glpi_plugin_activity_planningexternalevents`.`planningexternalevents_id` = `glpi_planningexternalevents`.`id`)";
-      $query1.= " WHERE (`begin` >= '".$crit["begin"]."' 
+        $query1.= " WHERE (`begin` >= '".$crit["begin"]."' 
                            AND `begin` <= '".$crit["end"]."')
                               AND `users_id` = '".$crit["users_id"]."'";
-      if ($result1 = $DB->query($query1)) {
-         $data1 = $DB->fetchArray($result1);
-         $total = $data1["total"];
-      }
+        if ($result1 = $DB->query($query1)) {
+            $data1 = $DB->fetchArray($result1);
+            $total = $data1["total"];
+        }
 
 
-      # 1.2 Plugin Manageentities
-      $numberm = 0;
-      if (Plugin::isPluginActive('manageentities')) {
-         $config = new PluginManageentitiesConfig();
-         $config->GetFromDB(1);
+        # 1.2 Plugin Manageentities
+        $numberm = 0;
+        if (Plugin::isPluginActive('manageentities')) {
+            $config = new PluginManageentitiesConfig();
+            $config->GetFromDB(1);
 
-         $crit["documentcategories_id"] = $config->fields["documentcategories_id"];
+            $crit["documentcategories_id"] = $config->fields["documentcategories_id"];
 
-         $manage  = PluginActivityPlanningExternalEvent::queryManageentities($crit);
-         $resultm = $DB->query($manage);
-         $numberm = $DB->numrows($resultm);
-      }
+            $manage  = PluginActivityPlanningExternalEvent::queryManageentities($crit);
+            $resultm = $DB->query($manage);
+            $numberm = $DB->numrows($resultm);
+        }
 
-      # 1.3 Tickets
-      $tickets  = PluginActivityPlanningExternalEvent::queryTickets($crit);
-      $resultt1 = $DB->query($tickets);
-      $numbert  = $DB->numrows($resultt1);
+        # 1.3 Tickets
+        $tickets  = PluginActivityPlanningExternalEvent::queryTickets($crit);
+        $resultt1 = $DB->query($tickets);
+        $numbert  = $DB->numrows($resultt1);
 
-      # 1.1 Plugin holiday
-      $queryh  = "SELECT SUM(actiontime) AS total 
+        # 1.1 Plugin holiday
+        $queryh  = "SELECT SUM(actiontime) AS total 
                   FROM `glpi_plugin_activity_holidays`";
-      $queryh  .= " WHERE (`begin` >= '" . $crit["begin"] . "' 
+        $queryh  .= " WHERE (`begin` >= '" . $crit["begin"] . "' 
                            AND `begin` <= '" . $crit["end"] . "')
                         AND `users_id` = '" . $crit["users_id"] . "'";
-      $resulth = $DB->query($queryh);
-      $numberh = $DB->numrows($resulth);
+        $resulth = $DB->query($queryh);
+        $numberh = $DB->numrows($resulth);
 
-      $pie = [];
+        $pie = [];
 
-      if ($number != "0" || $numberm != "0" || $numbert != "0" || $numberh != "0") {
+        if ($number != "0" || $numberm != "0" || $numbert != "0" || $numberh != "0") {
+            # 2.2 Details
+            $title  = [];
+            $values = [];
 
-         # 2.2 Details
-         $title  = [];
-         $values = [];
-
-         # 2.3 Plugin Activity
-         if ($number != "0") {
-
-            while ($data = $DB->fetchArray($result)) {
-               if ($data["total_actiontime"] > 0) {
-                  $percent = $data["total_actiontime"] * 100 / $total;
-               } else {
-                  $percent = 0;
-               }
+            # 2.3 Plugin Activity
+            if ($number != "0") {
+                while ($data = $DB->fetchArray($result)) {
+                    if ($data["total_actiontime"] > 0) {
+                        $percent = $data["total_actiontime"] * 100 / $total;
+                    } else {
+                        $percent = 0;
+                    }
 
 //               $parents = $dbu->getAncestorsOf("glpi_plugin_activity_activitytypes", $data["type"]);
 //               $last    = end($parents);
 //                                     $parents = $dbu->getAncestorsOf("glpi_planningeventcategories", $data["type"]);
 //                                     $last = end($parents);
 
-               if (empty($data["type"])) {
-                  $type = $data["entity"] . " > " . __('No defined type', 'activity');
-               } else {
-                  $dropdown = new PlanningEventCategory();
+                    if (empty($data["type"])) {
+                        $type = $data["entity"] . " > " . __('No defined type', 'activity');
+                    } else {
+                        $dropdown = new PlanningEventCategory();
 //                  if (count($parents) > 1) {
 //                     $dropdown->getFromDB($last);
 //                     $type = $dropdown->fields['name'];
 //                  } else {
-                     $dropdown->getFromDB($data["type"]);
-                     $type = $dropdown->fields['name'];
+                        $dropdown->getFromDB($data["type"]);
+                        $type = $dropdown->fields['name'];
 //                  }
-               }
+                    }
 
-               $values[$type][] = $data["total_actiontime"] / $AllDay;
+                    $values[$type][] = $data["total_actiontime"] / $AllDay;
+                }
             }
-         }
 
-         foreach ($values as $k => $v) {
-            $pie[$k] = array_sum($v);
-         }
-
-         # 2.3 Plugin Activity holidays
-         if (Session::haveRight("plugin_activity_can_requestholiday", 1)) {
-            $opt["is_usedbycra"] = true;
-            $opt                 = array_merge($crit, $opt);
-
-            $queryh = PluginActivityHoliday::queryUserHolidays($opt);
-
-
-            $resulth = $DB->query($queryh);
-            if ($DB->numrows($resulth)) {
-               $tmp = [];
-               while ($datah = $DB->fetchArray($resulth)) {
-                  if (empty($datah["type"])) {
-                     $type = $datah["entity"] . " > " . __('No defined type', 'activity');
-                  } else {
-                     $type = $datah["type"];
-                  }
-                  if (!isset($tmp[$type]))
-                     $tmp[$type] = 0;
-
-                  $value = $datah['actiontime'];
-
-                  $tmp[$type] += $value;
-               }
-               foreach ($tmp as $type => $value) {
-                  $pie[$type] = /* ($value * 100) / $total */
-                     $value / $AllDay;
-               }
+            foreach ($values as $k => $v) {
+                $pie[$k] = array_sum($v);
             }
-         }
+
+            # 2.3 Plugin Activity holidays
+            if (Session::haveRight("plugin_activity_can_requestholiday", 1)) {
+                $opt["is_usedbycra"] = true;
+                $opt                 = array_merge($crit, $opt);
+
+                $queryh = PluginActivityHoliday::queryUserHolidays($opt);
+
+
+                $resulth = $DB->query($queryh);
+                if ($DB->numrows($resulth)) {
+                    $tmp = [];
+                    while ($datah = $DB->fetchArray($resulth)) {
+                        if (empty($datah["type"])) {
+                            $type = $datah["entity"] . " > " . __('No defined type', 'activity');
+                        } else {
+                            $type = $datah["type"];
+                        }
+                        if (!isset($tmp[$type])) {
+                            $tmp[$type] = 0;
+                        }
+
+                        $value = $datah['actiontime'];
+
+                        $tmp[$type] += $value;
+                    }
+                    foreach ($tmp as $type => $value) {
+                        $pie[$type] = /* ($value * 100) / $total */
+                           $value / $AllDay;
+                    }
+                }
+            }
 
          //         # 1.3 Tickets
-         if ($numbert != "0") {
-            $values = [];
-            $sums   = [];
-            $sum    = 0;
-            $report = new PluginActivityReport();
-            while ($datat = $DB->fetchArray($resultt1)) {
-
-               $mtitle   = strtoupper($datat["entity"]) . " > " . _n('Ticket', 'Tickets', 2);
-               $internal = PluginActivityConfig::getConfigFromDB($datat['entities_id']);
-               if ($internal) {
-                  foreach ($internal as $field) {
-                     $mtitle = strtoupper($datat["entity"]) . " > " . $field["name"];
-                  }
-               }
-               if (!empty($datat["begin"]) && !empty($datat["end"])) {
-                  $values = $report->timeRepartition($datat['actiontime'] / $AllDay, $datat["begin"], $values, PluginActivityReport::$WORK, $mtitle, $holiday->getHolidays());
-               } else {
-                  $values = $report->timeRepartition($datat['actiontime'] / $AllDay, $datat["date"], $values, PluginActivityReport::$WORK, $mtitle, $holiday->getHolidays());
-               }
+            if ($numbert != "0") {
+                $values = [];
+                $sums   = [];
+                $sum    = 0;
+                $report = new PluginActivityReport();
+                while ($datat = $DB->fetchArray($resultt1)) {
+                    $mtitle   = strtoupper($datat["entity"]) . " > " . _n('Ticket', 'Tickets', 2);
+                    $internal = PluginActivityConfig::getConfigFromDB($datat['entities_id']);
+                    if ($internal) {
+                        foreach ($internal as $field) {
+                            $mtitle = strtoupper($datat["entity"]) . " > " . $field["name"];
+                        }
+                    }
+                    if (!empty($datat["begin"]) && !empty($datat["end"])) {
+                        $values = $report->timeRepartition($datat['actiontime'] / $AllDay, $datat["begin"], $values, PluginActivityReport::$WORK, $mtitle, $holiday->getHolidays());
+                    } else {
+                        $values = $report->timeRepartition($datat['actiontime'] / $AllDay, $datat["date"], $values, PluginActivityReport::$WORK, $mtitle, $holiday->getHolidays());
+                    }
+                }
+                $intern = $values[0];
+                foreach ($intern as $name => $times) {
+                    foreach ($times as $date => $nb) {
+                        $formatdate = date('Y-m-d', strtotime($date));
+                        if (isset($sums[$formatdate])) {
+                            $sums[$formatdate] += $nb;
+                        } else {
+                            $sums[$formatdate] = $nb;
+                        }
+                    }
+                }
+                foreach ($sums as $k => $cnt) {
+                    $sum += PluginActivityReport::TotalTpsPassesArrondis($cnt);
+                }
+                $pie[$mtitle] = $sum;
             }
-            $intern = $values[0];
-            foreach ($intern as $name => $times) {
-               foreach ($times as $date => $nb) {
-                  $formatdate = date('Y-m-d', strtotime($date));
-                  if (isset($sums[$formatdate])) {
-                     $sums[$formatdate] += $nb;
-                  } else {
-                     $sums[$formatdate] = $nb;
-                  }
-               }
-            }
-            foreach ($sums as $k => $cnt) {
-               $sum += PluginActivityReport::TotalTpsPassesArrondis($cnt);
-            }
-            $pie[$mtitle] = $sum;
-         }
 
 
          //         # 2.4 Plugin Manageentities
-         if (Plugin::isPluginActive('manageentities')) {
-            if ($numberm != "0") {
-               while ($datam = $DB->fetchArray($resultm)) {
-
-                  $queryTask = "SELECT `glpi_tickettasks`.*
+            if (Plugin::isPluginActive('manageentities')) {
+                if ($numberm != "0") {
+                    while ($datam = $DB->fetchArray($resultm)) {
+                        $queryTask = "SELECT `glpi_tickettasks`.*
                                  FROM `glpi_tickettasks`
                                  LEFT JOIN `glpi_plugin_manageentities_cridetails`
                                     ON (`glpi_plugin_manageentities_cridetails`.`tickets_id` = `glpi_tickettasks`.`tickets_id`)
@@ -541,270 +546,266 @@ class PluginActivityDashboard extends CommonGLPI {
                                        AND `glpi_plugin_activity_tickettasks`.`is_oncra` = 1
                                        AND `glpi_tickettasks`.`users_id_tech` = '" . $crit["users_id"] . "'";
 
-                  $resultTask = $DB->query($queryTask);
-                  $numberTask = $DB->numrows($resultTask);
-                  if ($numberTask != "0") {
-                     while ($dataTask = $DB->fetchArray($resultTask)) {
-
-                        $mtitle = $datam["entity"] . " > ";
-                        if ($datam["withcontract"]) {
-                           $contract = new Contract();
-                           $contract->getFromDB($datam["contracts_id"]);
-                           $mtitle .= $contract->fields["num"];
+                        $resultTask = $DB->query($queryTask);
+                        $numberTask = $DB->numrows($resultTask);
+                        if ($numberTask != "0") {
+                            while ($dataTask = $DB->fetchArray($resultTask)) {
+                                $mtitle = $datam["entity"] . " > ";
+                                if ($datam["withcontract"]) {
+                                    $contract = new Contract();
+                                    $contract->getFromDB($datam["contracts_id"]);
+                                    $mtitle .= $contract->fields["num"];
+                                }
+                                $values       = $dataTask['actiontime'] / $AllDay;
+                                $pie[$mtitle] = $values;
+                            }
                         }
-                        $values       = $dataTask['actiontime'] / $AllDay;
-                        $pie[$mtitle] = $values;
-                     }
-                  }
-               }
+                    }
+                }
             }
-         }
-      }
+        }
 
-      return $pie;
-   }
+        return $pie;
+    }
 
-   function getActivities($users_id, $activities_id = 0) {
-      global $DB, $CFG_GLPI;
+    public function getActivities($users_id, $activities_id = 0)
+    {
+        global $DB, $CFG_GLPI;
 
-      $AllDay = PluginActivityReport::getAllDay();
+        $AllDay = PluginActivityReport::getAllDay();
 
-      $default_view = PluginActivityPlanningExternalEvent::$DAY;
+        $default_view = PluginActivityPlanningExternalEvent::$DAY;
 
-      $report  = new PluginActivityReport();
-      $holiday = new PluginActivityHoliday();
-      $holiday->setHolidays();
+        $report  = new PluginActivityReport();
+        $holiday = new PluginActivityHoliday();
+        $holiday->setHolidays();
 
-      $month = date('m', time());
+        $month = date('m', time());
 
-      $queryMinDate = "SELECT MIN(`date`)
+        $queryMinDate = "SELECT MIN(`date`)
                   FROM `glpi_tickettasks`";
 
-      if ($resultMinDate = $DB->query($queryMinDate)) {
-         if ($DB->numrows($resultMinDate)) {
-            $MinDate = ($DB->result($resultMinDate, 0, 0));
-         }
-      }
+        if ($resultMinDate = $DB->query($queryMinDate)) {
+            if ($DB->numrows($resultMinDate)) {
+                $MinDate = ($DB->result($resultMinDate, 0, 0));
+            }
+        }
 
-      $queryMinBeginDate = "SELECT MIN(`begin`)
+        $queryMinBeginDate = "SELECT MIN(`begin`)
                   FROM `glpi_tickettasks`";
 
-      if ($resultMinBeginDate = $DB->query($queryMinBeginDate)) {
-         if ($DB->numrows($resultMinBeginDate)) {
-            $MinBeginDate = ($DB->result($resultMinBeginDate, 0, 0));
-         }
-      }
-
-      $first = $MinDate;
-      if ($MinBeginDate < $MinDate) {
-         $first = $MinBeginDate;
-      }
-      $crit["begin"]        = date("Y-m-d") . " 00:00:00";
-      $lastday              = cal_days_in_month(CAL_GREGORIAN, $month, date("Y"));
-      $crit["end"]          = date("Y") . "-" . $month . "-" . date("d") . " 23:59:59";
-      $crit["users_id"]     = $users_id;
-      $crit["is_usedbycra"] = false;
-
-      $use_pairs = 0;
-      $opt       = new PluginActivityOption();
-      $opt->getFromDB(1);
-      if ($opt) {
-         $use_pairs = $opt->fields['use_pairs'];
-      }
-      // ACTIVITIES
-      $activities    = [];
-      $activity      = new PlanningExternalEvent();
-      $dbu           = new DbUtils();
-      $allActivities = $dbu->getAllDataFromTable($activity->getTable());
-
-      $query  = PluginActivityPlanningExternalEvent::queryUserExternalEvents($crit);
-      $result = $DB->query($query);
-
-      $number = $DB->numrows($result);
-      $values = [];
-      if ($DB->numrows($result)) {
-         while ($data = DBmysql::fetchArray($result)) {
-            $values = $report->timeRepartition($data['actiontime'] / $AllDay, $data["begin"], $values, PluginActivityReport::$WORK, $data['id'], $holiday->getHolidays(), true);
-         }
-         $currentime = date("Y-m-d H:i:s");
-
-         foreach ($values as $k => $v) {
-            foreach ($v as $id => $data) {
-               if (count($data) > 1) {
-                  current($data);
-               }
-               foreach ($data as $date => $duration) {
-
-                  $activity = $allActivities[$id];
-                  $begin    = $date;
-
-                  if ($use_pairs == 1) {
-                     $end = date("Y-m-d H:i:s", strtotime($begin) + (PluginActivityReport::TotalTpsPassesArrondis($duration) * $AllDay));
-                  } else {
-                     $end = date("Y-m-d H:i:s", strtotime($begin) + ($duration * $AllDay));
-                  }
-
-                  $iscurrent = ($currentime >= $begin && $currentime <= $end);
-                  $content   = $activity['comment'];
-                  $nb        = count($data);
-                  if ($nb > 1) {
-                     $content .= "</br>";
-                     $content .= Html::timestampToString($activity['actiontime'] / $nb, false);
-                  } else {
-                     $content .= "</br>";
-                     $content .= Html::timestampToString($activity['actiontime'], false);
-                  }
-                  $isallday = false;
-                  if ($activity['allDay'] == 1) {
-                     $isallday = true;
-                  }
-
-                  $activities[] = ['id'              => $id,
-                                        'title'           => $activity['name'],
-                                        'description'     => $content,
-                                        'start'           => $begin,
-                                        'end'             => $end,
-                                        'editable'        => false,
-                                        'allDay'          => $isallday,
-                                        'color'           => PluginActivityPlanningExternalEvent::$ACTIVITY_COLOR,
-                                        'backgroundColor' => ($iscurrent) ? 'rgb(136, 218, 99)' : ''
-                  ];
-               }
+        if ($resultMinBeginDate = $DB->query($queryMinBeginDate)) {
+            if ($DB->numrows($resultMinBeginDate)) {
+                $MinBeginDate = ($DB->result($resultMinBeginDate, 0, 0));
             }
-         }
-      }
+        }
 
-      // HOLIDAYS
-      $crit['global_validation'] = PluginActivityCommonValidation::ACCEPTED;
-      $queryh                    = PluginActivityHoliday::queryUserHolidays($crit);
-      $resulth                   = $DB->query($queryh);
-      $numberh                   = $DB->numrows($resulth);
+        $first = $MinDate;
+        if ($MinBeginDate < $MinDate) {
+            $first = $MinBeginDate;
+        }
+        $crit["begin"]        = date("Y-m-d") . " 00:00:00";
+        $lastday              = cal_days_in_month(CAL_GREGORIAN, $month, date("Y"));
+        $crit["end"]          = date("Y") . "-" . $month . "-" . date("d") . " 23:59:59";
+        $crit["users_id"]     = $users_id;
+        $crit["is_usedbycra"] = false;
 
-      $values       = [];
-      $holidaytypes = [];
-      if ($DB->numrows($resulth)) {
-         while ($datah = DBmysql::fetchArray($resulth)) {
+        $use_pairs = 0;
+        $opt       = new PluginActivityOption();
+        $opt->getFromDB(1);
+        if ($opt) {
+            $use_pairs = $opt->fields['use_pairs'];
+        }
+        // ACTIVITIES
+        $activities    = [];
+        $activity      = new PlanningExternalEvent();
+        $dbu           = new DbUtils();
+        $allActivities = $dbu->getAllDataFromTable($activity->getTable());
 
-            //$isallday = false;
-            //if ($datah['allDay'] == 1) {
-            //   $isallday = true;
-            //}
+        $query  = PluginActivityPlanningExternalEvent::queryUserExternalEvents($crit);
+        $result = $DB->query($query);
 
-            $values = $report->timeRepartition($datah['actiontime'] / $AllDay, $datah["begin"], $values, PluginActivityReport::$WORK, $datah["id"], $holiday->getHolidays());
-
-            //if (empty($datah["type"])) {
-            //   $holidaytypes[$datah["id"]] = $datah["entity"]." > ".__('No defined type', 'activity');
-            //} else {
-            $holidaytypes[$datah["id"]] = $datah["type"];
-            //}
-         }
-
-         foreach ($values as $k => $v) {
-            foreach ($v as $id => $data) {
-               foreach ($data as $date => $duration) {
-                  $action = PluginActivityReport::TotalTpsPassesArrondis($duration) * $AllDay;
-                  $end    = date("Y-m-d H:i:s", strtotime($date) + $action);
-
-                  $isallday = false;
-                  if ($action == $AllDay) {
-                     $isallday = true;
-                  }
-
-                  if ($action > 0) {
-                     $activities[] = ['id'          => $id,
-                                           'title'       => $holidaytypes[$id],
-                                           'description' => '',
-                                           'start'       => $date,
-                                           'end'         => $end,
-                                           'editable'    => false,
-                                           'allDay'      => $isallday,
-                                           'color'       => PluginActivityPlanningExternalEvent::$HOLIDAY_COLOR
-                     ];
-                  }
-               }
+        $number = $DB->numrows($result);
+        $values = [];
+        if ($DB->numrows($result)) {
+            while ($data = DBmysql::fetchArray($result)) {
+                $values = $report->timeRepartition($data['actiontime'] / $AllDay, $data["begin"], $values, PluginActivityReport::$WORK, $data['id'], $holiday->getHolidays(), true);
             }
-         }
-      }
+            $currentime = date("Y-m-d H:i:s");
 
-      // TICKETS
-      $tickets = PluginActivityPlanningExternalEvent::queryTickets($crit);
-      $resultt = $DB->query($tickets);
-      $numbert = $DB->numrows($resultt);
+            foreach ($values as $k => $v) {
+                foreach ($v as $id => $data) {
+                    if (count($data) > 1) {
+                        current($data);
+                    }
+                    foreach ($data as $date => $duration) {
+                        $activity = $allActivities[$id];
+                        $begin    = $date;
 
-      if ($numbert != "0") {
+                        if ($use_pairs == 1) {
+                            $end = date("Y-m-d H:i:s", strtotime($begin) + (PluginActivityReport::TotalTpsPassesArrondis($duration) * $AllDay));
+                        } else {
+                            $end = date("Y-m-d H:i:s", strtotime($begin) + ($duration * $AllDay));
+                        }
 
-         $mtitle     = "";
-         $begin      = "";
-         $end        = 0;
-         $alltickets = [];
-         $all        = [];
-         $tickets    = [];
-         while ($datat = $DB->fetchArray($resultt)) {
-            $mtitle   = strtoupper($datat["entity"]) . " > " . __('Ticket');
-            $internal = PluginActivityConfig::getConfigFromDB($datat['entities_id']);
-            if ($internal) {
-               foreach ($internal as $field) {
-                  $mtitle = strtoupper($datat["entity"]) . " > " . $field["name"];
-               }
+                        $iscurrent = ($currentime >= $begin && $currentime <= $end);
+                        $content   = $activity['comment'];
+                        $nb        = count($data);
+                        if ($nb > 1) {
+                            $content .= "</br>";
+                            $content .= Html::timestampToString($activity['actiontime'] / $nb, false);
+                        } else {
+                            $content .= "</br>";
+                            $content .= Html::timestampToString($activity['actiontime'], false);
+                        }
+                        $isallday = false;
+                        if ($activity['allDay'] == 1) {
+                            $isallday = true;
+                        }
+
+                        $activities[] = ['id'              => $id,
+                                              'title'           => $activity['name'],
+                                              'description'     => $content,
+                                              'start'           => $begin,
+                                              'end'             => $end,
+                                              'editable'        => false,
+                                              'allDay'          => $isallday,
+                                              'color'           => PluginActivityPlanningExternalEvent::$ACTIVITY_COLOR,
+                                              'backgroundColor' => ($iscurrent) ? 'rgb(136, 218, 99)' : ''
+                        ];
+                    }
+                }
+            }
+        }
+
+        // HOLIDAYS
+        $crit['global_validation'] = PluginActivityCommonValidation::ACCEPTED;
+        $queryh                    = PluginActivityHoliday::queryUserHolidays($crit);
+        $resulth                   = $DB->query($queryh);
+        $numberh                   = $DB->numrows($resulth);
+
+        $values       = [];
+        $holidaytypes = [];
+        if ($DB->numrows($resulth)) {
+            while ($datah = DBmysql::fetchArray($resulth)) {
+                //$isallday = false;
+                //if ($datah['allDay'] == 1) {
+                //   $isallday = true;
+                //}
+
+                $values = $report->timeRepartition($datah['actiontime'] / $AllDay, $datah["begin"], $values, PluginActivityReport::$WORK, $datah["id"], $holiday->getHolidays());
+
+                //if (empty($datah["type"])) {
+                //   $holidaytypes[$datah["id"]] = $datah["entity"]." > ".__('No defined type', 'activity');
+                //} else {
+                $holidaytypes[$datah["id"]] = $datah["type"];
+                //}
             }
 
-            $use_timerepartition = 0;
-            $opt                 = new PluginActivityOption();
-            $opt->getFromDB(1);
-            if ($opt) {
-               $use_timerepartition = $opt->fields['use_timerepartition'];
-            }
+            foreach ($values as $k => $v) {
+                foreach ($v as $id => $data) {
+                    foreach ($data as $date => $duration) {
+                        $action = PluginActivityReport::TotalTpsPassesArrondis($duration) * $AllDay;
+                        $end    = date("Y-m-d H:i:s", strtotime($date) + $action);
 
-            if ($use_timerepartition > 0) {
-               if (!empty($datat["begin"]) && !empty($datat["end"])) {
-                  $alltickets = $report->timeRepartition($datat['actiontime'] / $AllDay, $datat["begin"], $alltickets, PluginActivityReport::$WORK, $mtitle, $holiday->getHolidays());
-               } else {
-                  $alltickets = $report->timeRepartition($datat['actiontime'] / $AllDay, $datat["date"], $alltickets, PluginActivityReport::$WORK, $mtitle, $holiday->getHolidays());
-               }
-            } else {
-               if (!empty($datat["begin"]) && !empty($datat["end"])) {
-                  $tickets[$mtitle][$datat["begin"]] = $datat['actiontime'] / $AllDay;
-               } /* else {
+                        $isallday = false;
+                        if ($action == $AllDay) {
+                            $isallday = true;
+                        }
+
+                        if ($action > 0) {
+                            $activities[] = ['id'          => $id,
+                                                  'title'       => $holidaytypes[$id],
+                                                  'description' => '',
+                                                  'start'       => $date,
+                                                  'end'         => $end,
+                                                  'editable'    => false,
+                                                  'allDay'      => $isallday,
+                                                  'color'       => PluginActivityPlanningExternalEvent::$HOLIDAY_COLOR
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+
+        // TICKETS
+        $tickets = PluginActivityPlanningExternalEvent::queryTickets($crit);
+        $resultt = $DB->query($tickets);
+        $numbert = $DB->numrows($resultt);
+
+        if ($numbert != "0") {
+            $mtitle     = "";
+            $begin      = "";
+            $end        = 0;
+            $alltickets = [];
+            $all        = [];
+            $tickets    = [];
+            while ($datat = $DB->fetchArray($resultt)) {
+                $mtitle   = strtoupper($datat["entity"]) . " > " . __('Ticket');
+                $internal = PluginActivityConfig::getConfigFromDB($datat['entities_id']);
+                if ($internal) {
+                    foreach ($internal as $field) {
+                        $mtitle = strtoupper($datat["entity"]) . " > " . $field["name"];
+                    }
+                }
+
+                $use_timerepartition = 0;
+                $opt                 = new PluginActivityOption();
+                $opt->getFromDB(1);
+                if ($opt) {
+                    $use_timerepartition = $opt->fields['use_timerepartition'];
+                }
+
+                if ($use_timerepartition > 0) {
+                    if (!empty($datat["begin"]) && !empty($datat["end"])) {
+                        $alltickets = $report->timeRepartition($datat['actiontime'] / $AllDay, $datat["begin"], $alltickets, PluginActivityReport::$WORK, $mtitle, $holiday->getHolidays());
+                    } else {
+                        $alltickets = $report->timeRepartition($datat['actiontime'] / $AllDay, $datat["date"], $alltickets, PluginActivityReport::$WORK, $mtitle, $holiday->getHolidays());
+                    }
+                } else {
+                    if (!empty($datat["begin"]) && !empty($datat["end"])) {
+                        $tickets[$mtitle][$datat["begin"]] = $datat['actiontime'] / $AllDay;
+                    } /* else {
                  //NOT PLANIFIED TASKS
                  $tickets[$datat["date"]] = $datat['actiontime']/$AllDay;
 
                  } */
+                }
             }
-         }
 
-         if ($use_timerepartition < 1) {
-            //TODO end it
-            $alltickets[0] = $tickets;
-         }
-         $y = 1;
-
-         foreach ($alltickets as $k => $v) {
-            foreach ($v as $title => $data) {
-               foreach ($data as $date => $duration) {
-
-                  if ($use_timerepartition > 0) {
-                     $action = PluginActivityReport::TotalTpsPassesArrondis($duration) * $AllDay;
-                  } else {
-                     $action = $duration * $AllDay;
-                  }
-                  $content = Html::timestampToString($action, false);
-                  $end     = date("Y-m-d H:i:s", strtotime($date) + $action);
-
-                  $y++;
-                  if ($action > 0) {
-                     $activities[] = ['id'          => $y,
-                                           'title'       => $title,
-                                           'description' => $content,
-                                           'start'       => $date,
-                                           'end'         => $end,
-                                           'editable'    => false,
-                                           'allDay'      => false,
-                                           'color'       => PluginActivityPlanningExternalEvent::$TICKET_COLOR];
-                  }
-               }
+            if ($use_timerepartition < 1) {
+                //TODO end it
+                $alltickets[0] = $tickets;
             }
-         }
-      }
-      return $activities;
-   }
+            $y = 1;
+
+            foreach ($alltickets as $k => $v) {
+                foreach ($v as $title => $data) {
+                    foreach ($data as $date => $duration) {
+                        if ($use_timerepartition > 0) {
+                            $action = PluginActivityReport::TotalTpsPassesArrondis($duration) * $AllDay;
+                        } else {
+                            $action = $duration * $AllDay;
+                        }
+                        $content = Html::timestampToString($action, false);
+                        $end     = date("Y-m-d H:i:s", strtotime($date) + $action);
+
+                        $y++;
+                        if ($action > 0) {
+                            $activities[] = ['id'          => $y,
+                                                  'title'       => $title,
+                                                  'description' => $content,
+                                                  'start'       => $date,
+                                                  'end'         => $end,
+                                                  'editable'    => false,
+                                                  'allDay'      => false,
+                                                  'color'       => PluginActivityPlanningExternalEvent::$TICKET_COLOR];
+                        }
+                    }
+                }
+            }
+        }
+        return $activities;
+    }
 }
