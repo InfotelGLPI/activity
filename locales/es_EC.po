@@ -563,7 +563,7 @@ msgstr "Pie de página del Informe de actividades"
 
 #: inc/option.class.php:149
 msgid "Use group manager as holiday manager"
-msgstr "Usar el administrador de grupos como administrador de vacaciones"
+msgstr "Usar el supervisor del grupo como supervisor de vacaciones"
 
 #: inc/option.class.php:156
 msgid "Default validation percent"
