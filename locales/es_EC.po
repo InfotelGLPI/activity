@@ -202,7 +202,7 @@ msgstr "La fecha elegida es un día festivo"
 
 #: inc/holiday.class.php:231
 msgid "You have already planned holidays for this period"
-msgstr "Ya ha planeado vacaciones para este período"
+msgstr "Ya ha planificado vacaciones para este período"
 
 #: inc/holiday.class.php:233
 msgid "The user has already planned holidays for this period"
