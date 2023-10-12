@@ -84,7 +84,7 @@ msgstr "Mostrar el servicio de asistencia interna"
 
 #: inc/crapdf.class.php:271
 msgid "during"
-msgstr "durante"
+msgstr "Durante"
 
 #: inc/crapdf.class.php:276
 msgid "Year"
