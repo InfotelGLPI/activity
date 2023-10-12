@@ -124,8 +124,8 @@ msgid ""
 "Entry except in the month, the total must be equal to the number of working "
 "days this month"
 msgstr ""
-"Entrada excepto en el mes, el total debe ser igual al número de días "
-"laborables este mes"
+"A menos que se ingrese en el mes, este total debe ser igual al número de "
+"días hábiles de este mes, es decir:"
 
 #: inc/crapdf.class.php:535
 msgid "Total incorrect"
