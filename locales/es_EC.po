@@ -625,7 +625,7 @@ msgstr "La fecha de finalización elegida es el fin de semana"
 
 #: inc/preference.class.php:106 inc/preference.class.php:145
 msgid "List of my managers"
-msgstr "Lista de mis gerentes"
+msgstr "Lista de mis supervisores"
 
 #: inc/preference.class.php:110
 msgid "You have not declared any manager yet."
