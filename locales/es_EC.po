@@ -157,7 +157,7 @@ msgstr "Menú de actividades"
 
 #: inc/dashboard.class.php:99 inc/dashboard.class.php:352
 msgid "Interventions not in CRA"
-msgstr "Intervenciones no incluidas en la CRA"
+msgstr "Intervenciones no incluidas en el Informe de actividades"
 
 #: inc/dashboard.class.php:220
 msgid "Planning access"
