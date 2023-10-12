@@ -44,7 +44,7 @@ msgstr "Por favor, seleccione un supervisor"
 
 #: ajax/preferenceactions.php:49
 msgid "Manager sucessfully added."
-msgstr "Administrador agregado con éxito."
+msgstr "Supervisor agregado con éxito."
 
 #: ajax/preferenceactions.php:51
 msgid "An error happend while adding the manager"
