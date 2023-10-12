@@ -633,7 +633,7 @@ msgstr "Aún no ha declarado ningún supervisor."
 
 #: inc/preference.class.php:150
 msgid "There is no manager for your groups"
-msgstr "No hay administrador para sus grupos"
+msgstr "No hay supervisores para sus grupos"
 
 #: inc/profile.class.php:38
 msgid "Right management"
