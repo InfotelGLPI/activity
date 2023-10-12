@@ -68,7 +68,7 @@ msgstr "de"
 
 #: front/config.form.php:63
 msgid "Please activate the plugin"
-msgstr "Por favor, active el plugin"
+msgstr "Por favor, active el complemento"
 
 #: front/cra.php:45 inc/crapdf.class.php:243
 msgid "Report of Activities"
