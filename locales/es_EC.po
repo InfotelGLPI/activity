@@ -680,7 +680,7 @@ msgstr "Instantánea tomada en"
 
 #: inc/report.class.php:310
 msgid "Export CRA"
-msgstr "Exportación CRA"
+msgstr "Exportar informe de actividades"
 
 #: inc/report.class.php:348
 msgid "Activity report"
