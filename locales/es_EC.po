@@ -404,7 +404,7 @@ msgstr "Vacaciones"
 
 #: inc/holidaytype.class.php:79
 msgid "Use this holiday in the counter"
-msgstr "Utilice estas vacaciones en el mostrador"
+msgstr "Utilice estas vacaciones en el contador"
 
 #: inc/holidaytype.class.php:84
 msgid "Sickness"
