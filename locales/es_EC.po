@@ -573,7 +573,7 @@ msgstr "Porcentaje de validación predeterminado"
 
 #: inc/option.class.php:165 inc/option.class.php:195
 msgid "is on CRA by default"
-msgstr "está en CRA de forma predeterminada"
+msgstr "está en el Informe de actividades de forma predeterminada"
 
 #: inc/option.class.php:172
 msgid "Use projects"
@@ -589,7 +589,7 @@ msgstr "Lista de actividades"
 
 #: inc/planningexternalevent.class.php:199
 msgid "CRA"
-msgstr "CRA"
+msgstr "Informe de actividades"
 
 #: inc/planningexternalevent.class.php:231 inc/projecttask.class.php:126
 #: inc/tickettask.class.php:80
