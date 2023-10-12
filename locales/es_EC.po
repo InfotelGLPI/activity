@@ -594,7 +594,7 @@ msgstr "Informe de actividades"
 #: inc/planningexternalevent.class.php:231 inc/projecttask.class.php:126
 #: inc/tickettask.class.php:80
 msgid "Use in CRA"
-msgstr "Uso en CRA"
+msgstr "Usar en el Informe de actividades"
 
 #: inc/planningexternalevent.class.php:339
 #: inc/planningexternalevent.class.php:522
