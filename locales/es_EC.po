@@ -282,8 +282,8 @@ msgid ""
 "You must fill a registration number for this user before generating the TXT "
 "file."
 msgstr ""
-"Debe rellenar un número de registro para este usuario antes de generar el "
-"archivo TXT."
+"Debe completar un número administrativo para este usuario antes de generar "
+"el archivo TXT."
 
 #: inc/holiday.class.php:1488
 msgid "See this page"
