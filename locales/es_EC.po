@@ -52,7 +52,7 @@ msgstr "Se ha producido un error al agregar el supervisor"
 
 #: ajax/preferenceactions.php:58
 msgid "An error happend while deleting the manager"
-msgstr "Se ha producido un error al eliminar el administrador"
+msgstr "Se ha producido un error al eliminar el supervisor"
 
 #: ajax/preferenceactions.php:66
 msgid "Manager sucessfully deleted."
