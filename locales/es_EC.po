@@ -481,7 +481,7 @@ msgstr "Correo enviado"
 #: inc/notification.class.php:115 inc/notification.class.php:118
 #, php-format
 msgid "A mail has been sent to %s"
-msgstr "Se ha enviado un correo a 1%s"
+msgstr "Se ha enviado un correo a %s"
 
 #: inc/notification.class.php:122
 msgid "Failed Mail send"
