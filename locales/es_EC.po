@@ -56,7 +56,7 @@ msgstr "Se ha producido un error al eliminar el supervisor"
 
 #: ajax/preferenceactions.php:66
 msgid "Manager sucessfully deleted."
-msgstr "Administrador eliminado con éxito."
+msgstr "Supervisor eliminado con éxito."
 
 #: ajax/sendmail.php:66
 msgid "Holiday request from"
