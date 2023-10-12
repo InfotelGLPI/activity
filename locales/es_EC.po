@@ -64,7 +64,7 @@ msgstr "Solicitud de vacaciones desde"
 
 #: ajax/sendmail.php:66
 msgid "of"
-msgstr "de"
+msgstr "De"
 
 #: front/config.form.php:63
 msgid "Please activate the plugin"
