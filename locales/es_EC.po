@@ -230,7 +230,7 @@ msgstr "Crear una solicitud de vacaciones"
 
 #: inc/holiday.class.php:450
 msgid "List of holidays"
-msgstr "Lista de días festivos"
+msgstr "Lista de vacaciones"
 
 #: inc/holiday.class.php:456 inc/holiday.class.php:2130
 msgid "Approve holiday"
