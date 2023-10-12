@@ -629,7 +629,7 @@ msgstr "Lista de mis supervisores"
 
 #: inc/preference.class.php:110
 msgid "You have not declared any manager yet."
-msgstr "Aún no ha declarado ningún gerente."
+msgstr "Aún no ha declarado ningún supervisor."
 
 #: inc/preference.class.php:150
 msgid "There is no manager for your groups"
