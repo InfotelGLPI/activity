@@ -137,7 +137,7 @@ msgstr "Total OK"
 
 #: inc/crapdf.class.php:579
 msgid "Generated with GLPI on"
-msgstr "Generado con GLPI activado"
+msgstr "Generado con GLPI el"
 
 #: inc/dashboard.class.php:93 inc/dashboard.class.php:160
 msgid "Activity in the month"
