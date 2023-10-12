@@ -40,7 +40,7 @@ msgstr[2] "Vacaciones privadas"
 
 #: ajax/preferenceactions.php:42
 msgid "Please select a manager"
-msgstr "Por favor, seleccione un administrador"
+msgstr "Por favor, seleccione un supervisor"
 
 #: ajax/preferenceactions.php:49
 msgid "Manager sucessfully added."
