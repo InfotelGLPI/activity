@@ -48,7 +48,7 @@ msgstr "Supervisor agregado con éxito."
 
 #: ajax/preferenceactions.php:51
 msgid "An error happend while adding the manager"
-msgstr "Se ha producido un error al agregar el administrador"
+msgstr "Se ha producido un error al agregar el supervisor"
 
 #: ajax/preferenceactions.php:58
 msgid "An error happend while deleting the manager"
