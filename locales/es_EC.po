@@ -148,7 +148,7 @@ msgid ""
 "Display of activity by month for a user (tickets, activity, holidays, "
 "others)"
 msgstr ""
-"Visualización de la actividad por mes de un usuario (entradas, actividad, "
+"Visualización de la actividad por mes de un usuario (casos, actividad, "
 "vacaciones, otros)"
 
 #: inc/dashboard.class.php:96 inc/dashboard.class.php:278
