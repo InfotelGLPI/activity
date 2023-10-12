@@ -218,9 +218,7 @@ msgstr "Validación de su solicitud de vacaciones"
 
 #: inc/holiday.class.php:321
 msgid "The user don't have any manager filled in his personal settings."
-msgstr ""
-"El usuario no tiene ningún administrador completado en su configuración "
-"personal."
+msgstr "El usuario no tiene ningún supervisor en sus preferencias."
 
 #: inc/holiday.class.php:443 inc/lateralmenu.class.php:64
 #: inc/planningexternalevent.class.php:103 inc/profile.class.php:98
@@ -249,7 +247,7 @@ msgstr[2] "Contadores de vacaciones"
 
 #: inc/holiday.class.php:473 inc/preference.class.php:189
 msgid "Add a manager"
-msgstr "Agregar un administrador"
+msgstr "Añadir un supervisor"
 
 #: inc/holiday.class.php:890
 msgid "You don't have any manager filled in you personal settings."
