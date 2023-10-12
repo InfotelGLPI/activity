@@ -243,9 +243,9 @@ msgstr[2] "Aprobar las vacaciones"
 #: inc/menu.class.php:51
 msgid "Holiday counter"
 msgid_plural "Holiday counters"
-msgstr[0] "Mostradores de vacaciones"
-msgstr[1] "Mostradores de vacaciones"
-msgstr[2] "Mostradores de vacaciones"
+msgstr[0] "Contador de vacaciones"
+msgstr[1] "Contador de vacaciones"
+msgstr[2] "Contadores de vacaciones"
 
 #: inc/holiday.class.php:473 inc/preference.class.php:189
 msgid "Add a manager"
