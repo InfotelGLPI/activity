@@ -668,7 +668,7 @@ msgstr[2] "Días festivos "
 
 #: inc/report.class.php:162
 msgid "Take a snapshot of the CRA"
-msgstr "Tome una instantánea de la CRA"
+msgstr "Tomar una instantánea del informe de actividades"
 
 #: inc/report.class.php:213
 msgid "Snapshots of the month"
