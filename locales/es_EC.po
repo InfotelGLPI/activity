@@ -561,7 +561,7 @@ msgstr "Correo usado para vacaciones"
 
 #: inc/option.class.php:136
 msgid "CRA Footer"
-msgstr "Pie de página de CRA"
+msgstr "Pie de página del Informe de actividades"
 
 #: inc/option.class.php:149
 msgid "Use group manager as holiday manager"
