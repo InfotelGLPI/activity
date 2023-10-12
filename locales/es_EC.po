@@ -258,8 +258,8 @@ msgid ""
 "In order to make a holiday demand, please fill at least one manager in your "
 "personal settings"
 msgstr ""
-"Para realizar una solicitud de vacaciones, rellene al menos un gestor en su "
-"configuración personal"
+"Para realizar una solicitud de vacaciones, rellene al menos un supervisor en"
+" sus preferencias"
 
 #: inc/holiday.class.php:895
 msgid "See the page"
