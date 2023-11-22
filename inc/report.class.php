@@ -458,7 +458,9 @@ class PluginActivityReport extends CommonDBTM {
 
       $dbu    = new DbUtils();
       $AllDay = self::getAllDay();
-
+       $opt = new PluginActivityOption();
+       $opt->getFromDB(1);
+       $use_hour_on_cra               = $opt->fields['use_hour_on_cra'];
       $holiday = new PluginActivityHoliday();
       $holiday->setHolidays();
 
@@ -1092,11 +1094,11 @@ class PluginActivityReport extends CommonDBTM {
                $numbert = $DB->numrows($resultt);
                if ($numbert != "0") {
                   while ($datat = $DB->fetchArray($resultt)) {
-                     $comment .= $datat["text"] . " (" . (self::TotalTpsPassesArrondis($datat["actiontime"] / $AllDay)) . ")<br>";
+                     $comment .= $datat["text"] . " (" . (self::TotalTpsPassesArrondis($datat["actiontime"] / $AllDay,$use_hour_on_cra)) . ")<br>";
                   }
                }
                echo Search::showItem($output_type, nl2br(Glpi\RichText\RichText::getTextFromHtml($comment)), $num, $row_num);
-               $total_ouvres = self::TotalTpsPassesArrondis($data["total_actiontime"] / $AllDay);
+               $total_ouvres = self::TotalTpsPassesArrondis($data["total_actiontime"] / $AllDay,$use_hour_on_cra);
                echo Search::showItem($output_type, Html::formatNumber($total_ouvres, false, 3), $num, $row_num);
                echo Search::showItem($output_type, Html::formatNumber($percent) . "%", $num, $row_num);
                echo Search::showEndLine($output_type);
@@ -1362,6 +1364,9 @@ class PluginActivityReport extends CommonDBTM {
 
       $activity_data = [];
       $tot_act       = [];
+       $opt = new PluginActivityOption();
+       $opt->getFromDB(1);
+       $use_hour_on_cra               = $opt->fields['use_hour_on_cra'];
       switch ($type) {
          case self::$SICKNESS:
          case self::$PART_TIME:
@@ -1407,7 +1412,9 @@ class PluginActivityReport extends CommonDBTM {
 
             foreach ($times as $begin => $data) {
                // Use round values
-               $data['values'] = self::TotalTpsPassesArrondis($data['values']);
+
+               $data['values'] = self::TotalTpsPassesArrondis($data['values'],$use_hour_on_cra);
+
 
                // Get css
                $class = "class='center'";
@@ -1433,9 +1440,11 @@ class PluginActivityReport extends CommonDBTM {
                   $tot_act[$key] = $data['values'];
                }
             }
-
+             $opt = new PluginActivityOption();
+             $opt->getFromDB(1);
+             $use_hour_on_cra               = $opt->fields['use_hour_on_cra'];
             // Total value depass
-            if (self::isIncorrectValue($tot_act[$key]) > 0) {
+            if (self::isIncorrectValue($tot_act[$key]) > 0 && !$use_hour_on_cra) {
                $class = " class='center red'";
             }
 
@@ -1519,7 +1528,9 @@ class PluginActivityReport extends CommonDBTM {
     */
    function getItemLink($value, $activity, $begin, $options = []) {
       $output = $value;
-
+       $opt = new PluginActivityOption();
+       $opt->getFromDB(1);
+       $use_hour_on_cra               = $opt->fields['use_hour_on_cra'];
       if (!empty($value) && isset($this->item_search[$activity])) {
          $rand                    = mt_rand();
          $opt                     = [];
@@ -1551,7 +1562,7 @@ class PluginActivityReport extends CommonDBTM {
 
                   $url   = $target . "?" . Toolbox::append_params($opt, '&amp;');
                   $style = null;
-                  if ($opt['depass']) {
+                  if ($opt['depass'] && !$use_hour_on_cra) {
                      $style = 'color:red';
                   }
                   $output = "<a style='$style' href=\"$url\" id=\"activity_link$rand\" target=\"_blank\" title=\"" . $value . "\">" . $value . "</a>";
@@ -1583,7 +1594,9 @@ class PluginActivityReport extends CommonDBTM {
    function showTotal($tot, $countAllDays, $countopened, $output_type, $row_num, $time) {
 
       $types = [self::$WORK, self::$HOLIDAY/*, self::$PART_TIME,  self::$SICKNESS*/];
-
+       $opt = new PluginActivityOption();
+       $opt->getFromDB(1);
+       $use_hour_on_cra               = $opt->fields['use_hour_on_cra'];
       $time_total = [];
       for ($y = 0; $y < $countAllDays; $y++) {
          $time_total[$y] = ['value' => 0, 'style' => ''];
@@ -1594,7 +1607,7 @@ class PluginActivityReport extends CommonDBTM {
             $i = 0;
             foreach ($times as $begin => $data) {
                // Use round values
-               $data['values'] = self::TotalTpsPassesArrondis($data['values']);
+               $data['values'] = self::TotalTpsPassesArrondis($data['values'],$use_hour_on_cra);
 
                $time_total[$i]['value'] = $time_total[$i]['value'] + $data['values'];
                if (isset($data['options']['weekend'])) {
@@ -1605,10 +1618,18 @@ class PluginActivityReport extends CommonDBTM {
 
          }
       }
+       $opt = new PluginActivityOption();
+       $opt->getFromDB(1);
+       $use_hour_on_cra               = $opt->fields['use_hour_on_cra'];
       $num = 1;
       $row_num++;
       echo Search::showNewLine($output_type);
-      echo Search::showItem($output_type, __('Total') . " (" . $countopened . ")", $num, $row_num);
+       if( !$use_hour_on_cra) {
+           echo Search::showItem($output_type, __('Total') . " (" . $countopened . ")", $num, $row_num);
+       } else {
+           echo Search::showItem($output_type, __('Total'), $num, $row_num);
+       }
+
       echo Search::showItem($output_type, '', $num, $row_num);
       foreach ($time_total as $key => $data) {
          if (!empty($data['style'])) {
@@ -1617,8 +1638,11 @@ class PluginActivityReport extends CommonDBTM {
             echo Search::showItem($output_type, '', $num, $row_num, $class);
          } else {
             $class = "class='center";
-            if ($data['value'] != 1) {
-               $class .= " red'";
+            if ($data['value'] != 1 ) {
+                if( !$use_hour_on_cra) {
+                    $class .= " red'";
+                }
+
                echo Search::showItem($output_type, Html::formatNumber($data['value'], false, 2), $num, $row_num, $class);
             } else {
                $class .= "' ";
@@ -1627,11 +1651,13 @@ class PluginActivityReport extends CommonDBTM {
          }
       }
       $class = "class='center";
-      if ($tot != $countopened) {
-         $class .= " red'";
-      } else {
-         $class .= " green'";
-      }
+       if( !$use_hour_on_cra) {
+           if ($tot != $countopened) {
+               $class .= " red'";
+           } else {
+               $class .= " green'";
+           }
+       }
       echo Search::showItem($output_type, Html::formatNumber($tot, false, 3), $num, $row_num, $class);
       echo Search::showEndLine($output_type);
    }
@@ -1685,10 +1711,19 @@ class PluginActivityReport extends CommonDBTM {
     *
     * @return Le total arrondi selon la régle de gestion.
     */
-   static function TotalTpsPassesArrondis($a_arrondir) {
+   static function TotalTpsPassesArrondis($a_arrondir,$arrondir_heure = 1) {
 
       $tranches_seuil   = 0.002;
-      $tranches_arrondi = [0, 0.25, 0.5, 0.75, 1];
+      if(!$arrondir_heure) {
+          $tranches_arrondi = [0, 0.25, 0.5, 0.75, 1];
+      } else {
+          $allday = self::getAllDay();
+          $hour = ((float) $a_arrondir)* (float)$allday;
+          $a_arrondir = $hour / 3600;
+          $tranches_arrondi = [0,0.25,0.5,0.75,1];
+
+      }
+
 
       $result = 0;
       if (empty($a_arrondir)) {
@@ -1702,21 +1737,29 @@ class PluginActivityReport extends CommonDBTM {
          // Le + 10 qui suit permet de pallier é un probléme de comparaison (??) par la suite.
          $tranches_majorees[] = $tranches_arrondi[$i] + $tranches_seuil + 10;
       }
+       $find = false;
+
+
+
       if ($reste < $tranches_majorees[0]) {
          $result = $partie_entiere;
-
-      } else if ($reste >= $tranches_majorees[0] && $reste < $tranches_majorees[1]) {
-         $result = $partie_entiere + $tranches_arrondi[1];
-
-      } else if ($reste >= $tranches_majorees[1] && $reste < $tranches_majorees[2]) {
-         $result = $partie_entiere + $tranches_arrondi[2];
-
-      } else if ($reste >= $tranches_majorees[2] && $reste < $tranches_majorees[3]) {
-         $result = $partie_entiere + $tranches_arrondi[3];
-
+         $find = true;
       } else {
-         $result = $partie_entiere + $tranches_arrondi[4];
+          for ($i = 1; $i < (count($tranches_arrondi)-1); $i++) {
+              // Le + 10 qui suit permet de pallier é un probléme de comparaison (??) par la suite.
+              if ($reste >= $tranches_majorees[($i-1)] && $reste < $tranches_majorees[$i]) {
+                  $result = $partie_entiere + $tranches_arrondi[$i];
+                  $find = 1;
+                  break;
+              }
+//              $tranches_majorees[] = $tranches_arrondi[$i] + $tranches_seuil + 10;
+          }
       }
+
+      if(!$find) {
+          $result = $partie_entiere + $tranches_arrondi[(count($tranches_arrondi)-1)];
+      }
+
 
       return $result;
    }

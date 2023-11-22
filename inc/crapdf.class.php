@@ -518,24 +518,36 @@ class PluginActivityCraPDF extends \Fpdf\Fpdf {
    function drawTotal() {
       $count      = count($this->getTime()) + count($this->getHoliday()) + 1;
       $line_color = '';
+       $opt = new PluginActivityOption();
+       $opt->getFromDB(1);
+       $use_hour_on_cra               = $opt->fields['use_hour_on_cra'];
+
       if (($count % 2) != 1) {
          $line_color = 'yellow';
       }
 
       $this->CellValue($this->total_bigwidth / 3, $this->line_height, Toolbox::decodeFromUtf8(strtoupper(__('Total'))), 'LBT', 'L', 'hardgrey', 1);
-      $this->CellValue($this->total_bigwidth / 3, $this->line_height, Toolbox::decodeFromUtf8(__('Entry except in the month, the total must be equal to the number of working days this month', 'activity').' : '), 'BT', 'R', 'hardgrey', 0, 6);
-      $this->CellValue($this->total_bigwidth / 3, $this->line_height, $this->getWorkingDays(), 'BT', 'C', 'hardgrey', 1, 6);
-      if ($this->total_all != $this->working_days) {
-         $this->CellValue($this->total_width, $this->line_height, $this->getTotal(), 'LRBT', 'C', $line_color, 1, '', 'red');
-      } else {
-         $this->CellValue($this->total_width, $this->line_height, $this->getTotal(), 'LRBT', 'C', 'blue', 1);
-      }
-      $this->Ln(4);
-      if ($this->total_all != $this->working_days) {
-         $this->CellValue($this->total_bigwidth, $this->line_height, Toolbox::decodeFromUtf8(strtoupper(__('Total incorrect', 'activity'))), 0, 'R', '', 0, 8);
-      } else {
-         $this->CellValue($this->total_bigwidth, $this->line_height, Toolbox::decodeFromUtf8(strtoupper(__('Total OK', 'activity'))), 0, 'R', '', 0, 8);
-      }
+       if(!$use_hour_on_cra) {
+           $this->CellValue($this->total_bigwidth / 3, $this->line_height, Toolbox::decodeFromUtf8(__('Entry except in the month, the total must be equal to the number of working days this month', 'activity').' : '), 'BT', 'R', 'hardgrey', 0, 6);
+           $this->CellValue($this->total_bigwidth / 3, $this->line_height, $this->getWorkingDays(), 'BT', 'C', 'hardgrey', 1, 6);
+           if ($this->total_all != $this->working_days) {
+               $this->CellValue($this->total_width, $this->line_height, $this->getTotal(), 'LRBT', 'C', $line_color, 1, '', 'red');
+           } else {
+               $this->CellValue($this->total_width, $this->line_height, $this->getTotal(), 'LRBT', 'C', 'blue', 1);
+           }
+           $this->Ln(4);
+           if ($this->total_all != $this->working_days) {
+               $this->CellValue($this->total_bigwidth, $this->line_height, Toolbox::decodeFromUtf8(strtoupper(__('Total incorrect', 'activity'))), 0, 'R', '', 0, 8);
+           } else {
+               $this->CellValue($this->total_bigwidth, $this->line_height, Toolbox::decodeFromUtf8(strtoupper(__('Total OK', 'activity'))), 0, 'R', '', 0, 8);
+           }
+       } else  {
+           $this->CellValue($this->total_bigwidth / 3, $this->line_height, '', 'BT', 'R', 'hardgrey', 0, 6);
+           $this->CellValue($this->total_bigwidth / 3, $this->line_height, '', 'BT', 'C', 'hardgrey', 1, 6);
+           $this->CellValue($this->total_width, $this->line_height, $this->getTotal(), 'LRBT', 'C', 'blue', 1);
+
+       }
+
    }
 
    function setWorkingDays($working_days) {

@@ -198,6 +198,13 @@ class PluginActivityOption extends CommonDBTM {
       echo "</td>";
       echo "</tr>";
 
+       echo "<tr class='tab_bg_1'>";
+       echo "<td>".__('Use hour on cra and not half day', 'activity')."</td>";
+       echo "<td>";
+       Dropdown::showYesNo('use_hour_on_cra', $this->fields['use_hour_on_cra']);
+       echo "</td>";
+       echo "</tr>";
+
       echo "<tr class='tab_bg_1'><td class='center' colspan='2'>";
       echo Html::hidden('id', ['value' => 1]);
       echo Html::submit(_sx('button', 'Save'), ['name' => 'update', 'class' => 'btn btn-primary']);
