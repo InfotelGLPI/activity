@@ -34,7 +34,7 @@ msgstr[2] "Actividades"
 #: ajax/lateralmenu.php:36 inc/holiday.class.php:54
 msgid "Private holiday"
 msgid_plural "Private holidays"
-msgstr[0] "Vacaciones privadas"
+msgstr[0] "Vacación privada"
 msgstr[1] "Vacaciones privadas"
 msgstr[2] "Vacaciones privadas"
 
@@ -64,7 +64,7 @@ msgstr "Solicitud de vacaciones desde"
 
 #: ajax/sendmail.php:66
 msgid "of"
-msgstr "De"
+msgstr "de"
 
 #: front/config.form.php:63
 msgid "Please activate the plugin"
@@ -84,7 +84,7 @@ msgstr "Mostrar el servicio de asistencia interna"
 
 #: inc/crapdf.class.php:271
 msgid "during"
-msgstr "Durante"
+msgstr "durante"
 
 #: inc/crapdf.class.php:276
 msgid "Year"
@@ -92,7 +92,7 @@ msgstr "Año"
 
 #: inc/crapdf.class.php:280
 msgid "for"
-msgstr "Para"
+msgstr "para"
 
 #: inc/crapdf.class.php:284
 msgid "Client"
@@ -125,7 +125,7 @@ msgid ""
 "days this month"
 msgstr ""
 "A menos que se ingrese en el mes, este total debe ser igual al número de "
-"días hábiles de este mes, es decir:"
+"días hábiles de este mes, es decir"
 
 #: inc/crapdf.class.php:535
 msgid "Total incorrect"
@@ -273,7 +273,7 @@ msgstr "Sólo por la tarde"
 #: inc/holiday.class.php:949 inc/holiday.class.php:956
 #: inc/holiday.class.php:1218 inc/holiday.class.php:1273
 msgid "Only on morning"
-msgstr "Solo por la mañana "
+msgstr "Solo por la mañana"
 
 #: inc/holiday.class.php:1486
 msgid ""
@@ -660,9 +660,9 @@ msgstr "Mostrar actividades de todos"
 #: inc/publicholiday.class.php:45
 msgid "Public holiday"
 msgid_plural "Public holidays"
-msgstr[0] "Días festivos"
+msgstr[0] "Día festivo"
 msgstr[1] "Días festivos"
-msgstr[2] "Días festivos "
+msgstr[2] "Días festivos"
 
 #: inc/report.class.php:162
 msgid "Take a snapshot of the CRA"
@@ -734,7 +734,7 @@ msgstr "Principal evolución del equipo"
 
 #: inc/ticket.class.php:43
 msgid "The following user is unavailable / on holiday : "
-msgstr "El siguiente usuario no está disponible / está de vacaciones :"
+msgstr "El siguiente usuario no está disponible / está de vacaciones : "
 
 #: inc/tickettask.class.php:43
 msgid "Cumulative ticket task"
