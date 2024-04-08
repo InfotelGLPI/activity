@@ -61,7 +61,7 @@ class PluginActivityConfig extends CommonDBTM {
 
       echo "<div align='center'><table class='tab_cadre_fixe'>";
 
-      echo "<tr><th colspan='3'>".__('Define internal helpdesk', 'activity')."</th></tr>";
+      echo "<tr><th colspan='5'>".__('Define internal helpdesk', 'activity')."</th></tr>";
 
       echo "<tr class='tab_bg_1'>";
 
@@ -70,6 +70,11 @@ class PluginActivityConfig extends CommonDBTM {
       echo "<td>";
       Dropdown::show('Entity', ['name' => 'entities_id',
                                      'used' => $used_entities]);
+      echo "</td>";
+    // is_recursive
+      echo "<td>".__('Is recursive')."</td>";
+      echo "<td>";
+      Dropdown::showYesNo('is_recursive');
       echo "</td>";
 
       // Checkbox is_internal_helpdesk
@@ -120,6 +125,7 @@ class PluginActivityConfig extends CommonDBTM {
       }
       echo "</th>";
       echo "<th>".__('Entity')."</th>";
+      echo "<th>".__('Is recursive')."</th>";
       echo "<th>".__('Type')."</th>";
       echo "</tr>";
       foreach ($fields as $field) {
@@ -132,6 +138,9 @@ class PluginActivityConfig extends CommonDBTM {
          echo "</td>";
          //DATA LINE
          echo "<td>".Dropdown::getDropdownName('glpi_entities', $field['entities_id'])."</td>";
+         echo "<td>";
+         echo Dropdown::getYesNo($field['is_recursive']);
+         echo "</td>";
          echo "<td>";
          echo $field['name'];
          echo "</td>";
@@ -156,7 +165,22 @@ class PluginActivityConfig extends CommonDBTM {
     */
    static function getConfigFromDB($entities_id) {
 
-      $restrict = ["entities_id" => $entities_id];
+      $ancestor_entities_id = getAncestorsOf(Entity::getTable(),$entities_id);
+      if(!empty($ancestor_entities_id)) {
+          $restrict = [
+              "OR" => [
+                  "entities_id" => $entities_id,
+                  "AND" => [
+                      "entities_id" => $ancestor_entities_id,
+                      "is_recursive" => 1
+                  ]
+              ]
+
+          ];
+      } else {
+          $restrict = [  "entities_id" => $entities_id];
+      }
+
       $dbu = new DbUtils();
       $dataConfig = $dbu->getAllDataFromTable("glpi_plugin_activity_configs", $restrict);
 

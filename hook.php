@@ -36,7 +36,7 @@ function plugin_activity_install() {
    // version 3.0.0
    if (!$DB->tableExists("glpi_plugin_activity_holidays")) {
       $install  = true;
-      $DB->runFile(PLUGIN_ACTIVITY_DIR . "/install/sql/empty-3.1.0.sql");
+      $DB->runFile(PLUGIN_ACTIVITY_DIR . "/install/sql/empty-3.1.3.sql");
    }
 
    if (!$DB->tableExists('glpi_plugin_activity_holidays')) {
@@ -158,6 +158,10 @@ function plugin_activity_install() {
       $DB->runFile(PLUGIN_ACTIVITY_DIR."/install/sql/update-3.0.0.sql");
       update251to300();
    }
+//version 3.1.3
+    if (!$DB->fieldExists("glpi_plugin_activity_options", "use_hour_on_cra")) {
+        $DB->runFile(PLUGIN_ACTIVITY_DIR."/install/sql/update-3.1.3.sql");
+    }
 
    PluginActivityProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
    PluginActivityProfile::initProfile();
