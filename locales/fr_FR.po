@@ -580,7 +580,7 @@ msgstr "Utiliser les projets"
 
 #: inc/option.class.php:202
 msgid "Use hour on cra and not half day"
-msgstr "Utiliser les heures sur le CRA (et non des jours / hommes)"
+msgstr "Utiliser les heures sur le CRA et non des jours / hommes"
 
 #: inc/planningexternalevent.class.php:187
 msgid "Add an activity"
