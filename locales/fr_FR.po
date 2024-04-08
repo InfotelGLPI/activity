@@ -4,27 +4,27 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# Xavier CAILLAUD <thetsmr@gmail.com>, 2022
+# Xavier CAILLAUD <thetsmr@gmail.com>, 2024
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-24 06:32+0000\n"
+"POT-Creation-Date: 2024-04-08 09:45+0000\n"
 "PO-Revision-Date: 2020-11-02 13:59+0000\n"
-"Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2022\n"
-"Language-Team: French (France) (https://www.transifex.com/infotelGLPI/teams/114456/fr_FR/)\n"
+"Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2024\n"
+"Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/114456/fr_FR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fr_FR\n"
 "Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
-#: setup.php:179 ajax/loadscripts.php:47 front/menu.php:46
+#: setup.php:173 ajax/loadscripts.php:47 front/menu.php:46
 #: inc/config.class.php:38 inc/menu.class.php:32 inc/option.class.php:38
-#: inc/preference.class.php:42 inc/profile.class.php:43
-#: inc/profile.class.php:138 inc/report.class.php:866
+#: inc/preference.class.php:57 inc/profile.class.php:45
+#: inc/profile.class.php:142 inc/report.class.php:867
 msgid "Activity"
 msgid_plural "Activities"
 msgstr[0] "Activité quotidienne"
@@ -66,7 +66,7 @@ msgstr "Demande de congés de"
 msgid "of"
 msgstr "du"
 
-#: front/config.form.php:65
+#: front/config.form.php:63
 msgid "Please activate the plugin"
 msgstr "Veuillez activer le plugin"
 
@@ -78,7 +78,7 @@ msgstr "Rapport d'activité"
 msgid "Define internal helpdesk"
 msgstr "Définir la terminologie pour l'assistance interne"
 
-#: inc/config.class.php:115
+#: inc/config.class.php:120
 msgid "Show internal helpdesk"
 msgstr "Dénomination pour l'assistance interne"
 
@@ -103,23 +103,23 @@ msgid "Project / activity"
 msgstr "Projet / Activité"
 
 #: inc/crapdf.class.php:462 inc/holidaytype.class.php:89
-#: inc/report.class.php:1505
+#: inc/report.class.php:1513
 msgid "Part time"
 msgstr "Temps partiel"
 
-#: inc/crapdf.class.php:463 inc/report.class.php:1503
+#: inc/crapdf.class.php:463 inc/report.class.php:1511
 msgid "Holidays or exceptional absences"
 msgstr "Congés ou absences exceptionnelles"
 
-#: inc/crapdf.class.php:464 inc/report.class.php:1507
+#: inc/crapdf.class.php:464 inc/report.class.php:1515
 msgid "Sickness or maternity"
 msgstr "Maladie ou maternité"
 
-#: inc/crapdf.class.php:493 inc/report.class.php:985
+#: inc/crapdf.class.php:493 inc/report.class.php:986
 msgid "Absences"
 msgstr "Absences"
 
-#: inc/crapdf.class.php:526
+#: inc/crapdf.class.php:531
 msgid ""
 "Entry except in the month, the total must be equal to the number of working "
 "days this month"
@@ -127,39 +127,23 @@ msgstr ""
 "Sauf entrée dans le mois, ce total doit être égal au nombre de jours ouvrés "
 "de ce mois, soit"
 
-#: inc/crapdf.class.php:535
+#: inc/crapdf.class.php:540
 msgid "Total incorrect"
 msgstr "Total incorrect"
 
-#: inc/crapdf.class.php:537
+#: inc/crapdf.class.php:542
 msgid "Total OK"
 msgstr "Total OK"
 
-#: inc/crapdf.class.php:579
+#: inc/crapdf.class.php:591
 msgid "Generated with GLPI on"
 msgstr "Généré avec GLPI le"
 
-#: inc/dashboard.class.php:84
-msgid "Tables"
-msgstr "Tableaux"
-
-#: inc/dashboard.class.php:85 inc/dashboard.class.php:307
-msgid "Activity Menu"
-msgstr "Menu Activité"
-
-#: inc/dashboard.class.php:88 inc/dashboard.class.php:381
-msgid "Interventions not in CRA"
-msgstr "Interventions non présentes sur le CRA"
-
-#: inc/dashboard.class.php:92
-msgid "Pie charts"
-msgstr "Camemberts"
-
-#: inc/dashboard.class.php:93 inc/dashboard.class.php:152
+#: inc/dashboard.class.php:93 inc/dashboard.class.php:160
 msgid "Activity in the month"
 msgstr "Activité du mois"
 
-#: inc/dashboard.class.php:95 inc/dashboard.class.php:154
+#: inc/dashboard.class.php:95 inc/dashboard.class.php:161
 msgid ""
 "Display of activity by month for a user (tickets, activity, holidays, "
 "others)"
@@ -167,17 +151,25 @@ msgstr ""
 "Affichage de l'activité par mois pour un utilisateur (tickets, activité, "
 "vacances, autres)"
 
-#: inc/dashboard.class.php:249
+#: inc/dashboard.class.php:96 inc/dashboard.class.php:278
+msgid "Activity Menu"
+msgstr "Menu Activité"
+
+#: inc/dashboard.class.php:99 inc/dashboard.class.php:352
+msgid "Interventions not in CRA"
+msgstr "Interventions non présentes sur le CRA"
+
+#: inc/dashboard.class.php:220
 msgid "Planning access"
 msgstr "Accès au planning"
 
-#: inc/dashboard.class.php:269 inc/holiday.class.php:1239
+#: inc/dashboard.class.php:240 inc/holiday.class.php:1239
 #: inc/holiday.class.php:1294
 msgid "All day"
 msgstr "Jour entier"
 
-#: inc/dashboard.class.php:472 inc/dashboard.class.php:505
-#: inc/report.class.php:579 inc/report.class.php:621 inc/report.class.php:674
+#: inc/dashboard.class.php:443 inc/dashboard.class.php:476
+#: inc/report.class.php:580 inc/report.class.php:622 inc/report.class.php:675
 msgid "No defined type"
 msgstr "Pas de type défini"
 
@@ -230,8 +222,8 @@ msgstr ""
 "L'utilisateur n'a pas encore renseigné de responsable dans ses préférences"
 
 #: inc/holiday.class.php:443 inc/lateralmenu.class.php:64
-#: inc/planningexternalevent.class.php:103 inc/profile.class.php:95
-#: inc/profile.class.php:145
+#: inc/planningexternalevent.class.php:103 inc/profile.class.php:98
+#: inc/profile.class.php:149
 msgid "Create a holiday request"
 msgstr "Demande de congé"
 
@@ -254,7 +246,7 @@ msgstr[0] "Compteur de congé"
 msgstr[1] "Compteur de congés"
 msgstr[2] "Compteur de congés"
 
-#: inc/holiday.class.php:473 inc/preference.class.php:156
+#: inc/holiday.class.php:473 inc/preference.class.php:189
 msgid "Add a manager"
 msgstr "Ajouter un responsable"
 
@@ -586,6 +578,10 @@ msgstr "Valeur par défaut du champ \"Afficher sur le CRA\""
 msgid "Use projects"
 msgstr "Utiliser les projets"
 
+#: inc/option.class.php:202
+msgid "Use hour on cra and not half day"
+msgstr "Utiliser les heures sur le CRA (et non des jours / hommes)"
+
 #: inc/planningexternalevent.class.php:187
 msgid "Add an activity"
 msgstr "Ajouter une activité"
@@ -633,37 +629,37 @@ msgstr "Le type d'activité est un champ obligatoire"
 msgid "The chosen end date is on weekend"
 msgstr "La date de fin choisie est en week-end"
 
-#: inc/preference.class.php:77 inc/preference.class.php:116
+#: inc/preference.class.php:106 inc/preference.class.php:145
 msgid "List of my managers"
 msgstr "Liste de mes responsables"
 
-#: inc/preference.class.php:81
+#: inc/preference.class.php:110
 msgid "You have not declared any manager yet."
 msgstr "Vous n'avez encore déclaré aucun responsable."
 
-#: inc/preference.class.php:121
+#: inc/preference.class.php:150
 msgid "There is no manager for your groups"
 msgstr "Il n'y a pas de responsables définis pour vos groupes"
 
-#: inc/profile.class.php:37
+#: inc/profile.class.php:38
 msgid "Right management"
 msgid_plural "Rights management"
 msgstr[0] "Gestion des droits"
 msgstr[1] "Gestion des droits"
 msgstr[2] "Gestion des droits"
 
-#: inc/profile.class.php:102 inc/profile.class.php:149
+#: inc/profile.class.php:105 inc/profile.class.php:153
 msgid "Validate holiday"
 msgid_plural "Validate holidays"
 msgstr[0] "Valider un congé"
 msgstr[1] "Valider des congés"
 msgstr[2] "Valider des congés"
 
-#: inc/profile.class.php:109 inc/profile.class.php:153
+#: inc/profile.class.php:112 inc/profile.class.php:157
 msgid "Statistics and reports"
 msgstr "Statistiques et rapports"
 
-#: inc/profile.class.php:116 inc/profile.class.php:157
+#: inc/profile.class.php:119 inc/profile.class.php:161
 msgid "Display activities of all"
 msgstr "Voir les activités / congés de tous"
 
@@ -702,23 +698,23 @@ msgstr "Mois suivant"
 msgid "Previous month"
 msgstr "Mois précédent"
 
-#: inc/report.class.php:698
+#: inc/report.class.php:699
 msgid "Unbilled"
 msgstr "Non facturé"
 
-#: inc/report.class.php:865
+#: inc/report.class.php:866
 msgid "Project"
 msgstr "Projet"
 
-#: inc/report.class.php:1052
+#: inc/report.class.php:1053
 msgid "Activities detail"
 msgstr "Détail des activités"
 
-#: inc/report.class.php:1060
+#: inc/report.class.php:1061
 msgid "Percent"
 msgstr "Pourcentage"
 
-#: inc/report.class.php:1111
+#: inc/report.class.php:1112
 msgid "No activity found"
 msgstr "Aucune activité trouvée"
 
