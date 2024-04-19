@@ -16,4 +16,6 @@ ALTER TABLE `glpi_plugin_activity_planningexternalevents`
 ALTER TABLE `glpi_plugin_activity_planningexternalevents`
     ADD KEY `plugin_activity_planningeventsubcategories_id` (`plugin_activity_planningeventsubcategories_id`);
 ALTER TABLE `glpi_plugin_activity_configs`
+    ADD `use_planningeventsubcategories` tinyint DEFAULT '0';
+ALTER TABLE `glpi_plugin_activity_options`
     ADD `use_planningeventsubcategories` tinyint DEFAULT '0'
