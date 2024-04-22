@@ -254,4 +254,8 @@ class PluginActivityOption extends CommonDBTM {
    public function getIsCraDefaultProject() {
       return $this->fields['is_cra_default_project'];
    }
+
+    public function getUseSubcategory() {
+        return $this->fields['use_planningeventsubcategories'];
+    }
 }

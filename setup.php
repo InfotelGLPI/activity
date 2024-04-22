@@ -149,14 +149,14 @@ function plugin_init_activity()
             }
         }
 
-        if (Session::haveRight("plugin_activity", READ) && strpos($_SERVER['REQUEST_URI'], "planningexternalevent")
-            || isset($_POST['action']) && $_POST['action'] == 'add_event_fromselect') {
-            $PLUGIN_HOOKS['post_item_form']['activity'] = ['PluginActivityPlanningExternalEvent', 'addCra'];
-        }
-
         // Ticket task cra
         if (Session::haveRight("plugin_activity", READ)) {
             $PLUGIN_HOOKS['post_item_form']['activity'] = ['PluginActivityTicketTask', 'postForm'];
+        }
+
+        if (Session::haveRight("plugin_activity", READ) && strpos($_SERVER['REQUEST_URI'], "planningexternalevent")
+            || isset($_POST['action']) && $_POST['action'] == 'add_event_fromselect') {
+            $PLUGIN_HOOKS['post_item_form']['activity'] = ['PluginActivityPlanningExternalEvent', 'postItemForm'];
         }
     }
     //Planning hook

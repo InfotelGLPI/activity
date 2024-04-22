@@ -197,11 +197,11 @@ CREATE TABLE `glpi_plugin_activity_planningexternalevents`
     `id`                                            int unsigned NOT NULL auto_increment,
     `is_oncra`                                      tinyint default '1',
     `planningexternalevents_id`                     int unsigned NOT NULL,
-    `plugin_activity_planningeventsubcategories_id` int unsigned,
+    `planningeventsubcategories_id` int unsigned,
     `actiontime`                                    int unsigned NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`),
     KEY                                             `is_oncra` (`is_oncra`),
-    KEY                                             `plugin_activity_planningeventsubcategories_id` (`plugin_activity_planningeventsubcategories_id`)
+    KEY                                             `planningeventsubcategories_id` (`planningeventsubcategories_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
 
 DROP TABLE IF EXISTS `glpi_plugin_activity_planningeventsubcategories`;

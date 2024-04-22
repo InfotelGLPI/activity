@@ -12,9 +12,9 @@ CREATE TABLE `glpi_plugin_activity_planningeventsubcategories`
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
 
 ALTER TABLE `glpi_plugin_activity_planningexternalevents`
-    ADD `plugin_activity_planningeventsubcategories_id` int unsigned;
+    ADD `planningeventsubcategories_id` int unsigned;
 ALTER TABLE `glpi_plugin_activity_planningexternalevents`
-    ADD KEY `plugin_activity_planningeventsubcategories_id` (`plugin_activity_planningeventsubcategories_id`);
+    ADD KEY `planningeventsubcategories_id` (`planningeventsubcategories_id`);
 ALTER TABLE `glpi_plugin_activity_configs`
     ADD `use_planningeventsubcategories` tinyint DEFAULT '0';
 ALTER TABLE `glpi_plugin_activity_options`
