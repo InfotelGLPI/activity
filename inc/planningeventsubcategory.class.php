@@ -41,6 +41,6 @@ class PluginActivityPlanningeventsubcategory extends CommonDropdown {
     }
 
     static function getTypeName($nb = 0) {
-        return _n('Event sub-category', 'Event sub-categories', $nb, 'activity');
+        return _n('Event subcategory', 'Event subcategories', $nb, 'activity');
     }
 }

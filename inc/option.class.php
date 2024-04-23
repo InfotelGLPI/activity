@@ -206,7 +206,7 @@ class PluginActivityOption extends CommonDBTM {
        echo "</tr>";
 
        echo "<tr class='tab_bg_1'>";
-       echo "<td>".__('Use events subcategories', 'activity')."</td>";
+       echo "<td>".__('Use event subcategories', 'activity')."</td>";
        echo "<td>";
        Dropdown::showYesNo('use_planningeventsubcategories', $this->fields['use_planningeventsubcategories']);
        echo "</td>";

@@ -490,7 +490,8 @@ class PluginActivityReport extends CommonDBTM {
       if ($pdfMode) {
          $generalinformations = [];
          $monthsarray         = Toolbox::getMonthsOfYearArray();
-
+         // format month to avoid error when getting the month name from $monthsarray
+         $input['month'] = $input['month'] < 10 ? str_replace('0', '', $input['month']) : $input['month'];
          $user = new User();
          $user->getFromDB($crit["users_id"]);
          $generalinformations['name'] = strtoupper($user->fields['realname']) . ' ' . $user->fields['firstname'];
@@ -585,6 +586,9 @@ class PluginActivityReport extends CommonDBTM {
                         //                           $type = $dropdown->fields['completename'];
                         //                        } else {
                         $type = $data2["type"];
+                        if ($opt->getUseSubcategory() && $data2['subtype']) {
+                            $type .= ' - '.$data2['subtype'];
+                        }
                         //                        }
                      }
 
@@ -627,6 +631,9 @@ class PluginActivityReport extends CommonDBTM {
                      //                     $type = $dropdown->fields['name'];
                      //                  } else {
                      $type = htmlspecialchars_decode($data2["type"]);
+                      if ($opt->getUseSubcategory() && $data2['subtype']) {
+                          $type .= ' - '.htmlspecialchars_decode($data2['subtype']);
+                      }
                      //                  }
                   }
 
@@ -1052,10 +1059,12 @@ class PluginActivityReport extends CommonDBTM {
             echo Search::showNewLine($output_type);
             self::showTitle($output_type, $num, __('Activities detail', 'activity'), '', false);
             echo Search::showEndLine($output_type);
-
             echo Search::showHeader($output_type, $number + $numberm + $numbert, 3, true);
             echo Search::showNewLine($output_type);
             self::showTitle($output_type, $num, PlanningEventCategory::getTypeName(2), 'activitytype', false);
+             if ($opt->getUseSubcategory()) {
+                self::showTitle($output_type, $num, PluginActivityPlanningeventsubcategory::getTypeName(2), 'activitysubtype', false);
+             }
             self::showTitle($output_type, $num, __('Comments'), 'comment', false);
             self::showTitle($output_type, $num, __('Total'), 'hours', false);
             self::showTitle($output_type, $num, __('Percent', 'activity'), 'percent', false);
@@ -1074,7 +1083,9 @@ class PluginActivityReport extends CommonDBTM {
                $num = 1;
                echo Search::showNewLine($output_type);
                echo Search::showItem($output_type, $data["name"], $num, $row_num);
-
+                if ($opt->getUseSubcategory()) {
+                    echo Search::showItem($output_type, $data["subname"], $num, $row_num);
+                }
                $comment = "";
                $dbu     = new DbUtils();
                $queryt  = "SELECT `glpi_planningexternalevents`.`text` AS text,
@@ -1086,7 +1097,13 @@ class PluginActivityReport extends CommonDBTM {
                               ON (`glpi_planningexternalevents`.`id` = `glpi_plugin_activity_planningexternalevents`.`planningexternalevents_id`)";
                $queryt  .= "WHERE (`glpi_planningexternalevents`.`begin` >= '" . $crit["begin"] . "' 
                            AND `glpi_planningexternalevents`.`begin` <= '" . $crit["end"] . "') 
-                           AND `glpi_planningexternalevents`.`planningeventcategories_id` = '" . $data["type"] . "' ";
+                           AND `glpi_planningexternalevents`.`planningeventcategories_id` = '" . $data["type"] . "'";
+
+               if ($opt->getUseSubcategory()) {
+                   $queryt .= "AND `glpi_plugin_activity_planningexternalevents`.`planningeventsubcategories_id`";
+                   $queryt .= $data['subtype'] ?  " = '".$data["subtype"]."' " : ' IS NULL ';
+               }
+
                $queryt  .= "  AND `glpi_planningexternalevents`.`users_id` = '" . $crit["users_id"] . "' "
                            . $dbu->getEntitiesRestrictRequest("AND", "glpi_planningexternalevents");
 

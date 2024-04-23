@@ -290,7 +290,6 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
                             // insert it after the category row
                             plugin_activity.categoryRow = plugin_activity.categorySelect.parentElement.parentElement.parentElement;
                             plugin_activity.categoryRow.parentElement.insertBefore(plugin_activity.newRow, plugin_activity.categoryRow.nextElementSibling);
-                            // TODO : prendre en compte la possibilité d'un changement d'entité avec le champ ajouté pour la version custom de rennes métropole
                         }
                         plugin_activity = {};
                     </script>";
@@ -304,7 +303,7 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
             if (self::canCreate()) {
                 global $DB;
                 $extevent = new PluginActivityPlanningExternalEvent();
-                $is_exist = $extevent->getFromDBByCrit(["planningexternalevents_id=" . $item->getID()]);
+                $is_exist = $extevent->getFromDBByCrit(['planningexternalevents_id'=>$item->getID()]);
                 $actiontime = '';
                 $options = PluginActivityOption::getConfigFromDB()[1];
                 if (isset($item->input['plan']['_duration'])) {
@@ -343,7 +342,7 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
                             'actiontime' => $actiontime
                         ];
                         if ($options['use_planningeventsubcategories']) {
-                            $input['planningeventsubcategories_id'] = $item->input['planningeventsubcategories_id'];
+                            $input['planningeventsubcategories_id'] = isset($item->input['planningeventsubcategories_id']) ? $item->input['planningeventsubcategories_id'] : null ;
                         }
                         $extevent->update($input);
                     } elseif (!$is_exist) {
@@ -353,7 +352,7 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
                             'actiontime' => $actiontime
                         ];
                         if ($options['use_planningeventsubcategories']) {
-                            $input['planningeventsubcategories_id'] = $item->input['planningeventsubcategories_id'];
+                            $input['planningeventsubcategories_id'] = isset($item->input['planningeventsubcategories_id']) ? $item->input['planningeventsubcategories_id'] : null ;
                         }
                         $extevent->add($input);
                     }
@@ -364,17 +363,7 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
                     if ($opt) {
                         $is_cra_default = $opt->fields['is_cra_default'];
                     }
-                    if (!$is_exist && isset($_POST['add'])) {
-                        $input = [
-                            'is_oncra' => isset($item->input['is_oncra']) ? $item->input['is_oncra'] : $is_cra_default,
-                            'planningexternalevents_id' => $item->getID(),
-                            'actiontime' => $actiontime
-                        ];
-                        if ($options['use_planningeventsubcategories']) {
-                            $input['planningeventsubcategories_id'] = $item->input['planningeventsubcategories_id'];
-                        }
-                        $extevent->add($input);
-                    } elseif (isset($_POST['action']) && $_POST['action'] == 'clone_event') {
+                    if (isset($_POST['action']) && $_POST['action'] == 'clone_event') {
                         $iterator = $DB->request([
                             'FROM' => 'glpi_plugin_activity_planningexternalevents',
                             'LEFT JOIN' => [
@@ -397,6 +386,16 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
                                 ]);
                             }
                         }
+                    } else if (!$is_exist) { // add events and update events created before the plugin activation
+                        $input = [
+                            'is_oncra' => isset($item->input['is_oncra']) ? $item->input['is_oncra'] : $is_cra_default,
+                            'planningexternalevents_id' => $item->getID(),
+                            'actiontime' => $actiontime
+                        ];
+                        if ($options['use_planningeventsubcategories']) {
+                            $input['planningeventsubcategories_id'] = isset($item->input['planningeventsubcategories_id']) ? $item->input['planningeventsubcategories_id'] : null ;
+                        }
+                        $extevent->add($input);
                     }
                 }
             }
@@ -733,19 +732,27 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
         static function queryAllExternalEvents($criteria)
         {
             $dbu = new DbUtils();
+            $options = PluginActivityOption::getConfigFromDB()[1];
+            $subcategoriesSelect = $options['use_planningeventsubcategories'] ? '`glpi_plugin_activity_planningexternalevents`.`planningeventsubcategories_id` AS subtype, `glpi_plugin_activity_planningeventsubcategories`.`name` AS subname, ' : '';
+            $subcategoriesJoin = $options['use_planningeventsubcategories'] ? 'LEFT JOIN `glpi_plugin_activity_planningeventsubcategories`
+                         ON (`glpi_plugin_activity_planningexternalevents`.`planningeventsubcategories_id` = `glpi_plugin_activity_planningeventsubcategories`.`id`)' : '';
             $query = "SELECT `glpi_planningexternalevents`.`planningeventcategories_id` AS type,
+                $subcategoriesSelect
                     SUM(`glpi_plugin_activity_planningexternalevents`.`actiontime`) AS total_actiontime, 
                         `glpi_planningeventcategories`.`name` AS name
                      FROM `glpi_planningexternalevents` 
                      INNER JOIN `glpi_planningeventcategories` 
                         ON (`glpi_planningeventcategories`.`id` = `glpi_planningexternalevents`.`planningeventcategories_id`)
                         INNER JOIN `glpi_plugin_activity_planningexternalevents`
-                         ON (`glpi_planningexternalevents`.`id` = `glpi_plugin_activity_planningexternalevents`.`planningexternalevents_id`)";
+                         ON (`glpi_planningexternalevents`.`id` = `glpi_plugin_activity_planningexternalevents`.`planningexternalevents_id`)
+                        $subcategoriesJoin
+                         ";
             $query .= "WHERE (`glpi_planningexternalevents`.`begin` >= '" . $criteria["begin"] . "' 
                   AND `glpi_planningexternalevents`.`begin` <= '" . $criteria["end"] . "') ";
             $query .= "  AND `glpi_planningexternalevents`.`users_id` = '" . $criteria["users_id"] . "' "
                 . $dbu->getEntitiesRestrictRequest("AND", "glpi_planningexternalevents");
-            $query .= " GROUP BY `glpi_planningexternalevents`.`planningeventcategories_id` 
+            $subcategoriesGroup = $options['use_planningeventsubcategories'] ? ', `glpi_plugin_activity_planningexternalevents`.`planningeventsubcategories_id` ' : '';
+            $query .= " GROUP BY `glpi_planningexternalevents`.`planningeventcategories_id` $subcategoriesGroup
                  ORDER BY name";
 
             return $query;
@@ -842,14 +849,18 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
                        `glpi_plugin_activity_planningexternalevents`.`actiontime` AS actiontime,
                        `glpi_planningexternalevents`.`text` AS text,
                        `glpi_planningeventcategories`.`name` AS type,
+                       `glpi_plugin_activity_planningeventsubcategories`.`name` as subtype,
                        `glpi_planningexternalevents`.`begin` AS begin,
                        `glpi_planningexternalevents`.`end` AS end,
                        `glpi_planningexternalevents`.`rrule` AS rrule,
                        `glpi_planningexternalevents`.`planningeventcategories_id` AS type_id,
+                        `glpi_plugin_activity_planningexternalevents`.`planningeventsubcategories_id` as subtype_id,
                        `glpi_entities`.`name` AS entity
                FROM `glpi_planningexternalevents` ";
             $query .= " LEFT JOIN `glpi_plugin_activity_planningexternalevents` 
                      ON (`glpi_planningexternalevents`.`id` = `glpi_plugin_activity_planningexternalevents`.`planningexternalevents_id`)";
+            $query .= " LEFT JOIN `glpi_plugin_activity_planningeventsubcategories` 
+                     ON (`glpi_plugin_activity_planningeventsubcategories`.`id` = `glpi_plugin_activity_planningexternalevents`.`planningeventsubcategories_id`)";
             $query .= " LEFT JOIN `glpi_users` 
                      ON (`glpi_users`.`id` = `glpi_planningexternalevents`.`users_id`)";
             $query .= " LEFT JOIN `glpi_planningeventcategories` 
