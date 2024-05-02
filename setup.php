@@ -145,18 +145,10 @@ function plugin_init_activity()
 
                 $PLUGIN_HOOKS['pre_item_update']['activity'] = ['ProjectTask' => ['PluginActivityProjectTask',
                                                                                   'taskUpdate']];
-                $PLUGIN_HOOKS['post_item_form']['activity']  = ['PluginActivityProjectTask', 'addField'];
             }
         }
 
-        // Ticket task cra
-        if (Session::haveRight("plugin_activity", READ)) {
-            $PLUGIN_HOOKS['post_item_form']['activity'] = ['PluginActivityTicketTask', 'postForm'];
-        }
-
-        if (Session::haveRight("plugin_activity", READ) && (strpos($_SERVER['REQUEST_URI'], "planningexternalevent") || strpos($_SERVER['REQUEST_URI'], "ajax/planning.php"))) {
-            $PLUGIN_HOOKS['post_item_form']['activity'] = ['PluginActivityPlanningExternalEvent', 'postItemForm'];
-        }
+        $PLUGIN_HOOKS['post_item_form']['activity'] = 'plugin_activity_post_item_form';
     }
     //Planning hook
     $PLUGIN_HOOKS['display_planning']['activity']  = ['PluginActivityPublicHoliday' => "displayPlanningItem",

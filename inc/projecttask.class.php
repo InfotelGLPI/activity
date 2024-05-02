@@ -103,37 +103,38 @@ class PluginActivityProjectTask extends CommonDBTM {
       $this->fields = array_shift($data);
    }
 
-   static function addField($params) {
+    /**
+     * post_item_form for ProjectTask
+     * @param $params
+     * @return void
+     */
+    public static function addField($params)
+    {
+        $item = $params['item'];
 
-      $item = $params['item'];
+        $opt = new PluginActivityOption();
+        $opt->getFromDB(1);
 
-      if ($item->getType() == 'ProjectTask') {
-         $opt = new PluginActivityOption();
-         $opt->getFromDB(1);
+        $projecttask = new self();
 
-         $projecttask = new self();
+        $is_cra_default = $opt->getIsCraDefaultProject();
 
-         $is_cra_default = $opt->getIsCraDefaultProject();
-
-         if ($item->getID()) {
-
+        if ($item->getID()) {
             $projecttask->getFromDBForTask($item->getID());
-            $is_cra_default = isset($projecttask->fields['is_oncra'])?$projecttask->fields['is_oncra']:$is_cra_default;
-         }
+            $is_cra_default = isset($projecttask->fields['is_oncra']) ? $projecttask->fields['is_oncra'] : $is_cra_default;
+        }
 
-         echo '<tr class="tab_bg_1">';
-         echo '<td>';
-         echo __('Use in CRA', 'activity');
-         echo '</td>';
-         echo '<td>';
+        echo '<tr class="tab_bg_1">';
+        echo '<td>';
+        echo __('Use in CRA', 'activity');
+        echo '</td>';
+        echo '<td>';
 
-         Dropdown::showYesNo('is_oncra', $is_cra_default, -1, ['value' => 1]);
-         echo '</td>';
-         echo '<td colspan="2"></td>';
-         echo '</tr>';
-      }
-
-   }
+        Dropdown::showYesNo('is_oncra', $is_cra_default, -1, ['value' => 1]);
+        echo '</td>';
+        echo '<td colspan="2"></td>';
+        echo '</tr>';
+    }
 
    static function queryProjectTask($criteria) {
 

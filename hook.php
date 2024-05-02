@@ -360,3 +360,28 @@ function plugin_activity_addWhere($link, $nott, $itemtype, $ID, $val, $searchtyp
     }
     return "";
 }
+
+
+function plugin_activity_post_item_form($params) {
+    $item = $params['item'];
+    $opt = new PluginActivityOption();
+    $opt->getFromDB(1);
+    switch ($item->getType()) {
+        case 'PlanningExternalEvent':
+            if (Session::haveRight("plugin_activity", READ)) {
+                PluginActivityPlanningExternalEvent::postItemForm($params);
+            }
+            break;
+        case 'ProjectTask':
+            if($opt->getUseProject()) {
+                PluginActivityProjectTask::addField($params);
+            }
+            break;
+        case 'TicketTask':
+            if(Session::haveRight("plugin_activity", READ)) {
+                // Ticket task cra
+                PluginActivityTicketTask::postForm($params);
+            }
+            break;
+    }
+}
