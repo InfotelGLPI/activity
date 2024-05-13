@@ -260,13 +260,17 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
         }
 
         if ($opt->fields['use_planningeventsubcategories']) {
+            $value = (isset($self->fields['id']) && $self->fields['id']) > 0 ? $self->fields['planningeventsubcategories_id'] : null;
+            if ($item->input && isset($item->input['planningeventsubcategories_id'])) {
+                $value = $item->input['planningeventsubcategories_id'];
+            }
             $rand = Dropdown::show(
                 PluginActivityPlanningeventsubcategory::class,
                 [
                     'name' => 'planningeventsubcategories_id',
-                    'value' => (isset($self->fields['id']) && $self->fields['id']) > 0 ? $self->fields['planningeventsubcategories_id'] : null,
+                    'value' => $value,
                     'entity' => Session::getActiveEntity()
-                ],
+                ]
             );
             $field_id = "dropdown_planningeventsubcategories_id" . $rand;
             $label = __('Subcategory', 'activity');
