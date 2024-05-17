@@ -24,7 +24,7 @@
  --------------------------------------------------------------------------
 */
 
-define('PLUGIN_ACTIVITY_VERSION', '3.1.3');
+define('PLUGIN_ACTIVITY_VERSION', '3.1.4');
 
 if (!defined("PLUGIN_ACTIVITY_DIR")) {
     define("PLUGIN_ACTIVITY_DIR", Plugin::getPhpDir("activity"));
@@ -145,19 +145,10 @@ function plugin_init_activity()
 
                 $PLUGIN_HOOKS['pre_item_update']['activity'] = ['ProjectTask' => ['PluginActivityProjectTask',
                                                                                   'taskUpdate']];
-                $PLUGIN_HOOKS['post_item_form']['activity']  = ['PluginActivityProjectTask', 'addField'];
             }
         }
 
-        if (Session::haveRight("plugin_activity", READ) && strpos($_SERVER['REQUEST_URI'], "planningexternalevent")
-            || isset($_POST['action']) && $_POST['action'] == 'add_event_fromselect') {
-            $PLUGIN_HOOKS['post_item_form']['activity'] = ['PluginActivityPlanningExternalEvent', 'addCra'];
-        }
-
-        // Ticket task cra
-        if (Session::haveRight("plugin_activity", READ)) {
-            $PLUGIN_HOOKS['post_item_form']['activity'] = ['PluginActivityTicketTask', 'postForm'];
-        }
+        $PLUGIN_HOOKS['post_item_form']['activity'] = 'plugin_activity_post_item_form';
     }
     //Planning hook
     $PLUGIN_HOOKS['display_planning']['activity']  = ['PluginActivityPublicHoliday' => "displayPlanningItem",

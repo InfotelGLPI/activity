@@ -205,6 +205,13 @@ class PluginActivityOption extends CommonDBTM {
        echo "</td>";
        echo "</tr>";
 
+       echo "<tr class='tab_bg_1'>";
+       echo "<td>".__('Use event subcategories', 'activity')."</td>";
+       echo "<td>";
+       Dropdown::showYesNo('use_planningeventsubcategories', $this->fields['use_planningeventsubcategories']);
+       echo "</td>";
+       echo "</tr>";
+
       echo "<tr class='tab_bg_1'><td class='center' colspan='2'>";
       echo Html::hidden('id', ['value' => 1]);
       echo Html::submit(_sx('button', 'Save'), ['name' => 'update', 'class' => 'btn btn-primary']);
@@ -247,4 +254,8 @@ class PluginActivityOption extends CommonDBTM {
    public function getIsCraDefaultProject() {
       return $this->fields['is_cra_default_project'];
    }
+
+    public function getUseSubcategory() {
+        return $this->fields['use_planningeventsubcategories'];
+    }
 }

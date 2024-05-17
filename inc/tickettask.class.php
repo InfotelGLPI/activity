@@ -52,45 +52,47 @@ class PluginActivityTicketTask extends CommonDBTM {
    }
 
 
-   static public function postForm($params) {
+    /**
+     * post_item_form for TicketTask
+     * @param $params
+     * @return void
+     */
+    static public function postForm($params)
+    {
+        $item = $params['item'];
+        $self = new self();
+        if ($item->getID() && !empty($item->getID())) {
+            $self->getFromDBForTask($item->getID());
+        } else {
+            $self->getEmpty();
+        }
 
-      $item       = $params['item'];
-      switch ($item->getType()) {
-         case 'TicketTask':
-            $self = new self();
-            if ($item->getID() && !empty($item->getID())) {
-               $self->getFromDBForTask($item->getID());
-            } else {
-               $self->getEmpty();
-            }
+        $is_cra_default = 0;
+        $opt = new PluginActivityOption();
+        $opt->getFromDB(1);
+        if ($opt) {
+            $is_cra_default = $opt->fields['is_cra_default'];
+        }
 
-            $is_cra_default = 0;
-            $opt            = new PluginActivityOption();
-            $opt->getFromDB(1);
-            if ($opt) {
-               $is_cra_default = $opt->fields['is_cra_default'];
-            }
-
-            if (Session::haveRight("plugin_activity_statistics", 1)) {
-               echo "<tr class='tab_bg_1'>";
-               echo "<td colspan='3'></td>";
-               echo '<td>';
-               echo "<div id='is_oncra_" . $item->getID() . "' class='fa-label right'>
+        if (Session::haveRight("plugin_activity_statistics", 1)) {
+            echo "<tr class='tab_bg_1'>";
+            echo "<td colspan='3'></td>";
+            echo '<td>';
+            echo "<div id='is_oncra_" . $item->getID() . "' class='fa-label right'>
                <i class='ti ti-flag fa-fw'
                   title='" . __('Use in CRA', 'activity') . "'></i>";
-               Dropdown::showYesNo('is_oncra',
-                                   (isset($self->fields['id']) && $self->fields['id']) > 0 ? $self->fields['is_oncra'] : $is_cra_default,
-                                   -1,
-                                   ['value' => 1]);
-               echo '</div></td>';
-               echo '</tr>';
-
-            } else {
-               echo Html::hidden('is_oncra', ['value' => 1]);
-            }
-            break;
-      }
-   }
+            Dropdown::showYesNo(
+                'is_oncra',
+                (isset($self->fields['id']) && $self->fields['id']) > 0 ? $self->fields['is_oncra'] : $is_cra_default,
+                -1,
+                ['value' => 1]
+            );
+            echo '</div></td>';
+            echo '</tr>';
+        } else {
+            echo Html::hidden('is_oncra', ['value' => 1]);
+        }
+    }
 
 
    function getFromDBForTask($tickettasks_id) {
