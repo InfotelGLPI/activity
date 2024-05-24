@@ -455,10 +455,11 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
                 $crit["begin"] = $input_date_begin[0] . "-" . $input_date_begin[1] . "-01 00:00:00";
                 $lastday = cal_days_in_month(CAL_GREGORIAN, "12", $input_date_begin[0]);
                 $crit["end"] = $input_date_begin[0] . "-" . "12" . "-" . $lastday . " 23:59:59";
-
                 if (isset($rrule['exceptions'])
                     && $rrule['exceptions'] != '') {
-                    $rrule['exceptions'] = explode(",", $rrule['exceptions']);
+                    if (!is_array($rrule['exceptions'])) {
+                        $rrule['exceptions'] = explode(",", $rrule['exceptions']);
+                    }
                 }
 
                 $array_inputs_occurence = PluginActivityPlanningExternalEvent::prepareInputsForReccurOccurence(
