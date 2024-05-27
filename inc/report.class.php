@@ -1225,15 +1225,18 @@ class PluginActivityReport extends CommonDBTM {
    function getActionTimeForExternalEvent($begin, $end, $values, $actiontime, $type) {
 
       $holidays = PluginActivityHoliday::getCalendarHolidaysArray($_SESSION["glpiactive_entity"]);
-      $AllDay   = self::getAllDay();
+//      $AllDay   = self::getAllDay();
 
       $holidaysO = new PluginActivityHoliday();
 
       $duration = strtotime($end) - strtotime($begin);
-
-      if ($duration == self::$ONE_DAY_ACTIVITY) {
-         $duration = $AllDay;
+      // sometimes duration == 86399 for an event whose length was set at 1 day
+      if ($duration == (self::$ONE_DAY_ACTIVITY - 1)) {
+          $duration = self::$ONE_DAY_ACTIVITY;
       }
+//      if ($duration == self::$ONE_DAY_ACTIVITY) {
+//         $duration = $AllDay;
+//      }
 
       $finalDuration = $duration - $holidaysO->countWe($begin, $end, $holidays);
       return $finalDuration;

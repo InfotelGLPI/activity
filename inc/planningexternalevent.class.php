@@ -419,6 +419,18 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
         $use_integerschedules = $opt->fields['use_integerschedules'];
         $use_we = $opt->fields['use_weekend'];
 
+        if ($opt && $opt->fields['use_type_as_name'] == 1) {
+            if ($item->fields['name'] == Dropdown::getDropdownName(
+                    'glpi_planningeventcategories',
+                    $item->fields['planningeventcategories_id']
+                )) {
+                $item->input['name'] = addslashes(Dropdown::getDropdownName(
+                    'glpi_planningeventcategories',
+                    $item->input['planningeventcategories_id']
+                ));
+            }
+        }
+
         if (isset($_POST['action']) && $_POST['action'] == 'update_event_times') {
             if ((isset($_POST['start']) && ($_POST['start'] != 'NULL')) && (isset($_POST['end']) && ($_POST['end'] != 'NULL'))) {
                 $begin = $_POST['start'];
@@ -585,10 +597,10 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
 
 
         if ($opt && $opt->fields['use_type_as_name'] == 1) {
-            $item->input["name"] = Dropdown::getDropdownName(
+            $item->input["name"] = addslashes(Dropdown::getDropdownName(
                 'glpi_planningeventcategories',
                 $item->input['planningeventcategories_id']
-            );
+            ));
         }
 
         if (!isset($item->input["planningeventcategories_id"]) || $item->input["planningeventcategories_id"] == 0) {
