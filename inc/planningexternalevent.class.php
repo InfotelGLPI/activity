@@ -896,6 +896,11 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
             . $dbu->getEntitiesRestrictRequest("AND", "glpi_planningexternalevents") . "
                   AND (`glpi_planningexternalevents`.`begin` >= '" . $criteria["begin"] . "' 
                   AND `glpi_planningexternalevents`.`begin` <= '" . $criteria["end"] . "') ";
+        // reoccuring events where the serie started before the starting date and ended during the ending month
+        $year = date('Y', strtotime($criteria["end"]));
+        $month = date('m', strtotime($criteria["end"]));
+        $query .= "OR (`glpi_planningexternalevents`.`begin` < '" . $criteria["begin"] . "'
+        AND `glpi_planningexternalevents`.`rrule` LIKE '%\"until\":\"" . $year ."-".$month. "%') ";
 
         if ($criteria["is_usedbycra"]) {
             $query .= " AND `glpi_plugin_activity_planningexternalevents`.`is_oncra` ";
