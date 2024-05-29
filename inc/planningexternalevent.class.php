@@ -347,7 +347,9 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
                         'actiontime' => $actiontime
                     ];
                     if ($options['use_planningeventsubcategories']) {
-                        $input['planningeventsubcategories_id'] = isset($item->input['planningeventsubcategories_id']) ? $item->input['planningeventsubcategories_id'] : null;
+                        if (isset($item->input['planningeventsubcategories_id'])) {
+                            $input['planningeventsubcategories_id'] = $item->input['planningeventsubcategories_id'];
+                        }
                     }
                     $extevent->update($input);
                 } elseif (!$is_exist) {
@@ -357,7 +359,9 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
                         'actiontime' => $actiontime
                     ];
                     if ($options['use_planningeventsubcategories']) {
-                        $input['planningeventsubcategories_id'] = isset($item->input['planningeventsubcategories_id']) ? $item->input['planningeventsubcategories_id'] : null;
+                        if (isset($item->input['planningeventsubcategories_id'])) {
+                            $input['planningeventsubcategories_id'] = $item->input['planningeventsubcategories_id'];
+                        }
                     }
                     $extevent->add($input);
                 }
@@ -398,7 +402,9 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
                         'actiontime' => $actiontime
                     ];
                     if ($options['use_planningeventsubcategories']) {
-                        $input['planningeventsubcategories_id'] = isset($item->input['planningeventsubcategories_id']) ? $item->input['planningeventsubcategories_id'] : null;
+                        if (isset($item->input['planningeventsubcategories_id'])) {
+                            $input['planningeventsubcategories_id'] = $item->input['planningeventsubcategories_id'];
+                        }
                     }
                     $extevent->add($input);
                 }
@@ -419,7 +425,7 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
         $use_integerschedules = $opt->fields['use_integerschedules'];
         $use_we = $opt->fields['use_weekend'];
 
-        if ($opt && $opt->fields['use_type_as_name'] == 1) {
+        if ($opt && $opt->fields['use_type_as_name'] == 1 && isset($item->input['planningeventcategories_id'])) {
             if ($item->fields['name'] == Dropdown::getDropdownName(
                     'glpi_planningeventcategories',
                     $item->fields['planningeventcategories_id']
