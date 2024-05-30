@@ -896,18 +896,37 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
             . $dbu->getEntitiesRestrictRequest("AND", "glpi_planningexternalevents") . "
                   AND (`glpi_planningexternalevents`.`begin` >= '" . $criteria["begin"] . "' 
                   AND `glpi_planningexternalevents`.`begin` <= '" . $criteria["end"] . "') ";
-        // reoccuring events where the serie started before the starting date and ended during the ending month
+        // reoccuring events where the serie started before the ending date and ended during the ending month or later
         $year = date('Y', strtotime($criteria["end"]));
         $month = date('m', strtotime($criteria["end"]));
-        $query .= "OR (`glpi_planningexternalevents`.`begin` < '" . $criteria["begin"] . "'
-        AND `glpi_planningexternalevents`.`rrule` LIKE '%\"until\":\"" . $year ."-".$month. "%') ";
+        $query .= "OR (
+        `glpi_planningexternalevents`.`begin` < '" . $criteria["end"] . "'
+         AND (
+            `glpi_planningexternalevents`.`rrule` REGEXP '\"until\":\"" . $year ."-(";
+        // regexp to add recurring events that can happen until the end of the year
+        $months = [];
+        for($m = (int)$month; $m < 13; $m++) {
+            $value = $m < 10 ? '0'.$m : $m;
+            $months[] = $value;
+        }
+        $query .= implode('|', $months);
+        $query .= ")'
+            OR `glpi_planningexternalevents`.`rrule` REGEXP '\"until\":\"(";
+        // regexp to add recurring events which continue up to 5 years into the future
+        for ($i = 0; $i < 5; $i++) {
+            $year++;
+            if ($i != 0) {
+                $query .= '|';
+            }
+            $query .= "$year";
+        }
+        $query .= ")'))";
 
         if ($criteria["is_usedbycra"]) {
             $query .= " AND `glpi_plugin_activity_planningexternalevents`.`is_oncra` ";
         }
         $query .= " AND `glpi_plugin_activity_planningexternalevents`.`actiontime` != 0";
         $query .= " ORDER BY `glpi_planningexternalevents`.`name`";
-
         return $query;
     }
 
