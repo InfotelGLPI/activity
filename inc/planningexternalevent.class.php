@@ -894,7 +894,7 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
         $query .= " WHERE ";
         $query .= "  `glpi_planningexternalevents`.`users_id` = '" . $criteria["users_id"] . "' "
             . $dbu->getEntitiesRestrictRequest("AND", "glpi_planningexternalevents") . "
-                  AND (`glpi_planningexternalevents`.`begin` >= '" . $criteria["begin"] . "' 
+                  AND ((`glpi_planningexternalevents`.`begin` >= '" . $criteria["begin"] . "' 
                   AND `glpi_planningexternalevents`.`begin` <= '" . $criteria["end"] . "') ";
         // reoccuring events where the serie started before the ending date and ended during the ending month or later
         $year = date('Y', strtotime($criteria["end"]));
@@ -920,7 +920,7 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
             }
             $query .= "$year";
         }
-        $query .= ")'))";
+        $query .= ")')))";
 
         if ($criteria["is_usedbycra"]) {
             $query .= " AND `glpi_plugin_activity_planningexternalevents`.`is_oncra` ";
