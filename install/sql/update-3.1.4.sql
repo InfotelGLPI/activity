@@ -6,7 +6,10 @@ CREATE TABLE `glpi_plugin_activity_planningeventsubcategories`
     `comment`      text collate utf8_unicode_ci,
     PRIMARY KEY (`id`),
     KEY            `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci
+  ROW_FORMAT = DYNAMIC;
 
 ALTER TABLE `glpi_plugin_activity_planningexternalevents`
     ADD `planningeventsubcategories_id` int unsigned;
@@ -15,4 +18,4 @@ ALTER TABLE `glpi_plugin_activity_planningexternalevents`
 ALTER TABLE `glpi_plugin_activity_configs`
     ADD `use_planningeventsubcategories` tinyint DEFAULT '0';
 ALTER TABLE `glpi_plugin_activity_options`
-    ADD `use_planningeventsubcategories` tinyint DEFAULT '0'
+    ADD `use_planningeventsubcategories` tinyint DEFAULT '0';
