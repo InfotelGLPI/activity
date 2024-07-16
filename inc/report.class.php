@@ -29,6 +29,7 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
+#[\AllowDynamicProperties]
 class PluginActivityReport extends CommonDBTM {
 
    static $WORK             = 0;
