@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-15 15:59+0000\n"
+"POT-Creation-Date: 2024-07-16 07:27+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,7 +21,7 @@ msgstr ""
 #: setup.php:164 ajax/loadscripts.php:47 front/menu.php:46
 #: inc/config.class.php:38 inc/menu.class.php:32 inc/option.class.php:38
 #: inc/preference.class.php:57 inc/profile.class.php:45
-#: inc/profile.class.php:142 inc/report.class.php:874
+#: inc/profile.class.php:142 inc/report.class.php:875
 msgid "Activity"
 msgid_plural "Activities"
 msgstr[0] ""
@@ -98,19 +98,19 @@ msgid "Project / activity"
 msgstr ""
 
 #: inc/crapdf.class.php:462 inc/holidaytype.class.php:89
-#: inc/report.class.php:1533
+#: inc/report.class.php:1534
 msgid "Part time"
 msgstr ""
 
-#: inc/crapdf.class.php:463 inc/report.class.php:1531
+#: inc/crapdf.class.php:463 inc/report.class.php:1532
 msgid "Holidays or exceptional absences"
 msgstr ""
 
-#: inc/crapdf.class.php:464 inc/report.class.php:1535
+#: inc/crapdf.class.php:464 inc/report.class.php:1536
 msgid "Sickness or maternity"
 msgstr ""
 
-#: inc/crapdf.class.php:493 inc/report.class.php:993
+#: inc/crapdf.class.php:493 inc/report.class.php:994
 msgid "Absences"
 msgstr ""
 
@@ -159,7 +159,7 @@ msgid "All day"
 msgstr ""
 
 #: inc/dashboard.class.php:443 inc/dashboard.class.php:476
-#: inc/report.class.php:581 inc/report.class.php:626 inc/report.class.php:682
+#: inc/report.class.php:582 inc/report.class.php:627 inc/report.class.php:683
 msgid "No defined type"
 msgstr ""
 
@@ -656,51 +656,51 @@ msgid_plural "Public holidays"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/report.class.php:162
+#: inc/report.class.php:163
 msgid "Take a snapshot of the CRA"
 msgstr ""
 
-#: inc/report.class.php:213
+#: inc/report.class.php:214
 msgid "Snapshots of the month"
 msgstr ""
 
-#: inc/report.class.php:272
+#: inc/report.class.php:273
 msgid "Snapshot taken in"
 msgstr ""
 
-#: inc/report.class.php:310
+#: inc/report.class.php:311
 msgid "Export CRA"
 msgstr ""
 
-#: inc/report.class.php:348
+#: inc/report.class.php:349
 msgid "Activity report"
 msgstr ""
 
-#: inc/report.class.php:373
+#: inc/report.class.php:374
 msgid "Next month"
 msgstr ""
 
-#: inc/report.class.php:374
+#: inc/report.class.php:375
 msgid "Previous month"
 msgstr ""
 
-#: inc/report.class.php:706
+#: inc/report.class.php:707
 msgid "Unbilled"
 msgstr ""
 
-#: inc/report.class.php:873
+#: inc/report.class.php:874
 msgid "Project"
 msgstr ""
 
-#: inc/report.class.php:1060
+#: inc/report.class.php:1061
 msgid "Activities detail"
 msgstr ""
 
-#: inc/report.class.php:1070
+#: inc/report.class.php:1071
 msgid "Percent"
 msgstr ""
 
-#: inc/report.class.php:1129
+#: inc/report.class.php:1130
 msgid "No activity found"
 msgstr ""
 
