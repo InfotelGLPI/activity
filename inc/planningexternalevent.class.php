@@ -306,107 +306,111 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
     static function setActivity(PlanningExternalEvent $item)
     {
         if (self::canCreate()) {
-            global $DB;
-            $extevent = new PluginActivityPlanningExternalEvent();
-            $is_exist = $extevent->getFromDBByCrit(['planningexternalevents_id' => $item->getID()]);
-            $actiontime = '';
-            $options = PluginActivityOption::getConfigFromDB()[1];
-            if (isset($item->input['plan']['_duration'])) {
-                $actiontime = $item->input['plan']['_duration'];
-            } else {
-                $report = new PluginActivityReport();
-                if (isset($item->input['begin']) && isset($item->input['begin'])) {
-                    $actiontime = $report->getActionTimeForExternalEvent(
-                        $item->input['begin'],
-                        $item->input['end'],
-                        '',
-                        '',
-                        ''
-                    );
-                } elseif (isset($item->input['plan']['begin']) && isset($item->input['plan']['end'])) {
-                    $actiontime = $report->getActionTimeForExternalEvent(
-                        $item->input['plan']['begin'],
-                        $item->input['plan']['end'],
-                        '',
-                        '',
-                        ''
-                    );
-                }
-            }
-
-            if (isset($item->input['id'])
-                && isset($extevent->fields['is_oncra'])) {
-                $extevent->getFromDBForTask($item->input['id']);
-
-                if (!empty($extevent->fields)) {
-                    $input = [
-                        'id' => $extevent->fields['id'],
-                        'is_oncra' => isset($item->input['is_oncra']) ? $item->input['is_oncra'] :
-                            $extevent->getField('is_oncra'),
-                        'planningexternalevents_id' => $item->input['id'],
-                        'actiontime' => $actiontime
-                    ];
-                    if ($options['use_planningeventsubcategories']) {
-                        if (isset($item->input['planningeventsubcategories_id'])) {
-                            $input['planningeventsubcategories_id'] = $item->input['planningeventsubcategories_id'];
-                        }
+            // don't do anything if coming from cleanDBRelations
+            if ((isset($item->input['plan']) && isset($item->input['plan']['_duration']))
+            || (isset($item->input['begin']) && isset($item->input['end']))) {
+                global $DB;
+                $extevent = new PluginActivityPlanningExternalEvent();
+                $is_exist = $extevent->getFromDBByCrit(['planningexternalevents_id' => $item->getID()]);
+                $actiontime = '';
+                $options = PluginActivityOption::getConfigFromDB()[1];
+                if (isset($item->input['plan']['_duration'])) {
+                    $actiontime = $item->input['plan']['_duration'];
+                } else {
+                    $report = new PluginActivityReport();
+                    if (isset($item->input['begin']) && isset($item->input['begin'])) {
+                        $actiontime = $report->getActionTimeForExternalEvent(
+                            $item->input['begin'],
+                            $item->input['end'],
+                            '',
+                            '',
+                            ''
+                        );
+                    } elseif (isset($item->input['plan']['begin']) && isset($item->input['plan']['end'])) {
+                        $actiontime = $report->getActionTimeForExternalEvent(
+                            $item->input['plan']['begin'],
+                            $item->input['plan']['end'],
+                            '',
+                            '',
+                            ''
+                        );
                     }
-                    $extevent->update($input);
-                } elseif (!$is_exist) {
-                    $input = [
-                        'is_oncra' => isset($item->input['is_oncra']) ? $item->input['is_oncra'] : '',
-                        'planningexternalevents_id' => $item->getID(),
-                        'actiontime' => $actiontime
-                    ];
-                    if ($options['use_planningeventsubcategories']) {
-                        if (isset($item->input['planningeventsubcategories_id'])) {
-                            $input['planningeventsubcategories_id'] = $item->input['planningeventsubcategories_id'];
+                }
+
+                if (isset($item->input['id'])
+                    && isset($extevent->fields['is_oncra'])) {
+                    $extevent->getFromDBForTask($item->input['id']);
+
+                    if (!empty($extevent->fields)) {
+                        $input = [
+                            'id' => $extevent->fields['id'],
+                            'is_oncra' => isset($item->input['is_oncra']) ? $item->input['is_oncra'] :
+                                $extevent->getField('is_oncra'),
+                            'planningexternalevents_id' => $item->input['id'],
+                            'actiontime' => $actiontime
+                        ];
+                        if ($options['use_planningeventsubcategories']) {
+                            if (isset($item->input['planningeventsubcategories_id'])) {
+                                $input['planningeventsubcategories_id'] = $item->input['planningeventsubcategories_id'];
+                            }
                         }
+                        $extevent->update($input);
+                    } elseif (!$is_exist) {
+                        $input = [
+                            'is_oncra' => isset($item->input['is_oncra']) ? $item->input['is_oncra'] : '',
+                            'planningexternalevents_id' => $item->getID(),
+                            'actiontime' => $actiontime
+                        ];
+                        if ($options['use_planningeventsubcategories']) {
+                            if (isset($item->input['planningeventsubcategories_id'])) {
+                                $input['planningeventsubcategories_id'] = $item->input['planningeventsubcategories_id'];
+                            }
+                        }
+                        $extevent->add($input);
                     }
-                    $extevent->add($input);
-                }
-            } else {
-                $is_cra_default = 0;
-                $opt = new PluginActivityOption();
-                $opt->getFromDB(1);
-                if ($opt) {
-                    $is_cra_default = $opt->fields['is_cra_default'];
-                }
-                if (isset($_POST['action']) && $_POST['action'] == 'clone_event') {
-                    $iterator = $DB->request([
-                        'FROM' => 'glpi_plugin_activity_planningexternalevents',
-                        'LEFT JOIN' => [
-                            'glpi_planningexternalevents' => [
-                                'FKEY' => [
-                                    'glpi_planningexternalevents' => 'id',
-                                    'glpi_plugin_activity_planningexternalevents' => 'planningexternalevents_id'
+                } else {
+                    $is_cra_default = 0;
+                    $opt = new PluginActivityOption();
+                    $opt->getFromDB(1);
+                    if ($opt) {
+                        $is_cra_default = $opt->fields['is_cra_default'];
+                    }
+                    if (isset($_POST['action']) && $_POST['action'] == 'clone_event') {
+                        $iterator = $DB->request([
+                            'FROM' => 'glpi_plugin_activity_planningexternalevents',
+                            'LEFT JOIN' => [
+                                'glpi_planningexternalevents' => [
+                                    'FKEY' => [
+                                        'glpi_planningexternalevents' => 'id',
+                                        'glpi_plugin_activity_planningexternalevents' => 'planningexternalevents_id'
+                                    ]
                                 ]
-                            ]
-                        ],
-                        'WHERE' => ['planningexternalevents_id' => $_POST['event']['old_items_id']]
-                    ]);
-                    if (count($iterator)) {
-                        foreach ($iterator as $data) {
-                            $extevent->add([
-                                'is_oncra' => $data['is_oncra'],
-                                'planningexternalevents_id' => $item->getID(),
-                                'actiontime' => $data['actiontime'],
-                                'planningeventsubcategories_id' => $data['planningeventsubcategories_id']
-                            ]);
+                            ],
+                            'WHERE' => ['planningexternalevents_id' => $_POST['event']['old_items_id']]
+                        ]);
+                        if (count($iterator)) {
+                            foreach ($iterator as $data) {
+                                $extevent->add([
+                                    'is_oncra' => $data['is_oncra'],
+                                    'planningexternalevents_id' => $item->getID(),
+                                    'actiontime' => $data['actiontime'],
+                                    'planningeventsubcategories_id' => $data['planningeventsubcategories_id']
+                                ]);
+                            }
                         }
-                    }
-                } elseif (!$is_exist) { // add events and update events created before the plugin activation
-                    $input = [
-                        'is_oncra' => isset($item->input['is_oncra']) ? $item->input['is_oncra'] : $is_cra_default,
-                        'planningexternalevents_id' => $item->getID(),
-                        'actiontime' => $actiontime
-                    ];
-                    if ($options['use_planningeventsubcategories']) {
-                        if (isset($item->input['planningeventsubcategories_id'])) {
-                            $input['planningeventsubcategories_id'] = $item->input['planningeventsubcategories_id'];
+                    } elseif (!$is_exist) { // add events and update events created before the plugin activation
+                        $input = [
+                            'is_oncra' => isset($item->input['is_oncra']) ? $item->input['is_oncra'] : $is_cra_default,
+                            'planningexternalevents_id' => $item->getID(),
+                            'actiontime' => $actiontime
+                        ];
+                        if ($options['use_planningeventsubcategories']) {
+                            if (isset($item->input['planningeventsubcategories_id'])) {
+                                $input['planningeventsubcategories_id'] = $item->input['planningeventsubcategories_id'];
+                            }
                         }
+                        $extevent->add($input);
                     }
-                    $extevent->add($input);
                 }
             }
         }
@@ -430,10 +434,12 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
                     'glpi_planningeventcategories',
                     $item->fields['planningeventcategories_id']
                 )) {
-                $item->input['name'] = addslashes(Dropdown::getDropdownName(
-                    'glpi_planningeventcategories',
-                    $item->input['planningeventcategories_id']
-                ));
+                $item->input['name'] = addslashes(
+                    Dropdown::getDropdownName(
+                        'glpi_planningeventcategories',
+                        $item->input['planningeventcategories_id']
+                    )
+                );
             }
         }
 
@@ -516,31 +522,39 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
                 $item->input['rrule'] = $planning_ext_event->encodeRrule($array_inputs_occurence['rrule']);
             }
 
-            if (!isset($_POST["planningeventcategories_id"]) || $_POST["planningeventcategories_id"] == 0) {
-                Session::addMessageAfterRedirect(__('Activity type is mandatory field', 'activity'), false, ERROR);
-                unset($item->input);
-                return false;
+            // the only time it shouldn't be set is when the event is updated by cleanDBRelations (associated template is deleted)
+            if (isset($item->input["planningeventcategories_id"])) {
+                if ($item->input["planningeventcategories_id"] == 0) {
+                    Session::addMessageAfterRedirect(__('Activity type is mandatory field', 'activity'), false, ERROR);
+                    unset($item->input);
+                    return false;
+                }
             }
-
-            if (!isset($_POST["users_id"]) || $_POST["users_id"] == 0) {
-                Session::addMessageAfterRedirect(__('User is mandatory field', 'activity'), false, ERROR);
-                unset($item->input);
-                return false;
+            // same as above
+            if (isset($item->input["users"])) {
+                if ($item->input['users_id'] == 0) {
+                    Session::addMessageAfterRedirect(__('User is mandatory field', 'activity'), false, ERROR);
+                    unset($item->input);
+                    return false;
+                }
             }
-            if (PluginActivityHoliday::checkInHolidays($_POST['plan'], $holiday->getHolidays())) {
-                Session::addMessageAfterRedirect(
-                    __('The chosen date is a public holiday', 'activity'),
-                    false,
-                    ERROR
-                );
-                unset($item->input);
-                return false;
+            // same as above
+            if (isset($item->input["plan"])) {
+                if (PluginActivityHoliday::checkInHolidays($item->input['plan'], $holiday->getHolidays())) {
+                    Session::addMessageAfterRedirect(
+                        __('The chosen date is a public holiday', 'activity'),
+                        false,
+                        ERROR
+                    );
+                    unset($item->input);
+                    return false;
+                }
             }
 
             if ($use_we == 0) {
                 $hol = new PluginActivityHoliday();
-                if (isset($_POST['start'])) {
-                    if ($hol->isWeekend($_POST['start'], true)) {
+                if (isset($item->input['start'])) {
+                    if ($hol->isWeekend($item->input['start'], true)) {
                         Session::addMessageAfterRedirect(
                             __('The chosen begin date is on weekend', 'activity'),
                             false,
@@ -550,8 +564,8 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
                         return false;
                     }
                 }
-                if (isset($_POST['end'])) {
-                    if ($hol->isWeekend($_POST['end'], false)) {
+                if (isset($item->input['end'])) {
+                    if ($hol->isWeekend($item->input['end'], false)) {
                         Session::addMessageAfterRedirect(
                             __('The chosen end date is on weekend', 'activity'),
                             false,
@@ -603,10 +617,12 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
 
 
         if ($opt && $opt->fields['use_type_as_name'] == 1) {
-            $item->input["name"] = addslashes(Dropdown::getDropdownName(
-                'glpi_planningeventcategories',
-                $item->input['planningeventcategories_id']
-            ));
+            $item->input["name"] = addslashes(
+                Dropdown::getDropdownName(
+                    'glpi_planningeventcategories',
+                    $item->input['planningeventcategories_id']
+                )
+            );
         }
 
         if (!isset($item->input["planningeventcategories_id"]) || $item->input["planningeventcategories_id"] == 0) {
@@ -730,20 +746,17 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
 
     static function activityUpdate(PlanningExternalEvent $item)
     {
-        // input isn't set when updated by cleanDBRelation
-        if (isset($item->input)) {
-            if (!is_array($item->input) || !count($item->input)) {
-                // Already cancel by another plugin
-                return false;
-            }
-
-            if (isset($_POST['action']) && $_POST['action'] == 'delete_event') {
-                return false;
-            }
-
-            self::prepareInputToUpdateWithPluginOptions($item);
-            self::setActivity($item);
+        if (!is_array($item->input) || !count($item->input)) {
+            // Already cancel by another plugin
+            return false;
         }
+
+        if (isset($_POST['action']) && $_POST['action'] == 'delete_event') {
+            return false;
+        }
+
+        self::prepareInputToUpdateWithPluginOptions($item);
+        self::setActivity($item);
     }
 
     static function activityAdd(PlanningExternalEvent $item)
@@ -905,11 +918,11 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
         $query .= "OR (
         `glpi_planningexternalevents`.`begin` < '" . $criteria["end"] . "'
          AND (
-            `glpi_planningexternalevents`.`rrule` REGEXP '\"until\":\"" . $year ."-(";
+            `glpi_planningexternalevents`.`rrule` REGEXP '\"until\":\"" . $year . "-(";
         // regexp to add recurring events that can happen until the end of the year
         $months = [];
-        for($m = (int)$month; $m < 13; $m++) {
-            $value = $m < 10 ? '0'.$m : $m;
+        for ($m = (int)$month; $m < 13; $m++) {
+            $value = $m < 10 ? '0' . $m : $m;
             $months[] = $value;
         }
         $query .= implode('|', $months);

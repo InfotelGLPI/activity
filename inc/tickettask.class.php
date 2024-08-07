@@ -151,13 +151,11 @@ class PluginActivityTicketTask extends CommonDBTM {
    }
 
    static function taskUpdate(TicketTask $item) {
-        if (isset($item->input)) {
-            if (!is_array($item->input) || !count($item->input)) {
-                // Already cancel by another plugin
-                return false;
-            }
-            self::setTicketTask($item);
-        }
+       if (!is_array($item->input) || !count($item->input)) {
+           // Already cancel by another plugin
+           return false;
+       }
+       self::setTicketTask($item);
    }
 
    static function taskAdd(TicketTask $item) {
