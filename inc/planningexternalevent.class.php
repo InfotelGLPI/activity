@@ -730,17 +730,20 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
 
     static function activityUpdate(PlanningExternalEvent $item)
     {
-        if (!is_array($item->input) || !count($item->input)) {
-            // Already cancel by another plugin
-            return false;
-        }
+        // input isn't set when updated by cleanDBRelation
+        if (isset($item->input)) {
+            if (!is_array($item->input) || !count($item->input)) {
+                // Already cancel by another plugin
+                return false;
+            }
 
-        if (isset($_POST['action']) && $_POST['action'] == 'delete_event') {
-            return false;
-        }
+            if (isset($_POST['action']) && $_POST['action'] == 'delete_event') {
+                return false;
+            }
 
-        self::prepareInputToUpdateWithPluginOptions($item);
-        self::setActivity($item);
+            self::prepareInputToUpdateWithPluginOptions($item);
+            self::setActivity($item);
+        }
     }
 
     static function activityAdd(PlanningExternalEvent $item)
