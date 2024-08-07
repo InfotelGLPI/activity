@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-07 09:17+0000\n"
+"POT-Creation-Date: 2024-08-07 12:23+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -175,18 +175,18 @@ msgstr ""
 msgid "Holiday type is mandatory field"
 msgstr ""
 
-#: inc/holiday.class.php:190 inc/planningexternalevent.class.php:526
-#: inc/planningexternalevent.class.php:619
+#: inc/holiday.class.php:190 inc/planningexternalevent.class.php:536
+#: inc/planningexternalevent.class.php:635
 msgid "User is mandatory field"
 msgstr ""
 
-#: inc/holiday.class.php:218 inc/planningexternalevent.class.php:545
-#: inc/planningexternalevent.class.php:710
+#: inc/holiday.class.php:218 inc/planningexternalevent.class.php:559
+#: inc/planningexternalevent.class.php:726
 msgid "The chosen begin date is on weekend"
 msgstr ""
 
-#: inc/holiday.class.php:225 inc/planningexternalevent.class.php:532
-#: inc/planningexternalevent.class.php:697
+#: inc/holiday.class.php:225 inc/planningexternalevent.class.php:545
+#: inc/planningexternalevent.class.php:713
 msgid "The chosen date is a public holiday"
 msgstr ""
 
@@ -591,30 +591,30 @@ msgstr ""
 msgid "Subcategory"
 msgstr ""
 
-#: inc/planningexternalevent.class.php:452
-#: inc/planningexternalevent.class.php:684
+#: inc/planningexternalevent.class.php:458
+#: inc/planningexternalevent.class.php:700
 msgid "Only whole hours are allowed (no split times)"
 msgstr ""
 
-#: inc/planningexternalevent.class.php:460
-#: inc/planningexternalevent.class.php:690
+#: inc/planningexternalevent.class.php:466
+#: inc/planningexternalevent.class.php:706
 msgid "Only pairs schedules are allowed"
 msgstr ""
 
-#: inc/planningexternalevent.class.php:501
-#: inc/planningexternalevent.class.php:658
+#: inc/planningexternalevent.class.php:507
+#: inc/planningexternalevent.class.php:674
 msgid ""
 "One of the dates is on weekend, please add the date in the exceptionsof the "
 "reccurent rule"
 msgstr ""
 
-#: inc/planningexternalevent.class.php:520
-#: inc/planningexternalevent.class.php:613
+#: inc/planningexternalevent.class.php:528
+#: inc/planningexternalevent.class.php:629
 msgid "Activity type is mandatory field"
 msgstr ""
 
-#: inc/planningexternalevent.class.php:556
-#: inc/planningexternalevent.class.php:719
+#: inc/planningexternalevent.class.php:570
+#: inc/planningexternalevent.class.php:735
 msgid "The chosen end date is on weekend"
 msgstr ""
 
