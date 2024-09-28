@@ -1,0 +1,711 @@
+# Croatian translation of GLPI - Activity plugin.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Milo Ivir <mail@milotype.de>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: GLPI - Activity plugin 2.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-02-10 11:20+0100\n"
+"PO-Revision-Date: 2020-02-10 16:00+0100\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Poedit 1.8.12\n"
+"Last-Translator: Milo Ivir <mail@milotype.de>\n"
+"Language: hr_HR\n"
+
+#: hook.php:343 hook.php:351 setup.php:159 inc/activity.class.php:76
+#: inc/config.class.php:38 inc/menu.class.php:32 inc/option.class.php:38
+#: inc/preference.class.php:42 inc/profile.class.php:137
+#: inc/report.class.php:766
+msgid "Activity"
+msgid_plural "Activities"
+msgstr[0] "Aktivnost"
+msgstr[1] "Aktivnosti"
+msgstr[2] "Aktivnosti"
+
+#: ajax/preferenceactions.php:42
+msgid "Please select a manager"
+msgstr "Odaberi voditelja"
+
+#: ajax/preferenceactions.php:49
+msgid "Manager sucessfully added."
+msgstr "Voditelj uspješno dodan."
+
+#: ajax/preferenceactions.php:51
+msgid "An error happend while adding the manager"
+msgstr "Došlo je do greške pri dodavanju voditelja"
+
+#: ajax/preferenceactions.php:58
+msgid "An error happend while deleting the manager"
+msgstr "Došlo je do greške pri brisanju voditelja"
+
+#: ajax/preferenceactions.php:66
+msgid "Manager sucessfully deleted."
+msgstr "Voditelj uspješno izbrisan."
+
+#: front/config.form.php:66
+msgid "Please activate the plugin"
+msgstr "Aktiviraj dodatak"
+
+#: inc/activity.class.php:117 inc/activity.class.php:230
+msgid "Activity type is mandatory field"
+msgstr "Vrsta aktivnosti je obavezno polje"
+
+#: inc/activity.class.php:130 inc/activity.class.php:223
+#: inc/holiday.class.php:185
+msgid "User is mandatory field"
+msgstr "Korisnik je obavezno polje"
+
+#: inc/activity.class.php:155 inc/activity.class.php:288
+#: inc/activity.class.php:615
+msgid "Only whole hours are allowed (no split times)"
+msgstr "Dozvoljeni su samo cijeli sati (u nizu)"
+
+#: inc/activity.class.php:162 inc/activity.class.php:295
+#: inc/activity.class.php:621
+msgid "Only pairs schedules are allowed"
+msgstr "Dozvoljeni su samo termini s parnim brojem sati"
+
+#: inc/activity.class.php:183 inc/activity.class.php:250
+#: inc/holiday.class.php:220
+msgid "The chosen date is a public holiday"
+msgstr "Odabrani datum je državni praznik"
+
+#: inc/activity.class.php:189 inc/activity.class.php:312
+#: inc/activity.class.php:627 inc/holiday.class.php:213
+msgid "The chosen begin date is on weekend"
+msgstr "Odabrani početni datum pada na vikend"
+
+#: inc/activity.class.php:193 inc/activity.class.php:316
+#: inc/activity.class.php:631
+msgid "The chosen end date is on weekend"
+msgstr "Odabrani završni datum pada na vikend"
+
+#: inc/activity.class.php:376
+msgid "Add an activity"
+msgstr "Dodaj aktivnost"
+
+#: inc/activity.class.php:382
+msgid "List of activities"
+msgstr "Popis aktivnosti"
+
+#: inc/activity.class.php:388
+msgid "CRA"
+msgstr "Izvještaj o aktivnostima"
+
+#: inc/activity.class.php:417 inc/activity.class.php:999
+#: inc/holiday.class.php:432 inc/profile.class.php:94 inc/profile.class.php:144
+msgid "Create a holiday request"
+msgstr "Stvori zahtjev za dopust"
+
+#: inc/activity.class.php:564 inc/activity.class.php:721
+#: inc/projecttask.class.php:139 inc/tickettask.class.php:71
+msgid "Use in CRA"
+msgstr "Koristi u izvještaju o aktivnostima"
+
+#: inc/activity.class.php:1017
+msgid "Holidays detail"
+msgstr "Detalj dopusta"
+
+#: inc/activity.class.php:1026
+msgid "Holidays detail in progress"
+msgstr "Detalj dopusta u tijeku"
+
+#: inc/activity_item.class.php:99
+msgid "Associated activity"
+msgid_plural "Associated activities"
+msgstr[0] "Povezana aktivnost"
+msgstr[1] "Povezane aktivnosti"
+msgstr[2] "Povezane aktivnosti"
+
+#: inc/activity_item.class.php:130 inc/report.class.php:1004
+msgid "No activity found"
+msgstr "Nema aktivnosti"
+
+#: inc/activitytype.class.php:44
+msgid "Activity type"
+msgid_plural "Activity types"
+msgstr[0] "Vrsta aktivnosti"
+msgstr[1] "Vrste aktivnosti"
+msgstr[2] "Vrste aktivnosti"
+
+#: inc/config.class.php:64
+msgid "Define internal helpdesk"
+msgstr "Definiraj internu podršku"
+
+#: inc/config.class.php:116
+msgid "Show internal helpdesk"
+msgstr "Prikaži internu podršku"
+
+#: inc/crapdf.class.php:246
+msgid "Report of Activities"
+msgstr "Izvještaj o aktivnostima"
+
+#: inc/crapdf.class.php:274
+msgid "during"
+msgstr "tijekom"
+
+#: inc/crapdf.class.php:279
+msgid "Year"
+msgstr "Godina"
+
+#: inc/crapdf.class.php:283
+msgid "for"
+msgstr "za"
+
+#: inc/crapdf.class.php:287
+msgid "Client"
+msgstr "Klijent"
+
+#: inc/crapdf.class.php:339
+msgid "Project / activity"
+msgstr "Projekt / aktivnost"
+
+#: inc/crapdf.class.php:458 inc/holidaytype.class.php:86
+#: inc/report.class.php:1359
+msgid "Part time"
+msgstr "Nepuno radno vrijeme"
+
+#: inc/crapdf.class.php:459 inc/report.class.php:1357
+msgid "Holidays or exceptional absences"
+msgstr "Dopusti ili izvanredni izostanci"
+
+#: inc/crapdf.class.php:460 inc/report.class.php:1361
+msgid "Sickness or maternity"
+msgstr "Bolovanje ili roditeljski dopust"
+
+#: inc/crapdf.class.php:489 inc/report.class.php:883
+msgid "Absences"
+msgstr "Izostanci"
+
+#: inc/crapdf.class.php:522
+msgid ""
+"Entry except in the month, the total must be equal to the number of working "
+"days this month"
+msgstr ""
+"Unos, osim u mjesecu, ukupno mora biti jednak broju radnih dana u ovom "
+"mjesecu"
+
+#: inc/crapdf.class.php:531
+msgid "Total incorrect"
+msgstr "Ukupno neispravno"
+
+#: inc/crapdf.class.php:533
+msgid "Total OK"
+msgstr "Ukupno u redu"
+
+#: inc/crapdf.class.php:575
+msgid "Generated with GLPI on"
+msgstr "Izrađeno pomoću GLPI-a"
+
+#: inc/dashboard.class.php:83 inc/dashboard.class.php:139
+msgid "Activity in the month"
+msgstr "Aktivnost u mjesecu"
+
+#: inc/dashboard.class.php:85 inc/dashboard.class.php:294
+msgid "Activity Menu"
+msgstr "Izbornik aktivnosti"
+
+#: inc/dashboard.class.php:86 inc/dashboard.class.php:364
+msgid "Interventions not in CRA"
+msgstr "Intervencije nisu u izvještaju o aktivnostima"
+
+#: inc/dashboard.class.php:141
+msgid ""
+"Display of activity by month for a user (tickets, activity, holidays, others)"
+msgstr ""
+"Prikaži aktivnost po mjesecu za korisnika (predmeti, aktivnost, dopusti, "
+"ostalo)"
+
+#: inc/dashboard.class.php:236
+msgid "Planning access"
+msgstr "Planiranje pristupa"
+
+#: inc/dashboard.class.php:256 inc/holiday.class.php:1213
+#: inc/holiday.class.php:1267
+msgid "All day"
+msgstr "Cjelodnevno"
+
+#: inc/dashboard.class.php:452 inc/dashboard.class.php:485
+#: inc/report.class.php:540 inc/report.class.php:574
+msgid "No defined type"
+msgstr "Nema definirane vrste"
+
+#: inc/holiday.class.php:54
+msgid "Private holiday"
+msgid_plural "Private holidays"
+msgstr[0] "Dopust"
+msgstr[1] "Dopusti"
+msgstr[2] "Dopusti"
+
+#: inc/holiday.class.php:145 inc/holidayperiod.class.php:70
+msgid "Please fill a begin date"
+msgstr "Upiši početni datum"
+
+#: inc/holiday.class.php:149 inc/holidayperiod.class.php:74
+msgid "Please fill an end date"
+msgstr "Upiši završni datum"
+
+#: inc/holiday.class.php:155 inc/holidaycount.class.php:67
+msgid "Holiday type is mandatory field"
+msgstr "Vrsta dopusta je obavezno polje"
+
+#: inc/holiday.class.php:226
+msgid "You have already planned holidays for this period"
+msgstr "Za ovo vrijeme već imaš planirani dopust"
+
+#: inc/holiday.class.php:228
+msgid "The user has already planned holidays for this period"
+msgstr "Korisnik je već planirao dopust za ovo vrijeme"
+
+#: inc/holiday.class.php:281 inc/holidaytype.class.php:66
+msgid "Auto-validated"
+msgstr "Automatski provjereno"
+
+#: inc/holiday.class.php:310 inc/notificationtargetholiday.class.php:107
+msgid "Validation of your holiday request"
+msgstr "Provjera tvog zahtjeva za dopust"
+
+#: inc/holiday.class.php:314
+msgid "The user don't have any manager filled in his personal settings."
+msgstr "Korisnik nema polje voditelja u svojim osobnim postavkama."
+
+#: inc/holiday.class.php:439
+msgid "List of holidays"
+msgstr "Popis dopusta"
+
+#: inc/holiday.class.php:445 inc/holiday.class.php:2047
+msgid "Approve holiday"
+msgid_plural "Approve holidays"
+msgstr[0] "Odobri dopust"
+msgstr[1] "Odobri dopuste"
+msgstr[2] "Odobri dopuste"
+
+#: inc/holiday.class.php:451 inc/holidaycount.class.php:39
+#: inc/menu.class.php:50
+msgid "Holiday counter"
+msgid_plural "Holiday counters"
+msgstr[0] "Brojač dopusta"
+msgstr[1] "Brojači dopusta"
+msgstr[2] "Brojači dopusta"
+
+#: inc/holiday.class.php:462 inc/preference.class.php:153
+msgid "Add a manager"
+msgstr "Dodaj voditelja"
+
+#: inc/holiday.class.php:867
+msgid "You don't have any manager filled in you personal settings."
+msgstr "Nijedan voditelj nije upisan u tvojim osobnim postavkama."
+
+#: inc/holiday.class.php:869
+msgid ""
+"In order to make a holiday demand, please fill at least one manager in your "
+"personal settings"
+msgstr ""
+"Za stvaranje zahtjeva za dopust, upiši barem jednog voditelja u tvoje osobne "
+"postavke"
+
+#: inc/holiday.class.php:872
+msgid "See the page"
+msgstr "Pogledaj stranicu"
+
+#: inc/holiday.class.php:919 inc/holiday.class.php:926
+#: inc/holiday.class.php:933 inc/holiday.class.php:1192
+#: inc/holiday.class.php:1246
+msgid "Only on morning"
+msgstr "Samo ujutro"
+
+#: inc/holiday.class.php:947 inc/holiday.class.php:1202
+#: inc/holiday.class.php:1256
+msgid "Only on afternoon"
+msgstr "Samo popodne"
+
+#: inc/holiday.class.php:1454
+msgid ""
+"You must fill a registration number for this user before generating the TXT "
+"file."
+msgstr ""
+"Moraš upisati registarski broj za ovog korisnika prije generiranja TXT "
+"datoteke."
+
+#: inc/holiday.class.php:1456
+msgid "See this page"
+msgstr "Pogledaj ovu stranicu"
+
+#: inc/holiday.class.php:1514
+msgid "Generate TXT file for this holiday"
+msgstr "Generiraj TXT datoteku za ovaj dopust"
+
+#: inc/holiday.class.php:1525
+msgid "Holiday request from"
+msgstr "Zahtjev za dopust od"
+
+#: inc/holiday.class.php:1525
+msgid "of"
+msgstr "od"
+
+#: inc/holiday.class.php:1529
+msgid "Generate mail for this holiday"
+msgstr "Generiraj email za ovaj dopust"
+
+#: inc/holiday.class.php:2012
+msgid "Close without clearing"
+msgstr "Zatvori bez brisanja"
+
+#: inc/holiday.class.php:2013
+msgid "See previous month"
+msgstr "Pogledaj prošli mjesec"
+
+#: inc/holiday.class.php:2014
+msgid "See next month"
+msgstr "Pogledaj sljedeći mjesec"
+
+#: inc/holiday.class.php:2015
+msgid "See current month"
+msgstr "Pogledaj tekući mjesec"
+
+#: inc/holiday.class.php:2018
+msgid "See another month"
+msgstr "Pogledaj jedan drugi mjesec"
+
+#: inc/holiday.class.php:2018
+msgid "See another year"
+msgstr "Pogledaj jednu drugu godinu"
+
+#: inc/holiday.class.php:2023
+msgid "Use DD as first day of week"
+msgstr "Koristi DD kao prvi dan u tjednu"
+
+#: inc/holiday.class.php:2023
+msgid "Choose the DD, MM d"
+msgstr "Odaberi DD, MM d"
+
+#: inc/holiday.class.php:2025
+msgid "Choose the date"
+msgstr "Odaberi datum"
+
+#: inc/holiday.class.php:2075
+msgid "Comment"
+msgid_plural "Comments"
+msgstr[0] "Komentar"
+msgstr[1] "Komentari"
+msgstr[2] "Komentari"
+
+#: inc/holiday.class.php:2319
+msgid "Remaining holidays for the period"
+msgstr "Preostali dopusti za vrijeme"
+
+#: inc/holiday.class.php:2320
+msgid "Leave awaiting validation"
+msgstr "Ostavi čekanje na potvrdu"
+
+#: inc/holidaycount.class.php:63
+msgid "Holiday period is mandatory field"
+msgstr "Vrijeme dopusta je obavezno polje"
+
+#: inc/holidaycount.class.php:76
+msgid "Only one counter by period is allowed"
+msgstr "Dozvoljen je samo jedan brojač po vremenu"
+
+#: inc/holidaycount.class.php:141 inc/holidaycount.class.php:215
+msgid "Counter"
+msgstr "Brojač"
+
+#: inc/holidaycount.class.php:331
+msgid "Remaining holidays"
+msgstr "Preostali dopusti"
+
+#: inc/holidaycount.class.php:347 inc/holidaycount.class.php:381
+msgid "Valid until"
+msgstr "Vrijedi do"
+
+#: inc/holidaycount.class.php:401
+msgid "Cumul"
+msgstr "Kumulirano"
+
+#: inc/holidayperiod.class.php:37
+msgid "Holiday period"
+msgid_plural "Holiday periods"
+msgstr[0] "Vrijeme dopusta"
+msgstr[1] "Vremena dopusta"
+msgstr[2] "Vremena dopusta"
+
+#: inc/holidayperiod.class.php:46 inc/holidaytype.class.php:56
+msgid "Short name"
+msgstr "Kratko ime"
+
+#: inc/holidayperiod.class.php:61
+msgid "Archived"
+msgstr "Arhivirano"
+
+#: inc/holidaytype.class.php:48 inc/notificationtargetholiday.class.php:153
+msgid "Holiday type"
+msgid_plural "Holiday types"
+msgstr[0] "Vrsta dopusta"
+msgstr[1] "Vrste dopusta"
+msgstr[2] "Vrste dopusta"
+
+#: inc/holidaytype.class.php:61
+msgid "Mandatory comment"
+msgstr "Obavezni komentar"
+
+#: inc/holidaytype.class.php:71
+msgid "Holiday"
+msgstr "Dopust"
+
+#: inc/holidaytype.class.php:76
+msgid "Use this holiday in the counter"
+msgstr "Koristi ovaj dopust u brojaču"
+
+#: inc/holidaytype.class.php:81
+msgid "Sickness"
+msgstr "Bolovanje"
+
+#: inc/holidaytype.class.php:91
+msgid "Linked to a period"
+msgstr "Povezano s vremenom"
+
+#: inc/holidaytype.class.php:103 inc/holidaytype.class.php:117
+msgid "Can't be of more than one type at the same time"
+msgstr "Ne može biti više od jedne vrste istovremeno"
+
+#: inc/holidayvalidation.class.php:46
+msgid "Holiday validation"
+msgid_plural "Holidays validation"
+msgstr[0] "Provjera dopusta"
+msgstr[1] "Provjera dopusta"
+msgstr[2] "Provjera dopusta"
+
+#. TRANS: %s is the user name
+#: inc/holidayvalidation.class.php:209
+#, php-format
+msgid "Mail sent to %s"
+msgstr "Email poslan za %s"
+
+#: inc/holidayvalidation.class.php:315
+msgid "See validation options"
+msgstr "Pogledaj opcije za provjeru"
+
+#: inc/holidayvalidation.class.php:393
+msgid "Validation for this holiday"
+msgid_plural "Validations for this holiday"
+msgstr[0] "Provjera za ovaj dopust"
+msgstr[1] "Provjere za ovaj dopust"
+msgstr[2] "Provjere za ovaj dopust"
+
+#: inc/holidayvalidation.class.php:431
+msgid "No holiday validation request found"
+msgstr "Nema zahtjeva za provjerom dopusta"
+
+#: inc/holidayvalidation.class.php:473
+msgid "Accept holiday"
+msgstr "Prihvati dopust"
+
+#: inc/holidayvalidation.class.php:477
+msgid "Refuse holiday"
+msgstr "Odbij dopust"
+
+#: inc/notificationtargetholiday.class.php:39
+#: inc/notificationtargetholiday.class.php:209
+msgid "New personal holiday request"
+msgstr "Novi zahtjev za dopust"
+
+#: inc/notificationtargetholiday.class.php:40
+#: inc/notificationtargetholiday.class.php:215
+msgid "Answer to a personal holiday request"
+msgstr "Odgovor na zahtjev za dopust"
+
+#: inc/notificationtargetholiday.class.php:48
+msgid "Approvers"
+msgstr "Odobravatelji"
+
+#: inc/notificationtargetholiday.class.php:110
+msgid "Refusal of your holiday request"
+msgstr "Odbijanje tvog zahtjeva za dopust"
+
+#: inc/notificationtargetholiday.class.php:114
+msgid "A new holiday request has been submitted"
+msgstr "Podnesen je novi zahtjev za dopust"
+
+#: inc/notificationtargetholiday.class.php:135
+#: inc/notificationtargetholiday.class.php:196
+msgid "Number of days"
+msgstr "Broj dana"
+
+#: inc/option.class.php:58
+msgid "Plugin setup"
+msgstr "Postavljanje dodatka"
+
+#: inc/option.class.php:61
+msgid "Replace activity name by the activity type"
+msgstr "Zamijeni ime aktivnost s vrstom aktivnosti"
+
+#: inc/option.class.php:68
+msgid "Use time repartition"
+msgstr "Koristi raspoređivanje vremena"
+
+#: inc/option.class.php:94
+msgid "Use the view by day men in planning"
+msgstr "Koristi prikaz po danu pri planiranju"
+
+#: inc/option.class.php:101
+msgid "Use pairs schedules"
+msgstr "Koristi termine s parnim brojem sati"
+
+#: inc/option.class.php:108
+msgid "Authorize only the whole schedules"
+msgstr "Dozvoli samo termine sa cijelim satima"
+
+#: inc/option.class.php:115
+msgid "Principal client"
+msgstr "Glavni klijent"
+
+#: inc/option.class.php:124
+msgid "Used mail for holidays"
+msgstr "Korišteni email za dopuste"
+
+#: inc/option.class.php:133
+msgid "CRA Footer"
+msgstr "Podnožje u izvještaju o aktivnostima"
+
+#: inc/option.class.php:144
+msgid "Use group manager as holiday manager"
+msgstr "Koristi voditelja grupe kao voditelja dopusta"
+
+#: inc/option.class.php:151
+msgid "Default validation percent"
+msgstr "Standardni postotak provjere"
+
+#: inc/option.class.php:160 inc/option.class.php:190
+msgid "is on CRA by default"
+msgstr "standardno u izvještaju o aktivnostima"
+
+#: inc/option.class.php:167
+msgid "Use projects"
+msgstr "Koristi projekte"
+
+#: inc/preference.class.php:76 inc/preference.class.php:113
+msgid "List of my managers"
+msgstr "Popis mojih voditelja"
+
+#: inc/preference.class.php:80 inc/preference.class.php:118
+msgid "You have not declared any manager yet."
+msgstr "Još nisi prijavio/la niti jednog voditelja."
+
+#: inc/profile.class.php:37
+msgid "Right management"
+msgid_plural "Rights management"
+msgstr[0] "Upravljanje pravima"
+msgstr[1] "Upravljanje pravima"
+msgstr[2] "Upravljanje pravima"
+
+#: inc/profile.class.php:101 inc/profile.class.php:148
+msgid "Validate holiday"
+msgid_plural "Validate holidays"
+msgstr[0] "Provjeri dopust"
+msgstr[1] "Provjeri dopuste"
+msgstr[2] "Provjeri dopuste"
+
+#: inc/profile.class.php:108 inc/profile.class.php:152
+msgid "Statistics and reports"
+msgstr "Statisktika i izvještaji"
+
+#: inc/profile.class.php:115 inc/profile.class.php:156
+msgid "Display activities of all"
+msgstr "Prikaži aktivnosti svih"
+
+#: inc/publicholiday.class.php:45
+msgid "Public holiday"
+msgid_plural "Public holidays"
+msgstr[0] "Državni praznik"
+msgstr[1] "Državni praznici"
+msgstr[2] "Državni praznici"
+
+#: inc/report.class.php:160
+msgid "Take a snapshot of the CRA"
+msgstr "Napravi snimku izvještaja o aktivnostima"
+
+#: inc/report.class.php:211
+msgid "Snapshots of the month"
+msgstr "Snimke mjeseca"
+
+#: inc/report.class.php:261
+msgid "Snapshot taken in"
+msgstr "Snimka napravljena u"
+
+#: inc/report.class.php:296
+msgid "Export CRA"
+msgstr "Izvezi izvještaj o aktivnostima"
+
+#: inc/report.class.php:336
+msgid "Activity report"
+msgstr "Izvještaj o aktivnostima"
+
+#: inc/report.class.php:361
+msgid "Next month"
+msgstr "Sljedeći mjesec"
+
+#: inc/report.class.php:362
+msgid "Previous month"
+msgstr "Prošli mjesec"
+
+#: inc/report.class.php:598
+msgid "Unbilled"
+msgstr "Nenaplaćeno"
+
+#: inc/report.class.php:765
+msgid "Project"
+msgstr "Projekt"
+
+#: inc/report.class.php:948
+msgid "Activities detail"
+msgstr "Detalj aktivnosti"
+
+#: inc/report.class.php:956
+msgid "Percent"
+msgstr "Postotak"
+
+#: inc/stats5.class.php:223 inc/stats5.class.php:271
+msgid "Number of technicians"
+msgstr "Broj tehničarima"
+
+#: inc/stats5.class.php:241 inc/stats5.class.php:270
+msgid "Number of tickets in progress"
+msgstr "Broj naloga u tijeku"
+
+#: inc/stats5.class.php:272
+msgid "All the period"
+msgstr "Cijelo vrijeme"
+
+#: inc/stats5.class.php:287
+msgid "Main evolution of team"
+msgstr "Glavni razvoj tima"
+
+#: inc/stats.class.php:37
+msgid "Activity statistics"
+msgstr "Statistika aktivnosti"
+
+#: inc/ticket.class.php:43
+msgid "The following user is unavailable / on holiday : "
+msgstr "Sljedeći korisnik je nedostupan / na dopustu: "
+
+#: inc/tickettask.class.php:42
+msgid "Cumulative ticket task"
+msgid_plural "Cumulative ticket tasks"
+msgstr[0] "Kumulirani zadatak naloga"
+msgstr[1] "Kumulirani zadaci naloga"
+msgstr[2] "Kumulirani zadaci naloga"
+
+#: inc/tools.class.php:235
+msgid "Export the report"
+msgstr "Izvezi izvještaj"
+
+#: inc/tools.class.php:407
+msgid "Refresh"
+msgstr "Aktualiziraj"
