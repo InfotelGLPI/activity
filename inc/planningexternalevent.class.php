@@ -307,7 +307,8 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
     {
         if (self::canCreate()) {
             // don't do anything if coming from cleanDBRelations
-            if ((isset($item->input['plan']) && isset($item->input['plan']['_duration']))
+            if ((isset($item->input['plan'])
+                    && (isset($item->input['plan']['_duration']) || (isset($item->input['plan']['begin']) && isset($item->input['plan']['end']))))
             || (isset($item->input['begin']) && isset($item->input['end']))) {
                 global $DB;
                 $extevent = new PluginActivityPlanningExternalEvent();
