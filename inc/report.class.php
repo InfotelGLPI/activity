@@ -457,7 +457,6 @@ class PluginActivityReport extends CommonDBTM {
    function showCRA($input, $output_type, PluginActivityCraPDF $PDF, $pdfMode = false) {
       global $CFG_GLPI, $DB;
 
-      $dbu    = new DbUtils();
       $AllDay = self::getAllDay();
        $opt = new PluginActivityOption();
        $opt->getFromDB(1);
@@ -475,7 +474,7 @@ class PluginActivityReport extends CommonDBTM {
       $query  = PluginActivityPlanningExternalEvent::queryAllExternalEvents($crit);
       $result = $DB->query($query);
       $number = $DB->numrows($result);
-
+      // planningexternalevents total time
       $query1 = "SELECT SUM(`glpi_plugin_activity_planningexternalevents`.`actiontime`) AS total 
                   FROM `glpi_plugin_activity_planningexternalevents`
                    LEFT JOIN `glpi_planningexternalevents` 
@@ -495,7 +494,7 @@ class PluginActivityReport extends CommonDBTM {
          $input['month'] = $input['month'] < 10 ? str_replace('0', '', $input['month']) : $input['month'];
          $user = new User();
          $user->getFromDB($crit["users_id"]);
-         $generalinformations['name'] = strtoupper($user->fields['realname']) . ' ' . $user->fields['firstname'];
+         $generalinformations['name'] = self::strtoupper_auto($user->fields['realname']) . ' ' . $user->fields['firstname'];
          $generalinformations['name'] .= (!empty($user->fields['registration_number'])) ? ' (' . $user->fields['registration_number'] . ')' : '';
          $generalinformations['date'] = $monthsarray[$input["month"]] . '                      ' . $input["year"];
          $principal_client            = "";
@@ -503,7 +502,7 @@ class PluginActivityReport extends CommonDBTM {
          if ($opt->getFromDB(1)) {
             $principal_client = $opt->fields['principal_client'];
          }
-         $generalinformations['client'] = strtoupper($principal_client);
+         $generalinformations['client'] = self::strtoupper_auto($principal_client);
          $PDF->setGeneralInformations($generalinformations);
       }
 
@@ -577,20 +576,25 @@ class PluginActivityReport extends CommonDBTM {
                      if ($holiday->isWeekend($data2['begin'], true)) {
                         continue;
                      }
-
-                     if (empty($data2["type"])) {
-                        $type = $data2["entity"] . " > " . __('No defined type', 'activity');
+                     if ($opt->fields['show_planningevents_entity']) {
+                         $type = self::strtoupper_auto($data2["entity"]) . " > ";
+                         if (empty($data2["type"])) {
+                              $type .= __('No defined type', 'activity');
+                         } else {
+                             $type .= $data2["type"];
+                             if ($opt->getUseSubcategory() && $data2['subtype']) {
+                                 $type .= ' - '.$data2['subtype'];
+                             }
+                         }
                      } else {
-                        //                        if (count($parents) > 1) {
-                        //                           $dropdown = new PluginActivityActivityType();
-                        //                           $dropdown->getFromDB($last);
-                        //                           $type = $dropdown->fields['completename'];
-                        //                        } else {
-                        $type = $data2["type"];
-                        if ($opt->getUseSubcategory() && $data2['subtype']) {
-                            $type .= ' - '.$data2['subtype'];
-                        }
-                        //                        }
+                         if (empty($data2["type"])) {
+                             $type = self::strtoupper_auto($data2["entity"]) . " > " . __('No defined type', 'activity');
+                         } else {
+                             $type = $data2["type"];
+                             if ($opt->getUseSubcategory() && $data2['subtype']) {
+                                 $type .= ' - '.$data2['subtype'];
+                             }
+                         }
                      }
 
                      $title[$type][] = $data2["begin"];
@@ -623,20 +627,26 @@ class PluginActivityReport extends CommonDBTM {
                   }
 
                } else {
-                  if (empty($data2["type"])) {
-                     $type = $data2["entity"] . " > " . __('No defined type', 'activity');
-                  } else {
-                     //                  if (count($parents) > 1) {
-                     //                     $dropdown = new PlanningEventCategory();
-                     //                     $dropdown->getFromDB($last);
-                     //                     $type = $dropdown->fields['name'];
-                     //                  } else {
-                     $type = htmlspecialchars_decode($data2["type"]);
-                      if ($opt->getUseSubcategory() && $data2['subtype']) {
-                          $type .= ' - '.htmlspecialchars_decode($data2['subtype']);
-                      }
-                     //                  }
-                  }
+                   if ($opt->fields['show_planningevents_entity']) {
+                       $type = self::strtoupper_auto($data2["entity"]) . " > ";
+                       if (empty($data2["type"])) {
+                           $type .= __('No defined type', 'activity');
+                       } else {
+                           $type .= $data2["type"];
+                           if ($opt->getUseSubcategory() && $data2['subtype']) {
+                               $type .= ' - '.$data2['subtype'];
+                           }
+                       }
+                   } else {
+                       if (empty($data2["type"])) {
+                           $type = self::strtoupper_auto($data2["entity"]) . " > " . __('No defined type', 'activity');
+                       } else {
+                           $type = $data2["type"];
+                           if ($opt->getUseSubcategory() && $data2['subtype']) {
+                               $type .= ' - '.$data2['subtype'];
+                           }
+                       }
+                   }
 
                   $title[$type][] = $data2["begin"];
 
@@ -704,11 +714,11 @@ class PluginActivityReport extends CommonDBTM {
          // 1.3 Tickets
          if ($numbert != "0") {
             while ($datat = $DB->fetchArray($resultt1)) {
-               $mtitle   = strtoupper($datat["entity"]) . " > " . __('Unbilled', 'activity');
+                $mtitle = self::strtoupper_auto($datat['entity']) . " > " . __('Unbilled', 'activity');
                $internal = PluginActivityConfig::getConfigFromDB($datat['entities_id']);
                if ($internal) {
                   foreach ($internal as $field) {
-                     $mtitle = strtoupper($datat["entity"]) . " > " . $field["name"];
+                      $mtitle = self::strtoupper_auto($datat['entity']) . " > " . $field["name"];
                   }
                }
                if (!empty($datat["begin"]) && !empty($datat["end"])) {
@@ -743,8 +753,7 @@ class PluginActivityReport extends CommonDBTM {
                   $numberTask = $DB->numrows($resultTask);
                   if ($numberTask != "0") {
                      while ($dataTask = $DB->fetchArray($resultTask)) {
-
-                        $mtitle = strtoupper($datam["entity"]) . " > ";
+                         $mtitle = self::strtoupper_auto($datam["entity"]) . " > ";
                         if ($datam["withcontract"]) {
                            $contract = new Contract();
                            $contract->getFromDB($datam["contracts_id"]);
@@ -769,7 +778,7 @@ class PluginActivityReport extends CommonDBTM {
                while ($datapt = $DB->fetchArray($resultpt)) {
                   $project = new Project();
                   $project->getFromDB($datapt["projects_id"]);
-                  $mtitle = strtoupper($project->getName()) . " > " . ProjectTask::getTypeName();
+                  $mtitle = self::strtoupper_auto($project->getName()) . " > " . ProjectTask::getTypeName();
                   if ($datapt['planned_duration'] == 0) {
                      //$timestart        = strtotime($datapt["plan_start_date"]);
 
@@ -1800,5 +1809,21 @@ class PluginActivityReport extends CommonDBTM {
       header("Content-type: " . $doc->fields['mime']);
 
       readfile($file) or die ("Error opening file $file");
+   }
+
+    /**
+     * Transform a string to uppercase, take its encoding into account if possible
+     * @param $string
+     * @return string
+     */
+   static function strtoupper_auto($string) {
+       if(extension_loaded('mbstring')) {
+           $encoding = mb_detect_encoding($string, mb_detect_order(), true);
+           if ($encoding === false) {
+               $encoding = 'UTF-8';
+           }
+           return mb_strtoupper($string, $encoding);
+       }
+       return strtoupper($string);
    }
 }

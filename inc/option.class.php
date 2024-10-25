@@ -212,6 +212,13 @@ class PluginActivityOption extends CommonDBTM {
        echo "</td>";
        echo "</tr>";
 
+       echo "<tr class='tab_bg_1'>";
+       echo "<td>".__('Show event entity on CRA', 'activity')."</td>";
+       echo "<td>";
+       Dropdown::showYesNo('show_planningevents_entity', $this->fields['show_planningevents_entity']);
+       echo "</td>";
+       echo "</tr>";
+
       echo "<tr class='tab_bg_1'><td class='center' colspan='2'>";
       echo Html::hidden('id', ['value' => 1]);
       echo Html::submit(_sx('button', 'Save'), ['name' => 'update', 'class' => 'btn btn-primary']);

@@ -884,6 +884,9 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
 
     static function queryUserExternalEvents($criteria)
     {
+        $opt = new PluginActivityOption();
+        $opt->getFromDB(1);
+
         $dbu = new DbUtils();
         $query = "SELECT `glpi_planningexternalevents`.`name` AS name,
                        `glpi_planningexternalevents`.`id` AS id,
@@ -943,7 +946,10 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
             $query .= " AND `glpi_plugin_activity_planningexternalevents`.`is_oncra` ";
         }
         $query .= " AND `glpi_plugin_activity_planningexternalevents`.`actiontime` != 0";
-        $query .= " ORDER BY `glpi_planningexternalevents`.`name`";
+        $query .= " ORDER BY `glpi_planningexternalevents`.`name`, `subtype`";
+        if ($opt->fields['show_planningevents_entity']) {
+            $query .= ", `entity`";
+        }
         return $query;
     }
 
