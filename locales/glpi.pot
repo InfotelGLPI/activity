@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-11 13:08+0000\n"
+"POT-Creation-Date: 2024-11-25 12:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -71,6 +71,10 @@ msgstr ""
 
 #: inc/config.class.php:64
 msgid "Define internal helpdesk"
+msgstr ""
+
+#: inc/config.class.php:75
+msgid "Is recursive"
 msgstr ""
 
 #: inc/config.class.php:120
