@@ -593,8 +593,8 @@ msgstr "Utiliser les sous-catégories d'événements"
 #: inc/planningeventsubcategory.class.php:44
 msgid "Event subcategory"
 msgid_plural "Event subcategories"
-msgstr[0] "Sous-catégories d'événements"
-msgstr[1] "Sous-catégorie"
+msgstr[0] "Sous-catégorie d'événements"
+msgstr[1] "Sous-catégories d'événements"
 msgstr[2] "Sous-catégories d'événements"
 
 #: inc/planningexternalevent.class.php:195
