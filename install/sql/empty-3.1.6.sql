@@ -71,7 +71,8 @@ CREATE TABLE `glpi_plugin_activity_options`
     `use_project`                    tinyint unsigned NOT NULL DEFAULT '0',
     `use_weekend`                    tinyint unsigned NOT NULL DEFAULT '0',
     `is_cra_default_project`         tinyint unsigned NOT NULL DEFAULT '0',
-    `show_planningevents_entity` tinyint DEFAULT '0',
+    `show_planningevents_entity`     tinyint DEFAULT '0',
+    `use_planning_activity_hours`    tinyint DEFAULT '1',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
 

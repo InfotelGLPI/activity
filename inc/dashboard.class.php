@@ -25,6 +25,7 @@
  --------------------------------------------------------------------------
 */
 
+#[\AllowDynamicProperties]
 class PluginActivityDashboard extends CommonGLPI
 {
     public $widgets = [];
@@ -629,7 +630,7 @@ class PluginActivityDashboard extends CommonGLPI
         $values = [];
         if ($DB->numrows($result)) {
             while ($data = DBmysql::fetchArray($result)) {
-                $values = $report->timeRepartition($data['actiontime'] / $AllDay, $data["begin"], $values, PluginActivityReport::$WORK, $data['id'], $holiday->getHolidays(), true);
+                $values = $report->timeRepartition($data['actiontime'] / $AllDay, $data["begin"], $values, PluginActivityReport::$WORK, $data['id'], $holiday->getHolidays(), ['real_hour' => true]);
             }
             $currentime = date("Y-m-d H:i:s");
 
