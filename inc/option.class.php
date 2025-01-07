@@ -110,13 +110,6 @@ class PluginActivityOption extends CommonDBTM {
       Dropdown::showYesNo('use_integerschedules', $this->fields['use_integerschedules']);
       echo "</td>";
       echo "</tr>";
-
-       echo "<tr class='tab_bg_1'>";
-       echo "<td>".__('Limit daily hours to activity hours defined for the planning', 'activity')."</td>";
-       echo "<td>";
-       Dropdown::showYesNo('use_planning_activity_hours', $this->fields['use_planning_activity_hours']);
-       echo "</td>";
-       echo "</tr>";
       
       echo "<tr class='tab_bg_1'>";
       echo "<td>".__('Authorize activities on week-ends', 'activity')."</td>";
@@ -209,6 +202,13 @@ class PluginActivityOption extends CommonDBTM {
        echo "<td>".__('Use hour on cra and not half day', 'activity')."</td>";
        echo "<td>";
        Dropdown::showYesNo('use_hour_on_cra', $this->fields['use_hour_on_cra']);
+       echo "</td>";
+       echo "</tr>";
+
+       echo "<tr class='tab_bg_1'>";
+       echo "<td>".__('Limit daily hours to activity hours defined for the planning (No = maximum of 24h in a day)', 'activity')."</td>";
+       echo "<td>";
+       Dropdown::showYesNo('use_planning_activity_hours', $this->fields['use_planning_activity_hours']);
        echo "</td>";
        echo "</tr>";
 
