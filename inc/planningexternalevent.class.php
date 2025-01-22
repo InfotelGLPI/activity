@@ -977,4 +977,381 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
 
         $this->fields = array_shift($data);
     }
+
+    /**
+     * @param string $begin date format "Y-md h:i:s"
+     * @param string $end date format "Y-md h:i:s"
+     * @param int $users_id id of tech for the tasks
+     * @return array ticket tasks with activity during the selected period
+     */
+    public static function getTicketTasksManageentities(string $begin, string $end, int $users_id)
+    {
+        global $DB;
+
+        $ticketUserTable = Ticket_User::getTable();
+        $entityTable = Entity::getTable();
+        $criDetailTable = PluginManageentitiesCriDetail::getTable();
+        $criTechnicianTable = PluginManageentitiesCriTechnician::getTable();
+        $ticketTable = Ticket::getTable();
+        $ticketTaskTable =  TicketTask::getTable();
+
+        $request = [
+            'SELECT' => [
+                $ticketUserTable.'.users_id',
+                $entityTable.'.name AS entity',
+                $criDetailTable.'.date',
+                $criDetailTable.'.technicians',
+                $criDetailTable.'.plugin_manageentities_critypes_id',
+                $criDetailTable.'.withcontract',
+                $criDetailTable.'.contracts_id',
+                $ticketTable.'.id AS tickets_id'
+            ],
+            'FROM' => $criDetailTable,
+            'LEFT JOIN' => [
+                $ticketTable => [
+                    'FKEY' => [
+                        $ticketTable => 'id',
+                        $criDetailTable => 'tickets_id'
+                    ]
+                ],
+                $entityTable => [
+                    'FKEY' => [
+                        $ticketTable => 'entities_id',
+                        $entityTable => 'id'
+                    ]
+                ],
+                $ticketUserTable => [
+                    'FKEY' => [
+                        $ticketTable => 'id',
+                        $ticketUserTable => 'tickets_id'
+                    ]
+                ],
+                $ticketTaskTable => [
+                    'FKEY' => [
+                        $ticketTable => 'id',
+                        $ticketTaskTable => 'tickets_id'
+                    ]
+                ],
+                $criTechnicianTable => [
+                    'FKEY' => [
+                        $criTechnicianTable => 'tickets_id',
+                        $criDetailTable => 'tickets_id'
+                    ]
+                ]
+            ],
+            'WHERE' => [
+                $ticketUserTable.'.type' => Ticket::ASSIGNED,
+                $ticketTable.'.is_deleted' => 0,
+                self::getTicketTaskDateCriterias($begin, $end),
+                [
+                    'OR' => [
+                        $ticketUserTable.'.users_id' => $users_id,
+                        $criTechnicianTable.'.users_id' => $users_id
+                    ]
+                ],
+                getEntitiesRestrictCriteria($ticketTable, '', $_SESSION["glpiactiveentities"], false)
+            ],
+            'ORDERBY' => $criDetailTable.'.date ASC',
+            'GROUPBY' => $criDetailTable.'.tickets_id'
+        ];
+
+        $results = $DB->request($request);
+        $tasks = [];
+        foreach($results as $result) {
+            $tasks[] = $result;
+        }
+        return $tasks;
+    }
+
+    /**
+     * @param string $begin date format "Y-md h:i:s"
+     * @param string $end date format "Y-md h:i:s"
+     * @param int $users_id id of user owner of the events
+     * @param boolean $cra if true, only events visible on CRA
+     * @param boolean $subcat retrieve subcategory of the events
+     * @return array events with activity during the selected period, events with repetitions during the repetition have a record for each repetition individually (repetition during holidays or day not worked aren't included)
+     */
+    public static function getExternalEventWithActivityOnPeriod(string $begin, string $end, int $users_id, bool $cra = true, bool $subCat = false)
+    {
+        global $DB, $CFG_GLPI;
+
+        $year = date('Y', strtotime($end));
+        $month = date('m', strtotime($end));
+
+        // regex to get rrule which last until $end's month or after
+        $monthRegex = "\"until\":\"$year-(";
+        $months = [];
+        for ($m = (int)$month; $m < 13; $m++) {
+            $value = $m < 10 ? '0' . $m : $m;
+            $months[] = $value;
+        }
+        $monthRegex .= implode('|', $months);
+        $monthRegex .= ")";
+
+        // regex to get rrule which last until $end's year or within the next 5 years
+        $yearRegex = "\"until\":\"(";
+        for ($i = 0; $i < 5; $i++) {
+            $year++;
+            if ($i != 0) {
+                $yearRegex .= '|';
+            }
+            $yearRegex .= "$year";
+        }
+        $yearRegex .= ")";
+
+        $table = PlanningExternalEvent::getTable();
+        $entityTable = Entity::getTable();
+        $categoryTable = PlanningEventCategory::getTable();
+        $subQueryCrit = [
+            'SELECT' =>[$table.'.id'],
+            'FROM' => $table,
+            'WHERE' => [
+                $table.'.users_id' => $users_id,
+                'OR' => [
+                    [ // events within the period
+                        [$table.'.end' => ['>', $begin]],
+                        [$table.'.begin' => ['<', $end]]
+                    ],
+                    [ // events which may have a repetition within the period
+                        $table.'.begin' => ['<', $end],
+                        'OR' => [
+                            [$table.'.rrule' => ['REGEXP', $monthRegex]],
+                            [$table.'.rrule' => ['REGEXP', $yearRegex]],
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        $pluginTable = PluginActivityPlanningExternalEvent::getTable();
+        if ($cra) {
+            $subQueryCrit['JOIN'] = [
+                 $pluginTable => [
+                    'FKEY' => [
+                        $table => 'id',
+                        $pluginTable => 'planningexternalevents_id'
+                    ]
+                ]
+            ];
+            $subQueryCrit['WHERE'][] = [
+                $pluginTable.'.is_oncra' => 1
+            ];
+        }
+
+        $request = [
+            'SELECT' => [
+                $table.'.*',
+                $entityTable.'.name as entity_name',
+                $categoryTable.'.name as category_name'
+            ],
+            'FROM' => $table,
+            'JOIN' => [
+                $entityTable => [
+                    'FKEY' => [
+                        $table => 'entities_id',
+                        $entityTable => 'id'
+                    ]
+                ],
+                $categoryTable => [
+                    'FKEY' => [
+                        $table => 'planningeventcategories_id',
+                        $categoryTable => 'id'
+                    ]
+                ]
+            ],
+            'WHERE' => [
+                $table.'.id' => new QuerySubQuery($subQueryCrit)
+            ]
+        ];
+
+        if ($subCat) {
+            $subCatTable = PluginActivityPlanningeventsubcategory::getTable();
+            $request['LEFT JOIN'] = [
+                $pluginTable => [
+                    'FKEY' => [
+                        $table => 'id',
+                        $pluginTable => 'planningexternalevents_id'
+                    ]
+                ],
+                $subCatTable => [
+                    'FKEY' => [
+                        $subCatTable => 'id',
+                        $pluginTable => 'planningeventsubcategories_id'
+                    ]
+                ]
+            ];
+            $request['SELECT'][] = $pluginTable.'.planningeventsubcategories_id as subcategories_id';
+            $request['SELECT'][] = $subCatTable.'.name as subcategory_name';
+        }
+
+        $events = $DB->request($request);
+
+        $beginDateTime = new DateTime($begin);
+        $endDateTime = new DateTime($end);
+
+        // active entity's calendar
+        $calendar = new Calendar();
+        $entity = new Entity();
+        $entity->getFromDB(Session::getActiveEntity());
+        $calendars_id = $entity->fields['calendars_id'];
+        if ($calendars_id == Entity::CONFIG_PARENT) {
+            $calendars_id = Entity::getUsedConfig('calendars_strategy', Session::getActiveEntity(), 'calendars_id', 0);
+        }
+        $calendar->getFromDB($calendars_id);
+
+        $results = [];
+        foreach($events as $event) {
+            $eventBegin = new DateTime($event['begin']);
+            $eventEnd = new DateTime($event['end']);
+            $event['actiontime'] = $eventEnd->getTimestamp() - $eventBegin->getTimestamp();
+            // for events having a rrule, add each occurrence happening during the period as an individual record
+            if ($event['rrule'] && $rrule = json_decode($event['rrule'], 1)) {
+                $rset = PlanningExternalEvent::getRsetFromRRuleField($rrule, $event['begin']);
+                $ocurrences = $rset->getOccurrencesBetween($begin, $end);
+                foreach ($ocurrences as $occurrenceStart) {
+                    $occurrenceEnd = clone $occurrenceStart;
+                    $occurrenceEnd->modify('+'.$event['actiontime'].' seconds');
+                    if ($occurrenceStart < $endDateTime && $occurrenceEnd > $beginDateTime) {
+                        $weekday = $occurrenceStart->format('w');
+                        // exclude occurrence happening on a non-working day
+                        if (in_array($weekday, $CFG_GLPI["planning_work_days"])) {
+                            // exclude occurrence happening on a holiday (defined by the current entity)
+                            $isGlobalHoliday = false;
+                            if ($calendar->getID() > 0) {
+                                if ($calendar->isHoliday($occurrenceStart->format('Y-m-d H:i:s'))) {
+                                    $isGlobalHoliday = true;
+                                }
+                            }
+                            if (!$isGlobalHoliday) {
+                                $holiday = new PluginActivityHoliday();
+                                // exclude occurrence happening when the user is on leave/vacation/etc.
+                                // TODO use global_validation ?
+                                if (!$holiday->find([
+                                    'users_id' => $users_id,
+                                    'begin' => ['<', $occurrenceStart->format('Y-m-d H:i:s')],
+                                    'end' => ['>', $occurrenceEnd->format('Y-m-d H:i:s')]
+                                ])) {
+                                    $copy = $event;
+                                    $copy['date'] = $occurrenceStart->format('Y-m-d H:i:s');
+                                    $copy['begin'] = $occurrenceStart->format('Y-m-d H:i:s');
+                                    $copy['end'] = $occurrenceEnd->format('Y-m-d H:i:s');
+                                    $results[] = $copy;
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                $results[] = $event;
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * @param string $begin date format "Y-md h:i:s"
+     * @param string $end date format "Y-md h:i:s"
+     * @param int $users_id id of tech for the tasks
+     * @param boolean $cra if true, only tasks visible on CRA
+     * @return array ticket tasks with activity during the selected period
+     */
+    public static function getTicketTaskWithActivityOnPeriod(string $begin, string $end, int $users_id, bool $cra = true) {
+        global $DB;
+
+        $taskTable = TicketTask::getTable();
+        $ticketTable = Ticket::getTable();
+        $entityTable = Entity::getTable();
+        $pluginTable = PluginActivityTicketTask::getTable();
+        $request = [
+            'SELECT' => [
+                $taskTable.'.*',
+                $entityTable.'.id as entities_id',
+                $entityTable.'.name as entity_name'
+            ],
+            'FROM' => $taskTable,
+            'JOIN' => [
+                $ticketTable => [
+                    'FKEY' => [
+                        $taskTable => 'tickets_id',
+                        $ticketTable => 'id'
+                    ]
+                ],
+                $entityTable => [
+                    'FKEY' => [
+                        $ticketTable => 'entities_id',
+                        $entityTable => 'id'
+                    ]
+                ],
+            ],
+            'WHERE' => [
+                $taskTable.'.users_id' => $users_id,
+                $ticketTable.'.is_deleted' => 0,
+                self::getTicketTaskDateCriterias($begin, $end),
+                getEntitiesRestrictCriteria($ticketTable, '', $_SESSION["glpiactiveentities"], false)
+            ]
+        ];
+
+        if ($cra) {
+            $request['JOIN'][$pluginTable] = [
+                'FKEY' => [
+                    $taskTable => 'id',
+                    $pluginTable => 'tickettasks_id'
+                ]
+            ];
+            $request['SELECT'][] = $pluginTable.'.is_oncra as is_oncra';
+            $request['WHERE'][$pluginTable.'.is_oncra'] = 1;
+        }
+
+        $results = $DB->request($request);
+        $tasks =  [];
+        foreach($results as $task) {
+            $tasks[] = $task;
+        }
+        return $tasks;
+    }
+
+    /**
+     * Generate date criterias for request needing all ticket tasks on a period
+     * @param string $begin
+     * @param string $end
+     * @return array
+     */
+    public static function getTicketTaskDateCriterias(string $begin, string $end) {
+        $ticketTaskTable = TicketTask::getTable();
+        return [
+            'AND' => [
+                [
+                    'OR' => [
+                        [$ticketTaskTable.'.end' => ['>', $begin]],
+                        [
+                            [$ticketTaskTable.'.date' => ['>', $begin]], // if begin = null, date = end
+                            [$ticketTaskTable.'.begin' => null]
+                        ]
+
+                    ]
+                ],
+                [
+                    'OR' => [
+                        [$ticketTaskTable.'.begin' => ['<', $end]],
+                        [
+                            'OR' => [
+                                [
+                                    [$ticketTaskTable.'.date' => ['<', $end]],
+                                    [$ticketTaskTable.'.begin' => null]
+                                ],
+                                [ // not planned task with a date after the end, but an actiontime which indicate a start before the end
+                                    "(TIMESTAMPADD(SECOND, -$ticketTaskTable.actiontime, $ticketTaskTable.date) < '$end')",
+                                    [$ticketTaskTable.'.begin' => null]
+                                ]
+                            ]
+
+                        ]
+
+                    ]
+                ]
+            ],
+            $ticketTaskTable.'.actiontime' => ['!=', 0] // skip tasks with no time (like the ones created by escalade)
+        ];
+    }
 }
