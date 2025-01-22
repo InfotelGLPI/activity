@@ -206,7 +206,7 @@ class PluginActivityOption extends CommonDBTM {
        echo "</tr>";
 
        echo "<tr class='tab_bg_1'>";
-       echo "<td>".__('Limit daily hours to activity hours defined for the planning (No = maximum of 24h in a day)', 'activity')."</td>";
+       echo "<td>".__("Use the planning activity hours to limit hours per day on the CRA", 'activity')."</td>";
        echo "<td>";
        Dropdown::showYesNo('use_planning_activity_hours', $this->fields['use_planning_activity_hours']);
        echo "</td>";
