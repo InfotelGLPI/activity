@@ -24,8 +24,7 @@
  along with Activity. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
 */
-
-#[\AllowDynamicProperties]
+#[AllowDynamicProperties]
 class PluginActivityDashboard extends CommonGLPI
 {
     public $widgets = [];

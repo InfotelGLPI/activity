@@ -204,7 +204,7 @@ function plugin_activity_uninstall()
     ];
 
     foreach ($tables as $table) {
-        $DB->query("DROP TABLE IF EXISTS `$table`;");
+        $DB->dropTable($table);
     }
 
     $tables_glpi = [
@@ -215,11 +215,7 @@ function plugin_activity_uninstall()
     ];
 
     foreach ($tables_glpi as $table_glpi) {
-        $DB->query(
-            "DELETE
-                  FROM `$table_glpi`
-                  WHERE `itemtype` LIKE 'PluginActivity%'"
-        );
+        $DB->delete($table_glpi, ['itemtype' => ['LIKE' => 'PluginActivity%']]);
     }
 
     // Delete notifications

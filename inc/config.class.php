@@ -72,7 +72,7 @@ class PluginActivityConfig extends CommonDBTM {
                                      'used' => $used_entities]);
       echo "</td>";
     // is_recursive
-      echo "<td>".__('Is recursive')."</td>";
+      echo "<td>".__('Is recursive', 'activity')."</td>";
       echo "<td>";
       Dropdown::showYesNo('is_recursive');
       echo "</td>";

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-19 11:44+0100\n"
+"POT-Creation-Date: 2024-11-25 12:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,7 +21,7 @@ msgstr ""
 #: setup.php:164 ajax/loadscripts.php:47 front/menu.php:46
 #: inc/config.class.php:38 inc/menu.class.php:32 inc/option.class.php:38
 #: inc/preference.class.php:57 inc/profile.class.php:45
-#: inc/profile.class.php:142 inc/report.class.php:884
+#: inc/profile.class.php:142 inc/report.class.php:875
 msgid "Activity"
 msgid_plural "Activities"
 msgstr[0] ""
@@ -73,6 +73,10 @@ msgstr ""
 msgid "Define internal helpdesk"
 msgstr ""
 
+#: inc/config.class.php:75
+msgid "Is recursive"
+msgstr ""
+
 #: inc/config.class.php:120
 msgid "Show internal helpdesk"
 msgstr ""
@@ -98,19 +102,19 @@ msgid "Project / activity"
 msgstr ""
 
 #: inc/crapdf.class.php:462 inc/holidaytype.class.php:89
-#: inc/report.class.php:1543
+#: inc/report.class.php:1534
 msgid "Part time"
 msgstr ""
 
-#: inc/crapdf.class.php:463 inc/report.class.php:1541
+#: inc/crapdf.class.php:463 inc/report.class.php:1532
 msgid "Holidays or exceptional absences"
 msgstr ""
 
-#: inc/crapdf.class.php:464 inc/report.class.php:1545
+#: inc/crapdf.class.php:464 inc/report.class.php:1536
 msgid "Sickness or maternity"
 msgstr ""
 
-#: inc/crapdf.class.php:493 inc/report.class.php:1003
+#: inc/crapdf.class.php:493 inc/report.class.php:994
 msgid "Absences"
 msgstr ""
 
@@ -159,8 +163,7 @@ msgid "All day"
 msgstr ""
 
 #: inc/dashboard.class.php:443 inc/dashboard.class.php:476
-#: inc/report.class.php:582 inc/report.class.php:591 inc/report.class.php:633
-#: inc/report.class.php:642 inc/report.class.php:693
+#: inc/report.class.php:582 inc/report.class.php:627 inc/report.class.php:683
 msgid "No defined type"
 msgstr ""
 
@@ -565,10 +568,6 @@ msgstr ""
 msgid "Use event subcategories"
 msgstr ""
 
-#: inc/option.class.php:216
-msgid "Show event entity on CRA"
-msgstr ""
-
 #: inc/planningeventsubcategory.class.php:44
 msgid "Event subcategory"
 msgid_plural "Event subcategories"
@@ -689,23 +688,23 @@ msgstr ""
 msgid "Previous month"
 msgstr ""
 
-#: inc/report.class.php:717
+#: inc/report.class.php:707
 msgid "Unbilled"
 msgstr ""
 
-#: inc/report.class.php:883
+#: inc/report.class.php:874
 msgid "Project"
 msgstr ""
 
-#: inc/report.class.php:1070
+#: inc/report.class.php:1061
 msgid "Activities detail"
 msgstr ""
 
-#: inc/report.class.php:1080
+#: inc/report.class.php:1071
 msgid "Percent"
 msgstr ""
 
-#: inc/report.class.php:1139
+#: inc/report.class.php:1130
 msgid "No activity found"
 msgstr ""
 
