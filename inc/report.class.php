@@ -457,13 +457,30 @@ class PluginActivityReport extends CommonDBTM {
    function showCRA($input, $output_type, PluginActivityCraPDF $PDF, $pdfMode = false) {
       global $CFG_GLPI, $DB;
 
-      $dbu    = new DbUtils();
-      $AllDay = self::getAllDay();
+      $AllDay = 3600*24;
        $opt = new PluginActivityOption();
        $opt->getFromDB(1);
-       $use_hour_on_cra               = $opt->fields['use_hour_on_cra'];
+       $use_hour_on_cra = $opt->fields['use_hour_on_cra'];
+       $use_planning_activity_hours = isset($opt->fields['use_planning_activity_hours']) ? $opt->fields['use_planning_activity_hours'] : 1;
+       $use_subcategory = $opt->fields['use_planningeventsubcategories'];
+       if ($use_planning_activity_hours) {
+           $AllDay = self::getAllDay();
+       }
+
+       $options = [
+           'use_hours' => $use_hour_on_cra,
+           'use_planning_activity_hours' => $use_planning_activity_hours
+       ];
+
       $holiday = new PluginActivityHoliday();
       $holiday->setHolidays();
+
+      // temp fix for month format
+       if (!str_starts_with($input['month'], '0')) {
+           if($input['month'] < 10) {
+               $input['month'] = '0'.$input['month'];
+           }
+       }
 
       $crit["begin"]             = $input["year"] . "-" . $input["month"] . "-01 00:00:00";
       $lastday                   = cal_days_in_month(CAL_GREGORIAN, $input["month"], $input["year"]);
@@ -472,21 +489,67 @@ class PluginActivityReport extends CommonDBTM {
       $crit["global_validation"] = PluginActivityCommonValidation::ACCEPTED;
 
       // 1.1 Plugin Activity
-      $query  = PluginActivityPlanningExternalEvent::queryAllExternalEvents($crit);
-      $result = $DB->query($query);
-      $number = $DB->numrows($result);
-
-      $query1 = "SELECT SUM(`glpi_plugin_activity_planningexternalevents`.`actiontime`) AS total 
+       if ($use_planning_activity_hours) {
+           $query  = PluginActivityPlanningExternalEvent::queryAllExternalEvents($crit);
+           $result = $DB->query($query);
+           $number = $DB->numrows($result);
+           // planningexternalevents total time
+           $query1 = "SELECT SUM(`glpi_plugin_activity_planningexternalevents`.`actiontime`) AS total 
                   FROM `glpi_plugin_activity_planningexternalevents`
                    LEFT JOIN `glpi_planningexternalevents` 
                      ON (`glpi_plugin_activity_planningexternalevents`.`planningexternalevents_id` = `glpi_planningexternalevents`.`id`)";
-      $query1 .= " WHERE (`begin` >= '" . $crit["begin"] . "' 
-                           AND `begin` <= '" . $crit["end"] . "')
+           $query1 .= " WHERE (`begin` <= '" . $crit["end"] . "' 
+                           AND `end` >= '" . $crit["begin"] . "')
                               AND `users_id` = '" . $crit["users_id"] . "'";
-      if ($result1 = $DB->query($query1)) {
-         $data1 = $DB->fetchArray($result1);
-         $total = $data1["total"];
-      }
+           if ($result1 = $DB->query($query1)) {
+               $data1 = $DB->fetchArray($result1);
+               $total = $data1["total"];
+           }
+       } else {
+           $externalEvents = PluginActivityPlanningExternalEvent::getExternalEventWithActivityOnPeriod(
+               $crit['begin'],
+               $crit['end'],
+               $crit['users_id'],
+               true,
+               $use_subcategory
+           );
+           $total = 0;
+           $ids = []; // avoid repetition for external event with recurrences
+           $actiontimeByCategories = [];
+           foreach ($externalEvents as $event) {
+               if (!in_array($event['id'], $ids)) {
+                   $ids[] = $event['id'];
+               }
+
+               $actiontime = self::getActiontimeOnPeriod($crit['begin'], $crit['end'], $event);
+               $total += $actiontime;
+
+               // group events data by category
+               $key = $event['category_name'];
+               if ($use_subcategory) {
+                   $key .= ' '.$event['subcategory_name'];
+               }
+               $clone = $event;
+               $clone['actiontime'] = $actiontime;
+               if (!array_key_exists($key, $actiontimeByCategories)) {
+                   $actiontimeByCategories[$key] = [
+                       'total_actiontime' => $actiontime,
+                       'category_name' => $event['category_name'],
+                       'planningeventcategories_id' => $event['planningeventcategories_id'],
+                       'events' => [$clone]
+                   ];
+                   if ($use_subcategory) {
+                       $actiontimeByCategories[$key]['subcategories_id'] = $event['subcategories_id'];
+                       $actiontimeByCategories[$key]['subcategory_name'] = $event['subcategory_name'];
+                   }
+               } else {
+                   $actiontimeByCategories[$key]['total_actiontime'] += $actiontime;
+                   $actiontimeByCategories[$key]['events'][] = $clone;
+               }
+           }
+           $number = count($ids);
+       }
+
 
       if ($pdfMode) {
          $generalinformations = [];
@@ -495,7 +558,7 @@ class PluginActivityReport extends CommonDBTM {
          $input['month'] = $input['month'] < 10 ? str_replace('0', '', $input['month']) : $input['month'];
          $user = new User();
          $user->getFromDB($crit["users_id"]);
-         $generalinformations['name'] = strtoupper($user->fields['realname']) . ' ' . $user->fields['firstname'];
+         $generalinformations['name'] = self::strtoupper_auto($user->fields['realname']) . ' ' . $user->fields['firstname'];
          $generalinformations['name'] .= (!empty($user->fields['registration_number'])) ? ' (' . $user->fields['registration_number'] . ')' : '';
          $generalinformations['date'] = $monthsarray[$input["month"]] . '                      ' . $input["year"];
          $principal_client            = "";
@@ -503,7 +566,7 @@ class PluginActivityReport extends CommonDBTM {
          if ($opt->getFromDB(1)) {
             $principal_client = $opt->fields['principal_client'];
          }
-         $generalinformations['client'] = strtoupper($principal_client);
+         $generalinformations['client'] = self::strtoupper_auto($principal_client);
          $PDF->setGeneralInformations($generalinformations);
       }
 
@@ -515,17 +578,38 @@ class PluginActivityReport extends CommonDBTM {
 
          $crit["documentcategories_id"] = $config->fields["documentcategories_id"];
 
-         $manage  = PluginActivityPlanningExternalEvent::queryManageentities($crit);
-         $resultm = $DB->query($manage);
-         $numberm = $DB->numrows($resultm);
+         if ($use_planning_activity_hours) {
+             $manage  = PluginActivityPlanningExternalEvent::queryManageentities($crit);
+             $resultm = $DB->query($manage);
+             $numberm = $DB->numrows($resultm);
+         } else {
+             $manageentitiesTasks = PluginActivityPlanningExternalEvent::getTicketTasksManageentities(
+                 $crit['begin'],
+                 $crit['end'],
+                 $crit['users_id']
+             );
+             $numberm = count($manageentitiesTasks);
+         }
       }
 
       // 1.3 Tickets
-      $tickets  = PluginActivityPlanningExternalEvent::queryTickets($crit);
-      $resultt1 = $DB->query($tickets);
-      $numbert  = $DB->numrows($resultt1);
+       if ($use_planning_activity_hours) {
+           $tickets  = PluginActivityPlanningExternalEvent::queryTickets($crit);
+           $resultt1 = $DB->query($tickets);
+           $numbert  = $DB->numrows($resultt1);
+       } else {
+           $ticketTasks = PluginActivityPlanningExternalEvent::getTicketTaskWithActivityOnPeriod(
+               $crit['begin'],
+               $crit['end'],
+               $crit['users_id'],
+               true
+           );
+           $numbert = count($ticketTasks);
+       }
+
 
       // 1.1 Plugin holiday
+       // TODO implement holidays with !$use_planning_activity_hours
       $queryh  = "SELECT SUM(actiontime) AS total 
                   FROM `glpi_plugin_activity_holidays`";
       $queryh  .= " WHERE (`begin` >= '" . $crit["begin"] . "' 
@@ -546,127 +630,208 @@ class PluginActivityReport extends CommonDBTM {
          $values = [];
 
          // 2.3 Plugin Activity
-         $crit["is_usedbycra"] = true;
-         $query2               = PluginActivityPlanningExternalEvent::queryUserExternalEvents($crit);
+          if ($use_planning_activity_hours) {
+              $crit["is_usedbycra"] = true;
+              $query2 = PluginActivityPlanningExternalEvent::queryUserExternalEvents($crit);
 
-         $result2 = $DB->query($query2);
-         if ($DB->numrows($result2)) {
-            while ($data2 = $DB->fetchArray($result2)) {
+              $result2 = $DB->query($query2);
+              if ($DB->numrows($result2)) {
+                  while ($data2 = $DB->fetchArray($result2)) {
+                      if (isset($data2['rrule']) && !empty($data2['rrule'])) {
+                          $duration = strtotime($data2['end']) - strtotime($data2['begin']);
+                          $rrule = json_decode($data2['rrule'], 1);
+                          $rset = PlanningExternalEvent::getRsetFromRRuleField($rrule, $data2['begin']);
+                          $begin_datetime = new DateTime($crit['begin'], new DateTimeZone('UTC'));
+                          $begin_datetime->sub(new DateInterval("PT" . ($duration - 1) . "S"));
+                          $end_datetime = new DateTime($crit['end'], new DateTimeZone('UTC'));
+                          $occurences = $rset->getOccurrencesBetween($begin_datetime, $end_datetime);
 
-               if (isset($data2['rrule']) && !empty($data2['rrule'])) {
-                  $duration       = strtotime($data2['end']) - strtotime($data2['begin']);
-                  $rrule          = json_decode($data2['rrule'], 1);
-                  $rset           = PlanningExternalEvent::getRsetFromRRuleField($rrule, $data2['begin']);
-                  $begin_datetime = new DateTime($crit['begin'], new DateTimeZone('UTC'));
-                  $begin_datetime->sub(new DateInterval("PT" . ($duration - 1) . "S"));
-                  $end_datetime = new DateTime($crit['end'], new DateTimeZone('UTC'));
-                  $occurences   = $rset->getOccurrencesBetween($begin_datetime, $end_datetime);
+                          // add the found occurences to the final tab after replacing their dates
+                          foreach ($occurences as $currentDate) {
+                              $occurence_begin = $currentDate;
+                              $data2['begin'] = $occurence_begin->format('Y-m-d H:i:s');
 
-                  // add the found occurences to the final tab after replacing their dates
-                  foreach ($occurences as $currentDate) {
+                              $occurence_end = (clone $currentDate)->add(new DateInterval("PT" . $duration . "S"));
+                              $data2['end'] = $occurence_end->format('Y-m-d H:i:s');
+                              //                     $type = $data2["type"];
+                              //                     $parents = $dbu->getAncestorsOf("glpi_planningeventcategories", $data2["type_id"]);
+                              //                     $last = end($parents);
 
-                     $occurence_begin = $currentDate;
-                     $data2['begin']  = $occurence_begin->format('Y-m-d H:i:s');
+                              if ($holiday->isWeekend($data2['begin'], true)) {
+                                  continue;
+                              }
+                              if ($opt->fields['show_planningevents_entity']) {
+                                  $type = self::strtoupper_auto($data2["entity"]) . " > ";
+                                  if (empty($data2["type"])) {
+                                      $type .= __('No defined type', 'activity');
+                                  } else {
+                                      $type .= $data2["type"];
+                                      if ($opt->getUseSubcategory() && $data2['subtype']) {
+                                          $type .= ' - ' . $data2['subtype'];
+                                      }
+                                  }
+                              } else {
+                                  if (empty($data2["type"])) {
+                                      $type = self::strtoupper_auto($data2["entity"]) . " > " . __(
+                                              'No defined type',
+                                              'activity'
+                                          );
+                                  } else {
+                                      $type = $data2["type"];
+                                      if ($opt->getUseSubcategory() && $data2['subtype']) {
+                                          $type .= ' - ' . $data2['subtype'];
+                                      }
+                                  }
+                              }
 
-                     $occurence_end = (clone $currentDate)->add(new DateInterval("PT" . $duration . "S"));
-                     $data2['end']  = $occurence_end->format('Y-m-d H:i:s');
-                     //                     $type = $data2["type"];
-                     //                     $parents = $dbu->getAncestorsOf("glpi_planningeventcategories", $data2["type_id"]);
-                     //                     $last = end($parents);
+                              $title[$type][] = $data2["begin"];
 
-                     if ($holiday->isWeekend($data2['begin'], true)) {
-                        continue;
-                     }
+                              $opt_act = self::$WORK;
 
-                     if (empty($data2["type"])) {
-                        $type = $data2["entity"] . " > " . __('No defined type', 'activity');
-                     } else {
-                        //                        if (count($parents) > 1) {
-                        //                           $dropdown = new PluginActivityActivityType();
-                        //                           $dropdown->getFromDB($last);
-                        //                           $type = $dropdown->fields['completename'];
-                        //                        } else {
-                        $type = $data2["type"];
-                        if ($opt->getUseSubcategory() && $data2['subtype']) {
-                            $type .= ' - '.$data2['subtype'];
-                        }
-                        //                        }
-                     }
+                              //All Day planning Case
+                              $begin = strtotime($data2["begin"]);
+                              $end = strtotime($data2["end"]);
+                              $datediff = $end - $begin;
 
-                     $title[$type][] = $data2["begin"];
+                              $nbday = round($datediff / (60 * 60 * 24));
 
-                     $opt_act = self::$WORK;
+                              if ($pos = strpos($data2["begin"], '00:00:00') !== false) {
+                                  $action = $data2['actiontime'] / 3600;
+                                  $action = $action - (8 * $nbday);
+                                  $data2['actiontime'] = $action * 3600;
+                              }
+                              if ($pos = strpos('00:00:00', '00:00:00') !== false) {
+                                  $action = $data2['actiontime'] / 3600;
+                                  $action = $action - (8 * $nbday);
+                                  $data2['actiontime'] = $action * 3600;
+                              }
+                              //End All Day planning Case
+                              // Repartition of the time
+                              $values = $this->timeRepartition(
+                                  $data2['actiontime'] / $AllDay,
+                                  $data2["begin"],
+                                  $values,
+                                  $opt_act,
+                                  $type,
+                                  $holiday->getHolidays(),
+                                  $options
+                              );
 
-                     //All Day planning Case
-                     $begin = strtotime($data2["begin"]);
-                     $end = strtotime($data2["end"]);
-                     $datediff = $end - $begin;
 
-                     $nbday = round($datediff / (60 * 60 * 24));
+                              $this->item_search[$type]['PlanningExternalEvent'][date(
+                                  'Y-m-d',
+                                  strtotime($data2["begin"])
+                              )][] = $data2['id'];
+                          }
+                      } else {
+                          if ($opt->fields['show_planningevents_entity']) {
+                              $type = self::strtoupper_auto($data2["entity"]) . " > ";
+                              if (empty($data2["type"])) {
+                                  $type .= __('No defined type', 'activity');
+                              } else {
+                                  $type .= $data2["type"];
+                                  if ($opt->getUseSubcategory() && $data2['subtype']) {
+                                      $type .= ' - ' . $data2['subtype'];
+                                  }
+                              }
+                          } else {
+                              if (empty($data2["type"])) {
+                                  $type = self::strtoupper_auto($data2["entity"]) . " > " . __(
+                                          'No defined type',
+                                          'activity'
+                                      );
+                              } else {
+                                  $type = $data2["type"];
+                                  if ($opt->getUseSubcategory() && $data2['subtype']) {
+                                      $type .= ' - ' . $data2['subtype'];
+                                  }
+                              }
+                          }
 
-                     if ($pos = strpos($data2["begin"],'00:00:00') !== false) {
-                        $action = $data2['actiontime'] / 3600;
-                        $action = $action - (8*$nbday);
-                        $data2['actiontime'] = $action * 3600;
-                     }
-                     if ($pos = strpos('00:00:00','00:00:00') !== false) {
-                        $action = $data2['actiontime'] / 3600;
-                        $action = $action - (8*$nbday);
-                        $data2['actiontime'] = $action * 3600;
-                     }
-                     //End All Day planning Case
-                     
-                     // Repartition of the time
-                     $values = $this->timeRepartition($data2['actiontime'] / $AllDay, $data2["begin"], $values, $opt_act, $type, $holiday->getHolidays());
+                          $title[$type][] = $data2["begin"];
 
-                     $this->item_search[$type]['PlanningExternalEvent'][date('Y-m-d', strtotime($data2["begin"]))][] = $data2['id'];
-                  }
+                          $opt_act = self::$WORK;
 
-               } else {
-                  if (empty($data2["type"])) {
-                     $type = $data2["entity"] . " > " . __('No defined type', 'activity');
-                  } else {
-                     //                  if (count($parents) > 1) {
-                     //                     $dropdown = new PlanningEventCategory();
-                     //                     $dropdown->getFromDB($last);
-                     //                     $type = $dropdown->fields['name'];
-                     //                  } else {
-                     $type = htmlspecialchars_decode($data2["type"]);
-                      if ($opt->getUseSubcategory() && $data2['subtype']) {
-                          $type .= ' - '.htmlspecialchars_decode($data2['subtype']);
+                          //All Day planning Case
+                          $begin = strtotime($data2["begin"]);
+                          $end = strtotime($data2["end"]);
+                          $datediff = $end - $begin;
+
+                          $nbday = round($datediff / (60 * 60 * 24));
+
+                          if ($pos = strpos($data2["begin"], '00:00:00') !== false) {
+                              $action = $data2['actiontime'] / 3600;
+                              $action = $action - (8 * $nbday);
+                              $data2['actiontime'] = $action * 3600;
+                          }
+                          if ($pos = strpos('00:00:00', '00:00:00') !== false) {
+                              $action = $data2['actiontime'] / 3600;
+                              $action = $action - (8 * $nbday);
+                              $data2['actiontime'] = $action * 3600;
+                          }
+                          //End All Day planning Case
+                          // Repartition of the time
+                          $values = $this->timeRepartition(
+                              $data2['actiontime'] / $AllDay,
+                              $data2["begin"],
+                              $values,
+                              $opt_act,
+                              $type,
+                              $holiday->getHolidays(),
+                              $options
+                          );
+
+                          $this->item_search[$type]['PlanningExternalEvent'][date(
+                              'Y-m-d',
+                              strtotime($data2["begin"])
+                          )][] = $data2['id'];
                       }
-                     //                  }
                   }
+              }
+          } else {
+            foreach($externalEvents as $externalEvent) {
+                if ($opt->fields['show_planningevents_entity']) {
+                    $type = self::strtoupper_auto($externalEvent["entity_name"]) . " > ";
+                    if (empty($externalEvent["category_name"])) {
+                        $type .= __('No defined type', 'activity');
+                    } else {
+                        $type .= $externalEvent["category_name"];
+                        if ($opt->getUseSubcategory() && $externalEvent['subcategory_name']) {
+                            $type .= ' - ' . $externalEvent['subcategory_name'];
+                        }
+                    }
+                } else {
+                    if (empty($externalEvent["category_name"])) {
+                        $type = self::strtoupper_auto($externalEvent["entity_name"]) . " > " . __(
+                                'No defined type',
+                                'activity'
+                            );
+                    } else {
+                        $type = $externalEvent["category_name"];
+                        if ($opt->getUseSubcategory() && $externalEvent['subcategory_name']) {
+                            $type .= ' - ' . $externalEvent['subcategory_name'];
+                        }
+                    }
+                }
 
-                  $title[$type][] = $data2["begin"];
+                $title[$type][] = $externalEvent["begin"];
 
-                  $opt_act = self::$WORK;
-
-                  //All Day planning Case
-                  $begin = strtotime($data2["begin"]);
-                  $end = strtotime($data2["end"]);
-                  $datediff = $end - $begin;
-
-                  $nbday = round($datediff / (60 * 60 * 24));
-
-                  if ($pos = strpos($data2["begin"],'00:00:00') !== false) {
-                     $action = $data2['actiontime'] / 3600;
-                     $action = $action - (8*$nbday);
-                     $data2['actiontime'] = $action * 3600;
-                  }
-                  if ($pos = strpos('00:00:00','00:00:00') !== false) {
-                     $action = $data2['actiontime'] / 3600;
-                     $action = $action - (8*$nbday);
-                     $data2['actiontime'] = $action * 3600;
-                  }
-                  //End All Day planning Case
-                  // Repartition of the time
-                  $values = $this->timeRepartition($data2['actiontime'] / $AllDay, $data2["begin"], $values, $opt_act, $type, $holiday->getHolidays());
-
-                  $this->item_search[$type]['PlanningExternalEvent'][date('Y-m-d', strtotime($data2["begin"]))][] = $data2['id'];
-               }
+                $dateTimeBegin = new DateTime($externalEvent['begin']);
+                $dateTimeEnd =  new DateTime($externalEvent['end']);
+                $this->addEventToValues(
+                    $values,
+                    $dateTimeBegin,
+                    $dateTimeEnd,
+                    $crit,
+                    $externalEvent,
+                    self::$WORK,
+                    $type,
+                    'PlanningExternalEvent',
+                    $externalEvent['id']
+                );
             }
-         }
+          }
+
 
          // 2.3 Plugin Activity holidays
          if (Session::haveRight("plugin_activity_can_requestholiday", 1)) {
@@ -690,7 +855,7 @@ class PluginActivityReport extends CommonDBTM {
                   $opt_act = self::$HOLIDAY;
 
                   // Repartition of the time
-                  $values = $this->timeRepartition($datah['actiontime'] / $AllDay, $datah["begin"], $values, $opt_act, $type, $holiday->getHolidays());
+                  $values = $this->timeRepartition($datah['actiontime'] / $AllDay, $datah["begin"], $values, $opt_act, $type, $holiday->getHolidays(), $options);
                   if (!isset($this->holiday_type[$type])) {
                      $this->holiday_type[$type]['is_holiday']   = $datah['is_holiday'];
                      $this->holiday_type[$type]['is_sickness']  = $datah['is_sickness'];
@@ -703,28 +868,59 @@ class PluginActivityReport extends CommonDBTM {
 
          // 1.3 Tickets
          if ($numbert != "0") {
-            while ($datat = $DB->fetchArray($resultt1)) {
-               $mtitle   = strtoupper($datat["entity"]) . " > " . __('Unbilled', 'activity');
-               $internal = PluginActivityConfig::getConfigFromDB($datat['entities_id']);
-               if ($internal) {
-                  foreach ($internal as $field) {
-                     $mtitle = strtoupper($datat["entity"]) . " > " . $field["name"];
-                  }
-               }
-               if (!empty($datat["begin"]) && !empty($datat["end"])) {
-                  $values                                                                            = $this->timeRepartition($datat['actiontime'] / $AllDay, $datat["begin"], $values, self::$WORK, $mtitle, $holiday->getHolidays());
-                  $this->item_search[$mtitle]['Ticket'][date('Y-m-d', strtotime($datat["begin"]))][] = $datat['tickets_id'];
-               } else {
-                  $values                                                                           = $this->timeRepartition($datat['actiontime'] / $AllDay, $datat["date"], $values, self::$WORK, $mtitle, $holiday->getHolidays());
-                  $this->item_search[$mtitle]['Ticket'][date('Y-m-d', strtotime($datat["date"]))][] = $datat['tickets_id'];
-               }
-
-            }
+             if ($use_planning_activity_hours) {
+                 while ($datat = $DB->fetchArray($resultt1)) {
+                     $mtitle = self::strtoupper_auto($datat['entity']) . " > " . __('Unbilled', 'activity');
+                     $internal = PluginActivityConfig::getConfigFromDB($datat['entities_id']);
+                     if ($internal) {
+                         foreach ($internal as $field) {
+                             $mtitle = self::strtoupper_auto($datat['entity']) . " > " . $field["name"];
+                         }
+                     }
+                     if (!empty($datat["begin"]) && !empty($datat["end"])) {
+                         $values = $this->timeRepartition($datat['actiontime'] / $AllDay, $datat["begin"], $values, self::$WORK, $mtitle, $holiday->getHolidays(), $options);
+                         $this->item_search[$mtitle]['Ticket'][date('Y-m-d', strtotime($datat["begin"]))][] = $datat['tickets_id'];
+                     } else {
+                         $values = $this->timeRepartition($datat['actiontime'] / $AllDay, $datat["date"], $values, self::$WORK, $mtitle, $holiday->getHolidays(), $options);
+                         $this->item_search[$mtitle]['Ticket'][date('Y-m-d', strtotime($datat["date"]))][] = $datat['tickets_id'];
+                     }
+                 }
+             } else {
+                 foreach($ticketTasks as $ticketTask) {
+                     $mtitle = self::strtoupper_auto($ticketTask['entity_name']) . " > " . __('Unbilled', 'activity');
+                     $internal = PluginActivityConfig::getConfigFromDB($ticketTask['entities_id']);
+                     if ($internal) {
+                         foreach ($internal as $field) {
+                             $mtitle = self::strtoupper_auto($ticketTask['entity_name']) . " > " . $field["name"];
+                         }
+                     }
+                     if (!empty($ticketTask["begin"]) && !empty($ticketTask["end"])) {
+                         $dateTimeBegin = new DateTime($ticketTask['begin']);
+                         $dateTimeEnd =  new DateTime($ticketTask['end']);
+                     } else {
+                         $dateTimeEnd =  new DateTime($ticketTask['date']);
+                         $dateTimeBegin = clone $dateTimeEnd;
+                         $dateTimeBegin->modify('-' . $ticketTask['actiontime'] . ' seconds');
+                     }
+                     $this->addEventToValues(
+                         $values,
+                         $dateTimeBegin,
+                         $dateTimeEnd,
+                         $crit,
+                         $ticketTask,
+                         self::$WORK,
+                         $mtitle,
+                         'Ticket',
+                         $ticketTask['tickets_id']
+                     );
+                 }
+             }
          }
 
          // 2.4 Plugin Manageentities
          if (Plugin::isPluginActive('manageentities')) {
             if ($numberm != "0") {
+                // TODO implement $use_planning_activity_hours
                while ($datam = $DB->fetchArray($resultm)) {
 
                   $queryTask = "SELECT `glpi_tickettasks`.*
@@ -743,8 +939,7 @@ class PluginActivityReport extends CommonDBTM {
                   $numberTask = $DB->numrows($resultTask);
                   if ($numberTask != "0") {
                      while ($dataTask = $DB->fetchArray($resultTask)) {
-
-                        $mtitle = strtoupper($datam["entity"]) . " > ";
+                         $mtitle = self::strtoupper_auto($datam["entity"]) . " > ";
                         if ($datam["withcontract"]) {
                            $contract = new Contract();
                            $contract->getFromDB($datam["contracts_id"]);
@@ -753,7 +948,7 @@ class PluginActivityReport extends CommonDBTM {
                         $title[$mtitle][] = $dataTask["begin"];
 
                         // Repartition of the time
-                        $values = $this->timeRepartition($dataTask['actiontime'] / $AllDay, $dataTask["begin"], $values, self::$WORK, $mtitle, $holiday->getHolidays());
+                        $values = $this->timeRepartition($dataTask['actiontime'] / $AllDay, $dataTask["begin"], $values, self::$WORK, $mtitle, $holiday->getHolidays(), $options);
 
                         $this->item_search[$mtitle]['Ticket'][date('Y-m-d', strtotime($dataTask["begin"]))][] = $datam['tickets_id'];
                      }
@@ -769,7 +964,7 @@ class PluginActivityReport extends CommonDBTM {
                while ($datapt = $DB->fetchArray($resultpt)) {
                   $project = new Project();
                   $project->getFromDB($datapt["projects_id"]);
-                  $mtitle = strtoupper($project->getName()) . " > " . ProjectTask::getTypeName();
+                  $mtitle = self::strtoupper_auto($project->getName()) . " > " . ProjectTask::getTypeName();
                   if ($datapt['planned_duration'] == 0) {
                      //$timestart        = strtotime($datapt["plan_start_date"]);
 
@@ -803,7 +998,7 @@ class PluginActivityReport extends CommonDBTM {
                                                (strtotime(self::$PM_BEGIN) - strtotime(self::$AM_END));
 
                            $values = $this->timeRepartition($planned_duration / $AllDay, $timestart->format('Y-m-d H:i:s'),
-                                                            $values, self::$WORK, $mtitle, $holiday->getHolidays());
+                                                            $values, self::$WORK, $mtitle, $holiday->getHolidays(), $options);
                         }
                         $timestart->modify('+1 day');
                         $timeendDay->modify('+1 day');
@@ -815,10 +1010,10 @@ class PluginActivityReport extends CommonDBTM {
                      $planned_duration = (strtotime($timeendFinal->format('Y-m-d H:i:s')) - strtotime($timestart->format('Y-m-d H:i:s'))
                                           - ($midi));
                      $values           = $this->timeRepartition($planned_duration / $AllDay, $timestart->format('Y-m-d H:i:s'),
-                                                                $values, self::$WORK, $mtitle, $holiday->getHolidays());
+                                                                $values, self::$WORK, $mtitle, $holiday->getHolidays(), $options);
                   } else {
                      $values = $this->timeRepartition($datapt['planned_duration'] / $AllDay, $datapt["plan_start_date"],
-                                                      $values, self::$WORK, $mtitle, $holiday->getHolidays());
+                                                      $values, self::$WORK, $mtitle, $holiday->getHolidays(), $options);
                   }
                   $this->item_search[$mtitle]['ProjectTask'][date('Y-m-d', strtotime($datapt["plan_start_date"]))][] = $datapt['projects_id'];
                }
@@ -1073,54 +1268,86 @@ class PluginActivityReport extends CommonDBTM {
 
             // 2.1 Spew out the data in a table
             $row_num = 1;
-            while ($data = $DB->fetchArray($result)) {
-               if ($data["total_actiontime"] > 0) {
-                  $percent = $data["total_actiontime"] * 100 / $total;
-               } else {
-                  $percent = 0;
-               }
+            if ($use_planning_activity_hours) {
+                while ($data = $DB->fetchArray($result)) {
+                    if ($data["total_actiontime"] > 0) {
+                        $percent = $data["total_actiontime"] * 100 / $total;
+                    } else {
+                        $percent = 0;
+                    }
 
-               $row_num++;
-               $num = 1;
-               echo Search::showNewLine($output_type);
-               echo Search::showItem($output_type, $data["name"], $num, $row_num);
-                if ($opt->getUseSubcategory()) {
-                    echo Search::showItem($output_type, $data["subname"], $num, $row_num);
-                }
-               $comment = "";
-               $dbu     = new DbUtils();
-               $queryt  = "SELECT `glpi_planningexternalevents`.`text` AS text,
+                    $row_num++;
+                    $num = 1;
+                    echo Search::showNewLine($output_type);
+                    echo Search::showItem($output_type, $data["name"], $num, $row_num);
+                    if ($opt->getUseSubcategory()) {
+                        echo Search::showItem($output_type, $data["subname"], $num, $row_num);
+                    }
+                    $comment = "";
+                    $dbu     = new DbUtils();
+                    $queryt  = "SELECT `glpi_planningexternalevents`.`text` AS text,
                                  `glpi_plugin_activity_planningexternalevents`.`actiontime`
                      FROM `glpi_planningexternalevents` 
                      INNER JOIN `glpi_planningeventcategories` 
                         ON (`glpi_planningeventcategories`.`id` = `glpi_planningexternalevents`.`planningeventcategories_id`)
                      INNER JOIN `glpi_plugin_activity_planningexternalevents` 
                               ON (`glpi_planningexternalevents`.`id` = `glpi_plugin_activity_planningexternalevents`.`planningexternalevents_id`)";
-               $queryt  .= "WHERE (`glpi_planningexternalevents`.`begin` >= '" . $crit["begin"] . "' 
+                    $queryt  .= "WHERE (`glpi_planningexternalevents`.`begin` >= '" . $crit["begin"] . "' 
                            AND `glpi_planningexternalevents`.`begin` <= '" . $crit["end"] . "') 
                            AND `glpi_planningexternalevents`.`planningeventcategories_id` = '" . $data["type"] . "'";
 
-               if ($opt->getUseSubcategory()) {
-                   $queryt .= "AND `glpi_plugin_activity_planningexternalevents`.`planningeventsubcategories_id`";
-                   $queryt .= $data['subtype'] ?  " = '".$data["subtype"]."' " : ' IS NULL ';
-               }
+                    if ($opt->getUseSubcategory()) {
+                        $queryt .= "AND `glpi_plugin_activity_planningexternalevents`.`planningeventsubcategories_id`";
+                        $queryt .= $data['subtype'] ?  " = '".$data["subtype"]."' " : ' IS NULL ';
+                    }
 
-               $queryt  .= "  AND `glpi_planningexternalevents`.`users_id` = '" . $crit["users_id"] . "' "
-                           . $dbu->getEntitiesRestrictRequest("AND", "glpi_planningexternalevents");
+                    $queryt  .= "  AND `glpi_planningexternalevents`.`users_id` = '" . $crit["users_id"] . "' "
+                        . $dbu->getEntitiesRestrictRequest("AND", "glpi_planningexternalevents");
 
-               $resultt = $DB->query($queryt);
-               $numbert = $DB->numrows($resultt);
-               if ($numbert != "0") {
-                  while ($datat = $DB->fetchArray($resultt)) {
-                     $comment .= $datat["text"] . " (" . (self::TotalTpsPassesArrondis($datat["actiontime"] / $AllDay,$use_hour_on_cra)) . ")<br>";
-                  }
-               }
-               echo Search::showItem($output_type, nl2br(Glpi\RichText\RichText::getTextFromHtml($comment)), $num, $row_num);
-               $total_ouvres = self::TotalTpsPassesArrondis($data["total_actiontime"] / $AllDay,$use_hour_on_cra);
-               echo Search::showItem($output_type, Html::formatNumber($total_ouvres, false, 3), $num, $row_num);
-               echo Search::showItem($output_type, Html::formatNumber($percent) . "%", $num, $row_num);
-               echo Search::showEndLine($output_type);
+                    $resultt = $DB->query($queryt);
+                    $numbert = $DB->numrows($resultt);
+                    if ($numbert != "0") {
+                        while ($datat = $DB->fetchArray($resultt)) {
+                            $comment .= $datat["text"] . " (" . (self::TotalTpsPassesArrondis($datat["actiontime"] / $AllDay, $options)) . ")<br>";
+                        }
+                    }
+                    echo Search::showItem($output_type, nl2br(Glpi\RichText\RichText::getTextFromHtml($comment)), $num, $row_num);
+                    $total_ouvres = self::TotalTpsPassesArrondis($data["total_actiontime"] / $AllDay, $options);
+                    echo Search::showItem($output_type, Html::formatNumber($total_ouvres, false, 3), $num, $row_num);
+                    echo Search::showItem($output_type, Html::formatNumber($percent) . "%", $num, $row_num);
+                    echo Search::showEndLine($output_type);
+                }
+            } else {
+                foreach($actiontimeByCategories as $category => $data) {
+                    if ($data['total_actiontime'] > 0) {
+                        $percent = $data['total_actiontime'] * 100 / $total;
+                    } else {
+                        $percent = 0;
+                    }
+
+                    $row_num++;
+                    $num = 1;
+                    echo Search::showNewLine($output_type);
+                    echo Search::showItem($output_type, $data["category_name"], $num, $row_num);
+                    if ($opt->getUseSubcategory()) {
+                        echo Search::showItem($output_type, $data["subcategory_name"], $num, $row_num);
+                    }
+                    $comment = "";
+
+                    $numbert = count($data['events']);
+                    if ($numbert != "0") {
+                        foreach ($data['events'] as $datat) {
+                            $comment .= $datat["text"] . " (" . (self::TotalTpsPassesArrondis($datat["actiontime"] / $AllDay, $options)) . ")<br>";
+                        }
+                    }
+                    echo Search::showItem($output_type, nl2br(Glpi\RichText\RichText::getTextFromHtml($comment)), $num, $row_num);
+                    $total_ouvres = self::TotalTpsPassesArrondis($data["total_actiontime"] / $AllDay, $options);
+                    echo Search::showItem($output_type, Html::formatNumber($total_ouvres, false, 3), $num, $row_num);
+                    echo Search::showItem($output_type, Html::formatNumber($percent) . "%", $num, $row_num);
+                    echo Search::showEndLine($output_type);
+                }
             }
+
             echo Search::showFooter($output_type, PluginActivityPlanningExternalEvent::getTypeName(1));
          }
 
@@ -1146,54 +1373,91 @@ class PluginActivityReport extends CommonDBTM {
    /**
     * Repartition of the time
     *
-    * @param int      $time : time to add
-    * @param datetime $begin : begin date to add
+    * @param numeric  $time : time to add (in full day)
+    * @param string   $begin : begin date to add (format Y-m-d h:i:s)
     * @param array    $values : array of times
     * @param int      $type : holiday, work, part time, sickness
     * @param string   $activity : name of the activity
-    * @param array    $holiday : array of holidays
-    * @param bool     $real_hour : use real hour or constant hour
+    * @param array    $holidays : array of holidays
+    * @param array    $options : use real hour or constant hour
     *
     * @return array
     */
-   function timeRepartition($time, $begin, $values, $type, $activity, $holidays = [], $real_hour = false) {
-      if ($time > 1) {
-         $tot = $time * 100;
-         $add = 0;
+   function timeRepartition($time, $begin, $values, $type, $activity, $holidays = [], $options = []) {
+      $opt = [
+          'real_hour' => false,
+          'use_planning_activity_hours' => true,
+          'use_hours' => false
+      ];
+      foreach ($options as $key => $value) {
+          $opt[$key] = $value;
+      }
+       if ($time > 1) {
+         if ($opt['use_hours']) {
+             for ($i = 0; $i < $time; $i++) {
+                 $date_add = date('Y-m-d', strtotime($begin . ' + ' . $i . ' DAY'));
 
-         for ($i = 0; $i < $tot; $i = $i + 25) {
-            $mod = $i % 4;
+                 $h = date("H:i:s", strtotime($begin));
+                 if ($h < self::$AM_END) {
+                     $hour = self::getAmBegin();
+                 } else {
+                     $hour = self::$PM_BEGIN;
+                 }
 
-            if ($i != 0 && $mod == 0) {
-               $add++;
-            }
+                 if ($time >= ($i + 1)) {
+                     // more than one day remaining => add a full day to $date_add
+                     $toAdd = 1;
+                 } else {
+                     // add the remaining percentage to $date_add
+                     $toAdd = $time - $i;
+                 }
 
-            $date_add = date('Y-m-d', strtotime($begin . ' + ' . $add . ' DAY'));
+                 $values = self::setTimes(
+                     $toAdd,
+                     $opt['real_hour'] ? $h : $hour,
+                     $date_add,
+                     $values,
+                     $type,
+                     $activity,
+                     $holidays
+                 );
+             }
+         } else {
+             $tot = $time * 100;
+             $add = 0;
+             for ($i = 0; $i < $tot; $i = $i + 25) {
+                 $mod = $i % 4;
 
-            $h = date("H:i:s", strtotime($begin));
-            if ($h < self::$AM_END) {
-               $hour = self::getAmBegin();
-            } else {
-               $hour = self::$PM_BEGIN;
-            }
+                 if ($i != 0 && $mod == 0) {
+                     $add++;
+                 }
 
-            $values = self::setTimes(0.25, $real_hour ? $h : $hour, $date_add, $values, $type, $activity, $holidays);
+                 $date_add = date('Y-m-d', strtotime($begin . ' + ' . $add . ' DAY'));
+
+                 $h = date("H:i:s", strtotime($begin));
+                 if ($h < self::$AM_END) {
+                     $hour = self::getAmBegin();
+                 } else {
+                     $hour = self::$PM_BEGIN;
+                 }
+
+                 $values = self::setTimes(0.25, $opt['real_hour'] ? $h : $hour, $date_add, $values, $type, $activity, $holidays);
+             }
          }
-
       } else if ($time == 1) {
          $date_add = date('Y-m-d', strtotime($begin));
          $h        = date("H:i:s", strtotime($begin));
          if ($h > self::$AM_END) {
             $hour   = self::$PM_BEGIN;
-            $values = self::setTimes(0.5, $real_hour ? $h : $hour, $date_add, $values, $type, $activity, $holidays);
+            $values = self::setTimes(0.5, $opt['real_hour'] ? $h : $hour, $date_add, $values, $type, $activity, $holidays);
 
             $date_add = date('Y-m-d', strtotime($begin . ' + 1 DAY'));
             $hour     = self::getAmBegin();
-            $values   = self::setTimes(0.5, $real_hour ? $h : $hour, $date_add, $values, $type, $activity, $holidays);
+            $values   = self::setTimes(0.5, $opt['real_hour'] ? $h : $hour, $date_add, $values, $type, $activity, $holidays);
 
          } else {
             $hour   = self::getAmBegin();
-            $values = self::setTimes(1, $real_hour ? $h : $hour, $date_add, $values, $type, $activity, $holidays);
+            $values = self::setTimes(1, $opt['real_hour'] ? $h : $hour, $date_add, $values, $type, $activity, $holidays);
          }
 
       } else {
@@ -1205,7 +1469,7 @@ class PluginActivityReport extends CommonDBTM {
             $hour = self::$PM_BEGIN;
          }
 
-         $values = self::setTimes($time, $real_hour ? $h : $hour, $date_add, $values, $type, $activity, $holidays);
+         $values = self::setTimes($time, $opt['real_hour'] ? $h : $hour, $date_add, $values, $type, $activity, $holidays);
       }
 
       return $values;
@@ -1273,9 +1537,9 @@ class PluginActivityReport extends CommonDBTM {
    /**
     * Set times and check if day is not exceeding 1
     *
-    * @param int      $time : time to add
+    * @param int      $time : time to add (1 = full day)
     * @param int      $hour : begin hour
-    * @param datetime $date_add : Y-m-d begin date
+    * @param string   $date_add : Y-m-d begin date
     * @param array    $values : array of times
     * @param int      $type : holiday, work, part time, sickness
     * @param string   $activity : name of the activity
@@ -1338,7 +1602,7 @@ class PluginActivityReport extends CommonDBTM {
             if ($exeedingDay || $exeedingPM) {
                if ($countAll - $time < 0) {
                   $values[$type][$activity][$date_add . ' ' . self::getAmBegin()] = $time;
-                  $values                                                         = self::setTimes($countAll, self::getAmBegin(), date('Y-m-d', strtotime($date_add . ' + 1 DAY')), $values, $type, $activity, $holidays);
+                  $values = self::setTimes($countAll, self::getAmBegin(), date('Y-m-d', strtotime($date_add . ' + 1 DAY')), $values, $type, $activity, $holidays);
                } else {
                   $values = self::setTimes($time, self::getAmBegin(), date('Y-m-d', strtotime($date_add . ' + 1 DAY')), $values, $type, $activity, $holidays);
                }
@@ -1388,6 +1652,7 @@ class PluginActivityReport extends CommonDBTM {
        $opt = new PluginActivityOption();
        $opt->getFromDB(1);
        $use_hour_on_cra               = $opt->fields['use_hour_on_cra'];
+       $use_planning_activity_hours = $opt->fields['use_planning_activity_hours'];
       switch ($type) {
          case self::$SICKNESS:
          case self::$PART_TIME:
@@ -1433,9 +1698,10 @@ class PluginActivityReport extends CommonDBTM {
 
             foreach ($times as $begin => $data) {
                // Use round values
-
-               $data['values'] = self::TotalTpsPassesArrondis($data['values'],$use_hour_on_cra);
-
+               $data['values'] = self::TotalTpsPassesArrondis($data['values'], [
+                   'arrondir_heure' => $use_hour_on_cra,
+                   'use_planning_activity_hours' => $use_planning_activity_hours
+               ]);
 
                // Get css
                $class = "class='center'";
@@ -1461,9 +1727,6 @@ class PluginActivityReport extends CommonDBTM {
                   $tot_act[$key] = $data['values'];
                }
             }
-             $opt = new PluginActivityOption();
-             $opt->getFromDB(1);
-             $use_hour_on_cra               = $opt->fields['use_hour_on_cra'];
             // Total value depass
             if (self::isIncorrectValue($tot_act[$key]) > 0 && !$use_hour_on_cra) {
                $class = " class='center red'";
@@ -1474,6 +1737,7 @@ class PluginActivityReport extends CommonDBTM {
          }
 
       } else {
+          $num = 1;
          $holiday = new PluginActivityHoliday();
          $holiday->setHolidays();
          $count = PluginActivityPlanningExternalEvent::getNbDays($crit["begin"], $crit["end"]);
@@ -1551,7 +1815,7 @@ class PluginActivityReport extends CommonDBTM {
       $output = $value;
        $opt = new PluginActivityOption();
        $opt->getFromDB(1);
-       $use_hour_on_cra               = $opt->fields['use_hour_on_cra'];
+       $use_hour_on_cra = $opt->fields['use_hour_on_cra'];
       if (!empty($value) && isset($this->item_search[$activity])) {
          $rand                    = mt_rand();
          $opt                     = [];
@@ -1617,7 +1881,7 @@ class PluginActivityReport extends CommonDBTM {
       $types = [self::$WORK, self::$HOLIDAY/*, self::$PART_TIME,  self::$SICKNESS*/];
        $opt = new PluginActivityOption();
        $opt->getFromDB(1);
-       $use_hour_on_cra               = $opt->fields['use_hour_on_cra'];
+       $use_hour_on_cra = $opt->fields['use_hour_on_cra'];
       $time_total = [];
       for ($y = 0; $y < $countAllDays; $y++) {
          $time_total[$y] = ['value' => 0, 'style' => ''];
@@ -1628,7 +1892,10 @@ class PluginActivityReport extends CommonDBTM {
             $i = 0;
             foreach ($times as $begin => $data) {
                // Use round values
-               $data['values'] = self::TotalTpsPassesArrondis($data['values'],$use_hour_on_cra);
+               $data['values'] = self::TotalTpsPassesArrondis($data['values'], [
+                       'arrondir_heure' => $use_hour_on_cra,
+                   'use_planning_activity_hours' => $opt->fields['use_planning_activity_hours']
+               ]);
 
                $time_total[$i]['value'] = $time_total[$i]['value'] + $data['values'];
                if (isset($data['options']['weekend'])) {
@@ -1728,17 +1995,29 @@ class PluginActivityReport extends CommonDBTM {
     * Permet d'arrondir le total des temps passés avec les tranches définies en constantes.
     * Peut étre améliorée afin de boucler (while) sur les tranches pour ne pas avoir une suite de if, else if.
     *
-    * @param Total é arrondir.
+    * @param $a_arrondir mixed Total à arrondir
+    * @param $options array clés arrondir_heure
     *
     * @return Le total arrondi selon la régle de gestion.
     */
-   static function TotalTpsPassesArrondis($a_arrondir,$arrondir_heure = 1) {
-
+   static function TotalTpsPassesArrondis($a_arrondir,$options = []) {
+       $opt = [
+           'arrondir_heure' => 1,
+           'use_planning_activity_hours' => 1
+       ];
+       foreach ($options as $key => $value) {
+           $opt[$key] = $value;
+       }
       $tranches_seuil   = 0.002;
-      if(!$arrondir_heure) {
+      if(!$opt['arrondir_heure']) {
           $tranches_arrondi = [0, 0.25, 0.5, 0.75, 1];
       } else {
-          $allday = self::getAllDay();
+          if ($opt['use_planning_activity_hours']) {
+              $allday = self::getAllDay();
+          } else {
+              $allday = 3600*24;
+          }
+
           $hour = ((float) $a_arrondir)* (float)$allday;
           $a_arrondir = $hour / 3600;
           $tranches_arrondi = [0,0.25,0.5,0.75,1];
@@ -1800,5 +2079,111 @@ class PluginActivityReport extends CommonDBTM {
       header("Content-type: " . $doc->fields['mime']);
 
       readfile($file) or die ("Error opening file $file");
+   }
+
+    /**
+     * Transform a string to uppercase, take its encoding into account if possible
+     * @param $string
+     * @return string
+     */
+   static function strtoupper_auto($string) {
+       if(extension_loaded('mbstring')) {
+           $encoding = mb_detect_encoding($string, mb_detect_order(), true);
+           if ($encoding === false) {
+               $encoding = 'UTF-8';
+           }
+           return mb_strtoupper($string, $encoding);
+       }
+       return strtoupper($string);
+   }
+
+    /**
+     * Add an event/task to $values when building the CRA
+     * @param array $values
+     * @param DateTime $begin beginning of $event
+     * @param DateTime $end end of $event
+     * @param array $crit $crit from showCRA
+     * @param array $event array representing the event, must have keys : begin (value string, "Y-m-d h:i:s"), end (value string, , "Y-m-d h:i:s"), actiontime (int, duration in seconds)
+     * @param int $part see const from the class
+     * @param string $title
+     * @param string $itemtype of $event
+     * @param int $events_id tickets_id if $event is ticket task, id if $event is planning external event
+     * @return void
+     * @throws Exception
+     */
+   private function addEventToValues(array &$values, DateTime $begin, DateTime $end, array $crit, array $event, int $part, string $title, string $itemtype, int $events_id) {
+       $dateBegin = $begin->format('Y-m-d');
+       $dateEnd = $end->format('Y-m-d');
+       if ($dateBegin != $dateEnd) {
+           $loopDate = $dateBegin;
+           while ($loopDate <= $dateEnd) {
+               $dateTimeLoop =  new DateTime($loopDate);
+               $dateTimeLoop->modify('+1 day');
+               if ($loopDate . ' 00:00:00' < $crit['end']) { // task between 2 months, exclude the part outside of the current month
+                   $actionTime = self::getActiontimeOnPeriod(
+                       $loopDate.' 00:00:00',
+                       $dateTimeLoop->format('Y-m-d').' 00:00:00',
+                       $event
+                   );
+                   $dayLength = round($actionTime / (60 * 60 * 24), 4);
+                   if (isset($values[$part][$title][$loopDate . ' 00:00:00'])) {
+                       $values[$part][$title][$loopDate . ' 00:00:00'] += $dayLength;
+                   } else {
+                       $values[$part][$title][$loopDate . ' 00:00:00'] = $dayLength;
+                   }
+
+                   $this->item_search[$title][$itemtype][$loopDate][] = $events_id;
+               }
+               // increment date
+               $loopDate = $dateTimeLoop->format('Y-m-d');
+           }
+       } else {
+           $dayLength = round($event['actiontime'] / (60 * 60 * 24), 4);
+           if (isset($values[$part][$title][$dateBegin . ' 00:00:00'])) {
+               $values[$part][$title][$dateBegin . ' 00:00:00'] += $dayLength;
+           } else {
+               $values[$part][$title][$dateBegin . ' 00:00:00'] = $dayLength;
+           }
+           $this->item_search[$title][$itemtype][$dateBegin][] = $events_id;
+       }
+   }
+
+    /**
+     * @param string $begin date format Y-m-d h:i:s
+     * @param string $end date format Y-m-d h:i:s
+     * @param array $event must have keys : begin (value string, same format as $begin), end (value string, same format as $end), actiontime (int, duration in seconds)
+     * @return int duration of event on the given period (in seconds)
+     */
+   public static function getActiontimeOnPeriod($begin, $end, $event) {
+       if (!isset($event['begin'])) { // doesn't have begin / end (like not planned ticket tasks)
+           $event['end'] = $event['date'];
+           $eventEnd = new DateTime($event['date']);
+           $event['begin'] = $eventEnd->modify('-' . $event['actiontime'] . ' seconds')
+               ->format('Y-m-d H:i:s');
+       }
+
+       if (!isset($event['actiontime'])) { // doesn't have actiontime (like planning external event)
+           $eventBegin = new DateTime($event['begin']);
+           $eventEnd = new DateTime($event['end']);
+           $event['actiontime'] = $eventEnd->getTimestamp() - $eventBegin->getTimestamp();
+       }
+
+       if ($event['begin'] >= $begin && $event['end'] <= $end) { // entirety of the event happen on the period
+           return $event['actiontime'];
+       }
+
+       $duration = $event['actiontime'];
+       if ($event['begin'] < $begin) { // subtract time from before the period to the total
+           $periodBegin = new DateTime($begin);
+           $eventBegin = new DateTime($event['begin']);
+           $duration -= $periodBegin->getTimestamp() - $eventBegin->getTimeStamp();
+       }
+       if ($event['end'] > $end) { // subtract time from after the period to the total
+           $periodEnd = new DateTime($end);
+           $eventEnd = new DateTime($event['end']);
+           $duration -= $eventEnd->getTimeStamp() - $periodEnd->getTimestamp();
+       }
+
+       return $duration;
    }
 }

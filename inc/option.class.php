@@ -206,9 +206,23 @@ class PluginActivityOption extends CommonDBTM {
        echo "</tr>";
 
        echo "<tr class='tab_bg_1'>";
+       echo "<td>".__("Use the planning activity hours to limit hours per day on the CRA", 'activity')."</td>";
+       echo "<td>";
+       Dropdown::showYesNo('use_planning_activity_hours', $this->fields['use_planning_activity_hours']);
+       echo "</td>";
+       echo "</tr>";
+
+       echo "<tr class='tab_bg_1'>";
        echo "<td>".__('Use event subcategories', 'activity')."</td>";
        echo "<td>";
        Dropdown::showYesNo('use_planningeventsubcategories', $this->fields['use_planningeventsubcategories']);
+       echo "</td>";
+       echo "</tr>";
+
+       echo "<tr class='tab_bg_1'>";
+       echo "<td>".__('Show event entity on CRA', 'activity')."</td>";
+       echo "<td>";
+       Dropdown::showYesNo('show_planningevents_entity', $this->fields['show_planningevents_entity']);
        echo "</td>";
        echo "</tr>";
 

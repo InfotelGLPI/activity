@@ -37,7 +37,7 @@ function plugin_activity_install()
     // version 3.0.0
     if (!$DB->tableExists("glpi_plugin_activity_holidays")) {
         $install = true;
-        $DB->runFile(PLUGIN_ACTIVITY_DIR . "/install/sql/empty-3.1.4.sql");
+        $DB->runFile(PLUGIN_ACTIVITY_DIR . "/install/sql/empty-3.1.6.sql");
     }
 
     //TODO Update ?
@@ -161,6 +161,11 @@ function plugin_activity_install()
     // 3.1.4
     if (!$DB->tableExists('glpi_plugin_activity_planningeventsubcategories')) {
         $DB->runFile(PLUGIN_ACTIVITY_DIR . "/install/sql/update-3.1.4.sql");
+    }
+
+    // 3.1.6
+    if (!$DB->fieldExists("glpi_plugin_activity_options", "show_planningevents_entity")) {
+        $DB->runFile(PLUGIN_ACTIVITY_DIR . "/install/sql/update-3.1.6.sql");
     }
 
     PluginActivityProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
