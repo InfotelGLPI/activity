@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-25 12:56+0000\n"
+"POT-Creation-Date: 2025-02-14 09:11+0000\n"
 "PO-Revision-Date: 2020-11-02 13:59+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2025\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/114456/fr_FR/)\n"
@@ -24,7 +24,7 @@ msgstr ""
 #: setup.php:164 ajax/loadscripts.php:47 front/menu.php:46
 #: inc/config.class.php:38 inc/menu.class.php:32 inc/option.class.php:38
 #: inc/preference.class.php:57 inc/profile.class.php:45
-#: inc/profile.class.php:142 inc/report.class.php:875
+#: inc/profile.class.php:142 inc/report.class.php:1070
 msgid "Activity"
 msgid_plural "Activities"
 msgstr[0] "Activité quotidienne"
@@ -107,19 +107,19 @@ msgid "Project / activity"
 msgstr "Projet / Activité"
 
 #: inc/crapdf.class.php:462 inc/holidaytype.class.php:89
-#: inc/report.class.php:1534
+#: inc/report.class.php:1798
 msgid "Part time"
 msgstr "Temps partiel"
 
-#: inc/crapdf.class.php:463 inc/report.class.php:1532
+#: inc/crapdf.class.php:463 inc/report.class.php:1796
 msgid "Holidays or exceptional absences"
 msgstr "Congés ou absences exceptionnelles"
 
-#: inc/crapdf.class.php:464 inc/report.class.php:1536
+#: inc/crapdf.class.php:464 inc/report.class.php:1800
 msgid "Sickness or maternity"
 msgstr "Maladie ou maternité"
 
-#: inc/crapdf.class.php:493 inc/report.class.php:994
+#: inc/crapdf.class.php:493 inc/report.class.php:1189
 msgid "Absences"
 msgstr "Absences"
 
@@ -173,7 +173,9 @@ msgid "All day"
 msgstr "Jour entier"
 
 #: inc/dashboard.class.php:443 inc/dashboard.class.php:476
-#: inc/report.class.php:582 inc/report.class.php:627 inc/report.class.php:683
+#: inc/report.class.php:666 inc/report.class.php:676 inc/report.class.php:730
+#: inc/report.class.php:740 inc/report.class.php:796 inc/report.class.php:806
+#: inc/report.class.php:848
 msgid "No defined type"
 msgstr "Pas de type défini"
 
@@ -587,8 +589,18 @@ msgid "Use hour on cra and not half day"
 msgstr "Utiliser les heures sur le CRA et non des jours / hommes"
 
 #: inc/option.class.php:209
+msgid "Use the planning activity hours to limit hours per day on the CRA"
+msgstr ""
+"Utilisez les heures d'activité du planning pour limiter les heures par jour "
+"sur le CRA"
+
+#: inc/option.class.php:216
 msgid "Use event subcategories"
 msgstr "Utiliser les sous-catégories d'événements"
+
+#: inc/option.class.php:223
+msgid "Show event entity on CRA"
+msgstr "Afficher l'entité de l'événement sur le CRA"
 
 #: inc/planningeventsubcategory.class.php:44
 msgid "Event subcategory"
@@ -717,23 +729,23 @@ msgstr "Mois suivant"
 msgid "Previous month"
 msgstr "Mois précédent"
 
-#: inc/report.class.php:707
+#: inc/report.class.php:873 inc/report.class.php:890
 msgid "Unbilled"
 msgstr "Non facturé"
 
-#: inc/report.class.php:874
+#: inc/report.class.php:1069
 msgid "Project"
 msgstr "Projet"
 
-#: inc/report.class.php:1061
+#: inc/report.class.php:1256
 msgid "Activities detail"
 msgstr "Détail des activités"
 
-#: inc/report.class.php:1071
+#: inc/report.class.php:1266
 msgid "Percent"
 msgstr "Pourcentage"
 
-#: inc/report.class.php:1130
+#: inc/report.class.php:1357
 msgid "No activity found"
 msgstr "Aucune activité trouvée"
 
