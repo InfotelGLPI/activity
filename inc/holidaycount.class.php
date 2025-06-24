@@ -248,7 +248,7 @@ class PluginActivityHolidaycount extends CommonDBTM {
                                  AND `glpi_plugin_activity_holidayperiods`.`begin` >= '" . $old_annee . "-06-01' 
                                  AND `glpi_plugin_activity_holidayperiods`.`end` <= '" . $next_annee . "-05-31'";
 
-      $result = $DB->query($query);
+      $result = $DB->doQuery($query);
       $number = $DB->numrows($result);
 
       if ($number) {
@@ -280,7 +280,7 @@ class PluginActivityHolidaycount extends CommonDBTM {
                FROM `glpi_plugin_activity_holidayperiods`
                WHERE NOT `archived`";
 
-      $result = $DB->query($query);
+      $result = $DB->doQuery($query);
       $number = $DB->numrows($result);
 
       if ($number) {
@@ -314,7 +314,7 @@ class PluginActivityHolidaycount extends CommonDBTM {
          $query .= "AND `glpi_plugin_activity_holidaycounts`.`plugin_activity_holidayperiods_id` IN (" . implode(',', $period_id) . ")";
       }
 
-      $result = $DB->query($query);
+      $result = $DB->doQuery($query);
       $number = $DB->numrows($result);
 
       if ($number) {

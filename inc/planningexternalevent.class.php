@@ -242,7 +242,7 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
             echo __('Use in CRA', 'activity');
             echo "</td>";
             echo "<td>";
-//               echo "<div id='is_oncra_" . $item->getID() . "' class='fa-label'>";
+//               echo "<div id='is_oncra_" . $item->getID() . "' class='ti ti-label'>";
             Dropdown::showYesNo(
                 'is_oncra',
                 (isset($self->fields['id']) && $self->fields['id']) > 0 ? $self->fields['is_oncra'] : $is_cra_default,

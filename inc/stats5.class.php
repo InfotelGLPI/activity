@@ -55,7 +55,7 @@ class PluginActivityStats5 implements PluginActivityInterface {
                         ."WHERE `glpi_groups_users`.`groups_id` = ".$params['groups_id']." "
                         ." GROUP BY `glpi_groups_users`.`groups_id`";
 
-      $result_gu = $DB->fetchArray($DB->query($query_group_member));
+      $result_gu = $DB->fetchArray($DB->doQuery($query_group_member));
       $techlist = explode(',', $result_gu['listuser']);
 
       $nb_ticket = [];
@@ -106,7 +106,7 @@ class PluginActivityStats5 implements PluginActivityInterface {
                     . "OR ((`glpi_tickets`.`date` <= '$month_end_datetime') AND (`glpi_tickets`.`closedate` > ADDDATE('$month_end_date 00:00:00' , INTERVAL 1 DAY)))"
                     . ")"
                     .$entitiesRestrict['glpi_tickets'] ;
-            $result_t = $DB->fetchArray($DB->query($querym_t));
+            $result_t = $DB->fetchArray($DB->doQuery($querym_t));
             if(isset($result_t['count'])) {
                $nb_ticket[] = array($key,$result_t['count']);
                if($result_t['count'] > $params['maxyaxis']){
@@ -118,7 +118,7 @@ class PluginActivityStats5 implements PluginActivityInterface {
          if (isset($params['nb_ticket']) && $params['nb_ticket'] == 1) {
             $querym_t = "SELECT SUM(`nbstocktickets`) as count FROM glpi_plugin_mydashboard_stocktickets "
                       . "WHERE date = '$month_end_date' ".$entitiesRestrict['glpi_plugin_mydashboard_stocktickets'];
-            $result_t = $DB->fetchArray($DB->query($querym_t));
+            $result_t = $DB->fetchArray($DB->doQuery($querym_t));
             if (isset($result_t['count'])) {
                $nb_ticket[] = [$key, $result_t['count']];
                if ($result_t['count'] > $params['maxyaxis']) {
@@ -134,7 +134,7 @@ class PluginActivityStats5 implements PluginActivityInterface {
                              OR ((`glpi_tickets`.`date` <= '$month_end_date 23:59:59')
                              AND (`glpi_tickets`.`solvedate` > ADDDATE('$month_end_date 00:00:00' , INTERVAL 1 DAY))))";
 
-               $result_t2 = $DB->fetchArray($DB->query($querym_t2));
+               $result_t2 = $DB->fetchArray($DB->doQuery($querym_t2));
                if (isset($result_t2['count'])) {
                   $nb_ticket[] = [$key, $result_t2['count']];
 
@@ -165,7 +165,7 @@ class PluginActivityStats5 implements PluginActivityInterface {
                            ."AND `glpi_plugin_activity_activities`.`plugin_activity_activitytypes_id` IN (11) 
                               ORDER BY name";
 
-               $result_at_q = $DB->query($querym_at);
+               $result_at_q = $DB->doQuery($querym_at);
 
                while ($data = $DB->fetchAssoc($result_at_q)) {
                   $tot_time[$key] += (PluginActivityReport::TotalTpsPassesArrondis($data['actiontime']/3600/8))/$nb_worked_days;
@@ -199,7 +199,7 @@ class PluginActivityStats5 implements PluginActivityInterface {
                                  AND `glpi_tickettasks`.`actiontime` != 0 AND `glpi_plugin_activity_tickettasks`.`is_oncra` = 1 
                               GROUP BY DATE(`glpi_tickettasks`.`date`);
                               ";
-               $result_ai_q = $DB->query($querym_ai);
+               $result_ai_q = $DB->doQuery($querym_ai);
                while ($data = $DB->fetchAssoc($result_ai_q)) {
                   $tot_time/*[$techid]*/[$key] += (PluginActivityReport::TotalTpsPassesArrondis($data['actiontime_date']/3600/8))/$nb_worked_days;
                }

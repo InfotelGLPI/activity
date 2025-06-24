@@ -29,6 +29,8 @@ include ('../../../inc/includes.php');
 
 Session::checkLoginUser();
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
+
 if (Session::getCurrentInterface() == 'central') {
    Html::header(PluginActivityPlanningExternalEvent::getTypeName(2), '', "tools", "pluginactivitymenu");
 } else {
@@ -63,7 +65,7 @@ if ($canholiday
 }
 echo "</tr></table>";
 if (!$can && !$canholiday  && !$canvalidateholiday) {
-   Html::displayRightError();
+    throw new AccessDeniedHttpException();
 }
 
 if (Session::getCurrentInterface() == 'central') {

@@ -58,19 +58,23 @@ class PluginActivityHoliday extends CommonDBTM {
       return "ti ti-calendar-event";
    }
 
-   static function canView() {
+   static function canView(): bool
+   {
       return Session::haveRight('plugin_activity_can_requestholiday', 1);
    }
 
-   function canViewItem() {
+   function canViewItem(): bool
+   {
       return Session::haveRight('plugin_activity_can_requestholiday', 1);
    }
 
-   static function canCreate() {
+   static function canCreate(): bool
+   {
       return Session::haveRight('plugin_activity_can_requestholiday', 1);
    }
 
-   function canCreateItem() {
+   function canCreateItem(): bool
+   {
       return Session::haveRight('plugin_activity_can_requestholiday', 1);
    }
 
@@ -1543,7 +1547,7 @@ class PluginActivityHoliday extends CommonDBTM {
 
          echo "<ul style='list-style: none' >";
          echo "<li style='margin-left:16px'><a href='$url' target='_blank' style='cursor:pointer;'>";
-         echo "<i class='ti ti-file fa-2x'></i>&nbsp;" . __('Generate TXT file for this holiday', 'activity');
+         echo "<i style='font-size: 2em;' class='ti ti-file'></i>&nbsp;" . __('Generate TXT file for this holiday', 'activity');
          echo "</a></li>";
 
          $used_mail_for_holidays = "";
@@ -1558,10 +1562,10 @@ class PluginActivityHoliday extends CommonDBTM {
          //            echo "&Body=" . $this->getBodyMail($dateBegin, date("d/m/Y", strtotime($holiday->fields['begin'])), $userName, $approverFullname);
          //
          //            echo "'>";
-         //            echo "<i class='ti ti-mail fa-2x'></i>&nbsp;" . __('Generate mail for this holiday', 'activity');
+         //            echo "<i class='ti ti-mail'></i>&nbsp;" . __('Generate mail for this holiday', 'activity');
          //            echo "</a></li>";
          //         }
-         echo "<li style='margin-left:16px;'><a href ='javascript:send()' id='send'><i class='ti ti-mail fa-2x'></i>&nbsp;" . __('Send the mail for this holiday', 'activity') . "</a>";
+         echo "<li style='margin-left:16px;'><a href ='javascript:send()' id='send'><i style='font-size: 2em;' class='ti ti-mail'></i>&nbsp;" . __('Send the mail for this holiday', 'activity') . "</a>";
 
          echo "</li>";
          echo Html::scriptBlock("
@@ -1700,7 +1704,7 @@ class PluginActivityHoliday extends CommonDBTM {
       $query .= " AND '$begin' < `end` AND '$end' > `begin`
                   ORDER BY `begin` ";
 
-      $result = $DB->query($query);
+      $result = $DB->doQuery($query);
 
       if ($DB->numrows($result) > 0) {
 
@@ -1723,7 +1727,7 @@ class PluginActivityHoliday extends CommonDBTM {
             } else {
                $interv[$key]["end"] = $data["end"];
             }
-            $interv[$key]["name"]     = Glpi\Toolbox\Sanitizer::unsanitize(Html::resume_text($data["name"], $CFG_GLPI["cut"])); // name is re-encoded on JS side
+            $interv[$key]["name"]     = Html::resume_text($data["name"], $CFG_GLPI["cut"]); // name is re-encoded on JS side
             $interv[$key]["content"]  = Glpi\RichText\RichText::getSafeHtml(Html::resume_text($data["comment"],$CFG_GLPI["cut"]));
             $interv[$key]["type"]    = $data["type"];
             $interv[$key]["status"]  = $data["global_validation"];
@@ -1855,7 +1859,7 @@ class PluginActivityHoliday extends CommonDBTM {
 
       //"
       //                .getEntitiesRestrictRequest("AND", "glpi_plugin_activity_holidays")."
-      $result = $DB->query($query);
+      $result = $DB->doQuery($query);
       if ($DB->numrows($result)) {
          while ($data = $DB->fetchArray($result)) {
             $in_holiday[] = $data['realname'] . ' ' . $data['firstname'];
@@ -1962,7 +1966,7 @@ class PluginActivityHoliday extends CommonDBTM {
                            ON (`glpi_calendars_holidays`.`holidays_id` = `glpi_holidays`.`id`)
                       WHERE `glpi_calendars_holidays`.`calendars_id` = '" . $calendars_id . "'";
 
-         if ($result = $DB->query($query)) {
+         if ($result = $DB->doQuery($query)) {
             while ($data = $DB->fetchArray($result)) {
                $holidays[] = ['begin'        => $data['begin_date'],
                               'end'          => $data['end_date'],
@@ -2252,7 +2256,7 @@ class PluginActivityHoliday extends CommonDBTM {
                   . "`glpi_plugin_activity_holidays`.`plugin_activity_holidayperiods_id` = '" . $period['id'] . "' "
                   . "AND `is_holiday` = 1 AND `is_holiday_counter` = 1";
 
-         $result = $DB->query($query);
+         $result = $DB->doQuery($query);
 
          if ($DB->numrows($result)) {
             while ($data = $DB->fetchArray($result)) {
@@ -2304,7 +2308,7 @@ class PluginActivityHoliday extends CommonDBTM {
                    WHERE `glpi_plugin_activity_holidays`.`global_validation` = $statut  
                    AND `glpi_plugin_activity_holidays`.`users_id` = " . $users_id . " 
                    AND `glpi_plugin_activity_holidayperiods`.`id` = '" . $period['id'] . "'";
-         $result = $DB->query($query);
+         $result = $DB->doQuery($query);
 
          if ($DB->numrows($result)) {
             while ($data = $DB->fetchArray($result)) {
@@ -2418,7 +2422,7 @@ class PluginActivityHoliday extends CommonDBTM {
                AND `glpi_plugin_activity_holidays`.`global_validation` IN (" . implode(",", $states) . ")
                AND `plugin_activity_holidayperiods_id` = $holiday_period_id";
 
-      $result     = $DB->query($query);
+      $result     = $DB->doQuery($query);
       $actiontime = $DB->result($result, 0, "actiontime");
 
       $AllDay = PluginActivityReport::getAllDay();

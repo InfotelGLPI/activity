@@ -25,12 +25,14 @@
  --------------------------------------------------------------------------
 */
 
+use Glpi\Exception\Http\BadRequestHttpException;
+
 include ('../../../inc/includes.php');
 
 Session::checkLoginUser();
 
 if (!isset($_GET["id"]) && !(isset($_POST['id']))) {
-   Html::displayErrorAndDie(__('Item not found'));
+    throw new BadRequestHttpException(__('Item not found'));
 } else {
    if (isset($_GET['id'])) {
       $ID = $_GET["id"];

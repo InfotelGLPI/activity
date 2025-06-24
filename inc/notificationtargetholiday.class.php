@@ -65,14 +65,29 @@ class PluginActivityNotificationTargetHoliday extends NotificationTarget {
    function getUserAddress() {
       global $DB;
 
-      $query = " SELECT DISTINCT `glpi_useremails`.`email`
-                  FROM `glpi_plugin_activity_holidays`,`glpi_useremails`
-                  WHERE `glpi_useremails`.`users_id` = `glpi_plugin_activity_holidays`.`users_id` 
-                  AND `glpi_useremails`.`is_default` = 1
-                  AND  `glpi_plugin_activity_holidays`.`id` ='" . $this->obj->fields["id"] . "'";
+       $iterator = $DB->request([
+           'SELECT'    => [
+               'glpi_useremails.email',
+           ],
+           'DISTINCT'        => true,
+           'FROM'      => 'glpi_plugin_activity_holidays',
+           'LEFT JOIN'       => [
+               'glpi_useremails' => [
+                   'ON' => [
+                       'glpi_plugin_activity_holidays' => 'users_id',
+                       'glpi_useremails'          => 'users_id'
+                   ]
+               ]
+           ],
+           'WHERE'     => [
+               'glpi_useremails.is_default'  => 1,
+               'glpi_plugin_activity_holidays.id'  => $this->obj->fields["id"]
+           ],
+       ]);
 
-      $result       = $DB->query($query);
-      $res['email'] = $DB->result($result, 0, 'email');
+       foreach ($iterator as $data) {
+           $res['email'] = $data['email'];
+       }
 
       $this->addToRecipientsList($res);
    }
@@ -80,12 +95,26 @@ class PluginActivityNotificationTargetHoliday extends NotificationTarget {
    function getValidatorAddress() {
       global $DB;
 
-      $query = "SELECT DISTINCT `glpi_users`.`id` AS id
-                FROM `glpi_plugin_activity_holidayvalidations`
-                LEFT JOIN `glpi_users` ON (`glpi_users`.`id` = `glpi_plugin_activity_holidayvalidations`.`users_id_validate`)
-                WHERE `glpi_plugin_activity_holidayvalidations`.`plugin_activity_holidays_id` = '" . $this->obj->fields["id"] . "'";
+       $iterator = $DB->request([
+           'SELECT'    => [
+               'glpi_users.id',
+           ],
+           'DISTINCT'        => true,
+           'FROM'      => 'glpi_plugin_activity_holidayvalidations',
+           'LEFT JOIN'       => [
+               'glpi_users' => [
+                   'ON' => [
+                       'glpi_plugin_activity_holidayvalidations' => 'users_id_validate',
+                       'glpi_users'          => 'id'
+                   ]
+               ]
+           ],
+           'WHERE'     => [
+               'glpi_plugin_activity_holidayvalidations.plugin_activity_holidays_id'  => $this->obj->fields["id"]
+           ],
+       ]);
 
-      foreach ($DB->request($query) as $data) {
+       foreach ($iterator as $data) {
          $data['email'] = UserEmail::getDefaultForUser($data['id']);
          $this->addToRecipientsList($data);
       }

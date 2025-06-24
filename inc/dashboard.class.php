@@ -320,7 +320,7 @@ class PluginActivityDashboard extends CommonGLPI
                             __('Total duration')];
                 $widget->setTabNames($headers);
 
-                $result      = $DB->query($query);
+                $result      = $DB->doQuery($query);
                 $nb          = $DB->numrows($result);
                 $link_ticket = Toolbox::getItemTypeFormURL("Ticket");
 
@@ -374,7 +374,7 @@ class PluginActivityDashboard extends CommonGLPI
 
         # 1.1 Plugin Activity
         $query  = PluginActivityPlanningExternalEvent::queryAllExternalEvents($crit);
-        $result = $DB->query($query);
+        $result = $DB->doQuery($query);
         $number = $DB->numrows($result);
         $total  = 0;
 
@@ -385,7 +385,7 @@ class PluginActivityDashboard extends CommonGLPI
         $query1.= " WHERE (`begin` >= '".$crit["begin"]."' 
                            AND `begin` <= '".$crit["end"]."')
                               AND `users_id` = '".$crit["users_id"]."'";
-        if ($result1 = $DB->query($query1)) {
+        if ($result1 = $DB->doQuery($query1)) {
             $data1 = $DB->fetchArray($result1);
             $total = $data1["total"];
         }
@@ -400,13 +400,13 @@ class PluginActivityDashboard extends CommonGLPI
             $crit["documentcategories_id"] = $config->fields["documentcategories_id"];
 
             $manage  = PluginActivityPlanningExternalEvent::queryManageentities($crit);
-            $resultm = $DB->query($manage);
+            $resultm = $DB->doQuery($manage);
             $numberm = $DB->numrows($resultm);
         }
 
         # 1.3 Tickets
         $tickets  = PluginActivityPlanningExternalEvent::queryTickets($crit);
-        $resultt1 = $DB->query($tickets);
+        $resultt1 = $DB->doQuery($tickets);
         $numbert  = $DB->numrows($resultt1);
 
         # 1.1 Plugin holiday
@@ -415,7 +415,7 @@ class PluginActivityDashboard extends CommonGLPI
         $queryh  .= " WHERE (`begin` >= '" . $crit["begin"] . "' 
                            AND `begin` <= '" . $crit["end"] . "')
                         AND `users_id` = '" . $crit["users_id"] . "'";
-        $resulth = $DB->query($queryh);
+        $resulth = $DB->doQuery($queryh);
         $numberh = $DB->numrows($resulth);
 
         $pie = [];
@@ -468,7 +468,7 @@ class PluginActivityDashboard extends CommonGLPI
                 $queryh = PluginActivityHoliday::queryUserHolidays($opt);
 
 
-                $resulth = $DB->query($queryh);
+                $resulth = $DB->doQuery($queryh);
                 if ($DB->numrows($resulth)) {
                     $tmp = [];
                     while ($datah = $DB->fetchArray($resulth)) {
@@ -546,7 +546,7 @@ class PluginActivityDashboard extends CommonGLPI
                                        AND `glpi_plugin_activity_tickettasks`.`is_oncra` = 1
                                        AND `glpi_tickettasks`.`users_id_tech` = '" . $crit["users_id"] . "'";
 
-                        $resultTask = $DB->query($queryTask);
+                        $resultTask = $DB->doQuery($queryTask);
                         $numberTask = $DB->numrows($resultTask);
                         if ($numberTask != "0") {
                             while ($dataTask = $DB->fetchArray($resultTask)) {
@@ -585,7 +585,7 @@ class PluginActivityDashboard extends CommonGLPI
         $queryMinDate = "SELECT MIN(`date`)
                   FROM `glpi_tickettasks`";
 
-        if ($resultMinDate = $DB->query($queryMinDate)) {
+        if ($resultMinDate = $DB->doQuery($queryMinDate)) {
             if ($DB->numrows($resultMinDate)) {
                 $MinDate = ($DB->result($resultMinDate, 0, 0));
             }
@@ -594,7 +594,7 @@ class PluginActivityDashboard extends CommonGLPI
         $queryMinBeginDate = "SELECT MIN(`begin`)
                   FROM `glpi_tickettasks`";
 
-        if ($resultMinBeginDate = $DB->query($queryMinBeginDate)) {
+        if ($resultMinBeginDate = $DB->doQuery($queryMinBeginDate)) {
             if ($DB->numrows($resultMinBeginDate)) {
                 $MinBeginDate = ($DB->result($resultMinBeginDate, 0, 0));
             }
@@ -623,7 +623,7 @@ class PluginActivityDashboard extends CommonGLPI
         $allActivities = $dbu->getAllDataFromTable($activity->getTable());
 
         $query  = PluginActivityPlanningExternalEvent::queryUserExternalEvents($crit);
-        $result = $DB->query($query);
+        $result = $DB->doQuery($query);
 
         $number = $DB->numrows($result);
         $values = [];
@@ -681,7 +681,7 @@ class PluginActivityDashboard extends CommonGLPI
         // HOLIDAYS
         $crit['global_validation'] = PluginActivityCommonValidation::ACCEPTED;
         $queryh                    = PluginActivityHoliday::queryUserHolidays($crit);
-        $resulth                   = $DB->query($queryh);
+        $resulth                   = $DB->doQuery($queryh);
         $numberh                   = $DB->numrows($resulth);
 
         $values       = [];
@@ -731,7 +731,7 @@ class PluginActivityDashboard extends CommonGLPI
 
         // TICKETS
         $tickets = PluginActivityPlanningExternalEvent::queryTickets($crit);
-        $resultt = $DB->query($tickets);
+        $resultt = $DB->doQuery($tickets);
         $numbert = $DB->numrows($resultt);
 
         if ($numbert != "0") {

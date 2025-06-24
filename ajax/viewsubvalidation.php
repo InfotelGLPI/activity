@@ -32,10 +32,10 @@ Html::header_nocache();
 Session::checkLoginUser();
 
 if (!isset($_POST['type'])) {
-   exit();
+    throw new \Glpi\Exception\Http\NotFoundHttpException();
 }
 if (!isset($_POST['parenttype'])) {
-   exit();
+    throw new \Glpi\Exception\Http\NotFoundHttpException();
 }
 $dbu = new DbUtils();
 if (($item = $dbu->getItemForItemtype($_POST['type']))
@@ -51,4 +51,3 @@ if (($item = $dbu->getItemForItemtype($_POST['type']))
    }
 }
 
-Html::ajaxFooter();

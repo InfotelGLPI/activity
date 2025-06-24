@@ -29,13 +29,14 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
-/// PluginActivityHolidayType class
+/// PluginActivityPlanningeventsubcategory class
 class PluginActivityPlanningeventsubcategory extends CommonDropdown {
 
     var $can_be_translated  = true;
     static $rightname = "dropdown";
 
-    static function canCreate() {
+    static function canCreate(): bool
+    {
         return Session::haveRight('plugin_activity', CREATE)
             && Session::haveRight("plugin_activity_all_users", 1);
     }

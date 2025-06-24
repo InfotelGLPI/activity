@@ -29,6 +29,8 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
+#[AllowDynamicProperties]
+
 class PluginActivityCraPDF extends \Fpdf\Fpdf {
    /* Attributs d'un rapport envoyés par l'utilisateur avant la génération. */
 

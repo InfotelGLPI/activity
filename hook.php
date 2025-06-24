@@ -45,7 +45,7 @@ function plugin_activity_install()
 
     if ($install || $update200) {
         $query_id = "SELECT `id` FROM `glpi_notificationtemplates` WHERE `itemtype`='PluginActivityHoliday' AND `name` = 'Holidays validation'";
-        $result = $DB->query($query_id) or die ($DB->error());
+        $result = $DB->doQuery($query_id) or die ($DB->error());
         $itemtype = $DB->result($result, 0, 'id');
 
         $query = "INSERT INTO `glpi_notificationtemplatetranslations`
@@ -65,33 +65,33 @@ function plugin_activity_install()
 ##lang.activity.url## : ##activity.url##',
       '&lt;strong&gt;##lang.activity.title## &lt;/strong&gt;&lt;ul&gt;&lt;li&gt;&lt;strong&gt;##lang.holiday.status## :&lt;/strong&gt; ##holiday.status##&lt;/li&gt;&lt;li&gt;&lt;strong&gt;##lang.activity.url## :&lt;/strong&gt; ##activity.url##&lt;/li&gt;&lt;li&gt;&lt;strong&gt;##lang.holiday.applicant.name## :&lt;/strong&gt; ##holiday.applicant.name##&lt;/li&gt;&lt;li&gt;&lt;strong&gt;##lang.holiday.begin.date## :&lt;/strong&gt; ##holiday.begin.date##&lt;/li&gt;&lt;li&gt;&lt;strong&gt;##lang.holiday.end.date## :&lt;/strong&gt; ##holiday.end.date##&lt;/li&gt;&lt;li&gt;&lt;strong&gt;##lang.holiday.nbdays## :&lt;/strong&gt; ##holiday.nbdays##&lt;/li&gt;&lt;li&gt;&lt;strong&gt;##lang.holiday.date.submission## :&lt;/strong&gt; ##holiday.date.submission##&lt;/li&gt;##IFlang.holiday.date.validation##&lt;li&gt;&lt;strong&gt;##lang.holiday.date.validation## :&lt;/strong&gt; ##holiday.date.validation##&lt;/li&gt;##ENDIFlang.holiday.date.validation####IFlang.holiday.commentvalidation##&lt;li&gt;&lt;strong&gt;##lang.holiday.commentvalidation## :&lt;/strong&gt; ##holiday.commentvalidation##&lt;/li&gt;##ENDIFlang.holiday.commentvalidation##&lt;li&gt;&lt;strong&gt;##lang.holiday.holidaytype## :&lt;/strong&gt; ##holiday.holidaytype##&lt;/li&gt;&lt;/ul&gt;');";
 
-        $DB->query($query);
+        $DB->doQuery($query);
 
         $query = "INSERT INTO `glpi_notifications` (`name`, `entities_id`, `itemtype`, `event`, `is_recursive`, `is_active`) 
                    VALUES ('New validation', 0, 'PluginActivityHoliday', 'newvalidation', 1, 1);";
-        $DB->query($query);
+        $DB->doQuery($query);
 
         $query_id = "SELECT `id` FROM `glpi_notifications`
                WHERE `name` = 'New validation' AND `itemtype` = 'PluginActivityHoliday' AND `event` = 'newvalidation'";
-        $result = $DB->query($query_id) or die ($DB->error());
+        $result = $DB->doQuery($query_id) or die ($DB->error());
         $notification = $DB->result($result, 0, 'id');
 
         $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`) 
                VALUES (" . $notification . ", 'mailing', " . $itemtype . ");";
-        $DB->query($query);
+        $DB->doQuery($query);
 
         $query = "INSERT INTO `glpi_notifications` (`name`, `entities_id`, `itemtype`, `event`, `is_recursive`, `is_active`) 
                    VALUES ('Answer validation', 0, 'PluginActivityHoliday', 'answervalidation', 1, 1);";
-        $DB->query($query);
+        $DB->doQuery($query);
 
         $query_id = "SELECT `id` FROM `glpi_notifications`
                WHERE `name` = 'Answer validation' AND `itemtype` = 'PluginActivityHoliday' AND `event` = 'answervalidation'";
-        $result = $DB->query($query_id) or die ($DB->error());
+        $result = $DB->doQuery($query_id) or die ($DB->error());
         $notification = $DB->result($result, 0, 'id');
 
         $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`) 
                VALUES (" . $notification . ", 'mailing', " . $itemtype . ");";
-        $DB->query($query);
+        $DB->doQuery($query);
     }
 
     if (!$DB->tableExists("glpi_plugin_activity_snapshots")) {
@@ -170,7 +170,7 @@ function plugin_activity_install()
 
     PluginActivityProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
     PluginActivityProfile::initProfile();
-    $DB->query("DROP TABLE IF EXISTS `glpi_plugin_activity_profiles`;");
+    $DB->doQuery("DROP TABLE IF EXISTS `glpi_plugin_activity_profiles`;");
 
     $migration = new Migration("2.0.0");
     $migration->dropTable('glpi_plugin_activity_profiles');
@@ -225,7 +225,9 @@ function plugin_activity_uninstall()
         'event' => 'newvalidation',
         'FIELDS' => 'id'
     ];
-    foreach ($DB->request('glpi_notifications', $options) as $data) {
+    foreach ($DB->request([
+        'FROM' => 'glpi_notifications',
+        'WHERE' => $options]) as $data) {
         $notif->delete($data);
     }
 
@@ -234,7 +236,9 @@ function plugin_activity_uninstall()
         'event' => 'answervalidation',
         'FIELDS' => 'id'
     ];
-    foreach ($DB->request('glpi_notifications', $options) as $data) {
+    foreach ($DB->request([
+        'FROM' => 'glpi_notifications',
+        'WHERE' => $options]) as $data) {
         $notif->delete($data);
     }
 
@@ -246,18 +250,24 @@ function plugin_activity_uninstall()
         'itemtype' => 'PluginActivityHoliday',
         'FIELDS' => 'id'
     ];
-    foreach ($DB->request('glpi_notificationtemplates', $options) as $data) {
+    foreach ($DB->request([
+        'FROM' => 'glpi_notificationtemplates',
+        'WHERE' => $options]) as $data) {
         $options_template = [
             'notificationtemplates_id' => $data['id'],
             'FIELDS' => 'id'
         ];
 
-        foreach ($DB->request('glpi_notificationtemplatetranslations', $options_template) as $data_template) {
+        foreach ($DB->request([
+            'FROM' => 'glpi_notificationtemplatetranslations',
+            'WHERE' => $options_template]) as $data_template) {
             $translation->delete($data_template);
         }
         $template->delete($data);
 
-        foreach ($DB->request('glpi_notifications_notificationtemplates', $options_template) as $data_template) {
+        foreach ($DB->request([
+            'FROM' => 'glpi_notifications_notificationtemplates',
+            'WHERE' => $options_template]) as $data_template) {
             $notif_template->delete($data_template);
         }
     }
@@ -283,11 +293,11 @@ function plugin_activity_getDatabaseRelations()
         return [
             "glpi_tickettasks" => ["glpi_plugin_activity_tickettasks" => "tickettasks_id"],
             "glpi_planningexternalevents" => ["glpi_plugin_activity_planningexternalevents" => "planningexternalevents_id"],
-            "glpi_plugin_activity_holidaytypes" => [
-                "glpi_plugin_activity_holidays" => "plugin_activity_holidaytypes_id",
-                "glpi_plugin_activity_holidaycounts" => "plugin_activity_holidaytypes_id"
-            ],
-            "glpi_plugin_activity_holidayperiods" => ["glpi_plugin_activity_holidaycounts" => "plugin_activity_holidayperiods_id"]
+//            "glpi_plugin_activity_holidaytypes" => [
+//                "glpi_plugin_activity_holidays" => "plugin_activity_holidaytypes_id",
+//                "glpi_plugin_activity_holidaycounts" => "plugin_activity_holidaytypes_id"
+//            ],
+//            "glpi_plugin_activity_holidayperiods" => ["glpi_plugin_activity_holidaycounts" => "plugin_activity_holidayperiods_id"]
         ];
     }
     return [];

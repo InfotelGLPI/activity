@@ -25,6 +25,8 @@
  --------------------------------------------------------------------------
 */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
+
 include ('../../../inc/includes.php');
 
 Session::checkLoginUser();
@@ -42,7 +44,7 @@ if ($count->canView()) {
    Search::show("PluginActivityHolidaycount");
 
 } else {
-   Html::displayRightError();
+    throw new AccessDeniedHttpException();
 }
 
 if (Session::getCurrentInterface() == 'central') {

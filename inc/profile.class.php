@@ -42,9 +42,17 @@ class PluginActivityProfile extends Profile
     {
         if ($item->getType() == 'Profile' && $item->getField('interface') != 'helpdesk'
         ) {
-            return _n('Activity', 'Activities', 2, 'activity');
+            return self::createTabEntry(_n('Activity', 'Activities', 2, 'activity'));
         }
         return '';
+    }
+
+    /**
+     * @return string
+     */
+    public static function getIcon()//self::createTabEntry(
+    {
+        return "ti ti-calendar-event";
     }
 
     public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)

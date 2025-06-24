@@ -38,7 +38,7 @@ function update223to224() {
    $query_users = "SELECT DISTINCT `users_id` 
                   FROM `glpi_plugin_activity_holidays`";
 
-   if ($result_users = $DB->query($query_users)) {
+   if ($result_users = $DB->doQuery($query_users)) {
       if ($DB->numrows($result_users) > 0) {
          while ($data_user = $DB->fetchAssoc($result_users)) {
             $user_id = $data_user['users_id'];
@@ -53,7 +53,7 @@ function update223to224() {
                            AND `glpi_plugin_activity_holidayperiods`.`short_name` LIKE 'CP';";
 
             $CP = [];
-            if ($result_cp = $DB->query($query_cp)) {
+            if ($result_cp = $DB->doQuery($query_cp)) {
                if ($DB->numrows($result_cp) > 0) {
                   while ($data_cp = $DB->fetchAssoc($result_cp)) {
                      $CP[$data_cp['plugin_activity_holidayperiods_id']] = ['count'                           => $data_cp['count'],
@@ -74,7 +74,7 @@ function update223to224() {
                               AND `glpi_plugin_activity_holidaycounts`.`count` > 0
                               AND `glpi_plugin_activity_holidayperiods`.`short_name` LIKE 'RT';";
             $RTT = [];
-            if ($result_rtt = $DB->query($query_rtt)) {
+            if ($result_rtt = $DB->doQuery($query_rtt)) {
                if ($DB->numrows($result_rtt) > 0) {
                   while ($data_rtt = $DB->fetchAssoc($result_rtt)) {
                      $RTT[$data_rtt['plugin_activity_holidayperiods_id']] = ['count'                           => $data_rtt['count'],
@@ -91,7 +91,7 @@ function update223to224() {
                      FROM `glpi_plugin_activity_holidays` 
                      WHERE `users_id` = ".$user_id." ORDER BY id";
 
-            if ($results = $DB->query($query)) {
+            if ($results = $DB->doQuery($query)) {
                if ($DB->numrows($results) > 0) {
                   while ($data = $DB->fetchAssoc($results)) {
 
@@ -108,7 +108,7 @@ function update223to224() {
                            $CP[$key_period_id]['count'] -= 1;
                            $query_update = "UPDATE `glpi_plugin_activity_holidays` 
                               SET `plugin_activity_holidayperiods_id` = '$key_period_id' WHERE `glpi_plugin_activity_holidays`.`id` = ".$data['id'].";";
-                           $DB->query($query_update);
+                           $DB->doQuery($query_update);
                            break;
                         }
                      }
@@ -121,7 +121,7 @@ function update223to224() {
                               $RTT[$key_period_id]['count'] -= 1;
                               $query_update = "UPDATE `glpi_plugin_activity_holidays` 
                               SET `plugin_activity_holidayperiods_id` = '$key_period_id' WHERE `glpi_plugin_activity_holidays`.`id` = ".$data['id'].";";
-                              $DB->query($query_update);
+                              $DB->doQuery($query_update);
                               break;
                            }
                         }

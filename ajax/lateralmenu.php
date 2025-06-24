@@ -40,5 +40,3 @@ echo "<table class='tab_cadre' width='100%'>";
 PluginActivityLateralmenu::showMenu();
 echo "</table>";
 echo "</div>";
-
-Html::ajaxFooter();

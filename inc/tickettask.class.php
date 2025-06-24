@@ -78,8 +78,8 @@ class PluginActivityTicketTask extends CommonDBTM {
             echo "<tr class='tab_bg_1'>";
             echo "<td colspan='3'></td>";
             echo '<td>';
-            echo "<div id='is_oncra_" . $item->getID() . "' class='fa-label right'>
-               <i class='ti ti-flag fa-fw'
+            echo "<div id='is_oncra_" . $item->getID() . "' class='ti ti-label right'>
+               <i class='ti ti-flag'
                   title='" . __('Use in CRA', 'activity') . "'></i>";
             Dropdown::showYesNo(
                 'is_oncra',
@@ -232,7 +232,7 @@ class PluginActivityTicketTask extends CommonDBTM {
       $query.= " )) AND `glpi_tickettasks`.`actiontime` != 0 
                   AND `glpi_plugin_activity_tickettasks`.`is_oncra` = 1";
       $query.= " ORDER BY `glpi_tickettasks`.`begin` ASC";
-      $result = $DB->query($query);
+      $result = $DB->doQuery($query);
 
       $number = $DB->numrows($result);
 
@@ -305,7 +305,7 @@ class PluginActivityTicketTask extends CommonDBTM {
             $interv[$key]["begin"]           = $int["start"];
             $interv[$key]["end"]             = $int["end"];
             $interv[$key]["editable"]         = false;
-            $interv[$key]["name"]     = Glpi\Toolbox\Sanitizer::unsanitize(Html::resume_text($int["title"], $CFG_GLPI["cut"])); // name is re-encoded on JS side
+            $interv[$key]["name"]     = Html::resume_text($int["title"], $CFG_GLPI["cut"]); // name is re-encoded on JS side
             $interv[$key]["content"]  = Glpi\RichText\RichText::getSafeHtml(Html::resume_text($int["description"],$CFG_GLPI["cut"]));
 
          }

@@ -25,6 +25,8 @@
  --------------------------------------------------------------------------
 */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
+
 include ('../../../inc/includes.php');
 
 Session::checkLoginUser();
@@ -76,7 +78,7 @@ if ($activity->canView()) {
       Search::show("PlanningExternalEvent");
    //}
 } else {
-   Html::displayRightError();
+    throw new AccessDeniedHttpException();
 }
 
 if (isset($_GET["action"])) {

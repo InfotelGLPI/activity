@@ -42,7 +42,7 @@ if ($holiday->canView()) {
    Search::show("PluginActivityHoliday");
 
 } else {
-   Html::displayRightError();
+    throw new AccessDeniedHttpException();
 }
 
 if (Session::getCurrentInterface() == 'central') {

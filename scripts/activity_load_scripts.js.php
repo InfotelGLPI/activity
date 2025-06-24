@@ -28,7 +28,7 @@ var root_activity_doc = "<?php echo PLUGIN_ACTIVITY_WEBDIR; ?>";
             }
          });
          if($("#showLateralMenuLink").length === 0) {
-            $('.ms-md-4').before("\<a class='ti fa-1x ti-calendar-event' href='#' id='showLateralMenuLink'></a>");
+            $('.ms-md-4').before("\<a class='ti ti-calendar-event' href='#' id='showLateralMenuLink'></a>");
          }
 
          //            });

@@ -28,7 +28,7 @@
 include('../../../inc/includes.php');
 
 if (!isset($_POST['holidays_id']) && !isset($_GET['holidays_id'])) {
-   exit();
+    throw new \Glpi\Exception\Http\NotFoundHttpException();
 }
 
 if (isset($_POST['holidays_id'])) {
@@ -73,7 +73,7 @@ if (isset($holiday->fields['id'])) {
    $notification->sendComm($input);
 
 } else {
-   exit();
+    throw new \Glpi\Exception\Http\NotFoundHttpException();
 }
 
 exit;

@@ -71,7 +71,7 @@ function update251to300() {
    $migration = new Migration("3.0.0");
 
    $add_temporary_column_query = "ALTER TABLE `glpi_planningeventcategories` ADD `old_id` int(11) NOT NULL DEFAULT 0;";
-   $DB->queryOrDie($add_temporary_column_query);
+   $DB->doQuery($add_temporary_column_query);
 
    $cats = $dbu->getAllDataFromTable('glpi_plugin_activity_activitytypes');
 
@@ -79,14 +79,14 @@ function update251to300() {
       $migrate_cat_activities_query = 'INSERT INTO `glpi_planningeventcategories` (`name`, `comment`, `old_id`) 
            VALUES("' . $cat['completename'] . '","' . addslashes($cat['comment']) . '","' . $cat['id'] . '")';
 
-      $DB->query($migrate_cat_activities_query);
+      $DB->doQuery($migrate_cat_activities_query);
 
    }
 
 
    $activities = $dbu->getAllDataFromTable('glpi_plugin_activity_activities');
    $add_temporary_column_query = "ALTER TABLE `glpi_planningexternalevents` ADD `old_id` int(11) NOT NULL DEFAULT 0;";
-   $DB->queryOrDie($add_temporary_column_query);
+   $DB->doQuery($add_temporary_column_query);
 
    foreach ($activities as $activity) {
 
@@ -101,13 +101,13 @@ function update251to300() {
                                      "' . $activity['begin'] . '", "' . $activity['end'] . '", "' . $activity['is_planned'] . '","' . $activity['plugin_activity_activitytypes_id'] . '", "' . $activity['id'] . '")';
 
 
-      $DB->query($migrate_activities_query);
+      $DB->doQuery($migrate_activities_query);
 
       $migrate_cra_activities_query = 'INSERT INTO `glpi_plugin_activity_planningexternalevents` (`is_oncra`, `planningexternalevents_id`, `actiontime`) VALUES
                                            ("' . $activity['is_usedbycra'] . '", "' . $activity['id'] . '", "' . $activity['actiontime'] . '")';
 
 
-      $DB->query($migrate_cra_activities_query);
+      $DB->doQuery($migrate_cra_activities_query);
    }
 
    $new_cats = $dbu->getAllDataFromTable('glpi_planningeventcategories', ['old_id'  => ['>', 0]]);
@@ -123,16 +123,16 @@ function update251to300() {
       $query = "UPDATE `glpi_planningexternalevents` 
                          SET `planningeventcategories_id`='" . $new_cat['id'] . "'
                          WHERE `planningeventcategories_id`= " . $new_cat['old_id'] . ";";
-      $DB->query($query);
+      $DB->doQuery($query);
 
       $query_create_eventtemplates = 'INSERT INTO `glpi_planningexternaleventtemplates` (`name`, `state`, `planningeventcategories_id`) VALUES
                                            ("' .  addslashes($name) . '", "' . 1 . '", "' . $new_cat['id'] . '")';
 
-      $DB->query($query_create_eventtemplates);
+      $DB->doQuery($query_create_eventtemplates);
    }
 
    $remove_temporary_column_query = "ALTER TABLE `glpi_planningeventcategories` DROP `old_id`;";
-   $DB->queryOrDie($remove_temporary_column_query);
+   $DB->doQuery($remove_temporary_column_query);
 
    $new_events = $dbu->getAllDataFromTable('glpi_planningexternalevents', ['old_id'  => ['>', 0]]);
 
@@ -141,13 +141,13 @@ function update251to300() {
       $query = "UPDATE `glpi_plugin_activity_planningexternalevents` 
                          SET `planningexternalevents_id`='" . $new_event['id'] . "'
                          WHERE `planningexternalevents_id`= " . $new_event['old_id'] . ";";
-      $DB->query($query);
+      $DB->doQuery($query);
 
 
    }
 
    $remove_temporary_column_query = "ALTER TABLE `glpi_planningexternalevents` DROP `old_id`;";
-   $DB->queryOrDie($remove_temporary_column_query);
+   $DB->doQuery($remove_temporary_column_query);
 
    $migration->dropTable('glpi_plugin_activity_activitytypes');
    $migration->dropTable('glpi_plugin_activity_activities');

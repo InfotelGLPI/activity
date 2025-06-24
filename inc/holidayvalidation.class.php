@@ -58,7 +58,7 @@ class PluginActivityHolidayValidation extends CommonDBChild {
                 FROM `glpi_plugin_activity_holidayvalidations`
                 WHERE `plugin_activity_holidays_id` = '$hId'
                       AND users_id_validate = '" . Session::getLoginUserID() . "'";
-      $result = $DB->query($query);
+      $result = $DB->doQuery($query);
 
       if ($DB->numrows($result)) {
          return true;
@@ -313,7 +313,7 @@ class PluginActivityHolidayValidation extends CommonDBChild {
 
 
       echo "<div id='hideopt' class='options'>" . __('See validation options', 'activity');
-      echo "&nbsp;<i style='color:#004F91;' class=\"fa fa-angle-double-down\"></i>";
+      echo "&nbsp;<i style='color:#004F91;' class=\"ti ti-chevrons-down\"></i>";
       echo "</div>";
       echo "<div class='panelopt' style='display: none;'>";
       if ($canedit) {

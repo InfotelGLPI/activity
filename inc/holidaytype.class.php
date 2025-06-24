@@ -38,7 +38,8 @@ class PluginActivityHolidayType extends CommonDropdown {
    const RTT = 'RT';
    const CP = 'CP';
 
-   static function canCreate() {
+   static function canCreate(): bool
+   {
       return Session::haveRight('plugin_activity', CREATE)
                && Session::haveRight("plugin_activity_all_users", 1);
    }

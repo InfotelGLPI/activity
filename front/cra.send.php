@@ -25,6 +25,8 @@
  --------------------------------------------------------------------------
 */
 
+use Glpi\Exception\Http\BadRequestHttpException;
+
 include ('../../../inc/includes.php');
 
 Session::checkLoginUser();
@@ -48,9 +50,9 @@ if (isset($_GET["file"])) { // for other file
          $report = new PluginActivityReport();
          $report->send($doc);
       } else {
-         Html::displayErrorAndDie(__('Unauthorized access to this file'), true);
+          throw new BadRequestHttpException(__('Unauthorized access to this file'), true);
       }
    } else {
-      Html::displayErrorAndDie(__('Invalid filename'), true);
+       throw new BadRequestHttpException(__('Invalid filename'), true);
    }
 }

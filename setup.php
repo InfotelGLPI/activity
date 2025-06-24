@@ -26,10 +26,15 @@
 
 define('PLUGIN_ACTIVITY_VERSION', '3.1.6');
 
+global $CFG_GLPI;
+
+use Glpi\Plugin\Hooks;
+
 if (!defined("PLUGIN_ACTIVITY_DIR")) {
     define("PLUGIN_ACTIVITY_DIR", Plugin::getPhpDir("activity"));
     define("PLUGIN_ACTIVITY_DIR_NOFULL", Plugin::getPhpDir("activity", false));
-    define("PLUGIN_ACTIVITY_WEBDIR", Plugin::getWebDir("activity"));
+    $root = $CFG_GLPI['root_doc'] . '/plugins/activity';
+    define("PLUGIN_ACTIVITY_WEBDIR", $root);
 }
 
 include_once PLUGIN_ACTIVITY_DIR . "/vendor/autoload.php";
@@ -43,9 +48,9 @@ function plugin_init_activity()
     $PLUGIN_HOOKS['change_profile']['activity'] = ['PluginActivityProfile', 'initProfile'];
     if (isset($_SESSION["glpiactiveprofile"]["interface"])
         && $_SESSION["glpiactiveprofile"]["interface"] != "helpdesk") {
-        $PLUGIN_HOOKS['add_css']['activity']        = ['activity.css'];
-        $PLUGIN_HOOKS['javascript']['activity'][]   = PLUGIN_ACTIVITY_DIR_NOFULL . '/lib/sdashboard/lib/flotr2/flotr2.js';
-        $PLUGIN_HOOKS['add_javascript']['activity'] = ['/lib/jquery/js/jquery.ui.touch-punch.min.js'];
+        $PLUGIN_HOOKS[Hooks::ADD_CSS]['activity']        = ['activity.css'];
+//        $PLUGIN_HOOKS['javascript']['activity'][]   = PLUGIN_ACTIVITY_DIR_NOFULL . '/lib/sdashboard/lib/flotr2/flotr2.js';
+        $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['activity'] = ['/lib/jquery/js/jquery.ui.touch-punch.min.js'];
     }
 
     // Lateral menu
@@ -53,11 +58,13 @@ function plugin_init_activity()
         || Session::haveRight("plugin_activity_can_requestholiday", 1)
         || Session::haveRight("plugin_activity_can_validate", 1)
         || Session::haveRight("plugin_activity_all_users", 1)) {
-        $PLUGIN_HOOKS['add_javascript']['activity'] = ['scripts/scripts-activityholidays.js',
+        $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['activity'] = [
+            'scripts/scripts-activitydate.js',
+            'scripts/scripts-activityholidays.js',
                                                        'scripts/activity_load_scripts.js.php'];
-        $PLUGIN_HOOKS['javascript']['activity']     = [PLUGIN_ACTIVITY_DIR_NOFULL . "/scripts/scripts-activitydate.js",
-                                                       PLUGIN_ACTIVITY_DIR_NOFULL . "/scripts/scripts-activityholidays.js",
-                                                       PLUGIN_ACTIVITY_DIR_NOFULL . "/scripts/activity_load_scripts.js.php"];
+//        $PLUGIN_HOOKS['javascript']['activity']     = [PLUGIN_ACTIVITY_DIR_NOFULL . "/scripts/scripts-activitydate.js",
+//                                                       PLUGIN_ACTIVITY_DIR_NOFULL . "/scripts/scripts-activityholidays.js",
+//                                                       PLUGIN_ACTIVITY_DIR_NOFULL . "/scripts/activity_load_scripts.js.php"];
     }
 
     //   if (Session::haveRight("plugin_activity_statistics", 1)) {
@@ -168,8 +175,8 @@ function plugin_version_activity()
         'homepage'     => '',
         'requirements' => [
             'glpi' => [
-                'min' => '10.0',
-                'max' => '11.0',
+                'min' => '11.0',
+                'max' => '12.0',
                 'dev' => false
             ]
         ]];

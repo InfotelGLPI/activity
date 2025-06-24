@@ -28,7 +28,7 @@
 include ('../../../inc/includes.php');
 
 if (!isset($_POST['holidays_id']) && !isset($_GET['holidays_id'])) {
-   exit();
+    throw new \Glpi\Exception\Http\NotFoundHttpException();
 }
 
 if (isset($_POST['holidays_id'])) {
@@ -70,7 +70,7 @@ if (isset($holiday->fields['id'])) {
    header('Content-Transfer-Encoding: binary');
 
 } else {
-   exit();
+    throw new \Glpi\Exception\Http\NotFoundHttpException();
 }
 
-exit;
+throw new \Glpi\Exception\Http\NotFoundHttpException();

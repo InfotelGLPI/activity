@@ -181,14 +181,14 @@ class PluginActivityNotificationMail extends \PHPMailer\PHPMailer\PHPMailer {
       if ($options['replyto']) {
          $this->AddReplyTo($options['replyto'], $options['replytoname']);
       }
-      $this->Subject = Html::entity_decode_deep($options['subject']);
+      $this->Subject = $options['subject'];
 
       if (empty($options['content_html'])) {
          $this->isHTML(false);
          $this->Body = $options['content_text'];
       } else {
          $this->isHTML(true);
-         $this->Body    = Html::entity_decode_deep(str_replace(['\r', '\n', '\r\n'], '<br>', $options['content_html']));
+         $this->Body    = str_replace(['\r', '\n', '\r\n'], '<br>', $options['content_html']);
          $this->AltBody = $options['content_text'];
       }
 

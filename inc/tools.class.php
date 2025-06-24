@@ -45,7 +45,7 @@ class PluginActivityTools {
                   AND `glpi_tickets`.`is_deleted` = 0 
                   ".self::getSpecificEntityRestrict('glpi_tickets', $params);
 
-      $result = $DB->fetchArray($DB->query($query));
+      $result = $DB->fetchArray($DB->doQuery($query));
 
       return $result;
    }
@@ -68,7 +68,7 @@ class PluginActivityTools {
                   AND `glpi_tickets`.`is_deleted` = 0 
                   ".self::getSpecificEntityRestrict('glpi_tickets', $params);
 
-      $result = $DB->fetchArray($DB->query($query));
+      $result = $DB->fetchArray($DB->doQuery($query));
 
       return $result;
    }
@@ -331,8 +331,6 @@ class PluginActivityTools {
          echo "</table>";
          echo "<div id='$id' class='statsbig'></div>";
       }
-
-      Html::requireJs('activity');
 
       $script = "(function graph_$id(container){";
 
