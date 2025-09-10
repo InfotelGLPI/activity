@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-24 13:26+0000\n"
+"POT-Creation-Date: 2025-09-10 09:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -239,7 +239,7 @@ msgid_plural "Holiday counters"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/holiday.class.php:477 inc/preference.class.php:189
+#: inc/holiday.class.php:477 inc/preference.class.php:193
 msgid "Add a manager"
 msgstr ""
 
@@ -410,34 +410,34 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. TRANS: %s is the user name
-#: inc/holidayvalidation.class.php:209
+#: inc/holidayvalidation.class.php:212
 #, php-format
 msgid "Mail sent to %s"
 msgstr ""
 
-#: inc/holidayvalidation.class.php:315
+#: inc/holidayvalidation.class.php:318
 msgid "See validation options"
 msgstr ""
 
-#: inc/holidayvalidation.class.php:393
+#: inc/holidayvalidation.class.php:396
 msgid "Validation for this holiday"
 msgid_plural "Validations for this holiday"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/holidayvalidation.class.php:431
+#: inc/holidayvalidation.class.php:434
 msgid "No holiday validation request found"
 msgstr ""
 
-#: inc/holidayvalidation.class.php:467
+#: inc/holidayvalidation.class.php:470
 msgid "Do you approve this holiday ?"
 msgstr ""
 
-#: inc/holidayvalidation.class.php:473
+#: inc/holidayvalidation.class.php:476
 msgid "Accept holiday"
 msgstr ""
 
-#: inc/holidayvalidation.class.php:477
+#: inc/holidayvalidation.class.php:480
 msgid "Refuse holiday"
 msgstr ""
 
@@ -632,15 +632,15 @@ msgstr ""
 msgid "The chosen end date is on weekend"
 msgstr ""
 
-#: inc/preference.class.php:106 inc/preference.class.php:145
+#: inc/preference.class.php:110 inc/preference.class.php:149
 msgid "List of my managers"
 msgstr ""
 
-#: inc/preference.class.php:110
+#: inc/preference.class.php:114
 msgid "You have not declared any manager yet."
 msgstr ""
 
-#: inc/preference.class.php:150
+#: inc/preference.class.php:154
 msgid "There is no manager for your groups"
 msgstr ""
 
