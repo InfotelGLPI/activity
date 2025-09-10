@@ -32,7 +32,7 @@ use Glpi\Plugin\Hooks;
 
 if (!defined("PLUGIN_ACTIVITY_DIR")) {
     define("PLUGIN_ACTIVITY_DIR", Plugin::getPhpDir("activity"));
-    define("PLUGIN_ACTIVITY_DIR_NOFULL", Plugin::getPhpDir("activity", false));
+//    define("PLUGIN_ACTIVITY_WEBDIR", Plugin::getPhpDir("activity", false));
     $root = $CFG_GLPI['root_doc'] . '/plugins/activity';
     define("PLUGIN_ACTIVITY_WEBDIR", $root);
 }
@@ -49,7 +49,7 @@ function plugin_init_activity()
     if (isset($_SESSION["glpiactiveprofile"]["interface"])
         && $_SESSION["glpiactiveprofile"]["interface"] != "helpdesk") {
         $PLUGIN_HOOKS[Hooks::ADD_CSS]['activity']        = ['activity.css'];
-//        $PLUGIN_HOOKS['javascript']['activity'][]   = PLUGIN_ACTIVITY_DIR_NOFULL . '/lib/sdashboard/lib/flotr2/flotr2.js';
+//        $PLUGIN_HOOKS['javascript']['activity'][]   = PLUGIN_ACTIVITY_WEBDIR . '/lib/sdashboard/lib/flotr2/flotr2.js';
         $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['activity'] = ['/lib/jquery/js/jquery.ui.touch-punch.min.js'];
     }
 
@@ -62,9 +62,9 @@ function plugin_init_activity()
             'scripts/scripts-activitydate.js',
             'scripts/scripts-activityholidays.js',
                                                        'scripts/activity_load_scripts.js.php'];
-//        $PLUGIN_HOOKS['javascript']['activity']     = [PLUGIN_ACTIVITY_DIR_NOFULL . "/scripts/scripts-activitydate.js",
-//                                                       PLUGIN_ACTIVITY_DIR_NOFULL . "/scripts/scripts-activityholidays.js",
-//                                                       PLUGIN_ACTIVITY_DIR_NOFULL . "/scripts/activity_load_scripts.js.php"];
+//        $PLUGIN_HOOKS['javascript']['activity']     = [PLUGIN_ACTIVITY_WEBDIR . "/scripts/scripts-activitydate.js",
+//                                                       PLUGIN_ACTIVITY_WEBDIR . "/scripts/scripts-activityholidays.js",
+//                                                       PLUGIN_ACTIVITY_WEBDIR . "/scripts/activity_load_scripts.js.php"];
     }
 
     //   if (Session::haveRight("plugin_activity_statistics", 1)) {
@@ -113,11 +113,11 @@ function plugin_init_activity()
 
                 if (Session::haveRight('plugin_activity', READ)) {
                     $PLUGIN_HOOKS["menu_toadd"]['activity']               = ['tools' => 'PluginActivityMenu'];
-                    $PLUGIN_HOOKS['helpdesk_menu_entry']['activity']      = PLUGIN_ACTIVITY_DIR_NOFULL . '/front/menu.php';
+                    $PLUGIN_HOOKS['helpdesk_menu_entry']['activity']      = PLUGIN_ACTIVITY_WEBDIR . '/front/menu.php';
                     $PLUGIN_HOOKS['helpdesk_menu_entry_icon']['activity'] = PluginActivityHoliday::getIcon();
                 }
 
-                $PLUGIN_HOOKS['redirect_page']['activity'] = PLUGIN_ACTIVITY_DIR_NOFULL . '/front/holiday.form.php';
+                $PLUGIN_HOOKS['redirect_page']['activity'] = PLUGIN_ACTIVITY_WEBDIR . '/front/holiday.form.php';
             }
             $PLUGIN_HOOKS['mydashboard']['activity'] = ["PluginActivityDashboard"];
 

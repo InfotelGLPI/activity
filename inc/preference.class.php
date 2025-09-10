@@ -54,9 +54,13 @@ class PluginActivityPreference extends CommonDBTM
     function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
         if ($item->getType()=='Preference') {
-            return _n('Activity', 'Activities', 1, 'activity');
+            return self::createTabEntry(_n('Activity', 'Activities', 1, 'activity'));
         }
         return '';
+    }
+
+    static function getIcon() {
+        return "ti ti-calendar-event";
     }
 
 

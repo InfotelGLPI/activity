@@ -66,11 +66,14 @@ class PluginActivityHolidayValidation extends CommonDBChild {
       return false;
    }
 
+    static function getIcon() {
+        return "ti ti-calendar-event";
+    }
 
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
       if ($item->getType() == "PluginActivityHoliday") {
-         return [PluginActivityHolidayValidation::getTypeName(1)];
+         return self::createTabEntry(PluginActivityHolidayValidation::getTypeName(1));
       }
    }
 
