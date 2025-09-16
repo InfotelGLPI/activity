@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-14 09:11+0000\n"
+"POT-Creation-Date: 2025-09-16 16:24+0000\n"
 "PO-Revision-Date: 2020-11-02 13:59+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2025\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/114456/fr_FR/)\n"
@@ -21,17 +21,16 @@ msgstr ""
 "Language: fr_FR\n"
 "Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
-#: setup.php:164 ajax/loadscripts.php:47 front/menu.php:46
-#: inc/config.class.php:38 inc/menu.class.php:32 inc/option.class.php:38
-#: inc/preference.class.php:57 inc/profile.class.php:45
-#: inc/profile.class.php:142 inc/report.class.php:1070
+#: setup.php:183 ajax/loadscripts.php:47 front/menu.php:50 src/Config.php:47
+#: src/Menu.php:37 src/Option.php:46 src/Preference.php:68 src/Profile.php:54
+#: src/Profile.php:159 src/Report.php:1123
 msgid "Activity"
 msgid_plural "Activities"
 msgstr[0] "Activité quotidienne"
 msgstr[1] "Activités quotidiennes"
 msgstr[2] "Activités quotidiennes"
 
-#: ajax/lateralmenu.php:36 inc/holiday.class.php:54
+#: ajax/lateralmenu.php:36 src/Holiday.php:76
 msgid "Private holiday"
 msgid_plural "Private holidays"
 msgstr[0] "Congé personnel"
@@ -58,72 +57,71 @@ msgstr "Un erreur est survenue lors de la suppression du responsable"
 msgid "Manager sucessfully deleted."
 msgstr "Responsable supprimé avec succès"
 
-#: ajax/sendmail.php:66
+#: ajax/sendmail.php:68
 msgid "Holiday request from"
 msgstr "Demande de congés de"
 
-#: ajax/sendmail.php:66
+#: ajax/sendmail.php:68
 msgid "of"
 msgstr "du"
 
-#: front/config.form.php:63
+#: front/config.form.php:66
 msgid "Please activate the plugin"
 msgstr "Veuillez activer le plugin"
 
-#: front/cra.php:45 inc/crapdf.class.php:243
+#: front/cra.php:45 src/Crapdf.php:282
 msgid "Report of Activities"
 msgstr "Rapport d'activité"
 
-#: inc/config.class.php:64
+#: src/Config.php:74
 msgid "Define internal helpdesk"
 msgstr "Définir la terminologie pour l'assistance interne"
 
-#: inc/config.class.php:75
+#: src/Config.php:85 src/Config.php:138
 msgid "Is recursive"
 msgstr "Est récursive"
 
-#: inc/config.class.php:120
+#: src/Config.php:130
 msgid "Show internal helpdesk"
 msgstr "Dénomination pour l'assistance interne"
 
-#: inc/crapdf.class.php:271
+#: src/Crapdf.php:313
 msgid "during"
 msgstr "au cours de"
 
-#: inc/crapdf.class.php:276
+#: src/Crapdf.php:318
 msgid "Year"
 msgstr "Année"
 
-#: inc/crapdf.class.php:280
+#: src/Crapdf.php:322
 msgid "for"
 msgstr "pour"
 
-#: inc/crapdf.class.php:284
+#: src/Crapdf.php:326
 msgid "Client"
 msgstr "Client"
 
-#: inc/crapdf.class.php:336
+#: src/Crapdf.php:383
 msgid "Project / activity"
 msgstr "Projet / Activité"
 
-#: inc/crapdf.class.php:462 inc/holidaytype.class.php:89
-#: inc/report.class.php:1798
+#: src/Crapdf.php:514 src/Holidaytype.php:95 src/Report.php:1848
 msgid "Part time"
 msgstr "Temps partiel"
 
-#: inc/crapdf.class.php:463 inc/report.class.php:1796
+#: src/Crapdf.php:515 src/Report.php:1846
 msgid "Holidays or exceptional absences"
 msgstr "Congés ou absences exceptionnelles"
 
-#: inc/crapdf.class.php:464 inc/report.class.php:1800
+#: src/Crapdf.php:516 src/Report.php:1850
 msgid "Sickness or maternity"
 msgstr "Maladie ou maternité"
 
-#: inc/crapdf.class.php:493 inc/report.class.php:1189
+#: src/Crapdf.php:551 src/Report.php:1241
 msgid "Absences"
 msgstr "Absences"
 
-#: inc/crapdf.class.php:531
+#: src/Crapdf.php:592
 msgid ""
 "Entry except in the month, the total must be equal to the number of working "
 "days this month"
@@ -131,23 +129,23 @@ msgstr ""
 "Sauf entrée dans le mois, ce total doit être égal au nombre de jours ouvrés "
 "de ce mois, soit"
 
-#: inc/crapdf.class.php:540
+#: src/Crapdf.php:601
 msgid "Total incorrect"
 msgstr "Total incorrect"
 
-#: inc/crapdf.class.php:542
+#: src/Crapdf.php:603
 msgid "Total OK"
 msgstr "Total OK"
 
-#: inc/crapdf.class.php:591
+#: src/Crapdf.php:657
 msgid "Generated with GLPI on"
 msgstr "Généré avec GLPI le"
 
-#: inc/dashboard.class.php:93 inc/dashboard.class.php:160
+#: src/Dashboard.php:114 src/Dashboard.php:181
 msgid "Activity in the month"
 msgstr "Activité du mois"
 
-#: inc/dashboard.class.php:95 inc/dashboard.class.php:161
+#: src/Dashboard.php:116 src/Dashboard.php:182
 msgid ""
 "Display of activity by month for a user (tickets, activity, holidays, "
 "others)"
@@ -155,112 +153,108 @@ msgstr ""
 "Affichage de l'activité par mois pour un utilisateur (tickets, activité, "
 "vacances, autres)"
 
-#: inc/dashboard.class.php:96 inc/dashboard.class.php:278
+#: src/Dashboard.php:117 src/Dashboard.php:299
 msgid "Activity Menu"
 msgstr "Menu Activité"
 
-#: inc/dashboard.class.php:99 inc/dashboard.class.php:352
+#: src/Dashboard.php:120 src/Dashboard.php:373
 msgid "Interventions not in CRA"
 msgstr "Interventions non présentes sur le CRA"
 
-#: inc/dashboard.class.php:220
+#: src/Dashboard.php:241
 msgid "Planning access"
 msgstr "Accès au planning"
 
-#: inc/dashboard.class.php:240 inc/holiday.class.php:1239
-#: inc/holiday.class.php:1294
+#: src/Dashboard.php:261 src/Holiday.php:1269 src/Holiday.php:1323
 msgid "All day"
 msgstr "Jour entier"
 
-#: inc/dashboard.class.php:443 inc/dashboard.class.php:476
-#: inc/report.class.php:666 inc/report.class.php:676 inc/report.class.php:730
-#: inc/report.class.php:740 inc/report.class.php:796 inc/report.class.php:806
-#: inc/report.class.php:848
+#: src/Dashboard.php:464 src/Dashboard.php:497 src/Report.php:689
+#: src/Report.php:699 src/Report.php:753 src/Report.php:763 src/Report.php:819
+#: src/Report.php:829 src/Report.php:873
 msgid "No defined type"
 msgstr "Pas de type défini"
 
-#: inc/holiday.class.php:150 inc/holidayperiod.class.php:70
+#: src/Holiday.php:183 src/Holidayperiod.php:75
 msgid "Please fill a begin date"
 msgstr "Merci de renseigner une date de début"
 
-#: inc/holiday.class.php:154 inc/holidayperiod.class.php:74
+#: src/Holiday.php:187 src/Holidayperiod.php:79
 msgid "Please fill an end date"
 msgstr "Merci de renseigner une date de fin"
 
-#: inc/holiday.class.php:160 inc/holidaycount.class.php:67
+#: src/Holiday.php:193 src/Holidaycount.php:79
 msgid "Holiday type is mandatory field"
 msgstr "Le type de congé est un champ obligatoire"
 
-#: inc/holiday.class.php:190 inc/planningexternalevent.class.php:537
-#: inc/planningexternalevent.class.php:636
+#: src/Holiday.php:224 src/Planningexternalevent.php:546
+#: src/Planningexternalevent.php:645
 msgid "User is mandatory field"
 msgstr "L'utilisateur est un champ obligatoire"
 
-#: inc/holiday.class.php:218 inc/planningexternalevent.class.php:560
-#: inc/planningexternalevent.class.php:727
+#: src/Holiday.php:251 src/Planningexternalevent.php:569
+#: src/Planningexternalevent.php:736
 msgid "The chosen begin date is on weekend"
 msgstr "La date de début choisie est en weekend"
 
-#: inc/holiday.class.php:225 inc/planningexternalevent.class.php:546
-#: inc/planningexternalevent.class.php:714
+#: src/Holiday.php:258 src/Planningexternalevent.php:555
+#: src/Planningexternalevent.php:723
 msgid "The chosen date is a public holiday"
 msgstr "Le jour choisi est un jour férié"
 
-#: inc/holiday.class.php:231
+#: src/Holiday.php:264
 msgid "You have already planned holidays for this period"
 msgstr "Vous avez déjà planifié des congés pour cette période"
 
-#: inc/holiday.class.php:233
+#: src/Holiday.php:266
 msgid "The user has already planned holidays for this period"
 msgstr "Cet utilisateur a déjà planifié des congés pour cette période"
 
-#: inc/holiday.class.php:288 inc/holidaytype.class.php:69
+#: src/Holiday.php:322 src/Holidaytype.php:75
 msgid "Auto-validated"
 msgstr "Validé automatiquement"
 
-#: inc/holiday.class.php:317 inc/notificationtargetholiday.class.php:108
+#: src/Holiday.php:356 src/Notificationtargetholiday.php:144
 msgid "Validation of your holiday request"
 msgstr "Validation de la demande de congé"
 
-#: inc/holiday.class.php:321
+#: src/Holiday.php:360
 msgid "The user don't have any manager filled in his personal settings."
 msgstr ""
 "L'utilisateur n'a pas encore renseigné de responsable dans ses préférences"
 
-#: inc/holiday.class.php:443 inc/lateralmenu.class.php:64
-#: inc/planningexternalevent.class.php:109 inc/profile.class.php:98
-#: inc/profile.class.php:149
+#: src/Holiday.php:482 src/Lateralmenu.php:73
+#: src/Planningexternalevent.php:118 src/Profile.php:115 src/Profile.php:166
 msgid "Create a holiday request"
 msgstr "Demande de congé"
 
-#: inc/holiday.class.php:450
+#: src/Holiday.php:489
 msgid "List of holidays"
 msgstr "Liste des congés"
 
-#: inc/holiday.class.php:456 inc/holiday.class.php:2130
+#: src/Holiday.php:495 src/Holiday.php:2164
 msgid "Approve holiday"
 msgid_plural "Approve holidays"
 msgstr[0] "Valider un congé"
 msgstr[1] "Valider les congés"
 msgstr[2] "Valider les congés"
 
-#: inc/holiday.class.php:462 inc/holidaycount.class.php:39
-#: inc/menu.class.php:51
+#: src/Holiday.php:501 src/Holidaycount.php:49 src/Menu.php:56
 msgid "Holiday counter"
 msgid_plural "Holiday counters"
 msgstr[0] "Compteur de congé"
 msgstr[1] "Compteur de congés"
 msgstr[2] "Compteur de congés"
 
-#: inc/holiday.class.php:473 inc/preference.class.php:189
+#: src/Holiday.php:512 src/Preference.php:204
 msgid "Add a manager"
 msgstr "Ajouter un responsable"
 
-#: inc/holiday.class.php:890
+#: src/Holiday.php:930
 msgid "You don't have any manager filled in you personal settings."
 msgstr "Vous n'avez pas encore renseigné de responsable dans vos préférences"
 
-#: inc/holiday.class.php:892
+#: src/Holiday.php:932
 msgid ""
 "In order to make a holiday demand, please fill at least one manager in your "
 "personal settings"
@@ -268,21 +262,21 @@ msgstr ""
 "Pour effectuer une demande de congé, merci de renseigner au moins un "
 "responsable dans vos préférences"
 
-#: inc/holiday.class.php:895
+#: src/Holiday.php:935
 msgid "See the page"
 msgstr "Voir page"
 
-#: inc/holiday.class.php:942 inc/holiday.class.php:970
-#: inc/holiday.class.php:1228 inc/holiday.class.php:1283
+#: src/Holiday.php:981 src/Holiday.php:1005 src/Holiday.php:1258
+#: src/Holiday.php:1312
 msgid "Only on afternoon"
 msgstr "Que l'après-midi"
 
-#: inc/holiday.class.php:949 inc/holiday.class.php:956
-#: inc/holiday.class.php:1218 inc/holiday.class.php:1273
+#: src/Holiday.php:987 src/Holiday.php:993 src/Holiday.php:1248
+#: src/Holiday.php:1302
 msgid "Only on morning"
 msgstr "Que le matin"
 
-#: inc/holiday.class.php:1486
+#: src/Holiday.php:1514
 msgid ""
 "You must fill a registration number for this user before generating the TXT "
 "file."
@@ -290,140 +284,136 @@ msgstr ""
 "Vous devez renseigner un numéro de matricule pour cet utilisateur avant de "
 "pouvoir générer le fichier TXT."
 
-#: inc/holiday.class.php:1488
+#: src/Holiday.php:1516
 msgid "See this page"
 msgstr "Voir cette page"
 
-#: inc/holiday.class.php:1546
+#: src/Holiday.php:1571
 msgid "Generate TXT file for this holiday"
 msgstr "Générer le fichier TXT pour ce congé"
 
-#: inc/holiday.class.php:1564
-msgid "Send the mail for this holiday"
-msgstr "Envoyer l'email pour ce congé"
-
-#: inc/holiday.class.php:2096
+#: src/Holiday.php:2129
 msgid "Close without clearing"
 msgstr "Fermer sans effacer"
 
-#: inc/holiday.class.php:2097
+#: src/Holiday.php:2130
 msgid "See previous month"
 msgstr "Voir le mois précédent"
 
-#: inc/holiday.class.php:2098
+#: src/Holiday.php:2131
 msgid "See next month"
 msgstr "Voir le mois suivant"
 
-#: inc/holiday.class.php:2099
+#: src/Holiday.php:2132
 msgid "See current month"
 msgstr "Voir le mois en cours"
 
-#: inc/holiday.class.php:2102
+#: src/Holiday.php:2135
 msgid "See another month"
 msgstr "Voir un autre mois"
 
-#: inc/holiday.class.php:2102
+#: src/Holiday.php:2135
 msgid "See another year"
 msgstr "Voir une autre année"
 
-#: inc/holiday.class.php:2107
+#: src/Holiday.php:2140
 msgid "Use DD as first day of week"
 msgstr "Choisir DD comme premier jour de la semaine"
 
-#: inc/holiday.class.php:2107
+#: src/Holiday.php:2140
 msgid "Choose the DD, MM d"
 msgstr "Choisir DD, MM d"
 
-#: inc/holiday.class.php:2109
+#: src/Holiday.php:2142
 msgid "Choose the date"
 msgstr "Choisir la date"
 
-#: inc/holiday.class.php:2158
+#: src/Holiday.php:2193
 msgid "Comment"
 msgid_plural "Comments"
 msgstr[0] "Commentaire"
 msgstr[1] "Commentaires"
 msgstr[2] "Commentaires"
 
-#: inc/holiday.class.php:2406
+#: src/Holiday.php:2443
 msgid "Remaining holidays for the period"
 msgstr "Congés restants sur la période"
 
-#: inc/holiday.class.php:2407
+#: src/Holiday.php:2444
 msgid "Leave awaiting validation"
 msgstr "Congés en attente de validation"
 
-#: inc/holidaycount.class.php:63
+#: src/Holidaycount.php:75
 msgid "Holiday period is mandatory field"
 msgstr "La période des congés est obligatoire"
 
-#: inc/holidaycount.class.php:76
+#: src/Holidaycount.php:88
 msgid "Only one counter by period is allowed"
 msgstr "Uniquement un compteur par période est autorisé"
 
-#: inc/holidaycount.class.php:141 inc/holidaycount.class.php:216
+#: src/Holidaycount.php:153 src/Holidaycount.php:229
 msgid "Counter"
 msgstr "Compteur"
 
-#: inc/holidaycount.class.php:332
+#: src/Holidaycount.php:347
 msgid "Remaining holidays"
 msgstr "Congés restants"
 
-#: inc/holidaycount.class.php:348 inc/holidaycount.class.php:382
+#: src/Holidaycount.php:367 src/Holidaycount.php:403
 msgid "Valid until"
 msgstr "Valide jusqu'au"
 
-#: inc/holidaycount.class.php:402
+#: src/Holidaycount.php:422
 msgid "Cumul"
 msgstr "Cumul"
 
-#: inc/holidayperiod.class.php:37
+#: src/Holidayperiod.php:42
 msgid "Holiday period"
 msgid_plural "Holiday periods"
 msgstr[0] "Période de congé"
 msgstr[1] "Période de congés"
 msgstr[2] "Période de congés"
 
-#: inc/holidayperiod.class.php:46 inc/holidaytype.class.php:59
+#: src/Holidayperiod.php:51 src/Holidaytype.php:65
 msgid "Short name"
 msgstr "Nom court"
 
-#: inc/holidayperiod.class.php:61
+#: src/Holidayperiod.php:66
 msgid "Archived"
 msgstr "Archivé"
 
-#: inc/holidaytype.class.php:51 inc/notificationtargetholiday.class.php:154
+#: src/Holidaytype.php:57 src/Notificationtargetholiday.php:190
 msgid "Holiday type"
 msgid_plural "Holiday types"
 msgstr[0] "Type de congé"
 msgstr[1] "Type de congés"
 msgstr[2] "Type de congés"
 
-#: inc/holidaytype.class.php:64
+#: src/Holidaytype.php:70
 msgid "Mandatory comment"
 msgstr "Commentaire obligatoire"
 
-#: inc/holidaytype.class.php:74
+#: src/Holidaytype.php:80
 msgid "Holiday"
 msgstr "Congé"
 
-#: inc/holidaytype.class.php:79
+#: src/Holidaytype.php:85
 msgid "Use this holiday in the counter"
 msgstr "Utiliser ce congé dans le compteur"
 
-#: inc/holidaytype.class.php:84
+#: src/Holidaytype.php:90
 msgid "Sickness"
 msgstr "Maladie"
 
-#: inc/holidaytype.class.php:94
+#: src/Holidaytype.php:100
 msgid "Linked to a period"
 msgstr "Lié à une période de congés"
 
-#: inc/holidaytype.class.php:106 inc/holidaytype.class.php:120
+#: src/Holidaytype.php:112 src/Holidaytype.php:126
 msgid "Can't be of more than one type at the same time"
 msgstr "Can't be of more than one type at the same time"
 
-#: inc/holidayvalidation.class.php:46
+#: src/Holidayvalidation.php:61
 msgid "Holiday validation"
 msgid_plural "Holidays validation"
 msgstr[0] "Validation du congé"
@@ -431,218 +421,212 @@ msgstr[1] "Validations des congés"
 msgstr[2] "Validations des congés"
 
 #. TRANS: %s is the user name
-#: inc/holidayvalidation.class.php:209
+#: src/Holidayvalidation.php:231
 #, php-format
 msgid "Mail sent to %s"
 msgstr "Message envoyé à %s"
 
-#: inc/holidayvalidation.class.php:315
+#: src/Holidayvalidation.php:345
 msgid "See validation options"
 msgstr "Voir les options de validation"
 
-#: inc/holidayvalidation.class.php:393
+#: src/Holidayvalidation.php:427
 msgid "Validation for this holiday"
 msgid_plural "Validations for this holiday"
 msgstr[0] "Validation de ce congé"
 msgstr[1] "Validation de ces congés"
 msgstr[2] "Validation de ces congés"
 
-#: inc/holidayvalidation.class.php:431
+#: src/Holidayvalidation.php:468
 msgid "No holiday validation request found"
 msgstr "Pas de demande de validation de congé trouvée"
 
-#: inc/holidayvalidation.class.php:467
+#: src/Holidayvalidation.php:505
 msgid "Do you approve this holiday ?"
 msgstr "Validez-vous ce congé ?"
 
-#: inc/holidayvalidation.class.php:473
+#: src/Holidayvalidation.php:511
 msgid "Accept holiday"
 msgstr "Valider le congé"
 
-#: inc/holidayvalidation.class.php:477
+#: src/Holidayvalidation.php:515
 msgid "Refuse holiday"
 msgstr "Refuser le congé"
 
-#: inc/lateralmenu.class.php:82
+#: src/Lateralmenu.php:92
 msgid "Holidays detail"
 msgstr "Détail des congés"
 
-#: inc/lateralmenu.class.php:91
+#: src/Lateralmenu.php:101
 msgid "Holidays detail in progress"
 msgstr "Détails des congés en cours de validation"
 
-#: inc/notification.class.php:56
+#: src/Notification.php:64
 msgid "Please fill a subject"
 msgstr "Merci de spécifier un sujet"
 
-#: inc/notification.class.php:59
+#: src/Notification.php:67
 msgid "Please fill a mail body"
 msgstr "Merci d'ajouter le contenu de l'email"
 
-#: inc/notification.class.php:114
+#: src/Notification.php:122
 msgid "Mail sent"
 msgstr "Email envoyé"
 
-#: inc/notification.class.php:115 inc/notification.class.php:118
+#: src/Notification.php:123 src/Notification.php:126
 #, php-format
 msgid "A mail has been sent to %s"
 msgstr "Un email a été envoyé à %s"
 
-#: inc/notification.class.php:122
+#: src/Notification.php:130
 msgid "Failed Mail send"
 msgstr "L'email n'a pas été envoyé"
 
-#: inc/notification.class.php:123
+#: src/Notification.php:131
 #, php-format
 msgid "Fail to send a mail to %s"
 msgstr "Echec de l'envoi de l'email à %s"
 
-#: inc/notificationmail.class.php:208
+#: src/Notificationmail.php:215
 msgid "Error in sending the email"
 msgstr "Erreur d'envoi de l'email"
 
-#: inc/notificationtargetholiday.class.php:39
-#: inc/notificationtargetholiday.class.php:208
+#: src/Notificationtargetholiday.php:46 src/Notificationtargetholiday.php:244
 msgid "New personal holiday request"
 msgstr "Nouvelle demande de congé personnel"
 
-#: inc/notificationtargetholiday.class.php:40
-#: inc/notificationtargetholiday.class.php:214
+#: src/Notificationtargetholiday.php:47 src/Notificationtargetholiday.php:250
 msgid "Answer to a personal holiday request"
 msgstr "Réponse à une demande de congé personnel"
 
-#: inc/notificationtargetholiday.class.php:48
+#: src/Notificationtargetholiday.php:55
 msgid "Approvers"
 msgstr "Valideurs"
 
-#: inc/notificationtargetholiday.class.php:111
+#: src/Notificationtargetholiday.php:147
 msgid "Refusal of your holiday request"
 msgstr "Refus de votre demande de congé"
 
-#: inc/notificationtargetholiday.class.php:115
+#: src/Notificationtargetholiday.php:151
 msgid "A new holiday request has been submitted"
 msgstr "Une nouvelle demande de congé a été soumise"
 
-#: inc/notificationtargetholiday.class.php:136
-#: inc/notificationtargetholiday.class.php:195
+#: src/Notificationtargetholiday.php:172 src/Notificationtargetholiday.php:231
 msgid "Number of days"
 msgstr "Nombre de jours"
 
-#: inc/option.class.php:58
+#: src/Option.php:66
 msgid "Plugin setup"
 msgstr "Configuration du plugin"
 
-#: inc/option.class.php:61
+#: src/Option.php:69
 msgid "Replace activity name by the activity type"
 msgstr "Remplacer le nom de l'activité par le type d'activité"
 
-#: inc/option.class.php:68
+#: src/Option.php:76
 msgid "Use time repartition"
 msgstr "Utilisation de la répartition du temps"
 
-#: inc/option.class.php:94
+#: src/Option.php:102
 msgid "Use the view by day men in planning"
 msgstr "Utiliser l'affichage en jour-homme dans le planning"
 
-#: inc/option.class.php:101
+#: src/Option.php:109
 msgid "Use pairs schedules"
 msgstr "Autoriser uniquement les activités paires"
 
-#: inc/option.class.php:108
+#: src/Option.php:116
 msgid "Authorize only the whole schedules"
 msgstr "Autoriser uniquement les horaires entiers"
 
-#: inc/option.class.php:115
+#: src/Option.php:123
 msgid "Authorize activities on week-ends"
 msgstr "Autoriser les activité les Week-ends"
 
-#: inc/option.class.php:122
+#: src/Option.php:130
 msgid "Principal client"
 msgstr "Principal client"
 
-#: inc/option.class.php:129
+#: src/Option.php:137
 msgid "Used mail for holidays"
 msgstr "Courriel utilisé pour les congés"
 
-#: inc/option.class.php:136
+#: src/Option.php:144
 msgid "CRA Footer"
 msgstr "Pied de page du CRA"
 
-#: inc/option.class.php:149
+#: src/Option.php:157
 msgid "Use group manager as holiday manager"
 msgstr "Utiliser les superviseurs des groupes comme responsables des congés"
 
-#: inc/option.class.php:156
+#: src/Option.php:164
 msgid "Default validation percent"
 msgstr "Pourcentage de validation par défaut"
 
-#: inc/option.class.php:165 inc/option.class.php:195
+#: src/Option.php:173 src/Option.php:203
 msgid "is on CRA by default"
 msgstr "Valeur par défaut du champ \"Afficher sur le CRA\""
 
-#: inc/option.class.php:172
+#: src/Option.php:180
 msgid "Use projects"
 msgstr "Utiliser les projets"
 
-#: inc/option.class.php:202
+#: src/Option.php:210
 msgid "Use hour on cra and not half day"
 msgstr "Utiliser les heures sur le CRA et non des jours / hommes"
 
-#: inc/option.class.php:209
+#: src/Option.php:217
 msgid "Use the planning activity hours to limit hours per day on the CRA"
 msgstr ""
 "Utilisez les heures d'activité du planning pour limiter les heures par jour "
 "sur le CRA"
 
-#: inc/option.class.php:216
+#: src/Option.php:224
 msgid "Use event subcategories"
 msgstr "Utiliser les sous-catégories d'événements"
 
-#: inc/option.class.php:223
+#: src/Option.php:231
 msgid "Show event entity on CRA"
 msgstr "Afficher l'entité de l'événement sur le CRA"
 
-#: inc/planningeventsubcategory.class.php:44
+#: src/Planningeventsubcategory.php:50
 msgid "Event subcategory"
 msgid_plural "Event subcategories"
 msgstr[0] "Sous-catégorie d'événements"
 msgstr[1] "Sous-catégories d'événements"
 msgstr[2] "Sous-catégories d'événements"
 
-#: inc/planningexternalevent.class.php:195
+#: src/Planningexternalevent.php:204
 msgid "Add an activity"
 msgstr "Ajouter une activité"
 
-#: inc/planningexternalevent.class.php:201
+#: src/Planningexternalevent.php:210
 msgid "List of activities"
 msgstr "Liste des activités"
 
-#: inc/planningexternalevent.class.php:207
+#: src/Planningexternalevent.php:216
 msgid "CRA"
 msgstr "CRA"
 
-#: inc/planningexternalevent.class.php:242 inc/projecttask.class.php:129
-#: inc/tickettask.class.php:83
+#: src/Planningexternalevent.php:251 src/Projecttask.php:135
+#: src/Tickettask.php:93
 msgid "Use in CRA"
 msgstr "Afficher sur le CRA"
 
-#: inc/planningexternalevent.class.php:276
+#: src/Planningexternalevent.php:285
 msgid "Subcategory"
 msgstr "Sous-catégorie"
 
-#: inc/planningexternalevent.class.php:459
-#: inc/planningexternalevent.class.php:701
+#: src/Planningexternalevent.php:468 src/Planningexternalevent.php:710
 msgid "Only whole hours are allowed (no split times)"
 msgstr ""
 "Seuls les horaires entiers sont autorisés (pas d'horaires fractionnées)"
 
-#: inc/planningexternalevent.class.php:467
-#: inc/planningexternalevent.class.php:707
+#: src/Planningexternalevent.php:476 src/Planningexternalevent.php:716
 msgid "Only pairs schedules are allowed"
 msgstr "Seuls les horaires pairs sont autorisés"
 
-#: inc/planningexternalevent.class.php:508
-#: inc/planningexternalevent.class.php:675
+#: src/Planningexternalevent.php:517 src/Planningexternalevent.php:684
 msgid ""
 "One of the dates is on weekend, please add the date in the exceptionsof the "
 "reccurent rule"
@@ -650,140 +634,138 @@ msgstr ""
 "L'une des dates est le week-end, veuillez ajouter la date dans les "
 "exceptions de la règle récurrente"
 
-#: inc/planningexternalevent.class.php:529
-#: inc/planningexternalevent.class.php:630
+#: src/Planningexternalevent.php:538 src/Planningexternalevent.php:639
 msgid "Activity type is mandatory field"
 msgstr "Le type d'activité est un champ obligatoire"
 
-#: inc/planningexternalevent.class.php:571
-#: inc/planningexternalevent.class.php:736
+#: src/Planningexternalevent.php:580 src/Planningexternalevent.php:745
 msgid "The chosen end date is on weekend"
 msgstr "La date de fin choisie est en week-end"
 
-#: inc/preference.class.php:106 inc/preference.class.php:145
+#: src/Preference.php:121 src/Preference.php:160
 msgid "List of my managers"
 msgstr "Liste de mes responsables"
 
-#: inc/preference.class.php:110
+#: src/Preference.php:125
 msgid "You have not declared any manager yet."
 msgstr "Vous n'avez encore déclaré aucun responsable."
 
-#: inc/preference.class.php:150
+#: src/Preference.php:165
 msgid "There is no manager for your groups"
 msgstr "Il n'y a pas de responsables définis pour vos groupes"
 
-#: inc/profile.class.php:38
+#: src/Profile.php:46
 msgid "Right management"
 msgid_plural "Rights management"
 msgstr[0] "Gestion des droits"
 msgstr[1] "Gestion des droits"
 msgstr[2] "Gestion des droits"
 
-#: inc/profile.class.php:105 inc/profile.class.php:153
+#: src/Profile.php:122 src/Profile.php:170
 msgid "Validate holiday"
 msgid_plural "Validate holidays"
 msgstr[0] "Valider un congé"
 msgstr[1] "Valider des congés"
 msgstr[2] "Valider des congés"
 
-#: inc/profile.class.php:112 inc/profile.class.php:157
+#: src/Profile.php:129 src/Profile.php:174
 msgid "Statistics and reports"
 msgstr "Statistiques et rapports"
 
-#: inc/profile.class.php:119 inc/profile.class.php:161
+#: src/Profile.php:136 src/Profile.php:178
 msgid "Display activities of all"
 msgstr "Voir les activités / congés de tous"
 
-#: inc/publicholiday.class.php:45
+#: src/Publicholiday.php:50
 msgid "Public holiday"
 msgid_plural "Public holidays"
 msgstr[0] "Jour férié"
 msgstr[1] "Jours fériés"
 msgstr[2] "Jours fériés"
 
-#: inc/report.class.php:163
+#: src/Report.php:191
 msgid "Take a snapshot of the CRA"
 msgstr "Prendre un instantané du CRA"
 
-#: inc/report.class.php:214
+#: src/Report.php:243
 msgid "Snapshots of the month"
 msgstr "Instantanés du mois"
 
-#: inc/report.class.php:273
+#: src/Report.php:302
 msgid "Snapshot taken in"
 msgstr "Instantané pris le"
 
-#: inc/report.class.php:311
+#: src/Report.php:340
 msgid "Export CRA"
 msgstr "Exporter le CRA"
 
-#: inc/report.class.php:349
+#: src/Report.php:375
 msgid "Activity report"
 msgstr "Rapport d'activités"
 
-#: inc/report.class.php:374
+#: src/Report.php:400
 msgid "Next month"
 msgstr "Mois suivant"
 
-#: inc/report.class.php:375
+#: src/Report.php:401
 msgid "Previous month"
 msgstr "Mois précédent"
 
-#: inc/report.class.php:873 inc/report.class.php:890
+#: src/Report.php:898 src/Report.php:915
 msgid "Unbilled"
 msgstr "Non facturé"
 
-#: inc/report.class.php:1069
+#: src/Report.php:1122
 msgid "Project"
 msgstr "Projet"
 
-#: inc/report.class.php:1256
+#: src/Report.php:1308
 msgid "Activities detail"
 msgstr "Détail des activités"
 
-#: inc/report.class.php:1266
+#: src/Report.php:1318
 msgid "Percent"
 msgstr "Pourcentage"
 
-#: inc/report.class.php:1357
+#: src/Report.php:1408
 msgid "No activity found"
 msgstr "Aucune activité trouvée"
 
-#: inc/stats.class.php:37
+#: src/Stats.php:41
 msgid "Activity statistics"
 msgstr "Statistique sur l'activité"
 
-#: inc/stats5.class.php:223 inc/stats5.class.php:271
+#: src/Stats5.php:227 src/Stats5.php:275
 msgid "Number of technicians"
 msgstr "Nombre de techniciens"
 
-#: inc/stats5.class.php:241 inc/stats5.class.php:270
+#: src/Stats5.php:245 src/Stats5.php:274
 msgid "Number of tickets in progress"
 msgstr "Nombre de tickets en cours"
 
-#: inc/stats5.class.php:272
+#: src/Stats5.php:276
 msgid "All the period"
 msgstr "Toute la période"
 
-#: inc/stats5.class.php:287
+#: src/Stats5.php:291
 msgid "Main evolution of team"
 msgstr "Evolution générale de l'équipe"
 
-#: inc/ticket.class.php:43
+#: src/Ticket.php:49
 msgid "The following user is unavailable / on holiday : "
 msgstr "L'utilisateur suivant est indisponible / en vacances : "
 
-#: inc/tickettask.class.php:43
+#: src/Tickettask.php:53
 msgid "Cumulative ticket task"
 msgid_plural "Cumulative ticket tasks"
 msgstr[0] "Tâche de ticket cumulée"
 msgstr[1] "Tâches de ticket cumulées"
 msgstr[2] "Tâches de ticket cumulées"
 
-#: inc/tools.class.php:237
+#: src/Tools.php:244
 msgid "Export the report"
 msgstr "Exporter le rapport"
 
-#: inc/tools.class.php:416
+#: src/Tools.php:421
 msgid "Refresh"
 msgstr "Rafraichir"
