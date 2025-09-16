@@ -25,11 +25,11 @@
  --------------------------------------------------------------------------
 */
 
-include ('../../../inc/includes.php');
+use GlpiPlugin\Activity\Preference;
 
 Session::checkLoginUser();
 
-$pref = new PluginActivityPreference();
+$pref = new Preference();
 
 if (isset($_POST["add"])) {
    if ($pref->canCreate() && isset($_POST['users_id'])) {

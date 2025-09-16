@@ -25,33 +25,28 @@
  --------------------------------------------------------------------------
 */
 
-use Glpi\Exception\Http\BadRequestHttpException;
-use GlpiPlugin\Activity\Report;
+namespace GlpiPlugin\Activity;
 
-Session::checkLoginUser();
+use CommonDropdown;
+use Session;
 
-if (isset($_GET["file"])) { // for other file
-   $splitter = explode("/", $_GET["file"]);
+if (!defined('GLPI_ROOT')) {
+    die("Sorry. You can't access directly to this file");
+}
 
-   if (count($splitter) == 3) {
-      $send = false;
-      if (
-         ($splitter[1] == "activity")
-         && Session::haveRight("plugin_activity_statistics", READ)
-      ) {
-         $send = GLPI_DOC_DIR . "/" . $_GET["file"];
-      }
-      if ($send && file_exists($send)) {
-         $doc = new Document();
-         $doc->fields['filepath'] = $_GET["file"];
-         $doc->fields['mime'] = 'application/pdf';
-         $doc->fields['filename'] = $splitter[2];
-         $report = new Report();
-         $report->send($doc);
-      } else {
-          throw new BadRequestHttpException(__('Unauthorized access to this file'), true);
-      }
-   } else {
-       throw new BadRequestHttpException(__('Invalid filename'), true);
-   }
+/// Planningeventsubcategory class
+class Planningeventsubcategory extends CommonDropdown {
+
+    var $can_be_translated  = true;
+    static $rightname = "dropdown";
+
+    static function canCreate(): bool
+    {
+        return Session::haveRight('plugin_activity', CREATE)
+            && Session::haveRight("plugin_activity_all_users", 1);
+    }
+
+    static function getTypeName($nb = 0) {
+        return _n('Event subcategory', 'Event subcategories', $nb, 'activity');
+    }
 }

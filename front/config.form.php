@@ -25,14 +25,17 @@
  --------------------------------------------------------------------------
 */
 
-include ('../../../inc/includes.php');
+use GlpiPlugin\Activity\Config;
+use GlpiPlugin\Activity\Menu;
+use GlpiPlugin\Activity\Option;
+use GlpiPlugin\Activity\PlanningExternalEvent;
 
 Session::checkLoginUser();
 
 if (Plugin::isPluginActive("activity")) {
    Session::checkRight("config", UPDATE);
-   $config = new PluginActivityConfig();
-   $opt = new PluginActivityOption();
+   $config = new Config();
+   $opt = new Option();
    if (isset($_POST["update"])) {
       if ($config->canCreate() && isset($_POST['entities_id'])) {
          $config->add($_POST);
@@ -51,7 +54,7 @@ if (Plugin::isPluginActive("activity")) {
       Html::back();
 
    } else {
-      Html::header(PluginActivityPlanningExternalEvent::getTypeName(2), '', "tools", "pluginactivitymenu");
+      Html::header(PlanningExternalEvent::getTypeName(2), '', "tools", Menu::class);
       $config->showForm(1);
       $opt->showForm(1);
       Html::footer();

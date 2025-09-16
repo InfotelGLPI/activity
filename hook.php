@@ -25,11 +25,21 @@
  --------------------------------------------------------------------------
 */
 
+use GlpiPlugin\Activity\Holiday;
+use GlpiPlugin\Activity\Holidaycount;
+use GlpiPlugin\Activity\HolidayPeriod;
+use GlpiPlugin\Activity\HolidayType;
+use GlpiPlugin\Activity\Menu;
+use GlpiPlugin\Activity\Option;
+use GlpiPlugin\Activity\Planningeventsubcategory;
+use GlpiPlugin\Activity\PlanningExternalEvent;
+use GlpiPlugin\Activity\Profile;
+use GlpiPlugin\Activity\ProjectTask;
+use GlpiPlugin\Activity\TicketTask;
+
 function plugin_activity_install()
 {
     global $DB;
-
-    include_once(PLUGIN_ACTIVITY_DIR . "/inc/profile.class.php");
 
     $install = false;
     $update200 = false;
@@ -44,7 +54,7 @@ function plugin_activity_install()
     //TODO update tech_num & realtime (to `actiontime` int(11) NOT NULL DEFAULT '0') & use_planning -> is_planned (tinyint(1) NOT NULL DEFAULT '0',)
 
     if ($install || $update200) {
-        $query_id = "SELECT `id` FROM `glpi_notificationtemplates` WHERE `itemtype`='PluginActivityHoliday' AND `name` = 'Holidays validation'";
+        $query_id = "SELECT `id` FROM `glpi_notificationtemplates` WHERE `itemtype`='GlpiPlugin\\Activity\\Holiday' AND `name` = 'Holidays validation'";
         $result = $DB->doQuery($query_id) or die ($DB->error());
         $itemtype = $DB->result($result, 0, 'id');
 
@@ -68,11 +78,11 @@ function plugin_activity_install()
         $DB->doQuery($query);
 
         $query = "INSERT INTO `glpi_notifications` (`name`, `entities_id`, `itemtype`, `event`, `is_recursive`, `is_active`)
-                   VALUES ('New validation', 0, 'PluginActivityHoliday', 'newvalidation', 1, 1);";
+                   VALUES ('New validation', 0, 'GlpiPlugin\\Activity\\Holiday', 'newvalidation', 1, 1);";
         $DB->doQuery($query);
 
         $query_id = "SELECT `id` FROM `glpi_notifications`
-               WHERE `name` = 'New validation' AND `itemtype` = 'PluginActivityHoliday' AND `event` = 'newvalidation'";
+               WHERE `name` = 'New validation' AND `itemtype` = 'GlpiPlugin\\Activity\\Holiday' AND `event` = 'newvalidation'";
         $result = $DB->doQuery($query_id) or die ($DB->error());
         $notification = $DB->result($result, 0, 'id');
 
@@ -81,11 +91,11 @@ function plugin_activity_install()
         $DB->doQuery($query);
 
         $query = "INSERT INTO `glpi_notifications` (`name`, `entities_id`, `itemtype`, `event`, `is_recursive`, `is_active`)
-                   VALUES ('Answer validation', 0, 'PluginActivityHoliday', 'answervalidation', 1, 1);";
+                   VALUES ('Answer validation', 0, 'GlpiPlugin\\Activity\\Holiday', 'answervalidation', 1, 1);";
         $DB->doQuery($query);
 
         $query_id = "SELECT `id` FROM `glpi_notifications`
-               WHERE `name` = 'Answer validation' AND `itemtype` = 'PluginActivityHoliday' AND `event` = 'answervalidation'";
+               WHERE `name` = 'Answer validation' AND `itemtype` = 'GlpiPlugin\\Activity\\Holiday' AND `event` = 'answervalidation'";
         $result = $DB->doQuery($query_id) or die ($DB->error());
         $notification = $DB->result($result, 0, 'id');
 
@@ -168,8 +178,8 @@ function plugin_activity_install()
         $DB->runFile(PLUGIN_ACTIVITY_DIR . "/install/sql/update-3.1.6.sql");
     }
 
-    PluginActivityProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
-    PluginActivityProfile::initProfile();
+    Profile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
+    Profile::initProfile();
     $DB->doQuery("DROP TABLE IF EXISTS `glpi_plugin_activity_profiles`;");
 
     $migration = new Migration("2.0.0");
@@ -182,9 +192,6 @@ function plugin_activity_install()
 function plugin_activity_uninstall()
 {
     global $DB;
-
-    include_once(PLUGIN_ACTIVITY_DIR . "/inc/profile.class.php");
-    include_once(PLUGIN_ACTIVITY_DIR . "/inc/menu.class.php");
 
     // Plugin tables deletion
     $tables = [
@@ -215,13 +222,13 @@ function plugin_activity_uninstall()
     ];
 
     foreach ($tables_glpi as $table_glpi) {
-        $DB->delete($table_glpi, ['itemtype' => ['LIKE' => 'PluginActivity%']]);
+        $DB->delete($table_glpi, ['itemtype' => ['LIKE' => 'GlpiPlugin\Activity%']]);
     }
 
     // Delete notifications
     $notif = new Notification();
     $options = [
-        'itemtype' => 'PluginActivityHoliday',
+        'itemtype' => Holiday::class,
         'event' => 'newvalidation',
         'FIELDS' => 'id'
     ];
@@ -232,7 +239,7 @@ function plugin_activity_uninstall()
     }
 
     $options = [
-        'itemtype' => 'PluginActivityHoliday',
+        'itemtype' => Holiday::class,
         'event' => 'answervalidation',
         'FIELDS' => 'id'
     ];
@@ -247,7 +254,7 @@ function plugin_activity_uninstall()
     $translation = new NotificationTemplateTranslation();
     $notif_template = new Notification_NotificationTemplate();
     $options = [
-        'itemtype' => 'PluginActivityHoliday',
+        'itemtype' => Holiday::class,
         'FIELDS' => 'id'
     ];
     foreach ($DB->request([
@@ -274,13 +281,13 @@ function plugin_activity_uninstall()
 
     //Delete rights associated with the plugin
     $profileRight = new ProfileRight();
-    foreach (PluginActivityProfile::getAllRights() as $right) {
+    foreach (Profile::getAllRights() as $right) {
         $profileRight->deleteByCriteria(['name' => $right['field']]);
     }
-    PluginActivityProfile::removeRightsFromSession();
-    PluginActivityProfile::removeRightsFromDB();
+    Profile::removeRightsFromSession();
+    Profile::removeRightsFromDB();
 
-    PluginActivityMenu::removeRightsFromSession();
+    Menu::removeRightsFromSession();
 
     return true;
 }
@@ -308,9 +315,9 @@ function plugin_activity_getDropdown()
 {
     if (Plugin::isPluginActive("activity")) {
         return [
-            'PluginActivityHolidayType' => PluginActivityHolidayType::getTypeName(2),
-            'PluginActivityHolidayPeriod' => PluginActivityHolidayPeriod::getTypeName(2),
-            'PluginActivityPlanningeventsubcategory' => PluginActivityPlanningeventsubcategory::getTypeName(2)
+            HolidayType::class => HolidayType::getTypeName(2),
+            HolidayPeriod::class => HolidayPeriod::getTypeName(2),
+            Planningeventsubcategory::class => Planningeventsubcategory::getTypeName(2)
         ];
     } else {
         return [];
@@ -323,29 +330,19 @@ function plugin_activity_postinit()
     global $PLUGIN_HOOKS;
 
     $PLUGIN_HOOKS['item_purge']['activity']['TicketTask']
-        = ['PluginActivityTicketTask', 'cleanForItem'];
-
-    $PLUGIN_HOOKS['item_purge']['activity']['User']
-        = ['PluginActivityActivity', 'cleanForUser'];
+        = [TicketTask::class, 'cleanForItem'];
 }
 
 function plugin_activity_addDefaultWhere($type)
 {
     switch ($type) {
-        /*      case "PluginActivityActivity" :
-                 $who = Session::getLoginUserID();
-                 if (!Session::haveRight("plugin_activity_all_users", 1)) {
-                    return " `glpi_plugin_activity_activities`.`users_id` = '$who' ";
-                 }
-                 break;*/
-
-        case "PluginActivityHoliday" :
+        case Holiday::class :
             $who = Session::getLoginUserID();
             if (!Session::haveRight("plugin_activity_all_users", 1)) {
                 return " `glpi_plugin_activity_holidays`.`users_id` = '$who' ";
             }
             break;
-        case "PluginActivityHolidaycount" :
+        case Holidaycount::class :
             $who = Session::getLoginUserID();
             return " `glpi_plugin_activity_holidaycounts`.`users_id` = '$who' ";
             break;
@@ -357,7 +354,7 @@ function plugin_activity_addDefaultWhere($type)
 function plugin_activity_addWhere($link, $nott, $itemtype, $ID, $val, $searchtype)
 {
     switch ($itemtype) {
-        case "PluginActivityHoliday" :
+        case Holiday::class :
             $searchoptions = Search::getOptions($itemtype);
             if ($searchoptions[$ID]['table'] == 'glpi_plugin_activity_holidayvalidations') {
                 $who = Session::getLoginUserID();
@@ -375,23 +372,23 @@ function plugin_activity_addWhere($link, $nott, $itemtype, $ID, $val, $searchtyp
 
 function plugin_activity_post_item_form($params) {
     $item = $params['item'];
-    $opt = new PluginActivityOption();
+    $opt = new Option();
     $opt->getFromDB(1);
     switch ($item->getType()) {
         case 'PlanningExternalEvent':
             if (Session::haveRight("plugin_activity", READ)) {
-                PluginActivityPlanningExternalEvent::postItemForm($params);
+                PlanningExternalEvent::postItemForm($params);
             }
             break;
         case 'ProjectTask':
             if($opt->getUseProject()) {
-                PluginActivityProjectTask::addField($params);
+                ProjectTask::addField($params);
             }
             break;
         case 'TicketTask':
             if(Session::haveRight("plugin_activity", READ)) {
                 // Ticket task cra
-                PluginActivityTicketTask::postForm($params);
+                TicketTask::postForm($params);
             }
             break;
     }

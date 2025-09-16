@@ -25,14 +25,14 @@
  --------------------------------------------------------------------------
 */
 
-include ('../../../inc/includes.php');
+use GlpiPlugin\Activity\Stats;
 
 Session::checkLoginUser();
 
 Html::header(__('Statistics'), $_SERVER['PHP_SELF'], "helpdesk", "stat");
 Session::checkRight("statistic", READ);
 
-$menu = new PluginActivitystats();
+$menu = new Stats();
 $menu->showStats($_POST, $_GET);
 
 Html::footer();

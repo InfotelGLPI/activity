@@ -25,7 +25,8 @@
  --------------------------------------------------------------------------
 */
 
-include ('../../../inc/includes.php');
+use GlpiPlugin\Activity\Menu;
+use GlpiPlugin\Activity\TicketTask;
 
 Session::checkLoginUser();
 
@@ -38,17 +39,17 @@ if (!isset($_GET["users_id"])) {
    $users_id = $_GET["users_id"];
 }
 
-$tic = new PluginActivityTicketTask();
+$tic = new TicketTask();
 
 $tic->checkGlobal(READ);
 if (!isset($_GET['_in_modal'])) {
    if (Session::getCurrentInterface() == 'central') {
-      Html::header(PluginActivityTicketTask::getTypeName(2), '', "tools", "pluginactivitymenu");
+      Html::header(TicketTask::getTypeName(2), '', "tools", Menu::class);
    } else {
-      Html::helpHeader(PluginActivityTicketTask::getTypeName(2));
+      Html::helpHeader(TicketTask::getTypeName(2));
    }
 } else {
-   Html::popHeader(PluginActivityTicketTask::getTypeName(2));
+   Html::popHeader(TicketTask::getTypeName(2));
 }
 
 $tic->display($_GET);

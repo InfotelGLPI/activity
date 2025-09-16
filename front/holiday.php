@@ -25,21 +25,23 @@
  --------------------------------------------------------------------------
 */
 
-include ('../../../inc/includes.php');
+use Glpi\Exception\Http\AccessDeniedHttpException;
+use GlpiPlugin\Activity\Menu;
+use GlpiPlugin\Activity\Holiday;
 
 Session::checkLoginUser();
 
 if (Session::getCurrentInterface() == 'central') {
-   Html::header(PluginActivityHoliday::getTypeName(2), '', "tools", "pluginactivitymenu");
+   Html::header(Holiday::getTypeName(2), '', "tools", Menu::class);
 } else {
-   Html::helpHeader(PluginActivityHoliday::getTypeName(2));
+   Html::helpHeader(Holiday::getTypeName(2));
 }
 
-$holiday = new PluginActivityHoliday();
+$holiday = new Holiday();
 
 if ($holiday->canView()) {
 
-   Search::show("PluginActivityHoliday");
+   Search::show(Holiday::class);
 
 } else {
     throw new AccessDeniedHttpException();

@@ -25,10 +25,12 @@
   --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use Glpi\Exception\Http\NotFoundHttpException;
+use GlpiPlugin\Activity\Holiday;
+use GlpiPlugin\Activity\Notification;
 
 if (!isset($_POST['holidays_id']) && !isset($_GET['holidays_id'])) {
-    throw new \Glpi\Exception\Http\NotFoundHttpException();
+    throw new NotFoundHttpException();
 }
 
 if (isset($_POST['holidays_id'])) {
@@ -38,7 +40,7 @@ if (isset($_GET['holidays_id'])) {
    $hId = $_GET['holidays_id'];
 }
 
-$holiday = new PluginActivityHoliday();
+$holiday = new Holiday();
 $holiday->getFromDB($hId);
 
 if (isset($holiday->fields['id'])) {
@@ -69,11 +71,11 @@ if (isset($holiday->fields['id'])) {
    $input['users_id']     = $holiday->fields['users_id'];
    $input['filename']     = $filename;
    $input['filepath']     = GLPI_TMP_DIR . "/" . $filename;
-   $notification          = new PluginActivityNotification();
+   $notification          = new Notification();
    $notification->sendComm($input);
 
 } else {
-    throw new \Glpi\Exception\Http\NotFoundHttpException();
+    throw new NotFoundHttpException();
 }
 
 exit;

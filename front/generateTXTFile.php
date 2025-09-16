@@ -25,10 +25,13 @@
  --------------------------------------------------------------------------
 */
 
-include ('../../../inc/includes.php');
+
+use Glpi\Exception\Http\NotFoundHttpException;
+use GlpiPlugin\Activity\Holiday;
+use GlpiPlugin\Activity\HolidayValidation;
 
 if (!isset($_GET['holidays_id'])) {
-    throw new \Glpi\Exception\Http\NotFoundHttpException();
+    throw new NotFoundHttpException();
 }
 
 if (isset($_GET['holidays_id'])) {
@@ -37,11 +40,11 @@ if (isset($_GET['holidays_id'])) {
 
 Session::checkLoginUser();
 
-$holiday = new PluginActivityHoliday();
+$holiday = new Holiday();
 $holiday->getFromDB($hId);
 
 if (isset($holiday->fields['id']) &&
-   PluginActivityHolidayValidation::canValidate($hId)) {
+   HolidayValidation::canValidate($hId)) {
 
    $user = new User();
    $user->getFromDB($holiday->fields['users_id']);
@@ -70,7 +73,7 @@ if (isset($holiday->fields['id']) &&
    header('Content-Transfer-Encoding: binary');
 
 } else {
-    throw new \Glpi\Exception\Http\NotFoundHttpException();
+    throw new NotFoundHttpException();
 }
 
 exit;

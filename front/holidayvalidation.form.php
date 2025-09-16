@@ -26,8 +26,8 @@
 */
 
 use Glpi\Exception\Http\BadRequestHttpException;
-
-include ('../../../inc/includes.php');
+use GlpiPlugin\Activity\HolidayValidation;
+use GlpiPlugin\Activity\Menu;
 
 Session::checkLoginUser();
 
@@ -42,7 +42,7 @@ if (!isset($_GET["id"]) && !(isset($_POST['id']))) {
    }
 }
 
-$holidayValidation = new PluginActivityHolidayValidation();
+$holidayValidation = new HolidayValidation();
 
 if (isset($_POST["add"])) {
 
@@ -65,9 +65,9 @@ if (isset($_POST["add"])) {
    $holidayValidation->checkGlobal(READ);
 
    if (Session::getCurrentInterface() == 'central') {
-      Html::header(PluginActivityHolidayValidation::getTypeName(2), '', "tools", "pluginactivitymenu");
+      Html::header(HolidayValidation::getTypeName(2), '', "tools", Menu::class);
    } else {
-      Html::helpHeader(PluginActivityHolidayValidation::getTypeName(2));
+      Html::helpHeader(HolidayValidation::getTypeName(2));
    }
 
    $holidayValidation->display(['id' => $_GET['id']]);

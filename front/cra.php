@@ -25,10 +25,10 @@
  --------------------------------------------------------------------------
 */
 
-include ('../../../inc/includes.php');
+use GlpiPlugin\Activity\Menu;
+use GlpiPlugin\Activity\Report;
 
 Session::checkLoginUser();
-
 
 if (isset($_GET['itemtype'])) {
    unset($_GET['root_doc']);
@@ -42,7 +42,7 @@ if (isset($_GET['itemtype'])) {
    header('Location: '.$target."?".Toolbox::append_params($_GET, '&'));
 
 } else {
-   Html::header(__('Report of Activities', 'activity'), '', "tools", "pluginactivitymenu");
+   Html::header(__('Report of Activities', 'activity'), '', "tools", Menu::class);
    if (empty($_POST["month"])) {
       $_POST["month"] = date('m', time());
    }
@@ -56,7 +56,7 @@ if (isset($_GET['itemtype'])) {
       $_POST["users_id"] = Session::getLoginUserID();
    }
 
-   $report = new PluginActivityReport();
+   $report = new Report();
 
    $report->showGenericSearch($_POST);
 }

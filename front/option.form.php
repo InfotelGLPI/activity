@@ -25,12 +25,12 @@
  --------------------------------------------------------------------------
 */
 
-include ('../../../inc/includes.php');
+use GlpiPlugin\Activity\Option;
 
 Session::checkLoginUser();
 
 Session::checkRight("config", UPDATE);
-$opt = new PluginActivityOption();
+$opt = new Option();
 
 if (isset($_POST["update"])) {
    if ($opt->canCreate()) {

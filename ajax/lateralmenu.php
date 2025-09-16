@@ -25,8 +25,8 @@
  --------------------------------------------------------------------------
 */
 
-include ('../../../inc/includes.php');
-//header('Content-Type: application/json; charset=UTF-8');
+use GlpiPlugin\Activity\Lateralmenu;
+
 Html::header_nocache();
 
 Session::checkLoginUser();
@@ -37,6 +37,6 @@ Html::popHeader(_n('Private holiday', 'Private holidays', 2, 'activity'), $_SERV
 
 echo "<div class='center' id='tabsbody' >";
 echo "<table class='tab_cadre' width='100%'>";
-PluginActivityLateralmenu::showMenu();
+Lateralmenu::showMenu();
 echo "</table>";
 echo "</div>";

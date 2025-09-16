@@ -27,7 +27,8 @@
 
 use Glpi\Exception\Http\AccessDeniedHttpException;
 
-include ('../../../inc/includes.php');
+use GlpiPlugin\Activity\Menu;
+use GlpiPlugin\Activity\PlanningExternalEvent;
 
 Session::checkLoginUser();
 
@@ -52,12 +53,12 @@ if (isset($_GET["users_id"])) {
 
 //TODO used by modal
 //if (isset($_GET["action"])) {
-//   Html::popHeader(PluginActivityActivity::getTypeName(2));
+//   Html::popHeader(PlanningExternalEvent::getTypeName(2));
 //} else {
 if (Session::getCurrentInterface() == 'central') {
-   Html::header(PluginActivityPlanningExternalEvent::getTypeName(2), '', "tools", "pluginactivitymenu");
+   Html::header(PlanningExternalEvent::getTypeName(2), '', "tools", Menu::class);
 } else {
-   Html::helpHeader(PluginActivityPlanningExternalEvent::getTypeName(2));
+   Html::helpHeader(PlanningExternalEvent::getTypeName(2));
 }
 //}
 
@@ -69,9 +70,9 @@ if ($activity->canView()) {
    //      || (isset($_POST["action"]) && $_POST["action"] == "load"))
    //        && isset($users_id) && ($users_id > 0)) {
 
-   //   $_GET['target']   = Toolbox::getItemTypeSearchURL("PluginActivityActivity");
+   //   $_GET['target']   = Toolbox::getItemTypeSearchURL(PlanningExternalEvent::class);
    //   $_GET["users_id"] = $users_id;
-   //   PluginActivityActivity::showGenericSearch(array_merge($_POST, $_GET));
+   //   PlanningExternalEvent::showGenericSearch(array_merge($_POST, $_GET));
 
    //} else {
 

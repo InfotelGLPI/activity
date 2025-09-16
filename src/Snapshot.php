@@ -25,33 +25,14 @@
  --------------------------------------------------------------------------
 */
 
-use Glpi\Exception\Http\BadRequestHttpException;
-use GlpiPlugin\Activity\Report;
+namespace GlpiPlugin\Activity;
 
-Session::checkLoginUser();
+use CommonDBTM;
+use Document;
 
-if (isset($_GET["file"])) { // for other file
-   $splitter = explode("/", $_GET["file"]);
-
-   if (count($splitter) == 3) {
-      $send = false;
-      if (
-         ($splitter[1] == "activity")
-         && Session::haveRight("plugin_activity_statistics", READ)
-      ) {
-         $send = GLPI_DOC_DIR . "/" . $_GET["file"];
-      }
-      if ($send && file_exists($send)) {
-         $doc = new Document();
-         $doc->fields['filepath'] = $_GET["file"];
-         $doc->fields['mime'] = 'application/pdf';
-         $doc->fields['filename'] = $splitter[2];
-         $report = new Report();
-         $report->send($doc);
-      } else {
-          throw new BadRequestHttpException(__('Unauthorized access to this file'), true);
-      }
-   } else {
-       throw new BadRequestHttpException(__('Invalid filename'), true);
+class Snapshot extends CommonDBTM {
+   static function purgeSnapshots(Document $doc) {
+      $snapshot = new self();
+      $snapshot->deleteByCriteria(['documents_id' => $doc->getField("id")]);
    }
 }

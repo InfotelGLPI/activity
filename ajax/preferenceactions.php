@@ -25,11 +25,11 @@
   --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Activity\Preference;
 
 Html::header_nocache();
 
-$preferences = new PluginActivityPreference();
+$preferences = new Preference();
 
 Session::checkLoginUser();
 

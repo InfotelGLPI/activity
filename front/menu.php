@@ -25,19 +25,21 @@
  --------------------------------------------------------------------------
 */
 
-include ('../../../inc/includes.php');
+use GlpiPlugin\Activity\Menu;
+use GlpiPlugin\Activity\PlanningExternalEvent;
+use GlpiPlugin\Activity\Holiday;
 
 Session::checkLoginUser();
 
 use Glpi\Exception\Http\AccessDeniedHttpException;
 
 if (Session::getCurrentInterface() == 'central') {
-   Html::header(PluginActivityPlanningExternalEvent::getTypeName(2), '', "tools", "pluginactivitymenu");
+   Html::header(PlanningExternalEvent::getTypeName(2), '', "tools", Menu::class);
 } else {
-   Html::helpHeader(PluginActivityPlanningExternalEvent::getTypeName(2));
+   Html::helpHeader(PlanningExternalEvent::getTypeName(2));
 }
 
-$activity = new PlanningExternalEvent();
+$activity = new \PlanningExternalEvent();
 
 $can = Session::haveRight("plugin_activity", READ);
 $canholiday = Session::haveRight("plugin_activity_can_requestholiday", 1);
@@ -48,19 +50,19 @@ echo "<i class='ti ti-calendar'></i>&nbsp;";
 echo _n('Activity', 'Activities', 2, 'activity');
 echo "</div></h3>";
 
-echo "<table align='center' cellspacing='5'  style=\"margin-left: auto;margin-right:auto;\"><tr>";
+echo "<table class='center' cellspacing='5'  style=\"margin-left: auto;margin-right:auto;\"><tr>";
 
 if ($can) {
    echo "<td>";
-   $listActions = PluginActivityPlanningExternalEvent::getActionsOn();
-   echo PluginActivityPlanningExternalEvent::menu("PluginActivityPlanningExternalEvent", $listActions);
+   $listActions = PlanningExternalEvent::getActionsOn();
+   echo PlanningExternalEvent::menu(PlanningExternalEvent::class, $listActions);
    echo "</td>";
 }
 if ($canholiday
          || $canvalidateholiday) {
    echo "<td>";
-   $listActions = PluginActivityHoliday::getActionsOn();
-   echo PluginActivityPlanningExternalEvent::menu("PluginActivityHoliday", $listActions);
+   $listActions = Holiday::getActionsOn();
+   echo PlanningExternalEvent::menu(Holiday::class, $listActions);
    echo "</td>";
 }
 echo "</tr></table>";

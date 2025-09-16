@@ -25,7 +25,7 @@
  --------------------------------------------------------------------------
 */
 
-include ('../../../inc/includes.php');
+use GlpiPlugin\Activity\Planning;
 
 Session::checkRight("plugin_activity", READ);
 
@@ -45,7 +45,7 @@ if (!isset($_GET["limititemtype"])) {
 if (isset($_GET['checkavailability'])) {
    Html::popHeader(__('Availability'));
 
-   Planning::checkAvailability($_GET);
+   \Planning::checkAvailability($_GET);
    Html::popFooter();
 
 } else if (isset($_GET['genical'])) {
@@ -83,7 +83,7 @@ if (isset($_GET['checkavailability'])) {
          // If not mine check global right
          if (!$ismine) {
             // First check user
-            $entities = Profile_User::getUserEntitiesForRight($user->getID(), Planning::READALL);
+            $entities = Profile_User::getUserEntitiesForRight($user->getID(), \Planning::READALL);
             if ($_GET["uID"]) {
                $userentities = Profile_User::getUserEntities($user->getID());
                $intersect    = array_intersect($entities, $userentities);
@@ -103,7 +103,7 @@ if (isset($_GET['checkavailability'])) {
          }
 
          if ($ismine || $canview) {
-            Planning::generateIcal($_GET["uID"], $_GET["gID"], $_GET["limititemtype"]);
+            \Planning::generateIcal($_GET["uID"], $_GET["gID"], $_GET["limititemtype"]);
          }
       }
    }
@@ -118,7 +118,7 @@ if (isset($_GET['checkavailability'])) {
    if (!isset($_GET["type"])) {
       $_GET["type"] = "week";
    }
-   $planning = new PluginActivityPlanning();
+   $planning = new Planning();
    $planning->display($_GET);
 
    Html::footer();

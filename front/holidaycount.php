@@ -26,22 +26,22 @@
 */
 
 use Glpi\Exception\Http\AccessDeniedHttpException;
-
-include ('../../../inc/includes.php');
+use GlpiPlugin\Activity\Holidaycount;
+use GlpiPlugin\Activity\Menu;
 
 Session::checkLoginUser();
 
 if (Session::getCurrentInterface() == 'central') {
-   Html::header(PluginActivityHolidaycount::getTypeName(2), '', "tools", "pluginactivitymenu", "holidaycount");
+   Html::header(Holidaycount::getTypeName(2), '', "tools", Menu::class, "holidaycount");
 } else {
-   Html::helpHeader(PluginActivityHolidaycount::getTypeName(2));
+   Html::helpHeader(Holidaycount::getTypeName(2));
 }
 
-$count = new PluginActivityHolidaycount();
+$count = new Holidaycount();
 
 if ($count->canView()) {
 
-   Search::show("PluginActivityHolidaycount");
+   Search::show(Holidaycount::class);
 
 } else {
     throw new AccessDeniedHttpException();

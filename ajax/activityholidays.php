@@ -25,13 +25,13 @@
  --------------------------------------------------------------------------
 */
 
-include ('../../../inc/includes.php');
+use GlpiPlugin\Activity\Holiday;
 
 Html::header_nocache();
 Session::checkLoginUser();
 header("Content-Type: text/html; charset=UTF-8");
 
-$holiday = new PluginActivityHoliday();
+$holiday = new Holiday();
 
 if (isset($_POST['load_holiday_details'])) {
    $holiday->getDetails($_POST['users_id'], $_POST['holiday_period_id']);

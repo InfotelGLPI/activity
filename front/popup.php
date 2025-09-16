@@ -25,7 +25,8 @@
   --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+use GlpiPlugin\Activity\Holiday;
+use GlpiPlugin\Activity\PlanningExternalEvent;
 
 Session::checkLoginUser();
 
@@ -50,13 +51,13 @@ if (isset($_GET["popup"])) {
 if (isset($_SESSION["glpipopup"]["name"])) {
    switch ($_SESSION["glpipopup"]["name"]) {
       case "planningexternalevents" :
-         Html::popHeader(PluginActivityPlanningExternalEvent::getTypeName(2), $_SERVER['PHP_SELF']);
+         Html::popHeader(PlanningExternalEvent::getTypeName(2), $_SERVER['PHP_SELF']);
          $_POST['target'] = "popup.php";
-         PluginActivityPlanningExternalEvent::showGenericSearch(array_merge($_POST, ['users_id' => $users_id]));
+          PlanningExternalEvent::showGenericSearch(array_merge($_POST, ['users_id' => $users_id]));
          break;
       case "holiday" :
-         $holiday = new PluginActivityHoliday();
-         Html::popHeader(PluginActivityHoliday::getTypeName(2), $_SERVER['PHP_SELF']);
+         $holiday = new Holiday();
+         Html::popHeader(Holiday::getTypeName(2), $_SERVER['PHP_SELF']);
          $holiday->showForm($_GET["id"], ['users_id' => $users_id]);
          break;
    }

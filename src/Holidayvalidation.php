@@ -1,0 +1,666 @@
+<?php
+
+/*
+ -------------------------------------------------------------------------
+ Activity plugin for GLPI
+ Copyright (C) 2019-2022 by the Activity Development Team.
+ -------------------------------------------------------------------------
+
+ LICENSE
+
+ This file is part of Activity.
+
+ Activity is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+
+ Activity is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Activity. If not, see <http://www.gnu.org/licenses/>.
+ --------------------------------------------------------------------------
+*/
+
+namespace GlpiPlugin\Activity;
+
+use CommonDBChild;
+use CommonDBTM;
+use CommonGLPI;
+use DbUtils;
+use Dropdown;
+use Html;
+use NotificationEvent;
+use Session;
+use Toolbox;
+use User;
+
+if (!defined('GLPI_ROOT')) {
+    die("Sorry. You can't access directly to this file");
+}
+
+/**
+ * HolidayValidation class
+ */
+class HolidayValidation extends CommonDBChild
+{
+
+    public static $items_id  = 'plugin_activity_holidays_id';
+    public static $itemtype  = Holiday::class;
+    static $rightname = "plugin_activity";
+
+   /**
+    * functions mandatory
+    * getTypeName(), canCreate(), canView()
+    * */
+    static function getTypeName($nb = 0)
+    {
+        return _n('Holiday validation', 'Holidays validation', $nb, 'activity');
+    }
+
+   /**
+    * @param $tickets_id
+    *
+    * @return bool
+    */
+    static function canValidate($hId)
+    {
+        global $DB;
+
+        $query  = "SELECT *
+                FROM `glpi_plugin_activity_holidayvalidations`
+                WHERE `plugin_activity_holidays_id` = '$hId'
+                      AND users_id_validate = '" . Session::getLoginUserID() . "'";
+        $result = $DB->doQuery($query);
+
+        if ($DB->numrows($result)) {
+            return true;
+        }
+        return false;
+    }
+
+    static function getIcon()
+    {
+        return "ti ti-calendar-event";
+    }
+
+    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+    {
+
+        if ($item->getType() == Holiday::class) {
+            return self::createTabEntry(HolidayValidation::getTypeName(1));
+        }
+    }
+
+    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+    {
+
+        if ($item->getType() == Holiday::class) {
+            $validation = new HolidayValidation();
+            $validation->showSummary($item);
+        }
+        return true;
+    }
+
+    function prepareInputForAdd($input)
+    {
+       //      $input['comment_validation'] = '';
+        $input['submission_date'] = date('Y-m-d H:i');
+
+        return parent::prepareInputForAdd($input);
+    }
+
+    function post_addItem()
+    {
+
+        $holiday = new Holiday();
+        if ($holiday->getFromDB($this->fields['plugin_activity_holidays_id'])) {
+           // Set global validation to waiting
+            if ($holiday->fields['global_validation'] == CommonValidation::NONE) {
+                $input['id']                = $this->fields['plugin_activity_holidays_id'];
+                $input['global_validation'] = CommonValidation::WAITING;
+                $holiday->update($input);
+            }
+        }
+    }
+
+    function prepareInputForUpdate($input)
+    {
+        $input['validation_date'] = date('Y-m-d H:i:s');
+
+        if (isset($input['refuse_holiday']) && $input['refuse_holiday'] == 1) {
+            $input['status'] = CommonValidation::REFUSED;
+        }
+
+        if (isset($input['accept_holiday']) && $input['accept_holiday'] == 1) {
+            $input['status'] = CommonValidation::ACCEPTED;
+        }
+
+        if ($input['status'] == CommonValidation::REFUSED && $input['comment_validation'] == "") {
+            Session::addMessageAfterRedirect(__('If approval is denied, specify a reason.'), false, ERROR);
+            return false;
+        }
+
+        return parent::prepareInputForUpdate($input);
+    }
+
+
+    function post_updateItem($history = 1)
+    {
+        global $CFG_GLPI;
+
+        $holiday = new Holiday();
+        $holiday->getFromDB($this->fields['plugin_activity_holidays_id']);
+
+        $condition = ["plugin_activity_holidays_id" => $this->fields['plugin_activity_holidays_id']];
+        $dbu       = new DbUtils();
+        $datas     = $dbu->getAllDataFromTable($this->getTable(), $condition);
+
+       // Check if all holidaysValidation are validated or not
+       //Set global validation to accepted to define one
+        if (($holiday->fields['global_validation'] == CommonValidation::WAITING)
+          && in_array("status", $this->updates)) {
+            $input['id']                = $this->fields['plugin_activity_holidays_id'];
+            $input['global_validation'] = self::computeValidationStatus($holiday);
+            $holiday->update($input);
+        }
+
+       /*$isValidated = array(
+         'allValidated' => 0,
+         'allRefused'   => 0,
+         'allWaiting'   => 0
+      );
+      $finalValidated = 0;
+      if (sizeof($datas) > 0){
+         foreach ($datas as $data) {
+            if ($data['status'] == CommonValidation::ACCEPTED) {
+               $isValidated['allValidated'] ++;
+            } else if ($data['status'] == CommonValidation::REFUSED) {
+               $isValidated['allRefused'] ++;
+            } else {
+               $isValidated['allWaiting'] ++;
+            }
+
+         }
+      }
+
+      if ($isValidated['allWaiting'] > 0 ){
+         $finalValidated = CommonValidation::WAITING;
+      }else if ( $isValidated['allValidated'] > 0 && $isValidated['allRefused'] == 0){
+         $finalValidated = CommonValidation::ACCEPTED;
+      }else if ( $isValidated['allValidated'] == 0 && $isValidated['allRefused'] > 0){
+         $finalValidated = CommonValidation::REFUSED;
+      }else{
+         $finalValidated = CommonValidation::WAITING;
+      }
+
+
+
+
+      if ($holiday->fields['status'] != $finalValidated ){
+         $holiday->fields['status'] = $finalValidated;
+         $holiday->update($holiday->fields);
+       }*/
+
+        $donotif  = $CFG_GLPI["notifications_mailing"];
+        $mailsend = false;
+        if (isset($this->input['_disablenotif'])) {
+            $donotif = false;
+        }
+
+       // If holiday validated, send mail to the applicant
+        if ($holiday->fields['global_validation'] == CommonValidation::ACCEPTED
+          || $holiday->fields['global_validation'] == CommonValidation::REFUSED) {
+            if (count($this->updates) && in_array('status', $this->updates) && $donotif) {
+                if ($CFG_GLPI["notifications_mailing"]) {
+                    $options = ['plugin_activity_holidayvaldiations_id' => $this->fields["id"]];
+
+                    $mailsend = NotificationEvent::raiseEvent('answervalidation', $holiday, $options);
+                }
+            }
+
+            if ($mailsend) {
+                $user = new User();
+                $user->getFromDB($holiday->fields["users_id"]);
+                $email = $user->getDefaultEmail();
+                if (!empty($email)) {
+                   //TRANS: %s is the user name
+                    Session::addMessageAfterRedirect(sprintf(__('Mail sent to %s', 'activity'), $user->getDefaultEmail()));
+                } else {
+                    Session::addMessageAfterRedirect(
+                        sprintf(
+                            __('The selected user (%s) has no valid email address. The request has been created, without email confirmation.'),
+                            $user->getName()
+                        ),
+                        false,
+                        ERROR
+                    );
+                }
+            }
+        }
+    }
+
+
+    static function computeValidationStatus($item)
+    {
+
+        $validation_status = CommonValidation::WAITING;
+
+        $accepted = 0;
+        $rejected = 0;
+
+       // Percent of validation
+        $validation_percent = $item->fields['validation_percent'];
+
+        $statuses    = [CommonValidation::ACCEPTED => 0,
+          CommonValidation::WAITING  => 0,
+          CommonValidation::REFUSED  => 0];
+        $restrict    = ["plugin_activity_holidays_id" => $item->getID()];
+        $dbu         = new DbUtils();
+        $validations = $dbu->getAllDataFromTable(static::getTable(), $restrict);
+
+        if ($total = count($validations)) {
+            foreach ($validations as $validation) {
+                $statuses[$validation['status']]++;
+            }
+        }
+
+        if ($validation_percent > 0) {
+            if (($statuses[CommonValidation::ACCEPTED] * 100 / $total) >= $validation_percent) {
+                $validation_status = CommonValidation::ACCEPTED;
+            } elseif (($statuses[CommonValidation::REFUSED] * 100 / $total) >= $validation_percent) {
+                $validation_status = CommonValidation::REFUSED;
+            }
+        } else {
+            if ($statuses[CommonValidation::ACCEPTED]) {
+                $validation_status = CommonValidation::ACCEPTED;
+            } elseif ($statuses[CommonValidation::REFUSED]) {
+                $validation_status = CommonValidation::REFUSED;
+            }
+        }
+
+        return $validation_status;
+    }
+
+   /**
+    * Get the validation statistics
+    *
+    * @param $tID holiday id
+    *
+    * @return statistics array
+    **/
+    static function getValidationStats($tID)
+    {
+
+        $tab = CommonValidation::getAllStatusArray();
+        $dbu = new DbUtils();
+        $nb  = $dbu->countElementsInTable(static::getTable(), [static::$items_id => $tID]);
+
+        $stats = [];
+        foreach ($tab as $status => $name) {
+            $restrict    = [static::$items_id => $tID, "status" => $status];
+            $dbu         = new DbUtils();
+            $validations = $dbu->countElementsInTable(static::getTable(), $restrict);
+            if ($validations > 0) {
+                if (!isset($stats[$status])) {
+                    $stats[$status] = 0;
+                }
+                $stats[$status] = $validations;
+            }
+        }
+
+        $list = "";
+        foreach ($stats as $stat => $val) {
+            $list .= $tab[$stat];
+            $list .= sprintf(__('%1$s (%2$d%%) '), " ", HTml::formatNumber($val * 100 / $nb));
+        }
+
+        return $list;
+    }
+
+    function showSummary($item)
+    {
+
+        $canedit = true;
+
+        $dbu     = new DbUtils();
+        $number  = false;
+        $hID     = $item->fields['id'];
+        $holiday = new Holiday();
+        $holiday->getFromDB($hID);
+
+        echo Html::scriptBlock("$(document).ready(function(){
+                         if ($('.panelopt').size() == 0) {
+                             $('#hideopt').hide();
+                         }
+                        $('#hideopt').click(function(){
+                           $('.panelopt').toggle();
+                        });
+                     });");
+
+
+        echo "<div id='hideopt' class='options'>" . __('See validation options', 'activity');
+        echo "&nbsp;<i style='color:#004F91;' class=\"ti ti-chevrons-down\"></i>";
+        echo "</div>";
+        echo "<div class='panelopt' style='display: none;'>";
+        if ($canedit) {
+            echo "<form method='post' name=form action='" .
+              Toolbox::getItemTypeFormURL(static::$itemtype) . "'>";
+        }
+        echo "<table class='tab_cadre_fixe'>";
+        echo "<tr>";
+        echo "<th colspan='3'>" . self::getTypeName(Session::getPluralNumber()) . "</th>";
+        echo "</tr>";
+
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>" . __('Global approval status') . "</td>";
+        echo "<td colspan='2'>";
+        CommonValidation::dropdownStatus(
+            "global_validation",
+            ['value' => $item->fields["global_validation"]]
+        );
+        echo "</td></tr>";
+
+        echo "<tr>";
+        echo "<th colspan='2'>" . _x('item', 'State') . "</th>";
+        echo "<th colspan='2'>";
+        echo self::getValidationStats($hID);
+        echo "</th>";
+        echo "</tr>";
+
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>" . __('Minimum approval required (%)') . "</td>";
+        if ($canedit) {
+            echo "<td>";
+            echo $item->getValueToSelect(
+                'validation_percent',
+                'validation_percent',
+                $item->fields["validation_percent"]
+            );
+            echo "</td>";
+            echo "<td>";
+            echo Html::submit(_sx('button', 'Save'), ['name' => 'update', 'class' => 'btn btn-primary']);
+            if (!empty($hID)) {
+                 echo Html::hidden('id', ['value' => $hID]);
+            }
+            echo "</td>";
+        } else {
+            echo "<td colspan='2'>";
+            echo Dropdown::getValueWithUnit($item->fields["validation_percent"], "%");
+            echo "</td>";
+        }
+        echo "</tr>";
+        echo "</table>";
+        if ($canedit) {
+            Html::closeForm();
+        }
+        echo "</div>";
+
+        if (isset($holiday->fields['id'])) {
+            $hValidation = new HolidayValidation();
+            $dbu         = new DbUtils();
+            $datas       = $dbu->getAllDataFromTable($hValidation->getTable(), ["plugin_activity_holidays_id" => $holiday->fields['id']]);
+
+            $number = sizeof($datas);
+        }
+
+        if ($number) {
+            foreach ($datas as $data) {
+                if ($data["users_id_validate"] == Session::getLoginUserID()
+                && $data['status'] == CommonValidation::WAITING) {
+                    $this->showForm($data["id"], ['parent' => $holiday->fields['id']]);
+                }
+            }
+
+            $colonnes    = [_x('item', 'State'),
+                         sprintf(__('%1$s: %2$s'), __('Request'), __('Date')),
+                         __('Approval date'),
+                         __('Approver'),
+                         sprintf(__('%1$s: %2$s'), __('Approval'), __('Comments'))];
+            $nb_colonnes = count($colonnes);
+
+            echo "<table class='tab_cadre_fixe'>";
+            echo "<tr><th colspan='" . $nb_colonnes . "'>";
+            echo _n('Validation for this holiday', 'Validations for this holiday', $number > 1 ? 2 : 1, 'activity');
+            echo "</th></tr>";
+
+            echo "<tr>";
+            foreach ($colonnes as $colonne) {
+                echo "<th>" . $colonne . "</th>";
+            }
+            echo "</tr>";
+
+            Session::initNavigateListItems(
+                HolidayValidation::class,
+                //TRANS : %1$s is the itemtype name, %2$s is the name of the item (used for headings of a list)
+                                        sprintf(
+                                            __('%1$s = %2$s'),
+                                            $holiday->getTypeName(1),
+                                            $holiday->fields["name"]
+                                        )
+            );
+
+            foreach ($datas as $data) {
+                Session::addToNavigateListItems(HolidayValidation::class, $data["id"]);
+                $status = CommonValidation::getStatus($data['status']);
+                echo "<tr class='tab_bg_1'>";
+                echo "<td class='center'>";
+                if ($data['status'] == CommonValidation::ACCEPTED) {
+                    echo "<div style='color:forestgreen;'><i style='font-size: 3.5em;' class='ti ti-circle-check'></i><br>" . $status . "</div>";
+                } elseif ($data['status'] == CommonValidation::REFUSED) {
+                    echo "<div style='color:darkred;'><i style='font-size: 3.5em;' class='ti ti-circle-x'></i><br>" . $status . "</div>";
+                } else {
+                    echo "<div style='color:orange;'><i style='font-size: 3.5em;' class='ti ti-question-mark'></i><br>" . $status . "</div>";
+                }
+                echo "</td>";
+
+                echo "<td>" . Html::convDateTime($data["submission_date"]) . "</td>";
+                echo "<td>" . Html::convDateTime($data["validation_date"]) . "</td>";
+                echo "<td>" . $dbu->getUserName($data["users_id_validate"]) . "</td>";
+                echo "<td>" . $data["comment_validation"] . "</td>";
+                echo "</tr>";
+            }
+            echo "</table>";
+        } else {
+            echo "<div class='center b'>" . __('No holiday validation request found', 'activity') . "</div>";
+        }
+    }
+
+
+   /**
+    * Print the validation form
+    *
+    * @param $ID        integer  ID of the item
+    * @param $options   array    options used
+    *
+    *
+    * @return bool
+    */
+    function showForm($ID, $options = [])
+    {
+
+        $dbu              = new DbUtils();
+        $validation_admin = true;
+
+        $options['colspan']     = 1;
+        $options['candel']      = false;
+        $options['formtitle']   = '';
+        $options['formoptions'] = "id='formvalidation'";
+
+        $this->initForm($ID, $options);
+        $this->showFormHeader($options);
+
+        $holiday = new Holiday();
+        $holiday->getFromDB($this->fields['plugin_activity_holidays_id']);
+
+        $validator = ($this->fields["users_id_validate"] == Session::getLoginUserID());
+
+        echo "<table class='tab_cadre_fixe' id='mainformtable'>";
+
+        if ($validator && $this->fields["status"] == CommonValidation::WAITING) {
+            echo "<tr class='tab_bg_2'>";
+            echo "<th colspan='4'>" . __('Do you approve this holiday ?', 'activity') . "</th>";
+            echo "</tr>";
+
+            echo "<tr class='tab_bg_1'>";
+            echo "<td>" . __('Status of the approval request') . "</td>";
+            echo "<td class='center'>";
+            echo "<div style='color:forestgreen;'><i id='accept_holiday' style='font-size: 3.5em;' class='question ti ti-circle-check'></i><br>" . __('Accept holiday', 'activity') . "</div>";
+            echo Html::hidden('accept_holiday', ['value' => 0]);
+            echo "</td>";
+            echo "<td class='center'>";
+            echo "<div style='color:darkred;'><i id='refuse_holiday' style='font-size: 3.5em;' class='question ti ti-circle-x'></i><br>" . __('Refuse holiday', 'activity') . "</div>";
+            echo Html::hidden('refuse_holiday', ['value' => 0]);
+            echo Html::hidden('validation_date', ['value' => date('Y-m-d H:i:s')]);
+            echo Html::hidden('id', ['value' => $this->fields['id']]);
+            echo "</td>";
+            echo "</tr>";
+
+            echo Html::scriptBlock('$( "#accept_holiday" ).click(function() {
+                                $( "#formvalidation" ).append("<input type=\'hidden\' name=\'accept_holiday\' value=\'1\' />");
+                                $( "#formvalidation" ).append("<input type=\'hidden\' name=\'update\' value=\'1\' />");
+                                $( "#formvalidation" ).submit();
+                              });
+                              $( "#refuse_holiday" ).click(function() {
+                                $( "#formvalidation" ).append("<input type=\'hidden\' name=\'refuse_holiday\' value=\'1\' />");
+                                $( "#formvalidation" ).append("<input type=\'hidden\' name=\'update\' value=\'1\' />");
+                                $( "#formvalidation" ).submit();
+                              });');
+        }
+
+        if ($ID > 0) {
+            if ($validator) {
+                echo "<tr class='tab_bg_1'>";
+                echo "<td>" . __('Approval comments') . "<br>(" . __('Optional when approved') . ")</td>";
+                echo "<td colspan='2'>";
+                Html::textarea(['name'            => 'comment_validation',
+                            'value'           => $this->fields["comment_validation"],
+                            'cols'       => 100,
+                            'rows'       => 3,
+                            'enable_richtext' => false]);
+                echo "</td></tr>";
+            } else {
+                echo "<tr class='tab_bg_1'>";
+                echo "<td>" . __('Status of the approval request') . "</td>";
+                echo "<td colspan='2'>" . CommonValidation::getStatus($this->fields["status"]) . "</td></tr>";
+
+                echo "<tr class='tab_bg_1'>";
+                echo "<td>" . __('Comments') . "</td>";
+                echo "<td colspan='2'>" . $this->fields["comment_validation"] . "</td></tr>";
+            }
+        }
+
+        if ($validation_admin) {
+            echo "<tr class='tab_bg_1'>";
+            echo "<td>" . __('Approval requester') . "</td>";
+            echo "<td colspan='2'>";
+            echo $dbu->getUserName($holiday->fields["users_id"]);
+            echo "</td></tr>";
+
+            echo "<tr class='tab_bg_1'><td>" . __('Approver') . "</td>";
+            echo "<td colspan='2'>";
+            echo $dbu->getUserName($this->fields["users_id_validate"]);
+            echo "</td></tr>";
+        } else {
+            echo "<tr class='tab_bg_1'>";
+            echo "<td>" . __('Approval requester') . "</td>";
+            echo "<td colspan='2'>" . $dbu->getUserName($this->fields["users_id"]) . "</td></tr>";
+
+            echo "<tr class='tab_bg_1'><td>" . __('Approver') . "</td>";
+            echo "<td colspan='2'>" . $dbu->getUserName($this->fields["users_id_validate"]) . "</td></tr>";
+        }
+
+        $options['formfooter'] = '';
+        $options['colspan']    = 1;
+        $options['canedit']    = false;
+        $this->showFormButtons($options);
+        Html::closeForm();
+        return true;
+    }
+
+
+   /**
+    * @since version 0.84
+    *
+    * @see CommonDBConnexity::getHistoryChangeWhenUpdateField
+    **/
+    function getHistoryChangeWhenUpdateField($field)
+    {
+
+        $dbu = new DbUtils();
+        if ($field == 'status') {
+            $username = $dbu->getUserName($this->fields["users_id_validate"]);
+            $result   = ['0', '', ''];
+            if ($this->fields["status"] == 'accepted') {
+                //TRANS: %s is the username
+                $result[2] = sprintf(__('Approval granted by %s'), $username);
+            } else {
+               //TRANS: %s is the username
+                $result[2] = sprintf(__('Update the approval request to %s'), $username);
+            }
+            return $result;
+        }
+        return false;
+    }
+
+
+   /**
+    * @since version 0.84
+    *
+    * @see CommonDBChild::getHistoryNameForItem
+    **/
+    function getHistoryNameForItem(CommonDBTM $item, $case)
+    {
+
+        $dbu      = new DbUtils();
+        $username = $dbu->getUserName($this->fields["users_id_validate"]);
+        switch ($case) {
+            case 'add':
+                return sprintf(__('Approval request send to %s'), $username);
+
+            case 'delete':
+                return sprintf(__('Cancel the approval request to %s'), $username);
+        }
+        return '';
+    }
+
+    static function getSpecificValueToDisplay($field, $values, array $options = [])
+    {
+        if (!is_array($values)) {
+            $values = [$field => $values];
+        }
+        switch ($field) {
+            case 'users_id_validate':
+                $user = new User();
+                $user->getFromDB($values[$field]);
+                return $user->getLink();
+        }
+
+        return parent::getSpecificValueToDisplay($field, $values, $options);
+    }
+
+    static function getSpecificValueToSelect($field, $name = '', $values = '', array $options = [])
+    {
+        $dbu = new DbUtils();
+        if (!is_array($values)) {
+            $values = [$field => $values];
+        }
+        $options['display'] = false;
+        switch ($field) {
+            case 'users_id_validate':
+                $holidayValidation = new HolidayValidation();
+                $validators        = $holidayValidation->find();
+                $elements          = [Dropdown::EMPTY_VALUE];
+                foreach ($validators as $validator) {
+                    $elements[$validator['users_id_validate']] = $dbu->getUserName($validator['users_id_validate']);
+                }
+
+                return Dropdown::showFromArray($name, $elements, ['display' => false, 'value' => $values[$field]]);
+        }
+
+        return parent::getSpecificValueToSelect($field, $name, $values, $options);
+    }
+}

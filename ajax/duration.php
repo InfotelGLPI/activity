@@ -25,20 +25,22 @@
  --------------------------------------------------------------------------
 */
 
-include ('../../../inc/includes.php');
+use GlpiPlugin\Activity\Holiday;
+use GlpiPlugin\Activity\Report;
 
 Session::checkLoginUser();
 
 $values  = [];
-$report  = new PluginActivityReport();
-$holiday = new PluginActivityHoliday();
+$report  = new Report();
+$holiday = new Holiday();
 
 $actiontime  = $report->getActionTime(
-      $_POST["begin"],
-      $_POST["end"],
-      $values,
-      $_POST["actiontime"],
-      PluginActivityReport::$WORK);
+    $_POST["begin"],
+    $_POST["end"],
+    $values,
+    $_POST["actiontime"],
+    Report::$WORK
+);
 
 header('Content-Type: application/json');
 echo json_encode(['actiontime' => $actiontime]);

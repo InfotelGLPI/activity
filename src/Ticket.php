@@ -25,33 +25,29 @@
  --------------------------------------------------------------------------
 */
 
-use Glpi\Exception\Http\BadRequestHttpException;
-use GlpiPlugin\Activity\Report;
+namespace GlpiPlugin\Activity;
 
-Session::checkLoginUser();
+use CommonITILActor;
+use Session;
+use Ticket_User;
 
-if (isset($_GET["file"])) { // for other file
-   $splitter = explode("/", $_GET["file"]);
+class Ticket {
 
-   if (count($splitter) == 3) {
-      $send = false;
-      if (
-         ($splitter[1] == "activity")
-         && Session::haveRight("plugin_activity_statistics", READ)
-      ) {
-         $send = GLPI_DOC_DIR . "/" . $_GET["file"];
+   static function afterAddUser($item) {
+      if (!is_array($item->input) || !count($item->input)) {
+         // Already cancel by another plugin
+         return false;
       }
-      if ($send && file_exists($send)) {
-         $doc = new Document();
-         $doc->fields['filepath'] = $_GET["file"];
-         $doc->fields['mime'] = 'application/pdf';
-         $doc->fields['filename'] = $splitter[2];
-         $report = new Report();
-         $report->send($doc);
-      } else {
-          throw new BadRequestHttpException(__('Unauthorized access to this file'), true);
+
+      if ($item instanceof Ticket_User
+            && $item->input['type'] == CommonITILActor::ASSIGN) {
+         $ticket = new \Ticket;
+         $ticket->getFromDB($item->input['tickets_id']);
+
+         $in_holiday = Holiday::isUserInHoliday(date('Y-m-d H:i:s', time()), [$item->input['users_id']]);
+         if ($in_holiday) {
+            Session::addMessageAfterRedirect(__("The following user is unavailable / on holiday : ", 'activity').implode("', '", $in_holiday), true, ERROR, false);
+         }
       }
-   } else {
-       throw new BadRequestHttpException(__('Invalid filename'), true);
    }
 }

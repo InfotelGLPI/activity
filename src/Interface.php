@@ -25,33 +25,21 @@
  --------------------------------------------------------------------------
 */
 
-use Glpi\Exception\Http\BadRequestHttpException;
-use GlpiPlugin\Activity\Report;
+namespace GlpiPlugin\Activity;
 
-Session::checkLoginUser();
+interface ActivityInterface {
 
-if (isset($_GET["file"])) { // for other file
-   $splitter = explode("/", $_GET["file"]);
+   /**
+    * Initialize parameters from the $_POST var
+    *
+    */
+   function initParams($post);
 
-   if (count($splitter) == 3) {
-      $send = false;
-      if (
-         ($splitter[1] == "activity")
-         && Session::haveRight("plugin_activity_statistics", READ)
-      ) {
-         $send = GLPI_DOC_DIR . "/" . $_GET["file"];
-      }
-      if ($send && file_exists($send)) {
-         $doc = new Document();
-         $doc->fields['filepath'] = $_GET["file"];
-         $doc->fields['mime'] = 'application/pdf';
-         $doc->fields['filename'] = $splitter[2];
-         $report = new Report();
-         $report->send($doc);
-      } else {
-          throw new BadRequestHttpException(__('Unauthorized access to this file'), true);
-      }
-   } else {
-       throw new BadRequestHttpException(__('Invalid filename'), true);
-   }
+   function showForm($post);
+
+   function getData(&$post);
+
+   static function getTitle();
+
+   function showLine($params, $data);
 }
