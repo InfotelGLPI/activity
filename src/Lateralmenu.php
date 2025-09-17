@@ -84,23 +84,23 @@ class Lateralmenu extends CommonDBTM
             $periods = $hcount->getCurrentPeriods();
 
             if (count($periods) > 0) {
-                $nbHolidays = $holiday->countNbHoliday(Session::getLoginUserID(true), $periods, CommonValidation::ACCEPTED);
-
-                if (!empty($nbHolidays[Report::$HOLIDAY]['total'])
-                 || !empty($nbHolidays[Report::$SICKNESS]['total'])
-                 || !empty($nbHolidays[Report::$PART_TIME]['total'])) {
-                    echo "<tr class='tab_bg_1'><td colspan='2'><b>" . __('Holidays detail', 'activity') . " : </b></td></tr>";
-                    $holiday->showHolidayDetailsByType($nbHolidays);
-                }
-
-                $nbHolidays = $holiday->countNbHoliday(Session::getLoginUserID(true), $periods, CommonValidation::WAITING);
-
-                if (!empty($nbHolidays[Report::$HOLIDAY]['total'])
-                || !empty($nbHolidays[Report::$SICKNESS]['total'])
-                || !empty($nbHolidays[Report::$PART_TIME]['total'])) {
-                    echo "<tr class='tab_bg_1'><td colspan='2'><b>" . __('Holidays detail in progress', 'activity') . " : </b></td></tr>";
-                    $holiday->showHolidayDetailsByType($nbHolidays);
-                }
+//                $nbHolidays = $holiday->countNbHoliday(Session::getLoginUserID(true), $periods, CommonValidation::ACCEPTED);
+//
+//                if (!empty($nbHolidays[Report::$HOLIDAY]['total'])
+//                 || !empty($nbHolidays[Report::$SICKNESS]['total'])
+//                 || !empty($nbHolidays[Report::$PART_TIME]['total'])) {
+//                    echo "<tr class='tab_bg_1'><td colspan='2'><b>" . __('Holidays detail', 'activity') . " : </b></td></tr>";
+//                    $holiday->showHolidayDetailsByType($nbHolidays);
+//                }
+//
+//                $nbHolidays = $holiday->countNbHoliday(Session::getLoginUserID(true), $periods, CommonValidation::WAITING);
+//
+//                if (!empty($nbHolidays[Report::$HOLIDAY]['total'])
+//                || !empty($nbHolidays[Report::$SICKNESS]['total'])
+//                || !empty($nbHolidays[Report::$PART_TIME]['total'])) {
+//                    echo "<tr class='tab_bg_1'><td colspan='2'><b>" . __('Holidays detail in progress', 'activity') . " : </b></td></tr>";
+//                    $holiday->showHolidayDetailsByType($nbHolidays);
+//                }
                 $nbHolidays = $holiday->countNbHolidayByPeriod(Session::getLoginUserID(true), $periods);
 
                 $hcount->showHolidayDetailsByPeriod($nbHolidays);

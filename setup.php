@@ -1,4 +1,5 @@
 <?php
+
 /*
  -------------------------------------------------------------------------
  Activity plugin for GLPI
@@ -60,8 +61,8 @@ function plugin_init_activity()
     $PLUGIN_HOOKS['change_profile']['activity'] = [Profile::class, 'initProfile'];
     if (isset($_SESSION["glpiactiveprofile"]["interface"])
         && $_SESSION["glpiactiveprofile"]["interface"] != "helpdesk") {
-        $PLUGIN_HOOKS[Hooks::ADD_CSS]['activity']        = ['activity.css'];
-//        $PLUGIN_HOOKS['javascript']['activity'][]   = PLUGIN_ACTIVITY_WEBDIR . '/lib/sdashboard/lib/flotr2/flotr2.js';
+        $PLUGIN_HOOKS[Hooks::ADD_CSS]['activity'] = ['activity.css'];
+        //        $PLUGIN_HOOKS['javascript']['activity'][]   = PLUGIN_ACTIVITY_WEBDIR . '/lib/sdashboard/lib/flotr2/flotr2.js';
         $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['activity'] = ['/lib/jquery/js/jquery.ui.touch-punch.min.js'];
     }
 
@@ -73,10 +74,11 @@ function plugin_init_activity()
         $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['activity'] = [
             'scripts/scripts-activitydate.js',
             'scripts/scripts-activityholidays.js',
-                                                       'scripts/activity_load_scripts.js.php'];
-//        $PLUGIN_HOOKS['javascript']['activity']     = [PLUGIN_ACTIVITY_WEBDIR . "/scripts/scripts-activitydate.js",
-//                                                       PLUGIN_ACTIVITY_WEBDIR . "/scripts/scripts-activityholidays.js",
-//                                                       PLUGIN_ACTIVITY_WEBDIR . "/scripts/activity_load_scripts.js.php"];
+            'scripts/activity_load_scripts.js.php',
+        ];
+        //        $PLUGIN_HOOKS['javascript']['activity']     = [PLUGIN_ACTIVITY_WEBDIR . "/scripts/scripts-activitydate.js",
+        //                                                       PLUGIN_ACTIVITY_WEBDIR . "/scripts/scripts-activityholidays.js",
+        //                                                       PLUGIN_ACTIVITY_WEBDIR . "/scripts/activity_load_scripts.js.php"];
     }
 
     //   if (Session::haveRight("plugin_activity_statistics", 1)) {
@@ -110,8 +112,10 @@ function plugin_init_activity()
             unset($_SESSION['glpi_plannings']['filters']['TicketTask']);
         }
 
-        Plugin::registerClass(Holiday::class, ['planning_types'              => true,
-                                                        'notificationtemplates_types' => true]);
+        Plugin::registerClass(Holiday::class, [
+            'planning_types' => true,
+            'notificationtemplates_types' => true,
+        ]);
         Plugin::registerClass(HolidayValidation::class, []);
 
         if (Session::getLoginUserID()) {
@@ -124,8 +128,8 @@ function plugin_init_activity()
                 );
 
                 if (Session::haveRight('plugin_activity', READ)) {
-                    $PLUGIN_HOOKS["menu_toadd"]['activity']               = ['tools' => Menu::class];
-                    $PLUGIN_HOOKS['helpdesk_menu_entry']['activity']      = PLUGIN_ACTIVITY_WEBDIR . '/front/menu.php';
+                    $PLUGIN_HOOKS["menu_toadd"]['activity'] = ['tools' => Menu::class];
+                    $PLUGIN_HOOKS['helpdesk_menu_entry']['activity'] = PLUGIN_ACTIVITY_WEBDIR . '/front/menu.php';
                     $PLUGIN_HOOKS['helpdesk_menu_entry_icon']['activity'] = Holiday::getIcon();
                 }
 
@@ -134,64 +138,101 @@ function plugin_init_activity()
             $PLUGIN_HOOKS['mydashboard']['activity'] = [Dashboard::class];
 
             if (Session::haveRight("plugin_activity", UPDATE) && class_exists(Profile::class)) {
-                $PLUGIN_HOOKS['config_page']['activity']        = 'front/config.form.php';
+                $PLUGIN_HOOKS['config_page']['activity'] = 'front/config.form.php';
                 $PLUGIN_HOOKS['use_massive_action']['activity'] = false;
             }
 
-            $PLUGIN_HOOKS['pre_item_add']['activity'] = ['Ticket_User' => [Ticket::class,
-                                                                           'afterAddUser']];
+            $PLUGIN_HOOKS['pre_item_add']['activity'] = [
+                'Ticket_User' => [
+                    Ticket::class,
+                    'afterAddUser',
+                ],
+            ];
 
-            $PLUGIN_HOOKS['item_add']['activity'] = ['TicketTask'            => [TicketTask::class,
-                                                                                 'taskAdd'],
-                                                     'PlanningExternalEvent' => [PlanningExternalEvent::class,
-                                                                                 'activityAdd']];
+            $PLUGIN_HOOKS['item_add']['activity'] = [
+                'TicketTask' => [
+                    TicketTask::class,
+                    'taskAdd',
+                ],
+                'PlanningExternalEvent' => [
+                    PlanningExternalEvent::class,
+                    'activityAdd',
+                ],
+            ];
 
-            $PLUGIN_HOOKS['pre_item_update']['activity'] = ['TicketTask'            => [TicketTask::class,
-                                                                                        'taskUpdate'],
-                                                            'PlanningExternalEvent' => [PlanningExternalEvent::class,
-                                                                                        'activityUpdate']];
+            $PLUGIN_HOOKS['pre_item_update']['activity'] = [
+                'TicketTask' => [
+                    TicketTask::class,
+                    'taskUpdate',
+                ],
+                'PlanningExternalEvent' => [
+                    PlanningExternalEvent::class,
+                    'activityUpdate',
+                ],
+            ];
 
-            $PLUGIN_HOOKS['post_prepareadd']['activity'] = ['PlanningExternalEvent' => [PlanningExternalEvent::class,
-                                                                                        'prepareInputToAddWithPluginOptions']];
+            $PLUGIN_HOOKS['post_prepareadd']['activity'] = [
+                'PlanningExternalEvent' => [
+                    PlanningExternalEvent::class,
+                    'prepareInputToAddWithPluginOptions',
+                ],
+            ];
 
 
-            $PLUGIN_HOOKS['pre_item_purge']['activity'] = ['Document' => [Snapshot::class,
-                                                                          'purgeSnapshots']];
+            $PLUGIN_HOOKS['pre_item_purge']['activity'] = [
+                'Document' => [
+                    Snapshot::class,
+                    'purgeSnapshots',
+                ],
+            ];
 
             if ($opt->getUseProject() && strpos($_SERVER['REQUEST_URI'], "projecttask")) {
-                $PLUGIN_HOOKS['item_add']['activity'] = ['ProjectTask' => [ProjectTask::class,
-                                                                           'taskAdd']];
+                $PLUGIN_HOOKS['item_add']['activity'] = [
+                    'ProjectTask' => [
+                        ProjectTask::class,
+                        'taskAdd',
+                    ],
+                ];
 
-                $PLUGIN_HOOKS['pre_item_update']['activity'] = ['ProjectTask' => [ProjectTask::class,
-                                                                                  'taskUpdate']];
+                $PLUGIN_HOOKS['pre_item_update']['activity'] = [
+                    'ProjectTask' => [
+                        ProjectTask::class,
+                        'taskUpdate',
+                    ],
+                ];
             }
         }
 
         $PLUGIN_HOOKS['post_item_form']['activity'] = 'plugin_activity_post_item_form';
     }
     //Planning hook
-    $PLUGIN_HOOKS['display_planning']['activity']  = [PublicHoliday::class => "displayPlanningItem",
-        Holiday::class       => "displayPlanningItem"];
-    $PLUGIN_HOOKS['planning_populate']['activity'] = [PublicHoliday::class => "populatePlanning",
-        Holiday::class       => "populatePlanning"];
+    $PLUGIN_HOOKS['display_planning']['activity'] = [
+        PublicHoliday::class => "displayPlanningItem",
+        Holiday::class => "displayPlanningItem",
+    ];
+    $PLUGIN_HOOKS['planning_populate']['activity'] = [
+        PublicHoliday::class => "populatePlanning",
+        Holiday::class => "populatePlanning",
+    ];
 }
 
 // Get the name and the version of the plugin - Needed
 function plugin_version_activity()
 {
     return [
-        'name'         => _n('Activity', 'Activities', 2, 'activity'),
-        'version'      => PLUGIN_ACTIVITY_VERSION,
-        'author'       => "Xavier Caillaud / Infotel",
-        'license'      => 'GPLv2+',
-        'homepage'     => '',
+        'name' => _n('Activity', 'Activities', 2, 'activity'),
+        'version' => PLUGIN_ACTIVITY_VERSION,
+        'author' => "Xavier Caillaud / Infotel",
+        'license' => 'GPLv2+',
+        'homepage' => '',
         'requirements' => [
             'glpi' => [
                 'min' => '11.0',
                 'max' => '12.0',
-                'dev' => false
-            ]
-        ]];
+                'dev' => false,
+            ],
+        ],
+    ];
 }
 
 /**
