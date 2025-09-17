@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-16 16:24+0000\n"
+"POT-Creation-Date: 2025-09-17 09:23+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: setup.php:183 ajax/loadscripts.php:47 front/menu.php:50 src/Config.php:47
+#: setup.php:223 ajax/loadscripts.php:47 front/menu.php:50 src/Config.php:47
 #: src/Menu.php:37 src/Option.php:46 src/Preference.php:68 src/Profile.php:54
 #: src/Profile.php:159 src/Report.php:1123
 msgid "Activity"
@@ -429,14 +429,6 @@ msgstr ""
 
 #: src/Holidayvalidation.php:515
 msgid "Refuse holiday"
-msgstr ""
-
-#: src/Lateralmenu.php:92
-msgid "Holidays detail"
-msgstr ""
-
-#: src/Lateralmenu.php:101
-msgid "Holidays detail in progress"
 msgstr ""
 
 #: src/Notification.php:64
