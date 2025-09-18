@@ -28,7 +28,10 @@
 namespace GlpiPlugin\Activity;
 
 use Config;
+use GLPIKey;
 use GLPIMailer;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
 use Session;
 use Toolbox;
 
@@ -36,7 +39,7 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
-class NotificationMail extends \PHPMailer\PHPMailer\PHPMailer {
+class NotificationMail extends PHPMailer {
 
    //! mailing type (new,attrib,followup,finish)
    var $mailtype = NULL;
@@ -64,7 +67,7 @@ class NotificationMail extends \PHPMailer\PHPMailer\PHPMailer {
       global $CFG_GLPI;
 
       // Comes from config
-//      $this->SetLanguage("en", Config::getLibraryDir("PHPMailer") . "/language/");
+      $this->SetLanguage("en", Config::getLibraryDir("PHPMailer") . "/language/");
 
       if ($CFG_GLPI['smtp_mode'] != MAIL_MAIL) {
          $this->Mailer = "smtp";
@@ -73,7 +76,7 @@ class NotificationMail extends \PHPMailer\PHPMailer\PHPMailer {
          if ($CFG_GLPI['smtp_username'] != '') {
             $this->SMTPAuth = true;
             $this->Username = $CFG_GLPI['smtp_username'];
-            $this->Password = Toolbox::sodiumDecrypt($CFG_GLPI['smtp_passwd']);
+             $this->Password = (new GLPIKey())->decrypt($CFG_GLPI['smtp_passwd']);
          }
 
          if ($CFG_GLPI['smtp_mode'] == MAIL_SMTPSSL) {
