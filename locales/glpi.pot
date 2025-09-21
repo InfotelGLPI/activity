@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-18 07:18+0000\n"
+"POT-Creation-Date: 2025-09-21 14:49+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,8 +18,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: setup.php:223 ajax/loadscripts.php:47 front/menu.php:50 src/Config.php:47
-#: src/Menu.php:37 src/Option.php:46 src/Preference.php:68 src/Profile.php:54
+#: setup.php:223 ajax/loadscripts.php:47 front/menu.php:50 src/Config.php:48
+#: src/Menu.php:37 src/Option.php:46 src/Preference.php:67 src/Profile.php:54
 #: src/Profile.php:159 src/Report.php:1123
 msgid "Activity"
 msgid_plural "Activities"
@@ -68,15 +68,15 @@ msgstr ""
 msgid "Report of Activities"
 msgstr ""
 
-#: src/Config.php:74
+#: src/Config.php:75
 msgid "Define internal helpdesk"
 msgstr ""
 
-#: src/Config.php:85 src/Config.php:138
+#: src/Config.php:86 src/Config.php:139
 msgid "Is recursive"
 msgstr ""
 
-#: src/Config.php:130
+#: src/Config.php:131
 msgid "Show internal helpdesk"
 msgstr ""
 
@@ -233,7 +233,7 @@ msgid_plural "Holiday counters"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Holiday.php:512 src/Preference.php:204
+#: src/Holiday.php:512 src/Preference.php:206
 msgid "Add a manager"
 msgstr ""
 
@@ -431,28 +431,28 @@ msgstr ""
 msgid "Refuse holiday"
 msgstr ""
 
-#: src/Notification.php:64
+#: src/Notification.php:63
 msgid "Please fill a subject"
 msgstr ""
 
-#: src/Notification.php:67
+#: src/Notification.php:66
 msgid "Please fill a mail body"
 msgstr ""
 
-#: src/Notification.php:122
+#: src/Notification.php:121
 msgid "Mail sent"
 msgstr ""
 
-#: src/Notification.php:123 src/Notification.php:126
+#: src/Notification.php:122 src/Notification.php:125
 #, php-format
 msgid "A mail has been sent to %s"
 msgstr ""
 
-#: src/Notification.php:130
+#: src/Notification.php:129
 msgid "Failed Mail send"
 msgstr ""
 
-#: src/Notification.php:131
+#: src/Notification.php:130
 #, php-format
 msgid "Fail to send a mail to %s"
 msgstr ""
@@ -576,7 +576,7 @@ msgid "CRA"
 msgstr ""
 
 #: src/Planningexternalevent.php:251 src/Projecttask.php:135
-#: src/Tickettask.php:93
+#: src/Tickettask.php:94
 msgid "Use in CRA"
 msgstr ""
 
@@ -606,7 +606,7 @@ msgstr ""
 msgid "The chosen end date is on weekend"
 msgstr ""
 
-#: src/Preference.php:121 src/Preference.php:160
+#: src/Preference.php:121 src/Preference.php:162
 msgid "List of my managers"
 msgstr ""
 
@@ -614,7 +614,7 @@ msgstr ""
 msgid "You have not declared any manager yet."
 msgstr ""
 
-#: src/Preference.php:165
+#: src/Preference.php:167
 msgid "There is no manager for your groups"
 msgstr ""
 
@@ -716,16 +716,16 @@ msgstr ""
 msgid "The following user is unavailable / on holiday : "
 msgstr ""
 
-#: src/Tickettask.php:53
+#: src/Tickettask.php:54
 msgid "Cumulative ticket task"
 msgid_plural "Cumulative ticket tasks"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Tools.php:244
+#: src/Tools.php:246
 msgid "Export the report"
 msgstr ""
 
-#: src/Tools.php:421
+#: src/Tools.php:423
 msgid "Refresh"
 msgstr ""
