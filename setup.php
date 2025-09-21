@@ -25,7 +25,7 @@
  --------------------------------------------------------------------------
 */
 
-define('PLUGIN_ACTIVITY_VERSION', '3.1.6');
+define('PLUGIN_ACTIVITY_VERSION', '3.2.0');
 
 global $CFG_GLPI;
 
@@ -222,7 +222,7 @@ function plugin_version_activity()
     return [
         'name' => _n('Activity', 'Activities', 2, 'activity'),
         'version' => PLUGIN_ACTIVITY_VERSION,
-        'author' => "Xavier Caillaud / Infotel",
+        'author'       => "<a href='https://blogglpi.infotel.com'>Infotel</a>, Xavier CAILLAUD",
         'license' => 'GPLv2+',
         'homepage' => '',
         'requirements' => [

@@ -25,8 +25,6 @@
  --------------------------------------------------------------------------
 */
 
-use GlpiPlugin\Activity\Planning;
-
 Session::checkRight("plugin_activity", READ);
 
 if (!isset($_GET["uID"])) {
@@ -68,7 +66,7 @@ if (isset($_GET['checkavailability'])) {
                $ismine = true;
             } else {
                $entities = Profile_User::getUserEntitiesForRight($user->getID(),
-                                                                 Planning::READGROUP);
+                                                                 \Planning::READGROUP);
                $groups   = Group_User::getUserGroups($user->getID());
                foreach ($groups as $group) {
                   if (($_GET["gID"] == $group['id'])

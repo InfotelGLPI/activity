@@ -32,6 +32,7 @@ use DbUtils;
 use Dropdown;
 use Glpi\RichText\RichText;
 use Html;
+use Plugin;
 use Session;
 
 if (!defined('GLPI_ROOT')) {

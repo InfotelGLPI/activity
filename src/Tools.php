@@ -29,6 +29,8 @@ namespace GlpiPlugin\Activity;
 
 use DbUtils;
 use Dropdown;
+use Entity;
+use Group;
 use Html;
 use Toolbox;
 

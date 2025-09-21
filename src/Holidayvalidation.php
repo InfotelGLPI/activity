@@ -290,7 +290,7 @@ class HolidayValidation extends CommonDBChild
     *
     * @param $tID holiday id
     *
-    * @return statistics array
+    * @return  array statistics
     **/
     static function getValidationStats($tID)
     {

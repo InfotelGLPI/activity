@@ -29,7 +29,6 @@ namespace GlpiPlugin\Activity;
 
 use CommonDBTM;
 use Log;
-use Messages;
 use Session;
 use User;
 

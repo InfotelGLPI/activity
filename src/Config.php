@@ -29,6 +29,7 @@ namespace GlpiPlugin\Activity;
 use CommonDBTM;
 use DbUtils;
 use Dropdown;
+use Entity;
 use Html;
 use Toolbox;
 

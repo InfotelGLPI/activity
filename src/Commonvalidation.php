@@ -111,7 +111,7 @@ class CommonValidation extends CommonDBTM{
    /**
     * Get Ticket validation status Name
     *
-    * @param $value status ID
+    * @param status ID
     *
     * @return status
     */

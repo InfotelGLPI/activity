@@ -46,47 +46,47 @@ if (!defined('GLPI_ROOT')) {
  */
 class Preference extends CommonDBTM
 {
+    public static $rightname = "plugin_activity";
 
-    static $rightname = "plugin_activity";
-
-   /**
-    * Get Tab Name used for itemtype
-    *
-    * NB : Only called for existing object
-    *      Must check right on what will be displayed + template
-    *
-    * @since 0.83
-    *
-    * @param CommonGLPI $item         Item on which the tab need to be displayed
-    * @param boolean    $withtemplate is a template object ? (default 0)
-    *
-    *  @return string tab name
-    **/
-    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+    /**
+     * Get Tab Name used for itemtype
+     *
+     * NB : Only called for existing object
+     *      Must check right on what will be displayed + template
+     *
+     * @since 0.83
+     *
+     * @param CommonGLPI $item         Item on which the tab need to be displayed
+     * @param boolean    $withtemplate is a template object ? (default 0)
+     *
+     *  @return string tab name
+     **/
+    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
-        if ($item->getType()=='Preference') {
+        if ($item->getType() == 'Preference') {
             return self::createTabEntry(_n('Activity', 'Activities', 1, 'activity'));
         }
         return '';
     }
 
-    static function getIcon() {
+    public static function getIcon()
+    {
         return "ti ti-calendar-event";
     }
 
 
-   /**
-    * show Tab content
-    *
-    * @since 0.83
-    *
-    * @param CommonGLPI $item         Item on which the tab need to be displayed
-    * @param integer    $tabnum       tab number (default 1)
-    * @param boolean    $withtemplate is a template object ? (default 0)
-    *
-    * @return boolean
-    **/
-    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+    /**
+     * show Tab content
+     *
+     * @since 0.83
+     *
+     * @param CommonGLPI $item         Item on which the tab need to be displayed
+     * @param integer    $tabnum       tab number (default 1)
+     * @param boolean    $withtemplate is a template object ? (default 0)
+     *
+     * @return boolean
+     **/
+    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
 
         $pref = new Preference();
@@ -94,12 +94,12 @@ class Preference extends CommonDBTM
         return true;
     }
 
-   /**
-    * @param $user_id
-    *
-    * @return void
-    */
-    function showPreferenceForm($user_id)
+    /**
+     * @param $user_id
+     *
+     * @return void
+     */
+    public function showPreferenceForm($user_id)
     {
 
         $use_groupmanager = 0;
@@ -110,32 +110,34 @@ class Preference extends CommonDBTM
         }
 
         if ($use_groupmanager == 0) {
-           // Liste des managers déclarés
+            // Liste des managers déclarés
             $restrict = ["users_id" => $user_id];
             $dbu = new DbUtils();
             $managers = $dbu->getAllDataFromTable('glpi_plugin_activity_preferences', $restrict);
 
-            echo "<form method='post' action='".Toolbox::getItemTypeFormURL(Preference::class)."'>";
+            echo "<form method='post' action='" . Toolbox::getItemTypeFormURL(Preference::class) . "'>";
             echo "<table class='tab_cadre_fixe'>";
             echo "<tr class='tab_bg_1' >";
-            echo "<th colspan='2'>".__('List of my managers', 'activity')."</th>";
+            echo "<th colspan='2'>" . __('List of my managers', 'activity') . "</th>";
             echo "</tr>";
             if (sizeof($managers) == 0) {
                 echo "<tr class='tab_bg_1' id='no_manager_left'>";
-                echo "<td colspan='2'>".__('You have not declared any manager yet.', 'activity')."</td>";
+                echo "<td colspan='2'>" . __('You have not declared any manager yet.', 'activity') . "</td>";
                 echo "</tr>";
             } else {
                 echo "<tr class='tab_bg_1'>";
-                echo "<th>"._n('User', 'Users', 1)."</th>";
-                echo "<th>"._n('Action', 'Actions', 1)."</th>";
+                echo "<th>" . _n('User', 'Users', 1) . "</th>";
+                echo "<th>" . _n('Action', 'Actions', 1) . "</th>";
                 echo "</tr>";
                 foreach ($managers as $manager) {
                     echo "<tr class='tab_bg_1'>";
-                    echo "<td>".$dbu->getUserName($manager['users_id_validate'])."</td>";
+                    echo "<td>" . $dbu->getUserName($manager['users_id_validate']) . "</td>";
                     echo "<td>";
                     echo Html::hidden('id', ['value' => $manager['id']]);
-                    echo Html::submit(_sx('button', 'Delete permanently'),
-                                      ['name' => 'delete', 'class' => 'btn btn-primary']);
+                    echo Html::submit(
+                        _sx('button', 'Delete permanently'),
+                        ['name' => 'delete', 'class' => 'btn btn-primary']
+                    );
                     echo "</td>";
                     echo "</tr>";
                 }
@@ -151,26 +153,26 @@ class Preference extends CommonDBTM
 
             $dbu = new DbUtils();
             $restrict = ["groups_id" => $groups,
-                   "is_manager" => 1,
-                    "NOT" => ["users_id"  => $user_id]];
+                "is_manager" => 1,
+                "NOT" => ["users_id"  => $user_id]];
             $managers = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
 
             echo "<table class='tab_cadre_fixe'>";
             echo "<tr class='tab_bg_1' >";
-            echo "<th colspan='2'>".__('List of my managers', 'activity')."</th>";
+            echo "<th colspan='2'>" . __('List of my managers', 'activity') . "</th>";
             echo "</tr>";
 
             if (sizeof($managers) <= 0) {
                 echo "<tr class='tab_bg_1' id='no_manager_left'>";
-                echo "<td colspan='2'>".__('There is no manager for your groups', 'activity')."</td>";
+                echo "<td colspan='2'>" . __('There is no manager for your groups', 'activity') . "</td>";
                 echo "</tr>";
             } else {
                 echo "<tr class='tab_bg_1'>";
-                echo "<th>"._n('User', 'Users', count($managers))."</th>";
+                echo "<th>" . _n('User', 'Users', count($managers)) . "</th>";
                 echo "</tr>";
                 foreach ($managers as $manager) {
                     echo "<tr class='tab_bg_1'>";
-                    echo "<td>".$dbu->getUserName($manager['users_id'])."</td>";
+                    echo "<td>" . $dbu->getUserName($manager['users_id']) . "</td>";
                     echo "</tr>";
                 }
             }
@@ -178,14 +180,14 @@ class Preference extends CommonDBTM
             echo "</table>";
         }
 
-         $this->showAddManagerView($managers);
+        $this->showAddManagerView($managers);
     }
 
-   /**
-    * @param $managers
-    *
-    * @return void
-    */
+    /**
+     * @param $managers
+     *
+     * @return void
+     */
     public function showAddManagerView($managers)
     {
 
@@ -198,10 +200,10 @@ class Preference extends CommonDBTM
 
         if ($use_groupmanager == 0) {
             echo "<br/>";
-            echo "<form method='post' action='".Toolbox::getItemTypeFormURL(Preference::class)."'>";
+            echo "<form method='post' action='" . Toolbox::getItemTypeFormURL(Preference::class) . "'>";
             echo "<table class='tab_cadre_fixe'> ";
             echo "<tr class='tab_bg_1' >";
-            echo "<th colspan='2'>".__('Add a manager', 'activity')."</th>";
+            echo "<th colspan='2'>" . __('Add a manager', 'activity') . "</th>";
             echo "</tr>";
 
             echo "<tr class='tab_bg_1' >";
@@ -213,10 +215,10 @@ class Preference extends CommonDBTM
             }
 
             $rand = User::dropdown([
-               'name' => 'users_id_validate',
-               'entity' => $_SESSION['glpiactiveentities'],
-               'right' => 'all',
-               'used' => $used]);
+                'name' => 'users_id_validate',
+                'entity' => $_SESSION['glpiactiveentities'],
+                'right' => 'all',
+                'used' => $used]);
 
             echo "</td>";
             echo "<td>";

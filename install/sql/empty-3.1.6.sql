@@ -99,48 +99,17 @@ CREATE TABLE `glpi_plugin_activity_preferences`
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;
 
 DROP TABLE IF EXISTS `glpi_plugin_activity_holidayvalidations`;
-CREATE TABLE IF NOT EXISTS `glpi_plugin_activity_holidayvalidations`
-(
-    `id`
-    int
-    unsigned
-    NOT
-    NULL
-    AUTO_INCREMENT,
-    `plugin_activity_holidays_id`
-    int
-    unsigned
-    NOT
-    NULL
-    DEFAULT
-    '0',
-    `users_id_validate`
-    int
-    unsigned
-    NOT
-    NULL
-    DEFAULT
-    '0',
-    `comment_validation`
-    text
-    COLLATE
-    utf8_unicode_ci,
-    `status`
-    tinyint
-(
-    1
-) NOT NULL DEFAULT 2 COMMENT '1 -> NONE ; 2 -> Waiting ; 3 -> accepted ; 4 -> rejected',
+CREATE TABLE IF NOT EXISTS `glpi_plugin_activity_holidayvalidations` (
+    `id` int unsigned NOT NULL AUTO_INCREMENT,
+    `plugin_activity_holidays_id` int unsigned NOT NULL DEFAULT '0',
+    `users_id_validate` int unsigned NOT NULL DEFAULT '0',
+    `comment_validation` text COLLATE utf8mb4_unicode_ci,
+    `status` tinyint (1) NOT NULL DEFAULT 2 COMMENT '1 -> NONE ; 2 -> Waiting ; 3 -> accepted ; 4 -> rejected',
     `submission_date` timestamp NULL DEFAULT NULL,
     `validation_date` timestamp NULL DEFAULT NULL,
-    PRIMARY KEY
-(
-    `id`
-),
-    KEY `users_id_validate`
-(
-    `users_id_validate`
-)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE =utf8_unicode_ci ROW_FORMAT= DYNAMIC;
+    PRIMARY KEY (`id`),
+    KEY `users_id_validate` (`users_id_validate`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 DROP TABLE IF EXISTS `glpi_plugin_activity_holidaycounts`;
 CREATE TABLE `glpi_plugin_activity_holidaycounts`
