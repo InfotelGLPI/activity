@@ -27,6 +27,7 @@
 
 use GlpiPlugin\Activity\Holiday;
 use GlpiPlugin\Activity\PlanningExternalEvent;
+use GlpiPlugin\Activity\Report;
 
 Session::checkLoginUser();
 
@@ -53,7 +54,8 @@ if (isset($_SESSION["glpipopup"]["name"])) {
       case "planningexternalevents" :
          Html::popHeader(PlanningExternalEvent::getTypeName(2), $_SERVER['PHP_SELF']);
          $_POST['target'] = "popup.php";
-          PlanningExternalEvent::showGenericSearch(array_merge($_POST, ['users_id' => $users_id]));
+          $report = new Report();
+          $report->showGenericSearch(array_merge($_POST, ['users_id' => $users_id]));
          break;
       case "holiday" :
          $holiday = new Holiday();

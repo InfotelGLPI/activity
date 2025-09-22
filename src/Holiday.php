@@ -1736,7 +1736,7 @@ class Holiday extends CommonDBTM
                 $key                              = $data["begin"] . "$$" . "GlpiPlugin\Activity\Holiday" . $data["id"];
                 $interv[$key]['color']            = $options['color'];
                 $interv[$key]['event_type_color'] = $options['event_type_color'];
-                $interv[$key]["itemtype"]         = ActivityHoliday::class;
+                $interv[$key]["itemtype"]         = Holiday::class;
                 $interv[$key]["id"]               = $data["id"];
                 $interv[$key]["users_id"]         = $data["users_id"];
                 $interv[$key]["actiontime"]       = $data["actiontime"];

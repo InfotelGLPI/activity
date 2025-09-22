@@ -34,6 +34,7 @@ use DBmysql;
 use DbUtils;
 use Dropdown;
 use GlpiPlugin\Manageentities\Config;
+use GlpiPlugin\Activity\Config as ActivityConfig;
 use GlpiPlugin\Mydashboard\Charts\PieChart;
 use GlpiPlugin\Mydashboard\Helper;
 use GlpiPlugin\Mydashboard\Html as MydashboardHtml;
@@ -521,7 +522,7 @@ class Dashboard extends CommonGLPI
                 $report = new Report();
                 while ($datat = $DB->fetchArray($resultt1)) {
                     $mtitle   = strtoupper($datat["entity"]) . " > " . _n('Ticket', 'Tickets', 2);
-                    $internal = Config::getConfigFromDB($datat['entities_id']);
+                    $internal = ActivityConfig::getConfigFromDB($datat['entities_id']);
                     if ($internal) {
                         foreach ($internal as $field) {
                             $mtitle = strtoupper($datat["entity"]) . " > " . $field["name"];
@@ -764,7 +765,7 @@ class Dashboard extends CommonGLPI
             $tickets    = [];
             while ($datat = $DB->fetchArray($resultt)) {
                 $mtitle   = strtoupper($datat["entity"]) . " > " . __('Ticket');
-                $internal = Config::getConfigFromDB($datat['entities_id']);
+                $internal = ActivityConfig::getConfigFromDB($datat['entities_id']);
                 if ($internal) {
                     foreach ($internal as $field) {
                         $mtitle = strtoupper($datat["entity"]) . " > " . $field["name"];

@@ -67,7 +67,7 @@ class NotificationMail extends PHPMailer {
       global $CFG_GLPI;
 
       // Comes from config
-      $this->SetLanguage("en", Config::getLibraryDir("PHPMailer") . "/language/");
+//      $this->SetLanguage("en", Config::getLibraryDir("PHPMailer") . "/language/");
 
       if ($CFG_GLPI['smtp_mode'] != MAIL_MAIL) {
          $this->Mailer = "smtp";
