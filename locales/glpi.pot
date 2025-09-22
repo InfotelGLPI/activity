@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-21 14:49+0000\n"
+"POT-Creation-Date: 2025-09-22 17:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -134,32 +134,32 @@ msgstr ""
 msgid "Generated with GLPI on"
 msgstr ""
 
-#: src/Dashboard.php:114 src/Dashboard.php:181
+#: src/Dashboard.php:115 src/Dashboard.php:182
 msgid "Activity in the month"
 msgstr ""
 
-#: src/Dashboard.php:116 src/Dashboard.php:182
+#: src/Dashboard.php:117 src/Dashboard.php:183
 msgid ""
 "Display of activity by month for a user (tickets, activity, holidays, others)"
 msgstr ""
 
-#: src/Dashboard.php:117 src/Dashboard.php:299
+#: src/Dashboard.php:118 src/Dashboard.php:300
 msgid "Activity Menu"
 msgstr ""
 
-#: src/Dashboard.php:120 src/Dashboard.php:373
+#: src/Dashboard.php:121 src/Dashboard.php:374
 msgid "Interventions not in CRA"
 msgstr ""
 
-#: src/Dashboard.php:241
+#: src/Dashboard.php:242
 msgid "Planning access"
 msgstr ""
 
-#: src/Dashboard.php:261 src/Holiday.php:1269 src/Holiday.php:1323
+#: src/Dashboard.php:262 src/Holiday.php:1269 src/Holiday.php:1323
 msgid "All day"
 msgstr ""
 
-#: src/Dashboard.php:464 src/Dashboard.php:497 src/Report.php:689
+#: src/Dashboard.php:465 src/Dashboard.php:498 src/Report.php:689
 #: src/Report.php:699 src/Report.php:753 src/Report.php:763 src/Report.php:819
 #: src/Report.php:829 src/Report.php:873
 msgid "No defined type"
