@@ -344,7 +344,7 @@ class Dashboard extends CommonGLPI
 
                 $result      = $DB->doQuery($query);
                 $nb          = $DB->numrows($result);
-                $link_ticket = Toolbox::getItemTypeFormURL("Ticket");
+                $link_ticket = Toolbox::getItemTypeFormURL(\Ticket::class);
 
                 $i = 0;
                 if ($nb) {

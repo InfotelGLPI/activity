@@ -488,7 +488,7 @@ class HolidayValidation extends CommonDBChild
         $options['colspan']     = 1;
         $options['candel']      = false;
         $options['formtitle']   = '';
-        $options['formoptions'] = "id='formvalidation'";
+        $options['form_id'] = "formvalidation";
 
         $this->initForm($ID, $options);
         $this->showFormHeader($options);
