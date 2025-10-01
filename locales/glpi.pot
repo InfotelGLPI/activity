@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Activity - Accounts plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-01 07:24+0000\n"
+"POT-Creation-Date: 2025-10-01 07:30+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: setup.php:223 front/menu.php:50 ajax/loadscripts.php:47 src/Profile.php:54
+#: setup.php:222 front/menu.php:50 ajax/loadscripts.php:47 src/Profile.php:54
 #: src/Profile.php:159 src/Report.php:1123 src/Config.php:48 src/Menu.php:37
 #: src/Option.php:46 src/Preference.php:67
 msgid "Activity"
