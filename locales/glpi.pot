@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Activity - Accounts plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-23 11:57+0000\n"
+"POT-Creation-Date: 2025-10-01 07:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,13 +18,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: setup.php:223 ajax/loadscripts.php:47 src/Preference.php:67 src/Menu.php:37
-#: src/Option.php:46 src/Config.php:48 src/Report.php:1123 src/Profile.php:54
-#: src/Profile.php:159 front/menu.php:50
+#: setup.php:223 front/menu.php:50 ajax/loadscripts.php:47 src/Profile.php:54
+#: src/Profile.php:159 src/Report.php:1123 src/Config.php:48 src/Menu.php:37
+#: src/Option.php:46 src/Preference.php:67
 msgid "Activity"
 msgid_plural "Activities"
 msgstr[0] ""
 msgstr[1] ""
+
+#: front/config.form.php:66
+msgid "Please activate the plugin"
+msgstr ""
+
+#: front/cra.php:45 src/Crapdf.php:282
+msgid "Report of Activities"
+msgstr ""
 
 #: ajax/sendmail.php:68
 msgid "Holiday request from"
@@ -33,12 +41,6 @@ msgstr ""
 #: ajax/sendmail.php:68
 msgid "of"
 msgstr ""
-
-#: ajax/lateralmenu.php:36 src/Holiday.php:76
-msgid "Private holiday"
-msgid_plural "Private holidays"
-msgstr[0] ""
-msgstr[1] ""
 
 #: ajax/preferenceactions.php:42
 msgid "Please select a manager"
@@ -59,6 +61,143 @@ msgstr ""
 #: ajax/preferenceactions.php:66
 msgid "Manager sucessfully deleted."
 msgstr ""
+
+#: ajax/lateralmenu.php:36 src/Holiday.php:76
+msgid "Private holiday"
+msgid_plural "Private holidays"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Tickettask.php:54
+msgid "Cumulative ticket task"
+msgid_plural "Cumulative ticket tasks"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Tickettask.php:94 src/Planningexternalevent.php:251
+#: src/Projecttask.php:135
+msgid "Use in CRA"
+msgstr ""
+
+#: src/Planningexternalevent.php:118 src/Profile.php:115 src/Profile.php:166
+#: src/Lateralmenu.php:73 src/Holiday.php:482
+msgid "Create a holiday request"
+msgstr ""
+
+#: src/Planningexternalevent.php:204
+msgid "Add an activity"
+msgstr ""
+
+#: src/Planningexternalevent.php:210
+msgid "List of activities"
+msgstr ""
+
+#: src/Planningexternalevent.php:216
+msgid "CRA"
+msgstr ""
+
+#: src/Planningexternalevent.php:285
+msgid "Subcategory"
+msgstr ""
+
+#: src/Planningexternalevent.php:468 src/Planningexternalevent.php:710
+msgid "Only whole hours are allowed (no split times)"
+msgstr ""
+
+#: src/Planningexternalevent.php:476 src/Planningexternalevent.php:716
+msgid "Only pairs schedules are allowed"
+msgstr ""
+
+#: src/Planningexternalevent.php:517 src/Planningexternalevent.php:684
+msgid ""
+"One of the dates is on weekend, please add the date in the exceptionsof the "
+"reccurent rule"
+msgstr ""
+
+#: src/Planningexternalevent.php:538 src/Planningexternalevent.php:639
+msgid "Activity type is mandatory field"
+msgstr ""
+
+#: src/Planningexternalevent.php:546 src/Planningexternalevent.php:645
+#: src/Holiday.php:224
+msgid "User is mandatory field"
+msgstr ""
+
+#: src/Planningexternalevent.php:555 src/Planningexternalevent.php:723
+#: src/Holiday.php:258
+msgid "The chosen date is a public holiday"
+msgstr ""
+
+#: src/Planningexternalevent.php:569 src/Planningexternalevent.php:736
+#: src/Holiday.php:251
+msgid "The chosen begin date is on weekend"
+msgstr ""
+
+#: src/Planningexternalevent.php:580 src/Planningexternalevent.php:745
+msgid "The chosen end date is on weekend"
+msgstr ""
+
+#: src/Holidaycount.php:49 src/Menu.php:56 src/Holiday.php:501
+msgid "Holiday counter"
+msgid_plural "Holiday counters"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Holidaycount.php:75
+msgid "Holiday period is mandatory field"
+msgstr ""
+
+#: src/Holidaycount.php:79 src/Holiday.php:193
+msgid "Holiday type is mandatory field"
+msgstr ""
+
+#: src/Holidaycount.php:88
+msgid "Only one counter by period is allowed"
+msgstr ""
+
+#: src/Holidaycount.php:153 src/Holidaycount.php:229
+msgid "Counter"
+msgstr ""
+
+#: src/Holidaycount.php:347
+msgid "Remaining holidays"
+msgstr ""
+
+#: src/Holidaycount.php:367 src/Holidaycount.php:403
+msgid "Valid until"
+msgstr ""
+
+#: src/Holidaycount.php:422
+msgid "Cumul"
+msgstr ""
+
+#: src/Stats5.php:227 src/Stats5.php:275
+msgid "Number of technicians"
+msgstr ""
+
+#: src/Stats5.php:245 src/Stats5.php:274
+msgid "Number of tickets in progress"
+msgstr ""
+
+#: src/Stats5.php:276
+msgid "All the period"
+msgstr ""
+
+#: src/Stats5.php:291
+msgid "Main evolution of team"
+msgstr ""
+
+#: src/Planningeventsubcategory.php:50
+msgid "Event subcategory"
+msgid_plural "Event subcategories"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Publicholiday.php:50
+msgid "Public holiday"
+msgid_plural "Public holidays"
+msgstr[0] ""
+msgstr[1] ""
 
 #: src/Dashboard.php:115 src/Dashboard.php:182
 msgid "Activity in the month"
@@ -91,27 +230,175 @@ msgstr ""
 msgid "No defined type"
 msgstr ""
 
-#: src/Preference.php:121 src/Preference.php:162
-msgid "List of my managers"
-msgstr ""
-
-#: src/Preference.php:125
-msgid "You have not declared any manager yet."
-msgstr ""
-
-#: src/Preference.php:167
-msgid "There is no manager for your groups"
-msgstr ""
-
-#: src/Preference.php:206 src/Holiday.php:512
-msgid "Add a manager"
-msgstr ""
-
-#: src/Menu.php:56 src/Holidaycount.php:49 src/Holiday.php:501
-msgid "Holiday counter"
-msgid_plural "Holiday counters"
+#: src/Holidaytype.php:57 src/Notificationtargetholiday.php:190
+msgid "Holiday type"
+msgid_plural "Holiday types"
 msgstr[0] ""
 msgstr[1] ""
+
+#: src/Holidaytype.php:65 src/Holidayperiod.php:51
+msgid "Short name"
+msgstr ""
+
+#: src/Holidaytype.php:70
+msgid "Mandatory comment"
+msgstr ""
+
+#: src/Holidaytype.php:75 src/Holiday.php:322
+msgid "Auto-validated"
+msgstr ""
+
+#: src/Holidaytype.php:80
+msgid "Holiday"
+msgstr ""
+
+#: src/Holidaytype.php:85
+msgid "Use this holiday in the counter"
+msgstr ""
+
+#: src/Holidaytype.php:90
+msgid "Sickness"
+msgstr ""
+
+#: src/Holidaytype.php:95 src/Report.php:1848 src/Crapdf.php:514
+msgid "Part time"
+msgstr ""
+
+#: src/Holidaytype.php:100
+msgid "Linked to a period"
+msgstr ""
+
+#: src/Holidaytype.php:112 src/Holidaytype.php:126
+msgid "Can't be of more than one type at the same time"
+msgstr ""
+
+#: src/Notificationmail.php:218
+msgid "Error in sending the email"
+msgstr ""
+
+#: src/Profile.php:46
+msgid "Right management"
+msgid_plural "Rights management"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Profile.php:122 src/Profile.php:170
+msgid "Validate holiday"
+msgid_plural "Validate holidays"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Profile.php:129 src/Profile.php:174
+msgid "Statistics and reports"
+msgstr ""
+
+#: src/Profile.php:136 src/Profile.php:178
+msgid "Display activities of all"
+msgstr ""
+
+#: src/Report.php:191
+msgid "Take a snapshot of the CRA"
+msgstr ""
+
+#: src/Report.php:243
+msgid "Snapshots of the month"
+msgstr ""
+
+#: src/Report.php:302
+msgid "Snapshot taken in"
+msgstr ""
+
+#: src/Report.php:340
+msgid "Export CRA"
+msgstr ""
+
+#: src/Report.php:375
+msgid "Activity report"
+msgstr ""
+
+#: src/Report.php:400
+msgid "Next month"
+msgstr ""
+
+#: src/Report.php:401
+msgid "Previous month"
+msgstr ""
+
+#: src/Report.php:898 src/Report.php:915
+msgid "Unbilled"
+msgstr ""
+
+#: src/Report.php:1122
+msgid "Project"
+msgstr ""
+
+#: src/Report.php:1241 src/Crapdf.php:551
+msgid "Absences"
+msgstr ""
+
+#: src/Report.php:1308
+msgid "Activities detail"
+msgstr ""
+
+#: src/Report.php:1318
+msgid "Percent"
+msgstr ""
+
+#: src/Report.php:1408
+msgid "No activity found"
+msgstr ""
+
+#: src/Report.php:1846 src/Crapdf.php:515
+msgid "Holidays or exceptional absences"
+msgstr ""
+
+#: src/Report.php:1850 src/Crapdf.php:516
+msgid "Sickness or maternity"
+msgstr ""
+
+#: src/Config.php:75
+msgid "Define internal helpdesk"
+msgstr ""
+
+#: src/Config.php:86 src/Config.php:139
+msgid "Is recursive"
+msgstr ""
+
+#: src/Config.php:131
+msgid "Show internal helpdesk"
+msgstr ""
+
+#: src/Notificationtargetholiday.php:46 src/Notificationtargetholiday.php:244
+msgid "New personal holiday request"
+msgstr ""
+
+#: src/Notificationtargetholiday.php:47 src/Notificationtargetholiday.php:250
+msgid "Answer to a personal holiday request"
+msgstr ""
+
+#: src/Notificationtargetholiday.php:55
+msgid "Approvers"
+msgstr ""
+
+#: src/Notificationtargetholiday.php:144 src/Holiday.php:356
+msgid "Validation of your holiday request"
+msgstr ""
+
+#: src/Notificationtargetholiday.php:147
+msgid "Refusal of your holiday request"
+msgstr ""
+
+#: src/Notificationtargetholiday.php:151
+msgid "A new holiday request has been submitted"
+msgstr ""
+
+#: src/Notificationtargetholiday.php:172 src/Notificationtargetholiday.php:231
+msgid "Number of days"
+msgstr ""
+
+#: src/Stats.php:41
+msgid "Activity statistics"
+msgstr ""
 
 #: src/Notification.php:63
 msgid "Please fill a subject"
@@ -137,38 +424,6 @@ msgstr ""
 #: src/Notification.php:130
 #, php-format
 msgid "Fail to send a mail to %s"
-msgstr ""
-
-#: src/Holidayperiod.php:42
-msgid "Holiday period"
-msgid_plural "Holiday periods"
-msgstr[0] ""
-msgstr[1] ""
-
-#: src/Holidayperiod.php:51 src/Holidaytype.php:65
-msgid "Short name"
-msgstr ""
-
-#: src/Holidayperiod.php:66
-msgid "Archived"
-msgstr ""
-
-#: src/Holidayperiod.php:75 src/Holiday.php:183
-msgid "Please fill a begin date"
-msgstr ""
-
-#: src/Holidayperiod.php:79 src/Holiday.php:187
-msgid "Please fill an end date"
-msgstr ""
-
-#: src/Publicholiday.php:50
-msgid "Public holiday"
-msgid_plural "Public holidays"
-msgstr[0] ""
-msgstr[1] ""
-
-#: src/Notificationmail.php:218
-msgid "Error in sending the email"
 msgstr ""
 
 #: src/Option.php:66
@@ -243,119 +498,6 @@ msgstr ""
 msgid "Show event entity on CRA"
 msgstr ""
 
-#: src/Config.php:75
-msgid "Define internal helpdesk"
-msgstr ""
-
-#: src/Config.php:86 src/Config.php:139
-msgid "Is recursive"
-msgstr ""
-
-#: src/Config.php:131
-msgid "Show internal helpdesk"
-msgstr ""
-
-#: src/Planningexternalevent.php:118 src/Lateralmenu.php:73 src/Holiday.php:482
-#: src/Profile.php:115 src/Profile.php:166
-msgid "Create a holiday request"
-msgstr ""
-
-#: src/Planningexternalevent.php:204
-msgid "Add an activity"
-msgstr ""
-
-#: src/Planningexternalevent.php:210
-msgid "List of activities"
-msgstr ""
-
-#: src/Planningexternalevent.php:216
-msgid "CRA"
-msgstr ""
-
-#: src/Planningexternalevent.php:251 src/Tickettask.php:94
-#: src/Projecttask.php:135
-msgid "Use in CRA"
-msgstr ""
-
-#: src/Planningexternalevent.php:285
-msgid "Subcategory"
-msgstr ""
-
-#: src/Planningexternalevent.php:468 src/Planningexternalevent.php:710
-msgid "Only whole hours are allowed (no split times)"
-msgstr ""
-
-#: src/Planningexternalevent.php:476 src/Planningexternalevent.php:716
-msgid "Only pairs schedules are allowed"
-msgstr ""
-
-#: src/Planningexternalevent.php:517 src/Planningexternalevent.php:684
-msgid ""
-"One of the dates is on weekend, please add the date in the exceptionsof the "
-"reccurent rule"
-msgstr ""
-
-#: src/Planningexternalevent.php:538 src/Planningexternalevent.php:639
-msgid "Activity type is mandatory field"
-msgstr ""
-
-#: src/Planningexternalevent.php:546 src/Planningexternalevent.php:645
-#: src/Holiday.php:224
-msgid "User is mandatory field"
-msgstr ""
-
-#: src/Planningexternalevent.php:555 src/Planningexternalevent.php:723
-#: src/Holiday.php:258
-msgid "The chosen date is a public holiday"
-msgstr ""
-
-#: src/Planningexternalevent.php:569 src/Planningexternalevent.php:736
-#: src/Holiday.php:251
-msgid "The chosen begin date is on weekend"
-msgstr ""
-
-#: src/Planningexternalevent.php:580 src/Planningexternalevent.php:745
-msgid "The chosen end date is on weekend"
-msgstr ""
-
-#: src/Notificationtargetholiday.php:46 src/Notificationtargetholiday.php:244
-msgid "New personal holiday request"
-msgstr ""
-
-#: src/Notificationtargetholiday.php:47 src/Notificationtargetholiday.php:250
-msgid "Answer to a personal holiday request"
-msgstr ""
-
-#: src/Notificationtargetholiday.php:55
-msgid "Approvers"
-msgstr ""
-
-#: src/Notificationtargetholiday.php:144 src/Holiday.php:356
-msgid "Validation of your holiday request"
-msgstr ""
-
-#: src/Notificationtargetholiday.php:147
-msgid "Refusal of your holiday request"
-msgstr ""
-
-#: src/Notificationtargetholiday.php:151
-msgid "A new holiday request has been submitted"
-msgstr ""
-
-#: src/Notificationtargetholiday.php:172 src/Notificationtargetholiday.php:231
-msgid "Number of days"
-msgstr ""
-
-#: src/Notificationtargetholiday.php:190 src/Holidaytype.php:57
-msgid "Holiday type"
-msgid_plural "Holiday types"
-msgstr[0] ""
-msgstr[1] ""
-
-#: src/Crapdf.php:282 front/cra.php:45
-msgid "Report of Activities"
-msgstr ""
-
 #: src/Crapdf.php:313
 msgid "during"
 msgstr ""
@@ -376,22 +518,6 @@ msgstr ""
 msgid "Project / activity"
 msgstr ""
 
-#: src/Crapdf.php:514 src/Report.php:1848 src/Holidaytype.php:95
-msgid "Part time"
-msgstr ""
-
-#: src/Crapdf.php:515 src/Report.php:1846
-msgid "Holidays or exceptional absences"
-msgstr ""
-
-#: src/Crapdf.php:516 src/Report.php:1850
-msgid "Sickness or maternity"
-msgstr ""
-
-#: src/Crapdf.php:551 src/Report.php:1241
-msgid "Absences"
-msgstr ""
-
 #: src/Crapdf.php:592
 msgid ""
 "Entry except in the month, the total must be equal to the number of working "
@@ -410,84 +536,20 @@ msgstr ""
 msgid "Generated with GLPI on"
 msgstr ""
 
-#: src/Holidaycount.php:75
-msgid "Holiday period is mandatory field"
+#: src/Tools.php:246
+msgid "Export the report"
 msgstr ""
 
-#: src/Holidaycount.php:79 src/Holiday.php:193
-msgid "Holiday type is mandatory field"
+#: src/Tools.php:423
+msgid "Refresh"
 msgstr ""
 
-#: src/Holidaycount.php:88
-msgid "Only one counter by period is allowed"
+#: src/Holiday.php:183 src/Holidayperiod.php:75
+msgid "Please fill a begin date"
 msgstr ""
 
-#: src/Holidaycount.php:153 src/Holidaycount.php:229
-msgid "Counter"
-msgstr ""
-
-#: src/Holidaycount.php:347
-msgid "Remaining holidays"
-msgstr ""
-
-#: src/Holidaycount.php:367 src/Holidaycount.php:403
-msgid "Valid until"
-msgstr ""
-
-#: src/Holidaycount.php:422
-msgid "Cumul"
-msgstr ""
-
-#: src/Stats.php:41
-msgid "Activity statistics"
-msgstr ""
-
-#: src/Report.php:191
-msgid "Take a snapshot of the CRA"
-msgstr ""
-
-#: src/Report.php:243
-msgid "Snapshots of the month"
-msgstr ""
-
-#: src/Report.php:302
-msgid "Snapshot taken in"
-msgstr ""
-
-#: src/Report.php:340
-msgid "Export CRA"
-msgstr ""
-
-#: src/Report.php:375
-msgid "Activity report"
-msgstr ""
-
-#: src/Report.php:400
-msgid "Next month"
-msgstr ""
-
-#: src/Report.php:401
-msgid "Previous month"
-msgstr ""
-
-#: src/Report.php:898 src/Report.php:915
-msgid "Unbilled"
-msgstr ""
-
-#: src/Report.php:1122
-msgid "Project"
-msgstr ""
-
-#: src/Report.php:1308
-msgid "Activities detail"
-msgstr ""
-
-#: src/Report.php:1318
-msgid "Percent"
-msgstr ""
-
-#: src/Report.php:1408
-msgid "No activity found"
+#: src/Holiday.php:187 src/Holidayperiod.php:79
+msgid "Please fill an end date"
 msgstr ""
 
 #: src/Holiday.php:264
@@ -496,10 +558,6 @@ msgstr ""
 
 #: src/Holiday.php:266
 msgid "The user has already planned holidays for this period"
-msgstr ""
-
-#: src/Holiday.php:322 src/Holidaytype.php:75
-msgid "Auto-validated"
 msgstr ""
 
 #: src/Holiday.php:360
@@ -515,6 +573,10 @@ msgid "Approve holiday"
 msgid_plural "Approve holidays"
 msgstr[0] ""
 msgstr[1] ""
+
+#: src/Holiday.php:512 src/Preference.php:206
+msgid "Add a manager"
+msgstr ""
 
 #: src/Holiday.php:930
 msgid "You don't have any manager filled in you personal settings."
@@ -604,21 +666,31 @@ msgstr ""
 msgid "Leave awaiting validation"
 msgstr ""
 
-#: src/Planningeventsubcategory.php:50
-msgid "Event subcategory"
-msgid_plural "Event subcategories"
+#: src/Holidayperiod.php:42
+msgid "Holiday period"
+msgid_plural "Holiday periods"
 msgstr[0] ""
 msgstr[1] ""
+
+#: src/Holidayperiod.php:66
+msgid "Archived"
+msgstr ""
 
 #: src/Ticket.php:49
 msgid "The following user is unavailable / on holiday : "
 msgstr ""
 
-#: src/Tickettask.php:54
-msgid "Cumulative ticket task"
-msgid_plural "Cumulative ticket tasks"
-msgstr[0] ""
-msgstr[1] ""
+#: src/Preference.php:121 src/Preference.php:162
+msgid "List of my managers"
+msgstr ""
+
+#: src/Preference.php:125
+msgid "You have not declared any manager yet."
+msgstr ""
+
+#: src/Preference.php:167
+msgid "There is no manager for your groups"
+msgstr ""
 
 #: src/Holidayvalidation.php:61
 msgid "Holiday validation"
@@ -656,76 +728,4 @@ msgstr ""
 
 #: src/Holidayvalidation.php:515
 msgid "Refuse holiday"
-msgstr ""
-
-#: src/Tools.php:246
-msgid "Export the report"
-msgstr ""
-
-#: src/Tools.php:423
-msgid "Refresh"
-msgstr ""
-
-#: src/Holidaytype.php:70
-msgid "Mandatory comment"
-msgstr ""
-
-#: src/Holidaytype.php:80
-msgid "Holiday"
-msgstr ""
-
-#: src/Holidaytype.php:85
-msgid "Use this holiday in the counter"
-msgstr ""
-
-#: src/Holidaytype.php:90
-msgid "Sickness"
-msgstr ""
-
-#: src/Holidaytype.php:100
-msgid "Linked to a period"
-msgstr ""
-
-#: src/Holidaytype.php:112 src/Holidaytype.php:126
-msgid "Can't be of more than one type at the same time"
-msgstr ""
-
-#: src/Profile.php:46
-msgid "Right management"
-msgid_plural "Rights management"
-msgstr[0] ""
-msgstr[1] ""
-
-#: src/Profile.php:122 src/Profile.php:170
-msgid "Validate holiday"
-msgid_plural "Validate holidays"
-msgstr[0] ""
-msgstr[1] ""
-
-#: src/Profile.php:129 src/Profile.php:174
-msgid "Statistics and reports"
-msgstr ""
-
-#: src/Profile.php:136 src/Profile.php:178
-msgid "Display activities of all"
-msgstr ""
-
-#: src/Stats5.php:227 src/Stats5.php:275
-msgid "Number of technicians"
-msgstr ""
-
-#: src/Stats5.php:245 src/Stats5.php:274
-msgid "Number of tickets in progress"
-msgstr ""
-
-#: src/Stats5.php:276
-msgid "All the period"
-msgstr ""
-
-#: src/Stats5.php:291
-msgid "Main evolution of team"
-msgstr ""
-
-#: front/config.form.php:66
-msgid "Please activate the plugin"
 msgstr ""
