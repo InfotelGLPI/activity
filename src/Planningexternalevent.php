@@ -124,7 +124,7 @@ class PlanningExternalEvent extends CommonDBTM
                 ]
             );
 
-            $return .= "<div align='center'>";
+            $return .= "<div class='center'>";
 
             if (!$widget) {
                 $return .= "<table class='tab_cadre_fixe activity_menu' style='width: 400px;'>";

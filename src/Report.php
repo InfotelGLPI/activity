@@ -372,8 +372,8 @@ class Report extends CommonDBTM
         if ($output_type == Search::HTML_OUTPUT) {
             Html::header(PlanningExternalEvent::getTypeName(2));
 
-            echo "<div align='center'><b>" . __('Activity report', 'activity') . "</b></div><br>";
-            echo "<div align='center'>";
+            echo "<div class='center'><b>" . __('Activity report', 'activity') . "</b></div><br>";
+            echo "<div class='center'>";
             echo "<form method=\"post\" id=\"form_cra\" name=\"form\" action=\"cra.php\">";
             echo "<table class='tab_cadre' width='800'>";
             echo "<tr class='tab_bg_2'>";
@@ -402,7 +402,7 @@ class Report extends CommonDBTM
 
             echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
 
-            echo "<td class='tab_bg_2' align='center'>";
+            echo "<td class='tab_bg_2' class='center'>";
 
             if (Session::haveRight("plugin_activity_all_users", 1)) {
                 User::dropdown(['name'     => "users_id",
@@ -414,7 +414,7 @@ class Report extends CommonDBTM
                 echo Html::hidden('users_id', ['value' => $users_id]);
             }
             echo "</td>";
-            echo "<td align='center'>";
+            echo "<td class='center'>";
             echo Html::submit(_sx('button', 'Post'), ['name' => 'submit', 'class' => 'btn btn-primary']);
             echo "</td>";
             echo "</tr>";
