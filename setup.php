@@ -178,7 +178,6 @@ function plugin_init_activity()
                 ],
             ];
 
-
             $PLUGIN_HOOKS['pre_item_purge']['activity'] = [
                 'Document' => [
                     Snapshot::class,
