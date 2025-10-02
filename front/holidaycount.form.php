@@ -25,7 +25,7 @@
  --------------------------------------------------------------------------
 */
 
-use GlpiPlugin\Activity\Holidaycount;
+use GlpiPlugin\Activity\HolidayCount;
 use GlpiPlugin\Activity\Menu;
 
 Session::checkLoginUser();
@@ -39,7 +39,7 @@ if (!isset($_GET["users_id"])) {
    $users_id = $_GET["users_id"];
 }
 
-$count = new Holidaycount();
+$count = new HolidayCount();
 
 if (isset($_POST["add"])) {
 
@@ -61,12 +61,12 @@ if (isset($_POST["add"])) {
    $count->checkGlobal(READ);
    if (!isset($_GET['_in_modal'])) {
       if (Session::getCurrentInterface() == 'central') {
-         Html::header(Holidaycount::getTypeName(2), '', "tools", Menu::class, "holidaycount");
+         Html::header(HolidayCount::getTypeName(2), '', "tools", Menu::class, "holidaycount");
       } else {
-         Html::helpHeader(Holidaycount::getTypeName(2));
+         Html::helpHeader(HolidayCount::getTypeName(2));
       }
    } else {
-      Html::popHeader(Holidaycount::getTypeName(2));
+      Html::popHeader(HolidayCount::getTypeName(2));
    }
 
    $count->display($_GET);

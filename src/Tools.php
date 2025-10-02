@@ -183,7 +183,7 @@ class Tools {
    }
 
    static function roundTime($time){
-      $mod = round($time / 30,0);
+      $mod = round($time / 30,0, PHP_ROUND_HALF_UP);
 
       if($time > 480){
          return ($mod * 30)+120;

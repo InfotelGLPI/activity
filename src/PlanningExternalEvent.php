@@ -972,7 +972,7 @@ class PlanningExternalEvent extends CommonDBTM
     {
         $diff = strtotime(date('Y-m-d', strtotime($fin))) - strtotime(date('Y-m-d', strtotime($debut)));
 
-        return (round($diff / (3600 * 24)) + 1);
+        return (round($diff / (3600 * 24), 0,PHP_ROUND_HALF_UP) + 1);
     }
 
 

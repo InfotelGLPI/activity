@@ -37,7 +37,7 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
-class Holidaycount extends CommonDBTM
+class HolidayCount extends CommonDBTM
 {
 
     var    $dohistory = false;

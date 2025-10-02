@@ -2412,7 +2412,7 @@ class Holiday extends CommonDBTM
                         echo "<td><span class='activity_tree'></span>" . Dropdown::getDropdownName('glpi_plugin_activity_holidaytypes', $subType) . "</td>";
                         echo "<td>" . $subVal . "</td>";
                         //echo "<td>";
-                        //$hcount = new Holidaycount();
+                        //$hcount = new HolidayCount();
                         //$count = $hcount->showCountForHolidayType($subType);
                         //echo "(".$count.")";
                         //echo "</td>";
@@ -2426,7 +2426,7 @@ class Holiday extends CommonDBTM
 
     function getDetails($users_id, $holiday_period_id)
     {
-        $holidaycount = new Holidaycount();
+        $holidaycount = new HolidayCount();
         if ($holidaycount->getFromDBByCrit(['plugin_activity_holidayperiods_id' => $holiday_period_id,
                                           'users_id'                          => $users_id])) {
             $holiday = new Holiday();

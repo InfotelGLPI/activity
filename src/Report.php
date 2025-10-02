@@ -716,7 +716,7 @@ class Report extends CommonDBTM
                                 $end = strtotime($data2["end"]);
                                 $datediff = $end - $begin;
 
-                                $nbday = round($datediff / (60 * 60 * 24));
+                                $nbday = round($datediff / (60 * 60 * 24), 0,PHP_ROUND_HALF_UP);
 
                                 if ($pos = strpos($data2["begin"], '00:00:00') !== false) {
                                     $action = $data2['actiontime'] / 3600;
@@ -780,7 +780,7 @@ class Report extends CommonDBTM
                             $end = strtotime($data2["end"]);
                             $datediff = $end - $begin;
 
-                            $nbday = round($datediff / (60 * 60 * 24));
+                            $nbday = round($datediff / (60 * 60 * 24), 0,PHP_ROUND_HALF_UP);
 
                             if ($pos = strpos($data2["begin"], '00:00:00') !== false) {
                                 $action = $data2['actiontime'] / 3600;
@@ -1578,7 +1578,7 @@ class Report extends CommonDBTM
 
         $date_diff  = strtotime($end . " 23:59") - strtotime($begin . " 00:01");
         $nbSecondes = 60 * 60 * 24;
-        $duration   = round($date_diff / $nbSecondes);
+        $duration   = round($date_diff / $nbSecondes, 0,PHP_ROUND_HALF_UP);
 
         $finalDuration = $duration - $holidaysO->countWe($begin, $end, $holidays);
 
@@ -2186,7 +2186,7 @@ class Report extends CommonDBTM
                         $dateTimeLoop->format('Y-m-d').' 00:00:00',
                         $event
                     );
-                    $dayLength = round($actionTime / (60 * 60 * 24), 4);
+                    $dayLength = round($actionTime / (60 * 60 * 24), 4,PHP_ROUND_HALF_UP);
                     if (isset($values[$part][$title][$loopDate . ' 00:00:00'])) {
                         $values[$part][$title][$loopDate . ' 00:00:00'] += $dayLength;
                     } else {
@@ -2199,7 +2199,7 @@ class Report extends CommonDBTM
                 $loopDate = $dateTimeLoop->format('Y-m-d');
             }
         } else {
-            $dayLength = round($event['actiontime'] / (60 * 60 * 24), 4);
+            $dayLength = round($event['actiontime'] / (60 * 60 * 24), 4, PHP_ROUND_HALF_UP);
             if (isset($values[$part][$title][$dateBegin . ' 00:00:00'])) {
                 $values[$part][$title][$dateBegin . ' 00:00:00'] += $dayLength;
             } else {

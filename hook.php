@@ -26,7 +26,7 @@
 */
 
 use GlpiPlugin\Activity\Holiday;
-use GlpiPlugin\Activity\Holidaycount;
+use GlpiPlugin\Activity\HolidayCount;
 use GlpiPlugin\Activity\HolidayPeriod;
 use GlpiPlugin\Activity\HolidayType;
 use GlpiPlugin\Activity\Menu;
@@ -362,7 +362,7 @@ function plugin_activity_addDefaultWhere($type)
                 return " `glpi_plugin_activity_holidays`.`users_id` = '$who' ";
             }
             break;
-        case Holidaycount::class :
+        case HolidayCount::class :
             $who = Session::getLoginUserID();
             return " `glpi_plugin_activity_holidaycounts`.`users_id` = '$who' ";
             break;
