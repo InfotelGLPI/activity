@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Activity - Accounts plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-02 07:14+0000\n"
+"POT-Creation-Date: 2025-10-04 14:14+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -123,11 +123,10 @@ msgstr ""
 msgid "Main evolution of team"
 msgstr ""
 
-#: src/Planningeventsubcategory.php:50
-msgid "Event subcategory"
-msgid_plural "Event subcategories"
-msgstr[0] ""
-msgstr[1] ""
+#: src/LateralMenu.php:73 src/Profile.php:115 src/Profile.php:166
+#: src/PlanningExternalEvent.php:118 src/Holiday.php:482
+msgid "Create a holiday request"
+msgstr ""
 
 #: src/Dashboard.php:115 src/Dashboard.php:182
 msgid "Activity in the month"
@@ -165,11 +164,6 @@ msgid "Right management"
 msgid_plural "Rights management"
 msgstr[0] ""
 msgstr[1] ""
-
-#: src/Profile.php:115 src/Profile.php:166 src/Lateralmenu.php:73
-#: src/PlanningExternalEvent.php:118 src/Holiday.php:482
-msgid "Create a holiday request"
-msgstr ""
 
 #: src/Profile.php:122 src/Profile.php:170
 msgid "Validate holiday"
@@ -428,6 +422,12 @@ msgstr ""
 #: src/CraPDF.php:657
 msgid "Generated with GLPI on"
 msgstr ""
+
+#: src/PlanningEventSubCategory.php:50
+msgid "Event subcategory"
+msgid_plural "Event subcategories"
+msgstr[0] ""
+msgstr[1] ""
 
 #: src/NotificationMail.php:218
 msgid "Error in sending the email"
