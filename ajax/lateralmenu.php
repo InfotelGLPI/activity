@@ -25,7 +25,7 @@
  --------------------------------------------------------------------------
 */
 
-use GlpiPlugin\Activity\Lateralmenu;
+use GlpiPlugin\Activity\LateralMenu;
 
 Html::header_nocache();
 
@@ -37,6 +37,6 @@ Html::popHeader(_n('Private holiday', 'Private holidays', 2, 'activity'), $_SERV
 
 echo "<div class='center' id='tabsbody' >";
 echo "<table class='tab_cadre' width='100%'>";
-Lateralmenu::showMenu();
+LateralMenu::showMenu();
 echo "</table>";
 echo "</div>";

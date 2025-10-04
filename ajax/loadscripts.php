@@ -25,7 +25,7 @@
  --------------------------------------------------------------------------
 */
 
-use GlpiPlugin\Activity\Lateralmenu;
+use GlpiPlugin\Activity\LateralMenu;
 
 Html::header_nocache();
 Session::checkLoginUser();
@@ -41,7 +41,7 @@ if (isset($_POST['action'])) {
             echo "<script type='text/javascript'>changeClickTodayActivity(".json_encode(['lang_month' => $lang_month]).");</script>";
          }
 
-         Lateralmenu::createSlidePanel(
+          LateralMenu::createSlidePanel(
              'showLateralMenu',
              [
                  'title'     => _n('Activity', 'Activities', 1, 'activity'),

@@ -31,7 +31,7 @@ use GlpiPlugin\Activity\HolidayPeriod;
 use GlpiPlugin\Activity\HolidayType;
 use GlpiPlugin\Activity\Menu;
 use GlpiPlugin\Activity\Option;
-use GlpiPlugin\Activity\Planningeventsubcategory;
+use GlpiPlugin\Activity\PlanningEventSubCategory;
 use GlpiPlugin\Activity\PlanningExternalEvent;
 use GlpiPlugin\Activity\Profile;
 use GlpiPlugin\Activity\ProjectTask;
@@ -337,7 +337,7 @@ function plugin_activity_getDropdown()
         return [
             HolidayType::class => HolidayType::getTypeName(2),
             HolidayPeriod::class => HolidayPeriod::getTypeName(2),
-            Planningeventsubcategory::class => Planningeventsubcategory::getTypeName(2)
+            PlanningEventSubCategory::class => PlanningEventSubCategory::getTypeName(2)
         ];
     } else {
         return [];

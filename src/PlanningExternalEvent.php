@@ -274,7 +274,7 @@ class PlanningExternalEvent extends CommonDBTM
                 $value = $item->input['planningeventsubcategories_id'];
             }
             $rand = Dropdown::show(
-                Planningeventsubcategory::class,
+                PlanningEventSubCategory::class,
                 [
                     'name' => 'planningeventsubcategories_id',
                     'value' => $value,
@@ -1174,7 +1174,7 @@ class PlanningExternalEvent extends CommonDBTM
         ];
 
         if ($subCat) {
-            $subCatTable = Planningeventsubcategory::getTable();
+            $subCatTable = PlanningEventSubCategory::getTable();
             $request['LEFT JOIN'] = [
                 $pluginTable => [
                     'FKEY' => [

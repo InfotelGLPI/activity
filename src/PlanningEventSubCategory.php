@@ -34,8 +34,8 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
-/// Planningeventsubcategory class
-class Planningeventsubcategory extends CommonDropdown {
+/// PlanningEventSubCategory class
+class PlanningEventSubCategory extends CommonDropdown {
 
     var $can_be_translated  = true;
     static $rightname = "dropdown";

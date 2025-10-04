@@ -1311,7 +1311,7 @@ class Report extends CommonDBTM
                 echo Search::showNewLine($output_type);
                 self::showTitle($output_type, $num, PlanningEventCategory::getTypeName(2), 'activitytype', false);
                 if ($opt->getUseSubcategory()) {
-                    self::showTitle($output_type, $num, Planningeventsubcategory::getTypeName(2), 'activitysubtype', false);
+                    self::showTitle($output_type, $num, PlanningEventSubCategory::getTypeName(2), 'activitysubtype', false);
                 }
                 self::showTitle($output_type, $num, __('Comments'), 'comment', false);
                 self::showTitle($output_type, $num, __('Total'), 'hours', false);

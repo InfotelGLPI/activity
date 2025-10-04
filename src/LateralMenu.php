@@ -35,7 +35,7 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
-class Lateralmenu extends CommonDBTM
+class LateralMenu extends CommonDBTM
 {
 
     static function showMenu()
