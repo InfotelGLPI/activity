@@ -181,6 +181,8 @@ function plugin_activity_install()
     }
 
     $DB->runFile(PLUGIN_ACTIVITY_DIR . "/install/sql/update-3.2.0.sql");
+    
+    $DB->runFile(PLUGIN_ACTIVITY_DIR . "/install/sql/update-3.2.2.sql");
 
     Profile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
     Profile::initProfile();
