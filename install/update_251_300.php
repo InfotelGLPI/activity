@@ -35,19 +35,11 @@ ini_set("memory_limit", "-1");
 ini_set("max_execution_time", 0);
 chdir(dirname($_SERVER["SCRIPT_FILENAME"]));
 
-if (!defined('GLPI_ROOT')) {
-   define('GLPI_ROOT', realpath('..'));
-}
+//chdir(dirname($_SERVER["argv"][0]));
 
-include_once (GLPI_ROOT."/inc/autoload.function.php");
-include_once (GLPI_ROOT."/inc/db.function.php");
-include_once (GLPI_ROOT."/inc/based_config.php");
-include_once (GLPI_CONFIG_DIR."/config_db.php");
-include_once (GLPI_ROOT."/inc/define.php");
-
-$GLPI = new GLPI();
-$GLPI->initLogger();
-Config::detectRootDoc();
+define("GLPI_DIR_ROOT", realpath(dirname($_SERVER["SCRIPT_FILENAME"]) . "/../../.."));
+require_once GLPI_DIR_ROOT . '/vendor/autoload.php';
+$kernel = new \Glpi\Kernel\Kernel($options['env'] ?? null);
 
 if (is_writable(GLPI_SESSION_DIR)) {
    Session::setPath();
@@ -57,6 +49,8 @@ if (is_writable(GLPI_SESSION_DIR)) {
 Session::start();
 $_SESSION['glpi_use_mode'] = 0;
 Session::loadLanguage();
+
+global $DB;
 
 if (!$DB->connected) {
    die("No DB connection\r\n");
@@ -76,7 +70,7 @@ function update251to300() {
    $cats = $dbu->getAllDataFromTable('glpi_plugin_activity_activitytypes');
 
    foreach ($cats as $cat) {
-      $migrate_cat_activities_query = 'INSERT INTO `glpi_planningeventcategories` (`name`, `comment`, `old_id`) 
+      $migrate_cat_activities_query = 'INSERT INTO `glpi_planningeventcategories` (`name`, `comment`, `old_id`)
            VALUES("' . $cat['completename'] . '","' . addslashes($cat['comment']) . '","' . $cat['id'] . '")';
 
       $DB->doQuery($migrate_cat_activities_query);
@@ -120,7 +114,7 @@ function update251to300() {
       } else {
          $name = $new_cat['name'];
       }
-      $query = "UPDATE `glpi_planningexternalevents` 
+      $query = "UPDATE `glpi_planningexternalevents`
                          SET `planningeventcategories_id`='" . $new_cat['id'] . "'
                          WHERE `planningeventcategories_id`= " . $new_cat['old_id'] . ";";
       $DB->doQuery($query);
@@ -138,7 +132,7 @@ function update251to300() {
 
    foreach ($new_events as $new_event) {
 
-      $query = "UPDATE `glpi_plugin_activity_planningexternalevents` 
+      $query = "UPDATE `glpi_plugin_activity_planningexternalevents`
                          SET `planningexternalevents_id`='" . $new_event['id'] . "'
                          WHERE `planningexternalevents_id`= " . $new_event['old_id'] . ";";
       $DB->doQuery($query);
