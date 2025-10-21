@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Activity - Accounts plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-10 13:50+0000\n"
+"POT-Creation-Date: 2025-10-21 13:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 #: setup.php:222 front/menu.php:50 ajax/loadscripts.php:47 src/Profile.php:54
-#: src/Profile.php:159 src/Report.php:1123 src/Config.php:48 src/Menu.php:37
+#: src/Profile.php:159 src/Report.php:1124 src/Config.php:48 src/Menu.php:37
 #: src/Option.php:46 src/Preference.php:67
 msgid "Activity"
 msgid_plural "Activities"
@@ -153,9 +153,9 @@ msgstr ""
 msgid "All day"
 msgstr ""
 
-#: src/Dashboard.php:465 src/Dashboard.php:498 src/Report.php:689
-#: src/Report.php:699 src/Report.php:753 src/Report.php:763 src/Report.php:819
-#: src/Report.php:829 src/Report.php:873
+#: src/Dashboard.php:465 src/Dashboard.php:498 src/Report.php:690
+#: src/Report.php:700 src/Report.php:754 src/Report.php:764 src/Report.php:820
+#: src/Report.php:830 src/Report.php:874
 msgid "No defined type"
 msgstr ""
 
@@ -179,67 +179,67 @@ msgstr ""
 msgid "Display activities of all"
 msgstr ""
 
-#: src/Report.php:191
+#: src/Report.php:192
 msgid "Take a snapshot of the CRA"
 msgstr ""
 
-#: src/Report.php:243
+#: src/Report.php:244
 msgid "Snapshots of the month"
 msgstr ""
 
-#: src/Report.php:302
+#: src/Report.php:303
 msgid "Snapshot taken in"
 msgstr ""
 
-#: src/Report.php:340
+#: src/Report.php:341
 msgid "Export CRA"
 msgstr ""
 
-#: src/Report.php:375
+#: src/Report.php:376
 msgid "Activity report"
 msgstr ""
 
-#: src/Report.php:400
+#: src/Report.php:401
 msgid "Next month"
 msgstr ""
 
-#: src/Report.php:401
+#: src/Report.php:402
 msgid "Previous month"
 msgstr ""
 
-#: src/Report.php:898 src/Report.php:915
+#: src/Report.php:899 src/Report.php:916
 msgid "Unbilled"
 msgstr ""
 
-#: src/Report.php:1122
+#: src/Report.php:1123
 msgid "Project"
 msgstr ""
 
-#: src/Report.php:1241 src/CraPDF.php:551
+#: src/Report.php:1242 src/CraPDF.php:551
 msgid "Absences"
 msgstr ""
 
-#: src/Report.php:1308
+#: src/Report.php:1309
 msgid "Activities detail"
 msgstr ""
 
-#: src/Report.php:1318
+#: src/Report.php:1319
 msgid "Percent"
 msgstr ""
 
-#: src/Report.php:1408
+#: src/Report.php:1409
 msgid "No activity found"
 msgstr ""
 
-#: src/Report.php:1846 src/CraPDF.php:515
+#: src/Report.php:1847 src/CraPDF.php:515
 msgid "Holidays or exceptional absences"
 msgstr ""
 
-#: src/Report.php:1848 src/CraPDF.php:514 src/HolidayType.php:95
+#: src/Report.php:1849 src/CraPDF.php:514 src/HolidayType.php:95
 msgid "Part time"
 msgstr ""
 
-#: src/Report.php:1850 src/CraPDF.php:516
+#: src/Report.php:1851 src/CraPDF.php:516
 msgid "Sickness or maternity"
 msgstr ""
 
