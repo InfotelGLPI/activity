@@ -37,7 +37,7 @@ use DbUtils;
 use Document;
 use Document_Item;
 use Glpi\RichText\RichText;
-use GlpiPlugin\Manageentities\Config;
+use GlpiPlugin\Manageentities\Config as ManageentitiesConfig;
 use Html;
 use PlanningEventCategory;
 use Plugin;
@@ -598,7 +598,7 @@ class Report extends CommonDBTM
        // 1.2 Plugin Manageentities
         $numberm = 0;
         if (Plugin::isPluginActive('manageentities')) {
-            $config = new Config();
+            $config = new ManageentitiesConfig();
             $config->GetFromDB(1);
 
             $crit["documentcategories_id"] = $config->fields["documentcategories_id"];
@@ -1824,7 +1824,7 @@ class Report extends CommonDBTM
     static function isIncorrectValue($value)
     {
 
-        if ((($value * 10) % 5) > 0) {
+        if (((intval($value) * 10) % 5) > 0) {
             return true;
         }
 
@@ -2065,9 +2065,17 @@ class Report extends CommonDBTM
            'arrondir_heure' => 1,
            'use_planning_activity_hours' => 1
         ];
-        foreach ($options as $key => $value) {
-            $opt[$key] = $value;
+        if (count($options) > 0) {
+            foreach ($options as $key => $value) {
+                $opt[$key] = $value;
+            }
         }
+
+        $opt = new Option();
+        $opt->getFromDB(1);
+        $use_hour_on_cra = $opt->fields['use_hour_on_cra'];
+        $opt['arrondir_heure'] = $use_hour_on_cra;
+
         $tranches_seuil   = 0.002;
         if (!$opt['arrondir_heure']) {
             $tranches_arrondi = [0, 0.25, 0.5, 0.75, 1];
@@ -2082,7 +2090,6 @@ class Report extends CommonDBTM
             $a_arrondir = $hour / 3600;
             $tranches_arrondi = [0,0.25,0.5,0.75,1];
         }
-
 
         $result = 0;
         if (empty($a_arrondir)) {
