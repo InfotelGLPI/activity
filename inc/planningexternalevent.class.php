@@ -758,6 +758,13 @@ class PluginActivityPlanningExternalEvent extends CommonDBTM
 
         self::prepareInputToUpdateWithPluginOptions($item);
         self::setActivity($item);
+
+        $plugin = new Plugin();
+        if ($plugin->isActivated('planningoptions')) {
+            include_once(PLUGIN_PLANNINGOPTIONS_DIR . "/inc/config.class.php");
+            $config = PluginPlanningOptionsConfig::getInstance();
+            $config->includeRruleUntilDateBack($item);
+        }
     }
 
     static function activityAdd(PlanningExternalEvent $item)
