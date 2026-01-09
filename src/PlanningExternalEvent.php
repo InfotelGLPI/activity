@@ -312,7 +312,7 @@ class PlanningExternalEvent extends CommonDBTM
         }
     }
 
-    static function setActivity(PlanningExternalEvent $item)
+    static function setActivity(\PlanningExternalEvent $item)
     {
         if (self::canCreate()) {
             // don't do anything if coming from cleanDBRelations
