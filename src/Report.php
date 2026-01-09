@@ -2071,9 +2071,9 @@ class Report extends CommonDBTM
             }
         }
 
-        $opt = new Option();
-        $opt->getFromDB(1);
-        $use_hour_on_cra = $opt->fields['use_hour_on_cra'];
+        $option = new Option();
+        $option->getFromDB(1);
+        $use_hour_on_cra = $option->fields['use_hour_on_cra'];
         $opt['arrondir_heure'] = $use_hour_on_cra;
 
         $tranches_seuil   = 0.002;
