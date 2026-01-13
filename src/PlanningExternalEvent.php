@@ -320,7 +320,7 @@ class PlanningExternalEvent extends CommonDBTM
                     && (isset($item->input['plan']['_duration']) || (isset($item->input['plan']['begin']) && isset($item->input['plan']['end']))))
             || (isset($item->input['begin']) && isset($item->input['end']))) {
                 global $DB;
-                $extevent = new \PlanningExternalEvent();
+                $extevent = new PlanningExternalEvent();
                 $is_exist = $extevent->getFromDBByCrit(['planningexternalevents_id' => $item->getID()]);
                 $actiontime = '';
                 $options = Option::getConfigFromDB()[1];
