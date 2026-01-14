@@ -6,7 +6,7 @@ CREATE TABLE `glpi_plugin_activity_planningexternalevents` (
    `actiontime` int(11) NOT NULL DEFAULT '0',
    PRIMARY KEY  (`id`),
    KEY `is_oncra` (`is_oncra`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 ALTER TABLE `glpi_plugin_activity_holidays` CHANGE `date_mod` `date_mod` timestamp NULL DEFAULT NULL;
 ALTER TABLE `glpi_plugin_activity_holidays` CHANGE `begin` `begin` timestamp NULL DEFAULT NULL;

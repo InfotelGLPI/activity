@@ -126,11 +126,11 @@ class Holiday extends CommonDBTM
     }
 
 
-    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
-    {
-
-        return self::createTabEntry(__('Link'));
-    }
+//    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+//    {
+//
+//        return self::createTabEntry(__('Link'));
+//    }
 
     static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
@@ -138,8 +138,6 @@ class Holiday extends CommonDBTM
         if ($item->getType() == HolidayValidation::class) {
             $validation = new HolidayValidation();
             $validation->showSummary($item);
-        } else {
-            $item->showLinks($item);
         }
         return true;
     }
