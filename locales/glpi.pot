@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Activity - Accounts plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-14 16:22+0000\n"
+"POT-Creation-Date: 2026-01-14 16:25+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -80,7 +80,7 @@ msgstr ""
 msgid "Approvers"
 msgstr ""
 
-#: src/NotificationTargetHoliday.php:144 src/Holiday.php:356
+#: src/NotificationTargetHoliday.php:144 src/Holiday.php:354
 msgid "Validation of your holiday request"
 msgstr ""
 
@@ -124,7 +124,7 @@ msgid "Main evolution of team"
 msgstr ""
 
 #: src/LateralMenu.php:73 src/Profile.php:115 src/Profile.php:166
-#: src/PlanningExternalEvent.php:118 src/Holiday.php:482
+#: src/PlanningExternalEvent.php:118 src/Holiday.php:480
 msgid "Create a holiday request"
 msgstr ""
 
@@ -149,7 +149,7 @@ msgstr ""
 msgid "Planning access"
 msgstr ""
 
-#: src/Dashboard.php:262 src/Holiday.php:1269 src/Holiday.php:1323
+#: src/Dashboard.php:262 src/Holiday.php:1267 src/Holiday.php:1321
 msgid "All day"
 msgstr ""
 
@@ -293,7 +293,7 @@ msgstr ""
 msgid "Refuse holiday"
 msgstr ""
 
-#: src/Menu.php:56 src/HolidayCount.php:49 src/Holiday.php:501
+#: src/Menu.php:56 src/HolidayCount.php:49 src/Holiday.php:499
 msgid "Holiday counter"
 msgid_plural "Holiday counters"
 msgstr[0] ""
@@ -349,11 +349,11 @@ msgstr ""
 msgid "Archived"
 msgstr ""
 
-#: src/HolidayPeriod.php:75 src/Holiday.php:183
+#: src/HolidayPeriod.php:75 src/Holiday.php:181
 msgid "Please fill a begin date"
 msgstr ""
 
-#: src/HolidayPeriod.php:79 src/Holiday.php:187
+#: src/HolidayPeriod.php:79 src/Holiday.php:185
 msgid "Please fill an end date"
 msgstr ""
 
@@ -361,7 +361,7 @@ msgstr ""
 msgid "Holiday period is mandatory field"
 msgstr ""
 
-#: src/HolidayCount.php:79 src/Holiday.php:193
+#: src/HolidayCount.php:79 src/Holiday.php:191
 msgid "Holiday type is mandatory field"
 msgstr ""
 
@@ -540,17 +540,17 @@ msgid "Activity type is mandatory field"
 msgstr ""
 
 #: src/PlanningExternalEvent.php:546 src/PlanningExternalEvent.php:645
-#: src/Holiday.php:224
+#: src/Holiday.php:222
 msgid "User is mandatory field"
 msgstr ""
 
 #: src/PlanningExternalEvent.php:555 src/PlanningExternalEvent.php:723
-#: src/Holiday.php:258
+#: src/Holiday.php:256
 msgid "The chosen date is a public holiday"
 msgstr ""
 
 #: src/PlanningExternalEvent.php:569 src/PlanningExternalEvent.php:736
-#: src/Holiday.php:251
+#: src/Holiday.php:249
 msgid "The chosen begin date is on weekend"
 msgstr ""
 
@@ -566,121 +566,121 @@ msgstr ""
 msgid "Refresh"
 msgstr ""
 
-#: src/Holiday.php:264
+#: src/Holiday.php:262
 msgid "You have already planned holidays for this period"
 msgstr ""
 
-#: src/Holiday.php:266
+#: src/Holiday.php:264
 msgid "The user has already planned holidays for this period"
 msgstr ""
 
-#: src/Holiday.php:322 src/HolidayType.php:75
+#: src/Holiday.php:320 src/HolidayType.php:75
 msgid "Auto-validated"
 msgstr ""
 
-#: src/Holiday.php:360
+#: src/Holiday.php:358
 msgid "The user don't have any manager filled in his personal settings."
 msgstr ""
 
-#: src/Holiday.php:489
+#: src/Holiday.php:487
 msgid "List of holidays"
 msgstr ""
 
-#: src/Holiday.php:495 src/Holiday.php:2164
+#: src/Holiday.php:493 src/Holiday.php:2162
 msgid "Approve holiday"
 msgid_plural "Approve holidays"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Holiday.php:512 src/Preference.php:206
+#: src/Holiday.php:510 src/Preference.php:206
 msgid "Add a manager"
 msgstr ""
 
-#: src/Holiday.php:930
+#: src/Holiday.php:928
 msgid "You don't have any manager filled in you personal settings."
 msgstr ""
 
-#: src/Holiday.php:932
+#: src/Holiday.php:930
 msgid ""
 "In order to make a holiday demand, please fill at least one manager in your "
 "personal settings"
 msgstr ""
 
-#: src/Holiday.php:935
+#: src/Holiday.php:933
 msgid "See the page"
 msgstr ""
 
-#: src/Holiday.php:981 src/Holiday.php:1005 src/Holiday.php:1258
-#: src/Holiday.php:1312
+#: src/Holiday.php:979 src/Holiday.php:1003 src/Holiday.php:1256
+#: src/Holiday.php:1310
 msgid "Only on afternoon"
 msgstr ""
 
-#: src/Holiday.php:987 src/Holiday.php:993 src/Holiday.php:1248
-#: src/Holiday.php:1302
+#: src/Holiday.php:985 src/Holiday.php:991 src/Holiday.php:1246
+#: src/Holiday.php:1300
 msgid "Only on morning"
 msgstr ""
 
-#: src/Holiday.php:1514
+#: src/Holiday.php:1512
 msgid ""
 "You must fill a registration number for this user before generating the TXT "
 "file."
 msgstr ""
 
-#: src/Holiday.php:1516
+#: src/Holiday.php:1514
 msgid "See this page"
 msgstr ""
 
-#: src/Holiday.php:1571
+#: src/Holiday.php:1569
 msgid "Generate TXT file for this holiday"
 msgstr ""
 
-#: src/Holiday.php:2129
+#: src/Holiday.php:2127
 msgid "Close without clearing"
 msgstr ""
 
-#: src/Holiday.php:2130
+#: src/Holiday.php:2128
 msgid "See previous month"
 msgstr ""
 
-#: src/Holiday.php:2131
+#: src/Holiday.php:2129
 msgid "See next month"
 msgstr ""
 
-#: src/Holiday.php:2132
+#: src/Holiday.php:2130
 msgid "See current month"
 msgstr ""
 
-#: src/Holiday.php:2135
+#: src/Holiday.php:2133
 msgid "See another month"
 msgstr ""
 
-#: src/Holiday.php:2135
+#: src/Holiday.php:2133
 msgid "See another year"
 msgstr ""
 
-#: src/Holiday.php:2140
+#: src/Holiday.php:2138
 msgid "Use DD as first day of week"
 msgstr ""
 
-#: src/Holiday.php:2140
+#: src/Holiday.php:2138
 msgid "Choose the DD, MM d"
 msgstr ""
 
-#: src/Holiday.php:2142
+#: src/Holiday.php:2140
 msgid "Choose the date"
 msgstr ""
 
-#: src/Holiday.php:2193
+#: src/Holiday.php:2191
 msgid "Comment"
 msgid_plural "Comments"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Holiday.php:2443
+#: src/Holiday.php:2441
 msgid "Remaining holidays for the period"
 msgstr ""
 
-#: src/Holiday.php:2444
+#: src/Holiday.php:2442
 msgid "Leave awaiting validation"
 msgstr ""
 
