@@ -129,7 +129,7 @@ function getActionTime(beginDate, endDate, actiontime, input, format, root_doc) 
 
    document.getElementById('div_duration').innerHTML = '';
    var img = document.createElement('img');
-   img.setAttribute('src', root_doc + '/pics/loading.gif');
+   img.setAttribute('src', root_doc + '/public/pics/loading.gif');
    document.getElementById('div_duration').appendChild(img);
 
 
@@ -144,36 +144,43 @@ function getActionTime(beginDate, endDate, actiontime, input, format, root_doc) 
       document.getElementById('div_duration').innerHTML = finalDuration;
       updateRadioBtnDate(beginDate, endDate, input, finalDuration);
    } else {
-      args = "begin=" + beginDate + "&end=" + endDate + "&actiontime=" + actiontime;
 
-      xhr_object = getXHRObject();
-      xhr_object.open("POST", root_doc + '/ajax/duration.php', true);
-      xhr_object.setRequestHeader('X-Glpi-Csrf-Token', getAjaxCsrfToken());
-      xhr_object.onreadystatechange = function () {
-         if (xhr_object.readyState === 4) {
-            var jsondata = JSON.parse(xhr_object.responseText);
-            var finalDuration = jsondata['actiontime'] - 1;
+       $.ajax({
+           url: root_doc + '/ajax/duration.php',
+           type: 'POST',
+           headers: {
+               'X-Glpi-Csrf-Token': getAjaxCsrfToken()
+           },
+           data: {
+               begin: beginDate,
+               end: endDate,
+               actiontime: actiontime,
+           },
+           success: function (response) {
+               console.log(response);
+               var jsondata = response;
+               var finalDuration = jsondata['actiontime'] - 1;
 
-            if (cbAmBegin.checked === true || cbPmBegin.checked) {
-               finalDuration += 0.5;
-            } else if (cbAllDayBegin.checked === true) {
-               finalDuration += 1;
-            }
-            if (cbAmEnd.checked === true || cbPmEnd.checked) {
-               finalDuration -= 0.5;
-            }
+               if (cbAmBegin.checked === true || cbPmBegin.checked) {
+                   finalDuration += 0.5;
+               } else if (cbAllDayBegin.checked === true) {
+                   finalDuration += 1;
+               }
+               if (cbAmEnd.checked === true || cbPmEnd.checked) {
+                   finalDuration -= 0.5;
+               }
 
-            updateRadioBtnDate(beginDate, endDate, input, finalDuration);
+               updateRadioBtnDate(beginDate, endDate, input, finalDuration);
 
-            if (!isNaN(finalDuration)) {
-               document.getElementById('div_duration').innerHTML = finalDuration;
-               document.getElementById('actiontime').value = finalDuration;
-            }
-         }
-         return xhr_object.readyState;
-      };
-      xhr_object.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      xhr_object.send(args);
+               if (!isNaN(finalDuration)) {
+                   document.getElementById('div_duration').innerHTML = finalDuration;
+                   document.getElementById('actiontime').value = finalDuration;
+               }
+           },
+           error: function (xhr) {
+               console.error(xhr.status, xhr.responseText);
+           }
+       });
    }
 }
 
