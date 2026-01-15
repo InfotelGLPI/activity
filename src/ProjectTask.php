@@ -50,7 +50,7 @@ class ProjectTask extends CommonDBTM
         return \Project::getTypeName($nb);
     }
 
-    public static function taskUpdate(ProjectTask $item)
+    public static function taskUpdate(\ProjectTask $item)
     {
 
         if (!is_array($item->input) || !count($item->input)) {
@@ -65,7 +65,7 @@ class ProjectTask extends CommonDBTM
         //      }
     }
 
-    public static function taskAdd(ProjectTask $item)
+    public static function taskAdd(\ProjectTask $item)
     {
 
         if (!is_array($item->input) || !count($item->input)) {
@@ -76,7 +76,7 @@ class ProjectTask extends CommonDBTM
         self::setProjectTask($item);
     }
 
-    public static function setProjectTask(ProjectTask $item)
+    public static function setProjectTask(\ProjectTask $item)
     {
         if (self::canCreate()) {
             $projecttask = new self();
