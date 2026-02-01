@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Activity - Accounts plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-26 14:06+0000\n"
+"POT-Creation-Date: 2026-02-01 14:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -102,7 +102,7 @@ msgid_plural "Holiday types"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/ProjectTask.php:140 src/TicketTask.php:94
+#: src/ProjectTask.php:140 src/TicketTask.php:97
 #: src/PlanningExternalEvent.php:251
 msgid "Use in CRA"
 msgstr ""
@@ -329,7 +329,7 @@ msgstr ""
 msgid "Fail to send a mail to %s"
 msgstr ""
 
-#: src/TicketTask.php:54
+#: src/TicketTask.php:56
 msgid "Cumulative ticket task"
 msgid_plural "Cumulative ticket tasks"
 msgstr[0] ""
