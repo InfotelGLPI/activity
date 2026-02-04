@@ -92,7 +92,7 @@ class TicketTask extends CommonDBTM
             echo "<tr class='tab_bg_1'>";
             echo "<td colspan='3'></td>";
             echo '<td>';
-            echo "<div id='is_oncra_" . $item->getID() . "' class='ti ti-label right'>
+            echo "<div id='is_oncra_" . $item->getID() . "' class='label right'>
                <i class='ti ti-flag'
                   title='" . __('Use in CRA', 'activity') . "'></i>";
             Dropdown::showYesNo(
