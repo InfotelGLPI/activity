@@ -113,7 +113,7 @@ function plugin_activity_install()
         $DB->runFile(PLUGIN_ACTIVITY_DIR . "/install/sql/update-2.0.2.sql");
     }
     if (!$DB->fieldExists("glpi_plugin_activity_holidaytypes", "auto_validated")) {
-        $DB->runFile(PLUGIN_ACTIVITY_DIR . "/y/install/sql/update-2.0.3.sql");
+        $DB->runFile(PLUGIN_ACTIVITY_DIR . "/install/sql/update-2.0.3.sql");
     }
     if (!$DB->fieldExists("glpi_plugin_activity_holidays", "date_mod")) {
         $DB->runFile(PLUGIN_ACTIVITY_DIR . "/install/sql/update-2.0.4.sql");

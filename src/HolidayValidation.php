@@ -68,18 +68,13 @@ class HolidayValidation extends CommonDBChild
     */
     static function canValidate($hId)
     {
-        global $DB;
-
-        $query  = "SELECT *
-                FROM `glpi_plugin_activity_holidayvalidations`
-                WHERE `plugin_activity_holidays_id` = '$hId'
-                      AND users_id_validate = '" . Session::getLoginUserID() . "'";
-        $result = $DB->doQuery($query);
-
-        if ($DB->numrows($result)) {
-            return true;
-        }
-        return false;
+        return countElementsInTable(
+                'glpi_plugin_activity_holidayvalidations',
+                [
+                    'plugin_activity_holidays_id' => $hId,
+                    'users_id_validate'           => Session::getLoginUserID(),
+                ]
+            ) > 0;
     }
 
     static function getIcon()

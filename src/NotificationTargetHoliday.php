@@ -55,7 +55,7 @@ class NotificationTargetHoliday extends NotificationTarget {
       $this->addTarget(NotificationTargetHoliday::HOLIDAY_VALIDATOR, __('Approvers', 'activity'));
    }
 
-   function addSpecificTargets($data, $options) {
+   public function addSpecificTargets($data, $options) {
       //Look for all targets whose type is Notification::ITEM_USER
       switch ($data['items_id']) {
 
