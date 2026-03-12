@@ -339,7 +339,7 @@ class Holiday extends CommonDBTM
                     $email = $user->getDefaultEmail();
                     if (!empty($email)) {
                        //TRANS: %s is the user name
-                        Session::addMessageAfterRedirect(sprintf(__('Approval request send to %s'), $user->getName()));
+                        Session::addMessageAfterRedirect(sprintf(__('Approval request send to %s', 'activity'), $user->getName()));
                     } else {
                         Session::addMessageAfterRedirect(
                             sprintf(

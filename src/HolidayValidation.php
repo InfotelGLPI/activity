@@ -614,10 +614,10 @@ class HolidayValidation extends CommonDBChild
         $username = $dbu->getUserName($this->fields["users_id_validate"]);
         switch ($case) {
             case 'add':
-                return sprintf(__('Approval request send to %s'), $username);
+                return sprintf(__('Approval request send to %s', 'activity'), $username);
 
             case 'delete':
-                return sprintf(__('Cancel the approval request to %s'), $username);
+                return sprintf(__('Cancel the approval request to %s', 'activity'), $username);
         }
         return '';
     }

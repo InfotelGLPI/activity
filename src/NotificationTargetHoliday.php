@@ -179,8 +179,11 @@ class NotificationTargetHoliday extends NotificationTarget {
       $this->data['##holiday.date.validation##']      = Html::convDateTime($holidayValidation->fields["validation_date"]);
 
       $this->data['##lang.holiday.commentvalidation##'] = sprintf(__('%1$s: %2$s'), _n('Approval', 'Approvals', 1), __('Comments'));
-      $this->data['##holiday.commentvalidation##']      = stripslashes(str_replace(['\r\n', '\n', '\r'], "<br/>", $holidayValidation->fields["comment_validation"]));
-
+       if (!empty($holidayValidation->fields["comment_validation"])) {
+           $this->data['##holiday.commentvalidation##'] = stripslashes(
+               str_replace(['\r\n', '\n', '\r'], "<br/>", $holidayValidation->fields["comment_validation"])
+           );
+       }
       if (isset($this->obj->fields['comment'])) {
          $this->data['##lang.holiday.commentrequest##'] = sprintf(__('%1$s: %2$s'), __('Request'), __('Comments'));
          $comment                                       = stripslashes(str_replace(['\r\n', '\n', '\r'], "<br/>", $this->obj->fields['comment']));
@@ -215,7 +218,10 @@ class NotificationTargetHoliday extends NotificationTarget {
          $tmp['##comment.name##']        = $comment['comment_validation'];
          $tmp['##comment.author##']      = getUserName($comment['users_id_validate']);
          $tmp['##comment.datecomment##'] = Html::convDateTime($comment['validation_date']);
-         $tmp['##comment.comment##']     = nl2br($comment['comment_validation']);
+         if (!empty($comment['comment_validation'])) {
+             $tmp['##comment.comment##']     = nl2br($comment['comment_validation']);
+         }
+
 
          $this->data['comments'][] = $tmp;
       }
