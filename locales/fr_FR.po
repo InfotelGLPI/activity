@@ -4,16 +4,16 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# Xavier CAILLAUD <thetsmr@gmail.com>, 2025
+# Xavier CAILLAUD <thetsmr@gmail.com>, 2026
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Activity - Accounts plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-12 10:12+0000\n"
+"POT-Creation-Date: 2026-03-12 10:13+0000\n"
 "PO-Revision-Date: 2020-11-02 13:59+0000\n"
-"Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2025\n"
+"Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/114456/fr_FR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -119,6 +119,12 @@ msgstr "Cet utilisateur a déjà planifié des congés pour cette période"
 #: src/Holiday.php:320 src/HolidayType.php:75
 msgid "Auto-validated"
 msgstr "Validé automatiquement"
+
+#. TRANS: %s is the user name
+#: src/Holiday.php:342 src/HolidayValidation.php:617
+#, php-format
+msgid "Approval request send to %s"
+msgstr "Demande d'approbation envoyée à %s"
 
 #: src/Holiday.php:354 src/NotificationTargetHoliday.php:144
 msgid "Validation of your holiday request"
@@ -402,6 +408,11 @@ msgstr "Valider le congé"
 msgid "Refuse holiday"
 msgstr "Refuser le congé"
 
+#: src/HolidayValidation.php:620
+#, php-format
+msgid "Cancel the approval request to %s"
+msgstr "Annuler la demande d'approbation de %s"
+
 #: src/Config.php:75
 msgid "Define internal helpdesk"
 msgstr "Définir la terminologie pour l'assistance interne"
@@ -440,7 +451,7 @@ msgstr "L'email n'a pas été envoyé"
 msgid "Fail to send a mail to %s"
 msgstr "Echec de l'envoi de l'email à %s"
 
-#: src/HolidayType.php:57 src/NotificationTargetHoliday.php:190
+#: src/HolidayType.php:57 src/NotificationTargetHoliday.php:193
 msgid "Holiday type"
 msgid_plural "Holiday types"
 msgstr[0] "Type de congé"
@@ -471,11 +482,11 @@ msgstr "Lié à une période de congés"
 msgid "Can't be of more than one type at the same time"
 msgstr "Can't be of more than one type at the same time"
 
-#: src/NotificationTargetHoliday.php:46 src/NotificationTargetHoliday.php:244
+#: src/NotificationTargetHoliday.php:46 src/NotificationTargetHoliday.php:250
 msgid "New personal holiday request"
 msgstr "Nouvelle demande de congé personnel"
 
-#: src/NotificationTargetHoliday.php:47 src/NotificationTargetHoliday.php:250
+#: src/NotificationTargetHoliday.php:47 src/NotificationTargetHoliday.php:256
 msgid "Answer to a personal holiday request"
 msgstr "Réponse à une demande de congé personnel"
 
@@ -491,7 +502,7 @@ msgstr "Refus de votre demande de congé"
 msgid "A new holiday request has been submitted"
 msgstr "Une nouvelle demande de congé a été soumise"
 
-#: src/NotificationTargetHoliday.php:172 src/NotificationTargetHoliday.php:231
+#: src/NotificationTargetHoliday.php:172 src/NotificationTargetHoliday.php:237
 msgid "Number of days"
 msgstr "Nombre de jours"
 
