@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Activity - Accounts plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-12 10:12+0000\n"
+"POT-Creation-Date: 2026-03-12 10:13+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -113,6 +113,12 @@ msgstr ""
 
 #: src/Holiday.php:320 src/HolidayType.php:75
 msgid "Auto-validated"
+msgstr ""
+
+#. TRANS: %s is the user name
+#: src/Holiday.php:342 src/HolidayValidation.php:617
+#, php-format
+msgid "Approval request send to %s"
 msgstr ""
 
 #: src/Holiday.php:354 src/NotificationTargetHoliday.php:144
@@ -383,6 +389,11 @@ msgstr ""
 msgid "Refuse holiday"
 msgstr ""
 
+#: src/HolidayValidation.php:620
+#, php-format
+msgid "Cancel the approval request to %s"
+msgstr ""
+
 #: src/Config.php:75
 msgid "Define internal helpdesk"
 msgstr ""
@@ -421,7 +432,7 @@ msgstr ""
 msgid "Fail to send a mail to %s"
 msgstr ""
 
-#: src/HolidayType.php:57 src/NotificationTargetHoliday.php:190
+#: src/HolidayType.php:57 src/NotificationTargetHoliday.php:193
 msgid "Holiday type"
 msgid_plural "Holiday types"
 msgstr[0] ""
@@ -451,11 +462,11 @@ msgstr ""
 msgid "Can't be of more than one type at the same time"
 msgstr ""
 
-#: src/NotificationTargetHoliday.php:46 src/NotificationTargetHoliday.php:244
+#: src/NotificationTargetHoliday.php:46 src/NotificationTargetHoliday.php:250
 msgid "New personal holiday request"
 msgstr ""
 
-#: src/NotificationTargetHoliday.php:47 src/NotificationTargetHoliday.php:250
+#: src/NotificationTargetHoliday.php:47 src/NotificationTargetHoliday.php:256
 msgid "Answer to a personal holiday request"
 msgstr ""
 
@@ -471,7 +482,7 @@ msgstr ""
 msgid "A new holiday request has been submitted"
 msgstr ""
 
-#: src/NotificationTargetHoliday.php:172 src/NotificationTargetHoliday.php:231
+#: src/NotificationTargetHoliday.php:172 src/NotificationTargetHoliday.php:237
 msgid "Number of days"
 msgstr ""
 
