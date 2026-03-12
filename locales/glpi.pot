@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Activity - Accounts plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-12 09:40+0000\n"
+"POT-Creation-Date: 2026-03-12 10:12+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #: ajax/loadscripts.php:47 src/Preference.php:67 src/Report.php:1124
 #: src/Config.php:48 src/Option.php:46 src/Menu.php:37 src/Profile.php:54
-#: src/Profile.php:159 setup.php:225 front/menu.php:50
+#: src/Profile.php:159 setup.php:210 front/menu.php:50
 msgid "Activity"
 msgid_plural "Activities"
 msgstr[0] ""
@@ -475,30 +475,6 @@ msgstr ""
 msgid "Number of days"
 msgstr ""
 
-#: src/Tools.php:246
-msgid "Export the report"
-msgstr ""
-
-#: src/Tools.php:423
-msgid "Refresh"
-msgstr ""
-
-#: src/Stats5.php:227 src/Stats5.php:275
-msgid "Number of technicians"
-msgstr ""
-
-#: src/Stats5.php:245 src/Stats5.php:274
-msgid "Number of tickets in progress"
-msgstr ""
-
-#: src/Stats5.php:276
-msgid "All the period"
-msgstr ""
-
-#: src/Stats5.php:291
-msgid "Main evolution of team"
-msgstr ""
-
 #: src/PlanningExternalEvent.php:204
 msgid "Add an activity"
 msgstr ""
@@ -553,10 +529,6 @@ msgid "Cumulative ticket task"
 msgid_plural "Cumulative ticket tasks"
 msgstr[0] ""
 msgstr[1] ""
-
-#: src/Stats.php:41
-msgid "Activity statistics"
-msgstr ""
 
 #: src/CraPDF.php:282 front/cra.php:45
 msgid "Report of Activities"
