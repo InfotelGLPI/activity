@@ -84,21 +84,6 @@ function plugin_init_activity()
         $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['activity'] = $activityScripts;
     }
 
-    //   if (Session::haveRight("plugin_activity_statistics", 1)) {
-    //      /* Show Stats in standard stats page */
-    //      if (class_exists(Stats::class)) {
-    //         $common = new Stats();
-    //         $stats  = $common->getAllStats();
-    //
-    //         if ($stats !== false) {
-    //            foreach ($stats as $stat) {
-    //               foreach ($stat['funct'] as $func) {
-    //                  $PLUGIN_HOOKS['stats']['activity'] = ['front/stats.php?stat_id=' . $func['id'] => $func['title']];
-    //               }
-    //            }
-    //         }
-    //      }
-    //   }
     $PLUGIN_HOOKS['post_init']['activity'] = 'plugin_activity_postinit';
 
     if (Plugin::isPluginActive("activity")) {
