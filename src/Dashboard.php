@@ -105,7 +105,7 @@ class Dashboard extends CommonGLPI
 
 
     /**
-     * @return \array[][]
+     * @return array
      */
     public function getWidgetsForItem()
     {

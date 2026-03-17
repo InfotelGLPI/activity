@@ -29,6 +29,7 @@ namespace GlpiPlugin\Activity;
 
 use CommonGLPI;
 use DbUtils;
+use Glpi\Application\View\TemplateRenderer;
 use Html;
 use ProfileRight;
 use Session;
@@ -64,93 +65,39 @@ class Profile extends \Profile
         return "ti ti-calendar-event";
     }
 
-    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
-    {
-        global $CFG_GLPI;
-
-        if ($item->getType() == 'Profile') {
-            $ID   = $item->getID();
-            $prof = new self();
-
-            self::addDefaultProfileInfos($ID, ['plugin_activity'                    => 0,
-                                                    'plugin_activity_statistics'         => 0,
-                                                    'plugin_activity_can_requestholiday' => 0,
-                                                    'plugin_activity_can_validate'       => 0,
-                                                    'plugin_activity_all_users'          => 0]);
-            $prof->showForm($ID);
-        }
-        return true;
-    }
 
     /**
-     * Show profile form
+     * @param CommonGLPI $item
+     * @param int        $tabnum
+     * @param int        $withtemplate
      *
-     * @param $items_id integer id of the profile
-     * @param $target value url of target
-     *
-     * @return nothing
-     * */
-    public function showForm($profiles_id = 0, $openform = true, $closeform = true)
-    {
-        echo "<div class='firstbloc'>";
-        if (($canedit = Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, PURGE])) && $openform) {
-            $profile = new \Profile();
-            echo "<form method='post' action='".$profile->getFormURL()."'>";
+     * @return bool
+     */
+    public static function displayTabContentForItem(
+        CommonGLPI $item,
+        $tabnum = 1,
+        $withtemplate = 0
+    ) {
+        if (!$item instanceof \Profile || !self::canView()) {
+            return false;
         }
 
         $profile = new \Profile();
-        $profile->getFromDB($profiles_id);
+        $profile->getFromDB($item->getID());
 
-        $rights = $this->getAllRights();
-        $profile->displayRightsChoiceMatrix($rights, ['canedit'       => $canedit,
-                                                      'default_class' => 'tab_bg_2',
-                                                      'title'         => __('General')]);
+        $rights = self::getAllRights(true);
 
-        echo "<table class='tab_cadre_fixehov'>";
-        $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_activity_can_requestholiday',
-                                                                               'plugin_activity_can_validate',
-                                                                               'plugin_activity_statistics',
-                                                                               'plugin_activity_all_users']);
-        echo "<tr class='tab_bg_2'>";
-        echo "<td width='20%'>".__('Create a holiday request', 'activity')."</td>";
-        echo "<td colspan='5'>";
-        Html::showCheckbox(['name'    => '_plugin_activity_can_requestholiday[1_0]',
-                                 'checked' => $effective_rights['plugin_activity_can_requestholiday']]);
-        echo "</td></tr>\n";
+        $twig = TemplateRenderer::getInstance();
+        $twig->display('@activity/profile.html.twig', [
+            'id'      => $item->getID(),
+            'profile' => $profile,
+            'title'   => self::getTypeName(Session::getPluralNumber()),
+            'rights'  => $rights,
+        ]);
 
-        echo "<tr class='tab_bg_2'>";
-        echo "<td width='20%'>"._n('Validate holiday', 'Validate holidays', 2, 'activity')."</td>";
-        echo "<td colspan='5'>";
-        Html::showCheckbox(['name'    => '_plugin_activity_can_validate[1_0]',
-                                 'checked' => $effective_rights['plugin_activity_can_validate']]);
-        echo "</td></tr>\n";
-
-        echo "<tr class='tab_bg_2'>";
-        echo "<td width='20%'>".__('Statistics and reports', 'activity')."</td>";
-        echo "<td colspan='5'>";
-        Html::showCheckbox(['name'    => '_plugin_activity_statistics[1_0]',
-                                 'checked' => $effective_rights['plugin_activity_statistics']]);
-        echo "</td></tr>\n";
-
-        echo "<tr class='tab_bg_2'>";
-        echo "<td width='20%'>".__('Display activities of all', 'activity')."</td>";
-        echo "<td colspan='5'>";
-        Html::showCheckbox(['name'    => '_plugin_activity_all_users[1_0]',
-                                 'checked' => $effective_rights['plugin_activity_all_users']]);
-        echo "</td></tr>\n";
-        echo "</table>";
-
-        if ($canedit && $closeform) {
-            echo "<div class='center'>";
-            echo Html::hidden('id', ['value' => $profiles_id]);
-            echo Html::submit(_sx('button', 'Save'), ['name' => 'update', 'class' => 'btn btn-primary']);
-            echo "</div>\n";
-            Html::closeForm();
-        }
-        echo "</div>";
-
-        $this->showLegend();
+        return true;
     }
+
 
     public static function getAllRights($all = false)
     {
@@ -164,19 +111,31 @@ class Profile extends \Profile
         if ($all) {
             $rights[] = ['itemtype' => Holiday::class,
                               'label'    => __('Create a holiday request', 'activity'),
-                              'field'    => 'plugin_activity_can_requestholiday'];
+                              'field'    => 'plugin_activity_can_requestholiday',
+                'rights' => [
+                    READ  => __s('Read'),
+                ],];
 
             $rights[] = ['itemtype' => Holiday::class,
                               'label'    => _n('Validate holiday', 'Validate holidays', 2, 'activity'),
-                              'field'    => 'plugin_activity_can_validate'];
+                              'field'    => 'plugin_activity_can_validate',
+                'rights' => [
+                    READ  => __s('Read'),
+                ],];
 
             $rights[] = ['itemtype' => PlanningExternalEvent::class,
                               'label'    => __('Statistics and reports', 'activity'),
-                              'field'    => 'plugin_activity_statistics'];
+                              'field'    => 'plugin_activity_statistics',
+                'rights' => [
+                    READ  => __s('Read'),
+                ],];
 
             $rights[] = ['itemtype' => PlanningExternalEvent::class,
                               'label'    => __('Display activities of all', 'activity'),
-                              'field'    => 'plugin_activity_all_users'];
+                              'field'    => 'plugin_activity_all_users',
+                'rights' => [
+                    READ  => __s('Read'),
+                ],];
         }
 
         return $rights;
@@ -207,7 +166,7 @@ class Profile extends \Profile
     /**
      * @since 0.85
      * Migration rights from old system to the new one for one profile
-     * @param $profiles_id the profile ID
+     * @param $profiles_id
      * @return bool
      */
     public static function migrateOneProfile()
