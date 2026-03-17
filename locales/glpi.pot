@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Activity - Accounts plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-12 10:13+0000\n"
+"POT-Creation-Date: 2026-03-17 10:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,8 +19,8 @@ msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 #: ajax/loadscripts.php:47 src/Preference.php:67 src/Report.php:1124
-#: src/Config.php:48 src/Option.php:46 src/Menu.php:37 src/Profile.php:54
-#: src/Profile.php:159 setup.php:210 front/menu.php:50
+#: src/Config.php:48 src/Option.php:46 src/Menu.php:37 src/Profile.php:55
+#: src/Profile.php:106 setup.php:210 front/menu.php:50
 msgid "Activity"
 msgid_plural "Activities"
 msgstr[0] ""
@@ -130,7 +130,7 @@ msgid "The user don't have any manager filled in his personal settings."
 msgstr ""
 
 #: src/Holiday.php:480 src/PlanningExternalEvent.php:118 src/LateralMenu.php:73
-#: src/Profile.php:115 src/Profile.php:166
+#: src/Profile.php:113
 msgid "Create a holiday request"
 msgstr ""
 
@@ -685,23 +685,23 @@ msgstr ""
 msgid "Cumul"
 msgstr ""
 
-#: src/Profile.php:46
+#: src/Profile.php:47
 msgid "Right management"
 msgid_plural "Rights management"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Profile.php:122 src/Profile.php:170
+#: src/Profile.php:120
 msgid "Validate holiday"
 msgid_plural "Validate holidays"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Profile.php:129 src/Profile.php:174
+#: src/Profile.php:127
 msgid "Statistics and reports"
 msgstr ""
 
-#: src/Profile.php:136 src/Profile.php:178
+#: src/Profile.php:134
 msgid "Display activities of all"
 msgstr ""
 
