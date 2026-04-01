@@ -1,4 +1,5 @@
 <?php
+
 /*
  -------------------------------------------------------------------------
  Activity plugin for GLPI
@@ -39,16 +40,15 @@ if (!defined('GLPI_ROOT')) {
 
 class Config extends CommonDBTM
 {
+    public static $rightname = "plugin_activity";
 
-    static $rightname = "plugin_activity";
-
-    static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0)
     {
 
         return _n('Activity', 'Activity', $nb, 'activity');
     }
 
-    function showForm($ID, $options = [])
+    public function showForm($ID, $options = [])
     {
         $this->getfromDB($ID);
         if (!$this->canView()) {
@@ -67,28 +67,28 @@ class Config extends CommonDBTM
             }
         }
 
-        echo "<form name='form' method='post' action='".
-         Toolbox::getItemTypeFormURL(Config::class)."'>";
+        echo "<form name='form' method='post' action='"
+         . Toolbox::getItemTypeFormURL(Config::class) . "'>";
 
         echo "<div class='center'><table class='tab_cadre_fixe'>";
 
-        echo "<tr><th colspan='5'>".__('Define internal helpdesk', 'activity')."</th></tr>";
+        echo "<tr><th colspan='5'>" . __('Define internal helpdesk', 'activity') . "</th></tr>";
 
         echo "<tr class='tab_bg_1'>";
 
-       // Dropdown entity
-        echo "<td>".__('Entity')."</td>";
+        // Dropdown entity
+        echo "<td>" . __('Entity') . "</td>";
         echo "<td>";
         Dropdown::show('Entity', ['name' => 'entities_id',
-                                     'used' => $used_entities]);
+            'used' => $used_entities]);
         echo "</td>";
-     // is_recursive
-        echo "<td>".__('Is recursive', 'activity')."</td>";
+        // is_recursive
+        echo "<td>" . __('Is recursive', 'activity') . "</td>";
         echo "<td>";
         Dropdown::showYesNo('is_recursive');
         echo "</td>";
 
-       // Checkbox is_internal_helpdesk
+        // Checkbox is_internal_helpdesk
         echo "<td>";
         echo Html::input('name', ['size' => 70]);
         echo "</td>";
@@ -120,35 +120,35 @@ class Config extends CommonDBTM
         echo "<div class='left'>";
 
         if ($canedit && $number) {
-            Html::openMassiveActionsForm('mass'.__CLASS__.$rand);
+            Html::openMassiveActionsForm('mass' . $rand);
             $massiveactionparams
             = ['container'
-                        => 'mass'.__CLASS__.$rand];
+                        => 'mass' . $rand];
             Html::showMassiveActions($massiveactionparams);
         }
 
         echo "<table class='tab_cadre_fixe'>";
-        echo "<tr><th colspan='4'>".__('Show internal helpdesk', 'activity')."</th></tr>";
+        echo "<tr><th colspan='4'>" . __('Show internal helpdesk', 'activity') . "</th></tr>";
         echo "<tr>";
         echo "<th width='10'>";
         if ($canedit && $number) {
-            echo Html::getCheckAllAsCheckbox('mass'.__CLASS__.$rand);
+            echo Html::getCheckAllAsCheckbox('mass' . $rand);
         }
         echo "</th>";
-        echo "<th>".__('Entity')."</th>";
-        echo "<th>".__('Is recursive', 'activity')."</th>";
-        echo "<th>".__('Type')."</th>";
+        echo "<th>" . __('Entity') . "</th>";
+        echo "<th>" . __('Is recursive', 'activity') . "</th>";
+        echo "<th>" . __('Type') . "</th>";
         echo "</tr>";
         foreach ($fields as $field) {
             echo "<tr class='tab_bg_1'>";
-           //CHECKBOX
+            //CHECKBOX
             echo "<td width='10'>";
             if ($canedit) {
                 Html::showMassiveActionCheckBox(__CLASS__, $field["id"]);
             }
             echo "</td>";
-           //DATA LINE
-            echo "<td>".Dropdown::getDropdownName('glpi_entities', $field['entities_id'])."</td>";
+            //DATA LINE
+            echo "<td>" . Dropdown::getDropdownName('glpi_entities', $field['entities_id']) . "</td>";
             echo "<td>";
             echo Dropdown::getYesNo($field['is_recursive']);
             echo "</td>";
@@ -167,26 +167,26 @@ class Config extends CommonDBTM
     }
 
 
-   /**
-    * getConfigFromDB : get all configs in the database
-    *
-    * @param type $ID : configs_id
-    * @return array
-    *@global type $DB
-    */
-    static function getConfigFromDB($entities_id)
+    /**
+     * getConfigFromDB : get all configs in the database
+     *
+     * @param type $ID : configs_id
+     * @return array
+     *@global type $DB
+     */
+    public static function getConfigFromDB($entities_id)
     {
 
         $ancestor_entities_id = getAncestorsOf(Entity::getTable(), $entities_id);
         if (!empty($ancestor_entities_id)) {
             $restrict = [
-              "OR" => [
-                  "entities_id" => $entities_id,
-                  "AND" => [
-                      "entities_id" => $ancestor_entities_id,
-                      "is_recursive" => 1
-                  ]
-              ]
+                "OR" => [
+                    "entities_id" => $entities_id,
+                    "AND" => [
+                        "entities_id" => $ancestor_entities_id,
+                        "is_recursive" => 1,
+                    ],
+                ],
 
             ];
         } else {

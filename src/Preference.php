@@ -112,8 +112,8 @@ class Preference extends CommonDBTM
         if ($use_groupmanager == 0) {
             // Liste des managers déclarés
             $restrict = ["users_id" => $user_id];
-            $dbu = new DbUtils();
-            $managers = $dbu->getAllDataFromTable('glpi_plugin_activity_preferences', $restrict);
+
+            $managers = getAllDataFromTable('glpi_plugin_activity_preferences', $restrict);
 
             echo "<form method='post' action='" . Toolbox::getItemTypeFormURL(Preference::class) . "'>";
             echo "<table class='tab_cadre_fixe'>";
@@ -131,7 +131,7 @@ class Preference extends CommonDBTM
                 echo "</tr>";
                 foreach ($managers as $manager) {
                     echo "<tr class='tab_bg_1'>";
-                    echo "<td>" . $dbu->getUserName($manager['users_id_validate']) . "</td>";
+                    echo "<td>" . getUserName($manager['users_id_validate']) . "</td>";
                     echo "<td>";
                     echo Html::hidden('id', ['value' => $manager['id']]);
                     echo Html::submit(
@@ -151,11 +151,10 @@ class Preference extends CommonDBTM
                 $groups[] = $groupuser["id"];
             }
 
-            $dbu = new DbUtils();
             $restrict = ["groups_id" => $groups,
                 "is_manager" => 1,
                 "NOT" => ["users_id"  => $user_id]];
-            $managers = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
+            $managers = getAllDataFromTable('glpi_groups_users', $restrict);
 
             echo "<table class='tab_cadre_fixe'>";
             echo "<tr class='tab_bg_1' >";
@@ -172,7 +171,7 @@ class Preference extends CommonDBTM
                 echo "</tr>";
                 foreach ($managers as $manager) {
                     echo "<tr class='tab_bg_1'>";
-                    echo "<td>" . $dbu->getUserName($manager['users_id']) . "</td>";
+                    echo "<td>" . getUserName($manager['users_id']) . "</td>";
                     echo "</tr>";
                 }
             }
