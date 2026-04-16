@@ -28,8 +28,11 @@
 namespace GlpiPlugin\Activity;
 
 use CommonDBTM;
+use GLPIMailer;
 use Log;
 use Session;
+use Symfony\Component\Mailer\Transport;
+use Symfony\Component\Mime\Address;
 use User;
 
 class Notification extends CommonDBTM {
@@ -39,14 +42,87 @@ class Notification extends CommonDBTM {
     */
    public $dohistory = true;
 
+
+    /**
+     * @param $options   array
+     **/
+    public function sendNotification($options = [])
+    {
+
+        $transport = Transport::fromDsn(GLPIMailer::buildDsn(true));
+
+        $mmail = new GLPIMailer($transport);
+        $mail = $mmail->getEmail();
+
+        $mail->getHeaders()->addTextHeader("Message-Id", $options['messageid']);
+
+        $mail->from(new Address($options['from'], $options["fromname"]));
+
+        if ($options['replyto']) {
+            $mail->addReplyTo(new Address($options['replyto'], $options['replytoname']));
+        }
+
+        $mail->to(new Address($options['to'], $options['toname']));
+
+        $mail->subject($options['subject']);
+
+        $mail->html($options['content_html']);
+
+        // Attach pdf to mail
+        if (!empty($options['attachment'])) {
+            foreach ($options['attachment'] as $attachment) {
+                $mail->attachFromPath($attachment['filepath'], $attachment['name']);
+            }
+        }
+
+        if (!$mmail->send()) {
+            Session::addMessageAfterRedirect(
+                __('Failed to send email to ' . $options['to']),
+                false,
+                ERROR
+            );
+            return false;
+        } else {
+//            if ((count($mail->to)) > 0) {
+//                foreach ($mail->to as $to) {
+//                    //TRANS to be written in logs %1$s is the to email / %2$s is the subject of the mail
+//                    Toolbox::logInFile("mail", sprintf(
+//                        __('%1$s: %2$s'),
+//                        sprintf(__('An email was sent to %s'), $to[0]),
+//                        $options['subject'] . "\n"
+//                    ));
+//                }
+//            }
+//            if ((count($mail->cc)) > 0) {
+//                foreach ($mail->cc as $to) {
+//                    //TRANS to be written in logs %1$s is the to email / %2$s is the subject of the mail
+//                    Toolbox::logInFile("mail", sprintf(
+//                        __('%1$s: %2$s'),
+//                        sprintf(__('An email was sent to %s'), $to[0]),
+//                        $options['subject'] . "\n"
+//                    ));
+//                }
+//            }
+//            if ((count($mail->bcc)) > 0) {
+//                foreach ($mail->bcc as $to) {
+//                    //TRANS to be written in logs %1$s is the to email / %2$s is the subject of the mail
+//                    Toolbox::logInFile("mail", sprintf(
+//                        __('%1$s: %2$s'),
+//                        sprintf(__('An email was sent to %s'), $to[0]),
+//                        $options['subject'] . "\n"
+//                    ));
+//                }
+//            }
+            return true;
+        }
+    }
    /**
     * @param $mailing_options
     **/
    static function send($mailing_options, $additional_options) {
 
-      $mail = new NotificationMail();
+      $mail = new self();
       $mail->sendNotification(array_merge($mailing_options, $additional_options));
-      $mail->ClearAddresses();
    }
 
    static function sendComm($input) {
@@ -67,30 +143,12 @@ class Notification extends CommonDBTM {
 
       } else {
          // Envoi du mail
-         $notificationMail = new NotificationMail();
-
-         $mails    = [];
+         $notificationMail = new self();
          $mail     = "";
-
-         $user = new User();
-         if ($user->getFromDB($input['users_id'])) {
-            $user_email = $user->getDefaultEmail();
-            if (!in_array($user_email, $mails)) {
-               $notificationMail->addCC($user_email, getUserName($input['users_id']));
-               $mail .= " " . $user_email . ",";
-               $mails[] = $user_email;
-            }
-         }
-
          $user = new User();
          if ($user->getFromDB($input['validate_id'])) {
             $validate_email = $user->getDefaultEmail();
             $validate_name = getUserName($input['validate_id']);
-            if (!in_array($validate_email, $mails)) {
-               $notificationMail->addCC($validate_email, $validate_name);
-               $mail .= " " . $validate_email . ",";
-               $mails[] = $validate_email;
-            }
          }
 
 
