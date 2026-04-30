@@ -30,15 +30,13 @@ use Glpi\Exception\Http\NotFoundHttpException;
 use GlpiPlugin\Activity\Holiday;
 use GlpiPlugin\Activity\HolidayValidation;
 
+Session::checkLoginUser();
+
 if (!isset($_GET['holidays_id'])) {
     throw new NotFoundHttpException();
 }
 
-if (isset($_GET['holidays_id'])) {
-   $hId = $_GET['holidays_id'];
-}
-
-Session::checkLoginUser();
+$hId = (int)$_GET['holidays_id'];
 
 $holiday = new Holiday();
 $holiday->getFromDB($hId);

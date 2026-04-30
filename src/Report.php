@@ -203,17 +203,17 @@ class Report extends CommonDBTM
         if (!isset($input["users_id"]) || empty($input["users_id"])) {
             $users_id = Session::getLoginUserID();
         } else {
-            $users_id = $input["users_id"];
+            $users_id = (int)$input["users_id"];
         }
         $mois_courant = intval(date('m', time()));
         if (isset($input["month"])
           && $input["month"] > 0) {
-            $mois_courant = $input["month"];
+            $mois_courant = (int)$input["month"];
         }
         $annee_courante = date('Y', time());
         if (isset($input["year"])
           && $input["year"] > 0) {
-            $annee_courante = $input["year"];
+            $annee_courante = (int)$input["year"];
         }
 
         $doc = new Document();
@@ -368,7 +368,7 @@ class Report extends CommonDBTM
         if (!isset($input["users_id"]) || empty($input["users_id"])) {
             $users_id = Session::getLoginUserID();
         } else {
-            $users_id = $_POST["users_id"];
+            $users_id = (int)$_POST["users_id"];
         }
         if ($output_type == Search::HTML_OUTPUT) {
             Html::header(PlanningExternalEvent::getTypeName(2));
@@ -385,14 +385,14 @@ class Report extends CommonDBTM
             $mois_courant = intval(date('m', time()));
             if (isset($input["month"])
              && $input["month"] > 0) {
-                $mois_courant = $input["month"];
+                $mois_courant = (int)$input["month"];
             }
             echo self::monthDropdown("month", $mois_courant);
             echo "&nbsp;";
             $annee_courante = date('Y', time());
             if (isset($input["year"])
              && $input["year"] > 0) {
-                $annee_courante = $input["year"];
+                $annee_courante = (int)$input["year"];
             }
             echo self::YearDropdown("year", $annee_courante);
             echo "</td>";

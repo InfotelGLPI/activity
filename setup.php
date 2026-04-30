@@ -58,7 +58,7 @@ function plugin_init_activity()
     global $PLUGIN_HOOKS, $CFG_GLPI;
 
     $PLUGIN_HOOKS['csrf_compliant']['activity'] = true;
-    $PLUGIN_HOOKS['change_profile']['activity'] = [Profile::class, 'initProfile'];
+    $PLUGIN_HOOKS[Hooks::CHANGE_PROFILE]['activity'] = [Profile::class, 'initProfile'];
     if (isset($_SESSION["glpiactiveprofile"]["interface"])
         && $_SESSION["glpiactiveprofile"]["interface"] != "helpdesk") {
         $PLUGIN_HOOKS[Hooks::ADD_CSS]['activity'] = ['activity.css'];
@@ -84,7 +84,7 @@ function plugin_init_activity()
         $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['activity'] = $activityScripts;
     }
 
-    $PLUGIN_HOOKS['post_init']['activity'] = 'plugin_activity_postinit';
+    $PLUGIN_HOOKS[Hooks::POST_INIT]['activity'] = 'plugin_activity_postinit';
 
     if (Plugin::isPluginActive("activity")) {
         Plugin::registerClass(Profile::class, ['addtabon' => 'Profile']);
@@ -116,9 +116,9 @@ function plugin_init_activity()
                 );
 
                 if (Session::haveRight('plugin_activity', READ)) {
-                    $PLUGIN_HOOKS["menu_toadd"]['activity'] = ['tools' => Menu::class];
-                    $PLUGIN_HOOKS['helpdesk_menu_entry']['activity'] = PLUGIN_ACTIVITY_WEBDIR . '/front/menu.php';
-                    $PLUGIN_HOOKS['helpdesk_menu_entry_icon']['activity'] = Holiday::getIcon();
+                    $PLUGIN_HOOKS[Hooks::MENU_TOADD]['activity'] = ['tools' => Menu::class];
+                    $PLUGIN_HOOKS[Hooks::HELPDESK_MENU_ENTRY]['activity'] = PLUGIN_ACTIVITY_WEBDIR . '/front/menu.php';
+                    $PLUGIN_HOOKS[Hooks::HELPDESK_MENU_ENTRY_ICON]['activity'] = Holiday::getIcon();
                 }
 
                 $PLUGIN_HOOKS['redirect_page']['activity'] = PLUGIN_ACTIVITY_WEBDIR . '/front/holiday.form.php';
@@ -126,18 +126,18 @@ function plugin_init_activity()
             $PLUGIN_HOOKS['mydashboard']['activity'] = [Dashboard::class];
 
             if (Session::haveRight("plugin_activity", UPDATE) && class_exists(Profile::class)) {
-                $PLUGIN_HOOKS['config_page']['activity'] = 'front/config.form.php';
-                $PLUGIN_HOOKS['use_massive_action']['activity'] = false;
+                $PLUGIN_HOOKS[Hooks::CONFIG_PAGE]['activity'] = 'front/config.form.php';
+                $PLUGIN_HOOKS[Hooks::USE_MASSIVE_ACTION]['activity'] = false;
             }
 
-            $PLUGIN_HOOKS['pre_item_add']['activity'] = [
+            $PLUGIN_HOOKS[Hooks::PRE_ITEM_ADD]['activity'] = [
                 'Ticket_User' => [
                     Ticket::class,
                     'afterAddUser',
                 ],
             ];
 
-            $PLUGIN_HOOKS['item_add']['activity'] = [
+            $PLUGIN_HOOKS[Hooks::ITEM_ADD]['activity'] = [
                 'TicketTask' => [
                     TicketTask::class,
                     'taskAdd',
@@ -148,7 +148,7 @@ function plugin_init_activity()
                 ],
             ];
 
-            $PLUGIN_HOOKS['pre_item_update']['activity'] = [
+            $PLUGIN_HOOKS[Hooks::PRE_ITEM_UPDATE]['activity'] = [
                 'TicketTask' => [
                     TicketTask::class,
                     'taskUpdate',
@@ -159,14 +159,14 @@ function plugin_init_activity()
                 ],
             ];
 
-            $PLUGIN_HOOKS['post_prepareadd']['activity'] = [
+            $PLUGIN_HOOKS[Hooks::POST_PREPAREADD]['activity'] = [
                 'PlanningExternalEvent' => [
                     PlanningExternalEvent::class,
                     'prepareInputToAddWithPluginOptions',
                 ],
             ];
 
-            $PLUGIN_HOOKS['pre_item_purge']['activity'] = [
+            $PLUGIN_HOOKS[Hooks::PRE_ITEM_PURGE]['activity'] = [
                 'Document' => [
                     Snapshot::class,
                     'purgeSnapshots',
@@ -174,14 +174,14 @@ function plugin_init_activity()
             ];
 
             if ($opt->getUseProject() && strpos($_SERVER['REQUEST_URI'], "projecttask")) {
-                $PLUGIN_HOOKS['item_add']['activity'] = [
+                $PLUGIN_HOOKS[Hooks::ITEM_ADD]['activity'] = [
                     'ProjectTask' => [
                         ProjectTask::class,
                         'taskAdd',
                     ],
                 ];
 
-                $PLUGIN_HOOKS['pre_item_update']['activity'] = [
+                $PLUGIN_HOOKS[Hooks::PRE_ITEM_UPDATE]['activity'] = [
                     'ProjectTask' => [
                         ProjectTask::class,
                         'taskUpdate',
@@ -190,7 +190,7 @@ function plugin_init_activity()
             }
         }
 
-        $PLUGIN_HOOKS['post_item_form']['activity'] = 'plugin_activity_post_item_form';
+        $PLUGIN_HOOKS[Hooks::POST_ITEM_FORM]['activity'] = 'plugin_activity_post_item_form';
     }
     //Planning hook
     $PLUGIN_HOOKS['display_planning']['activity'] = [

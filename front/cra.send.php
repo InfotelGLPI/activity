@@ -42,6 +42,11 @@ if (isset($_GET["file"])) { // for other file
          $send = GLPI_DOC_DIR . "/" . $_GET["file"];
       }
       if ($send && file_exists($send)) {
+         $real = realpath($send);
+         $base = realpath(GLPI_DOC_DIR);
+         if ($real === false || $base === false || strpos($real, $base) !== 0) {
+             throw new BadRequestHttpException(__('Unauthorized access to this file'), true);
+         }
          $doc = new Document();
          $doc->fields['filepath'] = $_GET["file"];
          $doc->fields['mime'] = 'application/pdf';

@@ -28,6 +28,9 @@
 use Glpi\Exception\Http\NotFoundHttpException;
 use GlpiPlugin\Activity\Holiday;
 
+Session::checkLoginUser();
+Session::checkRight("plugin_activity_can_validate", READ);
+
 if (!isset($_POST['holidays_id']) && !isset($_GET['holidays_id'])) {
     throw new NotFoundHttpException();
 }
