@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Activity - Accounts plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-30 15:40+0000\n"
+"POT-Creation-Date: 2026-05-12 13:20+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -53,12 +53,6 @@ msgstr ""
 #: ajax/sendmail.php:71
 msgid "of"
 msgstr ""
-
-#: ajax/lateralmenu.php:36 src/Holiday.php:76
-msgid "Private holiday"
-msgid_plural "Private holidays"
-msgstr[0] ""
-msgstr[1] ""
 
 #: src/PlanningEventSubCategory.php:50
 msgid "Event subcategory"
@@ -174,7 +168,7 @@ msgstr ""
 msgid "Sickness or maternity"
 msgstr ""
 
-#: src/LateralMenu.php:73 src/Profile.php:113 src/Holiday.php:480
+#: src/LateralMenu.php:69 src/Profile.php:113 src/Holiday.php:480
 #: src/PlanningExternalEvent.php:118
 msgid "Create a holiday request"
 msgstr ""
@@ -295,6 +289,12 @@ msgstr ""
 #: src/PublicHoliday.php:50
 msgid "Public holiday"
 msgid_plural "Public holidays"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Holiday.php:76
+msgid "Private holiday"
+msgid_plural "Private holidays"
 msgstr[0] ""
 msgstr[1] ""
 
