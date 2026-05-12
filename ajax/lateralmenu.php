@@ -33,10 +33,6 @@ Session::checkLoginUser();
 
 header("Content-Type: text/html; charset=UTF-8");
 
-Html::popHeader(_n('Private holiday', 'Private holidays', 2, 'activity'), $_SERVER['PHP_SELF']);
-
-echo "<div class='center' id='tabsbody' >";
-echo "<table class='tab_cadre' width='100%'>";
+echo "<div class='p-2'>";
 LateralMenu::showMenu();
-echo "</table>";
 echo "</div>";

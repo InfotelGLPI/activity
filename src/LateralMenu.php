@@ -40,32 +40,28 @@ class LateralMenu extends CommonDBTM
 
     static function showMenu()
     {
-        global $CFG_GLPI;
-
         $listActions = array_merge(PlanningExternalEvent::getActionsOn(), Holiday::getActionsOn());
 
         $types = [
-         Action::ADD_ACTIVITY,
-          Action::HOLIDAY_REQUEST,
-          Action::CRA,
-         Action::APPROVE_HOLIDAYS
+            Action::ADD_ACTIVITY,
+            Action::HOLIDAY_REQUEST,
+            Action::CRA,
+            Action::APPROVE_HOLIDAYS,
         ];
 
+        echo "<div class='d-grid gap-2 mb-3'>";
         foreach ($listActions as $key => $action) {
             if (in_array($key, $types) && $action['rights']) {
-                echo "<tr class='tab_bg_1 center'>";
-                echo "<td colspan='2'>";
-                echo "<a href=\"" . $action['link'] . "\"  class='submit btn btn-info'";
+                echo "<a href=\"" . $action['link'] . "\" class='btn btn-info'";
                 if (isset($action['onclick']) && !empty($action['onclick'])) {
                     echo $action['onclick'];
                 }
                 echo ">";
                 echo $action['label'];
                 echo "</a>";
-                echo "</td>";
-                echo "</tr>";
             }
         }
+        echo "</div>";
 
         Ajax::createIframeModalWindow(
             'holiday',
@@ -84,122 +80,89 @@ class LateralMenu extends CommonDBTM
             $periods = $hcount->getCurrentPeriods();
 
             if (count($periods) > 0) {
-//                $nbHolidays = $holiday->countNbHoliday(Session::getLoginUserID(true), $periods, CommonValidation::ACCEPTED);
-//
-//                if (!empty($nbHolidays[Report::$HOLIDAY]['total'])
-//                 || !empty($nbHolidays[Report::$SICKNESS]['total'])
-//                 || !empty($nbHolidays[Report::$PART_TIME]['total'])) {
-//                    echo "<tr class='tab_bg_1'><td colspan='2'><b>" . __('Holidays detail', 'activity') . " : </b></td></tr>";
-//                    $holiday->showHolidayDetailsByType($nbHolidays);
-//                }
-//
-//                $nbHolidays = $holiday->countNbHoliday(Session::getLoginUserID(true), $periods, CommonValidation::WAITING);
-//
-//                if (!empty($nbHolidays[Report::$HOLIDAY]['total'])
-//                || !empty($nbHolidays[Report::$SICKNESS]['total'])
-//                || !empty($nbHolidays[Report::$PART_TIME]['total'])) {
-//                    echo "<tr class='tab_bg_1'><td colspan='2'><b>" . __('Holidays detail in progress', 'activity') . " : </b></td></tr>";
-//                    $holiday->showHolidayDetailsByType($nbHolidays);
-//                }
                 $nbHolidays = $holiday->countNbHolidayByPeriod(Session::getLoginUserID(true), $periods);
-
+                echo "<table class='tab_cadre' width='100%'>";
                 $hcount->showHolidayDetailsByPeriod($nbHolidays);
+                echo "</table>";
             }
         }
     }
 
-   /**
-    * Create a side slide panel
-    *
-    * @param string $name    name of the js object
-    * @param array  $options Possible options:
-    *          - title       Title to display
-    *          - position    position (either left or right - defaults to right)
-    *          - display     display or get string? (default true)
-    *          - icon        Path to aditional icon
-    *          - icon_url    Link for aditional icon
-    *          - icon_txt    Alternative text and title for aditional icon_
-    *
-    * @return void|string (see $options['display'])
-    */
+    /**
+     * Create a Bootstrap Offcanvas side panel
+     *
+     * @param string $name    name / id of the offcanvas element
+     * @param array  $options Possible options:
+     *          - title     Title to display
+     *          - position  position (either left or right - defaults to right)
+     *          - url       URL to load content from
+     *          - display   display or get string? (default true)
+     *
+     * @return void|string (see $options['display'])
+     */
     static function createSlidePanel($name, $options = [])
     {
-        global $CFG_GLPI;
-
         $param = [
-         'title'     => '',
-         'position'  => 'right',
-         'url'       => '',
-         'display'   => true,
-         'icon'      => false,
-         'icon_url'  => false,
-         'icon_txt'  => false
+            'title'    => '',
+            'position' => 'right',
+            'url'      => '',
+            'display'  => true,
+            'icon'     => false,
+            'icon_url' => false,
+            'icon_txt' => false,
         ];
 
-        if (count($options)) {
-            foreach ($options as $key => $val) {
-                if (isset($param[$key])) {
-                    $param[$key] = $val;
-                }
+        foreach ($options as $key => $val) {
+            if (isset($param[$key])) {
+                $param[$key] = $val;
             }
         }
 
-        $out  =  "<script type='text/javascript'>\n";
-        $out .= "$(function() {";
-        $out .= "$('<div id=\'$name\' class=\'slidepanel on{$param['position']}\'><div class=\"header\">" .
-              "<button type=\'button\' class=\'close ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close\' title=\'". __s('Close') . "\'><span class=\'ui-button-icon-primary ui-icon ui-icon-closethick\'></span><span class=\'ui-button-text\'>X</span></button>";
+        $js_name      = json_encode($name);
+        $js_title     = json_encode($param['title']);
+        $js_url       = json_encode($param['url']);
+        $js_close_lbl = json_encode(__s('Close'));
+        $js_pos_class = ($param['position'] === 'left') ? 'offcanvas-start' : 'offcanvas-end';
 
-        if ($param['icon']) {
-            $icon = "<img class=\'icon\' src=\'{$CFG_GLPI['root_doc']}{$param['icon']}\' alt=\'{$param['icon_txt']}\' title=\'{$param['icon_txt']}\'/>";
-            if ($param['icon_url']) {
-                $out .= "<a href=\'{$param['icon_url']}\'>$icon</a>";
-            } else {
-                $out .= $icon;
-            }
-        }
-
-        if ($param['title'] != '') {
-            $out .= "<h3>{$param['title']}</h3>";
-        }
-
-        $out .= "</div><div class=\'contents\'></div></div>')
-         .hide()
-         .appendTo('body');\n";
-        $out .= "$('#{$name} .close').on('click', function() {
-         $('#$name').hide(
-            'slow',
-            function () {
-               $(this).find('.contents').empty();
-            }
-         );
-       });\n";
-        $out .= "$('#{$name}Link').on('click', function() {
-         $('#$name').show(
-            'slow',
-            function() {
-               _load$name();
-            }
-         );
-      });\n";
-        $out .= "});";
-        if ($param['url'] != null) {
-            $out .= "var _load$name = function() {
-            $.ajax({
-               url: '{$param['url']}',
-               beforeSend: function() {
-                  var _loader = $('<div id=\'loadingslide\'><div class=\'loadingindicator\'>" . __s('Loading...') . "</div></div>');
-                  $('#$name .contents').html(_loader);
-               }
-            })
-            .always( function() {
-               $('#loadingslide').remove();
-            })
-            .done(function(res) {
-               $('#$name .contents').html(res);
-            });
-         };\n";
-        }
-        $out .= "</script>";
+        $out = "<script type='text/javascript'>
+(function () {
+    var ocId = $js_name;
+    if (document.getElementById(ocId)) { return; }
+    var oc = document.createElement('div');
+    oc.id = ocId;
+    oc.className = 'offcanvas $js_pos_class';
+    oc.tabIndex = -1;
+    oc.setAttribute('data-bs-scroll', 'true');
+    var spinner = '<div class=\"text-center p-4\"><div class=\"spinner-border\" role=\"status\"></div></div>';
+    oc.innerHTML =
+        '<div class=\"offcanvas-header border-bottom\">'
+        + '<h5 class=\"offcanvas-title\">' + $js_title + '</h5>'
+        + '<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"offcanvas\" aria-label=\"' + $js_close_lbl + '\"></button>'
+        + '</div>'
+        + '<div class=\"offcanvas-body\" id=\"' + ocId + '_body\">' + spinner + '</div>';
+    document.body.appendChild(oc);
+    function injectHtml(container, html) {
+        container.innerHTML = '';
+        var frag = document.createRange().createContextualFragment(html);
+        container.appendChild(frag);
+    }
+    oc.addEventListener('show.bs.offcanvas', function () {
+        var bd = document.getElementById(ocId + '_body');
+        bd.innerHTML = spinner;
+        fetch($js_url)
+            .then(function (r) { return r.text(); })
+            .then(function (html) { injectHtml(bd, html); })
+            .catch(function () { bd.innerHTML = '<div class=\"alert alert-danger m-2\">Erreur de chargement</div>'; });
+    });
+    var trigger = document.getElementById(ocId + 'Link');
+    if (trigger) {
+        trigger.addEventListener('click', function (e) {
+            e.preventDefault();
+            bootstrap.Offcanvas.getOrCreateInstance(oc).show();
+        });
+    }
+}());
+</script>";
 
         if ($param['display']) {
             echo $out;
