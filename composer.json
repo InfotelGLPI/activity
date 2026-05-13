@@ -9,5 +9,8 @@
     },
     "require": {
         "fpdf/fpdf": "^1.86"
+    },
+    "conflict": {
+        "symfony/console": "<6.0"
     }
 }
