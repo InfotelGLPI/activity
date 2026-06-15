@@ -312,6 +312,20 @@ class PlanningExternalEvent extends CommonDBTM
                         plugin_activity = {};
                     </script>";
         }
+        if ($opt->fields['show_planningevents_project']) {
+            echo "<table class='tab_cadre_fixe'>";
+            echo "<tr class='tab_bg_2'>";
+            echo "<td>";
+            echo __('Project');
+            echo "</td>";
+            echo "<td>";
+            \Project::dropdown(['name' => 'project_id', 'value' => $self->fields['project_id']]);
+            echo "</td>";
+            echo "<td colspan='2' width='250px'>";
+            echo "</td>";
+            echo "</tr>";
+            echo "</table>";
+        }
     }
 
     static function setActivity(\PlanningExternalEvent $item)
@@ -359,7 +373,8 @@ class PlanningExternalEvent extends CommonDBTM
                             'is_oncra' => isset($item->input['is_oncra']) ? $item->input['is_oncra'] :
                                 $extevent->getField('is_oncra'),
                             'planningexternalevents_id' => $item->input['id'],
-                            'actiontime' => $actiontime
+                            'actiontime' => $actiontime,
+                            'project_id' => $item->input['project_id'] ?? 0
                         ];
                         if ($options['use_planningeventsubcategories']) {
                             if (isset($item->input['planningeventsubcategories_id'])) {
@@ -371,7 +386,8 @@ class PlanningExternalEvent extends CommonDBTM
                         $input = [
                             'is_oncra' => isset($item->input['is_oncra']) ? $item->input['is_oncra'] : '',
                             'planningexternalevents_id' => $item->getID(),
-                            'actiontime' => $actiontime
+                            'actiontime' => $actiontime,
+                            'project_id' => $item->input['project_id'] ?? 0
                         ];
                         if ($options['use_planningeventsubcategories']) {
                             if (isset($item->input['planningeventsubcategories_id'])) {
@@ -406,7 +422,8 @@ class PlanningExternalEvent extends CommonDBTM
                                     'is_oncra' => $data['is_oncra'],
                                     'planningexternalevents_id' => $item->getID(),
                                     'actiontime' => $data['actiontime'],
-                                    'planningeventsubcategories_id' => $data['planningeventsubcategories_id']
+                                    'planningeventsubcategories_id' => $data['planningeventsubcategories_id'],
+                                    'project_id' => $data['project_id']
                                 ]);
                             }
                         }
@@ -414,7 +431,8 @@ class PlanningExternalEvent extends CommonDBTM
                         $input = [
                             'is_oncra' => isset($item->input['is_oncra']) ? $item->input['is_oncra'] : $is_cra_default,
                             'planningexternalevents_id' => $item->getID(),
-                            'actiontime' => $actiontime
+                            'actiontime' => $actiontime,
+                            'project_id' => $item->input['project_id'] ?? 0
                         ];
                         if ($options['use_planningeventsubcategories']) {
                             if (isset($item->input['planningeventsubcategories_id'])) {
@@ -917,7 +935,8 @@ class PlanningExternalEvent extends CommonDBTM
                        `glpi_planningexternalevents`.`rrule` AS rrule,
                        `glpi_planningexternalevents`.`planningeventcategories_id` AS type_id,
                         `glpi_plugin_activity_planningexternalevents`.`planningeventsubcategories_id` as subtype_id,
-                       `glpi_entities`.`name` AS entity
+                       `glpi_entities`.`name` AS entity,
+                       `glpi_projects`.`name` AS project
                FROM `glpi_planningexternalevents` ";
         $query .= " LEFT JOIN `glpi_plugin_activity_planningexternalevents`
                      ON (`glpi_planningexternalevents`.`id` = `glpi_plugin_activity_planningexternalevents`.`planningexternalevents_id`)";
@@ -929,6 +948,8 @@ class PlanningExternalEvent extends CommonDBTM
                      ON (`glpi_planningeventcategories`.`id` = `glpi_planningexternalevents`.`planningeventcategories_id`)";
         $query .= " LEFT JOIN `glpi_entities`
                      ON (`glpi_planningexternalevents`.`entities_id` = `glpi_entities`.`id`)";
+        $query .= " LEFT JOIN `glpi_projects`
+                     ON (`glpi_plugin_activity_planningexternalevents`.`project_id` = `glpi_projects`.`id`)";
         $query .= " WHERE ";
         $query .= "  `glpi_planningexternalevents`.`users_id` = '" . $criteria["users_id"] . "' "
             . $dbu->getEntitiesRestrictRequest("AND", "glpi_planningexternalevents") . "
@@ -967,6 +988,9 @@ class PlanningExternalEvent extends CommonDBTM
         $query .= " ORDER BY `glpi_planningexternalevents`.`name`, `subtype`";
         if ($opt->fields['show_planningevents_entity']) {
             $query .= ", `entity`";
+        }
+        if ($opt->fields['show_planningevents_project']) {
+            $query .= ", `glpi_projects`.`name`";
         }
         return $query;
     }

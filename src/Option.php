@@ -236,7 +236,15 @@ class Option extends CommonDBTM {
        echo "</td>";
        echo "</tr>";
 
-      echo "<tr class='tab_bg_1'><td class='center' colspan='2'>";
+       echo "<tr class='tab_bg_1'>";
+       echo "<td>".__('Choose your project when entering externals events and display on CRA', 'activity')."</td>";
+       echo "<td>";
+       Dropdown::showYesNo('show_planningevents_project', $this->fields['show_planningevents_project']);
+       echo "</td>";
+       echo "</tr>";
+
+
+       echo "<tr class='tab_bg_1'><td class='center' colspan='2'>";
       echo Html::hidden('id', ['value' => 1]);
       echo Html::submit(_sx('button', 'Save'), ['name' => 'update', 'class' => 'btn btn-primary']);
       echo "</td></tr>";

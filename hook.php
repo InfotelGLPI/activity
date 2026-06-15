@@ -267,6 +267,10 @@ function plugin_activity_install()
     $migration = new Migration("2.0.0");
     $migration->dropTable('glpi_plugin_activity_profiles');
 
+    if (!$DB->fieldExists("glpi_plugin_activity_planningexternalevents", "project_id")) {
+        $DB->runFile(PLUGIN_ACTIVITY_DIR . "/install/sql/update-3.2.8.sql");
+    }
+
     return true;
 }
 
