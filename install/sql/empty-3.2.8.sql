@@ -171,7 +171,7 @@ CREATE TABLE `glpi_plugin_activity_planningexternalevents`
     `planningexternalevents_id`                     int unsigned NOT NULL,
     `planningeventsubcategories_id` int unsigned,
     `actiontime`                                    int unsigned NOT NULL DEFAULT '0',
-    `project_id`                                    int unsigned NOT NULL DEFAULT '0',
+    `projects_id`                                    int unsigned NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`),
     KEY                                             `is_oncra` (`is_oncra`),
     KEY                                             `planningeventsubcategories_id` (`planningeventsubcategories_id`)
