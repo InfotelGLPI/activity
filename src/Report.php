@@ -687,7 +687,13 @@ class Report extends CommonDBTM
                                     continue;
                                 }
                                 if ($opt->fields['show_planningevents_entity']) {
-                                    $type = self::strtoupper_auto($data2["entity"]) . " > ";
+                                    $type = self::strtoupper_auto($data2["entity"]) ;
+                                    if ($opt->fields['show_planningevents_project'] && !empty($data2["project"])) {
+                                        $type .= " - " .  $data2["project"] . " > ";
+                                    }
+                                    $type .= " > ";
+
+
                                     if (empty($data2["type"])) {
                                         $type .= __('No defined type', 'activity');
                                     } else {
@@ -697,13 +703,23 @@ class Report extends CommonDBTM
                                         }
                                     }
                                 } else {
+                                    if ($opt->fields['show_planningevents_project'] && !empty($data2["project"])) {
+                                        $type =   $data2["project"] . " > ";
+                                    } else {
+                                        $type = '';
+                                    }
+
                                     if (empty($data2["type"])) {
-                                        $type = self::strtoupper_auto($data2["entity"]) . " > " . __(
+                                        $type = self::strtoupper_auto($data2["entity"]) ;
+                                        if ($opt->fields['show_planningevents_project'] && !empty($data2["project"])) {
+                                            $type .= " - " .  $data2["project"] . " > ";
+                                        }
+                                        $type .= " > " . __(
                                             'No defined type',
                                             'activity'
                                         );
                                     } else {
-                                        $type = $data2["type"];
+                                        $type .= $data2["type"];
                                         if ($opt->getUseSubcategory() && $data2['subtype']) {
                                             $type .= ' - ' . $data2['subtype'];
                                         }
@@ -751,7 +767,11 @@ class Report extends CommonDBTM
                             }
                         } else {
                             if ($opt->fields['show_planningevents_entity']) {
-                                $type = self::strtoupper_auto($data2["entity"]) . " > ";
+                                $type = self::strtoupper_auto($data2["entity"]) ;
+                                if ($opt->fields['show_planningevents_project'] && !empty($data2["project"])) {
+                                    $type .= " - " .  $data2["project"] . " > ";
+                                }
+                                $type .= " > ";
                                 if (empty($data2["type"])) {
                                     $type .= __('No defined type', 'activity');
                                 } else {
@@ -761,13 +781,23 @@ class Report extends CommonDBTM
                                     }
                                 }
                             } else {
-                                if (empty($data2["type"])) {
-                                    $type = self::strtoupper_auto($data2["entity"]) . " > " . __(
-                                        'No defined type',
-                                        'activity'
-                                    );
+                                if ($opt->fields['show_planningevents_project'] && !empty($data2["project"])) {
+                                    $type =   $data2["project"] . " > ";
                                 } else {
-                                    $type = $data2["type"];
+                                    $type = '';
+                                }
+
+                                if (empty($data2["type"])) {
+                                    $type = self::strtoupper_auto($data2["entity"]) ;
+                                    if ($opt->fields['show_planningevents_project'] && !empty($data2["project"])) {
+                                        $type .= " - " .  $data2["project"] . " > ";
+                                    }
+                                    $type .= " > " . __(
+                                            'No defined type',
+                                            'activity'
+                                        );
+                                } else {
+                                    $type .= $data2["type"];
                                     if ($opt->getUseSubcategory() && $data2['subtype']) {
                                         $type .= ' - ' . $data2['subtype'];
                                     }
