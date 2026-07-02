@@ -1,0 +1,87 @@
+{#
+ * activity plugin for GLPI
+ * Copyright (C) 2019-2026 by the activity Development Team.
+ --------------------------------------------------------------------------
+ #}
+
+{% if canedit %}
+<div class="card mb-3">
+    <div class="card-header d-flex align-items-center gap-2">
+        <i class="ti ti-plus"></i>
+        <strong>{{ __('Define internal helpdesk', 'activity') }}</strong>
+    </div>
+    <form method="post" action="{{ form_url }}">
+        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+        <div class="card-body">
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label">{{ __('Entity') }}</label>
+                <div class="col-sm-4">{{ entity_dropdown_html|raw }}</div>
+                <label class="col-sm-2 col-form-label">{{ __('Child entities') }}</label>
+                <div class="col-sm-3">{{ is_recursive_html|raw }}</div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label">{{ __('Type') }}</label>
+                <div class="col-sm-9">
+                    <input type="text" name="name" class="form-control">
+                </div>
+            </div>
+        </div>
+        <div class="card-footer d-flex justify-content-end">
+            <button type="submit" name="add_config" class="btn btn-primary">
+                <i class="ti ti-plus me-1"></i>{{ _x('button', 'Add') }}
+            </button>
+        </div>
+    </form>
+</div>
+{% endif %}
+
+{% if entries|length %}
+<div class="card mb-3">
+    <div class="card-header d-flex align-items-center gap-2">
+        <i class="ti ti-list"></i>
+        <strong>{{ __('Show internal helpdesk', 'activity') }}</strong>
+    </div>
+    <div class="card-body p-0">
+        <form method="post" action="{{ form_url }}" id="mass_config_form">
+            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        {% if canedit %}
+                        <th style="width:40px">
+                            <input type="checkbox" id="checkall_config"
+                                   onclick="checkAll('mass_config_form')">
+                        </th>
+                        {% endif %}
+                        <th>{{ __('Entity') }}</th>
+                        <th>{{ __('Child entities') }}</th>
+                        <th>{{ __('Type') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in entries %}
+                    <tr>
+                        {% if canedit %}
+                        <td>
+                            <input type="checkbox" name="item[{{ entry.id }}]" value="1">
+                        </td>
+                        {% endif %}
+                        <td>{{ entry.entity }}</td>
+                        <td>{{ entry.is_recursive }}</td>
+                        <td>{{ entry.name }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% if canedit %}
+            <div class="card-footer d-flex justify-content-end">
+                <button type="submit" name="delete_item" class="btn btn-danger"
+                        onclick="return confirm('{{ __('Confirm the deletion?') }}')">
+                    <i class="ti ti-trash me-1"></i>{{ _x('button', 'Delete permanently') }}
+                </button>
+            </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+{% endif %}

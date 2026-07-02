@@ -30,40 +30,51 @@
 use GlpiPlugin\Activity\Config;
 use GlpiPlugin\Activity\Menu;
 use GlpiPlugin\Activity\Option;
-use GlpiPlugin\Activity\PlanningExternalEvent;
 
 Session::checkLoginUser();
 
 if (Plugin::isPluginActive("activity")) {
-   Session::checkRight("config", UPDATE);
-   $config = new Config();
-   $opt = new Option();
-   if (isset($_POST["update"])) {
-      if ($config->canCreate() && isset($_POST['entities_id'])) {
-         $config->add($_POST);
-      }
-      Html::back();
+    if (Session::haveRight("plugin_activity", UPDATE)) {
+        $opt = new Option();
 
-   } else if (isset($_POST["delete_item"])) {
-      if ($config->canCreate()) {
-         foreach ($_POST["item"] as $key => $val) {
-            if ($val != 0) {
-               $config->getFromDB($key);
-               $config->delete(['id' => $key]);
+        if (isset($_POST["update"])) {
+            Session::checkRight("config", UPDATE);
+            $opt->update($_POST);
+            Html::back();
+
+        } elseif (isset($_POST["add_config"])) {
+            Session::checkRight("config", UPDATE);
+            $config = new Config();
+            if (isset($_POST['entities_id'])) {
+                $config->add($_POST);
             }
-         }
-      }
-      Html::back();
+            Html::back();
 
-   } else {
-      Html::header(PlanningExternalEvent::getTypeName(2), '', "tools", Menu::class);
-      $config->showForm(1);
-      $opt->showForm(1);
-      Html::footer();
-   }
+        } elseif (isset($_POST["delete_item"])) {
+            Session::checkRight("config", UPDATE);
+            $config = new Config();
+            foreach ($_POST["item"] as $key => $val) {
+                if ($val != 0) {
+                    $config->delete(['id' => $key]);
+                }
+            }
+            Html::back();
 
+        } else {
+            Html::header(__('Setup'), '', "tools", Menu::class);
+            $opt->getFromDB(1);
+            $opt->display(['id' => 1]);
+            Html::footer();
+        }
+    } else {
+        Html::header(__('Setup'), '', "config", "plugin");
+        echo "<div class='alert alert-warning d-flex'>";
+        echo "<b>" . __("You don't have permission to perform this action.") . "</b></div>";
+        Html::footer();
+    }
 } else {
-   Html::header(__('Setup'), '', "config", "plugin");
-   echo "<div class='alert alert-important alert-warning d-flex'>";
-   echo "<b>".__('Please activate the plugin', 'activity')."</b></div>";
+    Html::header(__('Setup'), '', "config", "plugin");
+    echo "<div class='alert alert-important alert-warning d-flex'>";
+    echo "<b>" . __('Please activate the plugin', 'activity') . "</b></div>";
+    Html::footer();
 }

@@ -51,9 +51,9 @@ class Menu extends CommonGLPI {
       if (Session::haveRight(static::$rightname, UPDATE)
             || Session::haveRight("config", UPDATE)) {
          //Entry icon in breadcrumb
-         $menu['links']['config']                      = Config::getFormURL(false);
+         $menu['links']['config']                      = PLUGIN_ACTIVITY_WEBDIR . '/front/config.form.php';
          //Link to config page in admin plugins list
-         $menu['config_page']                          = Config::getFormURL(false);
+         $menu['config_page']                          = PLUGIN_ACTIVITY_WEBDIR . '/front/config.form.php';
 
          $menu['options']['holidaycount']['title']           = _n('Holiday counter', 'Holiday counters', 2, 'activity');
          $menu['options']['holidaycount']['page']            = PLUGIN_ACTIVITY_WEBDIR.'/front/holidaycount.php';

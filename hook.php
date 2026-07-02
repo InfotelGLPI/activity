@@ -49,7 +49,7 @@ function plugin_activity_install()
     // version 3.0.0
     if (!$DB->tableExists("glpi_plugin_activity_holidays")) {
         $install = true;
-        $DB->runFile(PLUGIN_ACTIVITY_DIR . "/install/sql/empty-3.2.0.sql");
+        $DB->runFile(PLUGIN_ACTIVITY_DIR . "/install/sql/empty-3.2.9.sql");
     }
 
     //TODO Update ?
@@ -269,6 +269,10 @@ function plugin_activity_install()
 
     if (!$DB->fieldExists("glpi_plugin_activity_planningexternalevents", "projects_id")) {
         $DB->runFile(PLUGIN_ACTIVITY_DIR . "/install/sql/update-3.2.8.sql");
+    }
+
+    if (!$DB->fieldExists("glpi_plugin_activity_options", "cra_logo_id")) {
+        $DB->runFile(PLUGIN_ACTIVITY_DIR . "/install/sql/update-3.2.9.sql");
     }
 
     return true;

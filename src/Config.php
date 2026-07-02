@@ -33,6 +33,7 @@ use CommonDBTM;
 use DbUtils;
 use Dropdown;
 use Entity;
+use Glpi\Application\View\TemplateRenderer;
 use Html;
 use Toolbox;
 
@@ -56,116 +57,38 @@ class Config extends CommonDBTM
         if (!$this->canView()) {
             return false;
         }
-        if (!$this->canCreate()) {
-            return false;
-        }
 
-        $used_entities = [];
         $dbu = new DbUtils();
         $dataConfig = $dbu->getAllDataFromTable($this->getTable());
-        if ($dataConfig) {
-            foreach ($dataConfig as $field) {
-                $used_entities[] = $field['entities_id'];
-            }
-        }
+        $used_entities = array_column($dataConfig, 'entities_id');
 
-        echo "<form name='form' method='post' action='"
-         . Toolbox::getItemTypeFormURL(Config::class) . "'>";
+        ob_start();
+        Dropdown::show('Entity', ['name' => 'entities_id', 'used' => $used_entities]);
+        $entity_dropdown_html = ob_get_clean();
 
-        echo "<div class='center'><table class='tab_cadre_fixe'>";
-
-        echo "<tr><th colspan='5'>" . __('Define internal helpdesk', 'activity') . "</th></tr>";
-
-        echo "<tr class='tab_bg_1'>";
-
-        // Dropdown entity
-        echo "<td>" . __('Entity') . "</td>";
-        echo "<td>";
-        Dropdown::show('Entity', ['name' => 'entities_id',
-            'used' => $used_entities]);
-        echo "</td>";
-        // is_recursive
-        echo "<td>" . __('Is recursive', 'activity') . "</td>";
-        echo "<td>";
+        ob_start();
         Dropdown::showYesNo('is_recursive');
-        echo "</td>";
+        $is_recursive_html = ob_get_clean();
 
-        // Checkbox is_internal_helpdesk
-        echo "<td>";
-        echo Html::input('name', ['size' => 70]);
-        echo "</td>";
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'><td class='center' colspan='3'>";
-        echo Html::submit(_sx('button', 'Save'), ['name' => 'update', 'class' => 'btn btn-primary']);
-        echo "</td></tr>";
-
-        echo "</table></div>";
-        Html::closeForm();
-
-        if ($dataConfig) {
-            $this->listItems($dataConfig);
-        }
-    }
-
-    private function listItems($fields)
-    {
-        if (!$this->canView()) {
-            return false;
+        $entries = [];
+        foreach ($dataConfig as $field) {
+            $entries[] = [
+                'id'           => $field['id'],
+                'entity'       => Dropdown::getDropdownName('glpi_entities', $field['entities_id']),
+                'is_recursive' => Dropdown::getYesNo($field['is_recursive']),
+                'name'         => $field['name'],
+            ];
         }
 
-        $canedit = $this->canUpdate();
+        TemplateRenderer::getInstance()->display('@activity/config_form.html.twig', [
+            'form_url'            => Toolbox::getItemTypeFormURL(Config::class),
+            'entity_dropdown_html' => $entity_dropdown_html,
+            'is_recursive_html'   => $is_recursive_html,
+            'entries'             => $entries,
+            'canedit'             => $this->canCreate(),
+        ]);
 
-        $rand = mt_rand();
-        $number = count($fields);
-
-        echo "<div class='left'>";
-
-        if ($canedit && $number) {
-            Html::openMassiveActionsForm('mass' . $rand);
-            $massiveactionparams
-            = ['container'
-                        => 'mass' . $rand];
-            Html::showMassiveActions($massiveactionparams);
-        }
-
-        echo "<table class='tab_cadre_fixe'>";
-        echo "<tr><th colspan='4'>" . __('Show internal helpdesk', 'activity') . "</th></tr>";
-        echo "<tr>";
-        echo "<th width='10'>";
-        if ($canedit && $number) {
-            echo Html::getCheckAllAsCheckbox('mass' . $rand);
-        }
-        echo "</th>";
-        echo "<th>" . __('Entity') . "</th>";
-        echo "<th>" . __('Is recursive', 'activity') . "</th>";
-        echo "<th>" . __('Type') . "</th>";
-        echo "</tr>";
-        foreach ($fields as $field) {
-            echo "<tr class='tab_bg_1'>";
-            //CHECKBOX
-            echo "<td width='10'>";
-            if ($canedit) {
-                Html::showMassiveActionCheckBox(__CLASS__, $field["id"]);
-            }
-            echo "</td>";
-            //DATA LINE
-            echo "<td>" . Dropdown::getDropdownName('glpi_entities', $field['entities_id']) . "</td>";
-            echo "<td>";
-            echo Dropdown::getYesNo($field['is_recursive']);
-            echo "</td>";
-            echo "<td>";
-            echo $field['name'];
-            echo "</td>";
-            echo "</tr>";
-        }
-        echo "</table>";
-        if ($canedit && $number) {
-            $massiveactionparams['ontop'] = false;
-            Html::showMassiveActions($massiveactionparams);
-            Html::closeForm();
-        }
-        echo "</div>";
+        return true;
     }
 
 

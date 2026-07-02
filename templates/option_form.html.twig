@@ -1,0 +1,192 @@
+{#
+ * activity plugin for GLPI
+ * Copyright (C) 2019-2026 by the activity Development Team.
+ --------------------------------------------------------------------------
+ #}
+
+<form name="form" method="post" action="{{ form_url }}" enctype="multipart/form-data">
+    <input type="hidden" name="id" value="1">
+    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+
+    {# --- CRA --- #}
+    <div class="card mb-3">
+        <div class="card-header d-flex align-items-center gap-2">
+            <i class="ti ti-calendar-stats"></i>
+            <strong>{{ __('CRA', 'activity') }}</strong>
+        </div>
+        <div class="card-body">
+
+            <div class="row mb-3">
+                <label class="col-sm-5 col-form-label">{{ __('Replace activity name by the activity type', 'activity') }}</label>
+                <div class="col-sm-7">{{ use_type_as_name_html|raw }}</div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-5 col-form-label">{{ __('is on CRA by default', 'activity') }}</label>
+                <div class="col-sm-7">{{ is_cra_default_html|raw }}</div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-5 col-form-label">{{ __('Use hour on cra and not half day', 'activity') }}</label>
+                <div class="col-sm-7">{{ use_hour_on_cra_html|raw }}</div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-5 col-form-label">{{ __('Use the planning activity hours to limit hours per day on the CRA', 'activity') }}</label>
+                <div class="col-sm-7">{{ use_planning_activity_hours_html|raw }}</div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-5 col-form-label">{{ __('Use event subcategories', 'activity') }}</label>
+                <div class="col-sm-7">{{ use_planningeventsubcategories_html|raw }}</div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-5 col-form-label">{{ __('Show event entity on CRA', 'activity') }}</label>
+                <div class="col-sm-7">{{ show_planningevents_entity_html|raw }}</div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-5 col-form-label">{{ __('Choose your project when entering externals events and display on CRA', 'activity') }}</label>
+                <div class="col-sm-7">{{ show_planningevents_project_html|raw }}</div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-5 col-form-label">{{ __('Use projects', 'activity') }}</label>
+                <div class="col-sm-7">{{ use_project_html|raw }}</div>
+            </div>
+
+            <div class="row mb-3" id="activity_display_use_project" {% if not fields.use_project %}style="display:none"{% endif %}>
+                <label class="col-sm-5 col-form-label">{{ __('is on CRA by default', 'activity') }} - {{ project_typename }}</label>
+                <div class="col-sm-7">{{ is_cra_default_project_html|raw }}</div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-5 col-form-label">{{ __('Principal client', 'activity') }}</label>
+                <div class="col-sm-7">
+                    <input type="text" name="principal_client" class="form-control"
+                           value="{{ fields.principal_client|e }}">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-5 col-form-label">{{ __('CRA logo', 'activity') }}</label>
+                <div class="col-sm-7">
+                    {% if logo_preview_url %}
+                    <div class="mb-2">
+                        <img src="{{ logo_preview_url }}" alt="{{ __('Current logo', 'activity') }}"
+                             style="max-height:80px; max-width:250px; border:1px solid #dee2e6; border-radius:4px; padding:4px; background:#fff;">
+                    </div>
+                    {% endif %}
+                    {% if canedit %}
+                        {{ logo_upload_html|raw }}
+                        <div class="form-text text-muted">
+                            {{ __('Accepted formats: JPG or JPEG. Leave empty to keep the current logo.', 'activity') }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-5 col-form-label">{{ __('CRA Footer', 'activity') }}</label>
+                <div class="col-sm-7">
+                    <textarea name="cra_footer" class="form-control" rows="5">{{ fields.cra_footer|e }}</textarea>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    {# --- Planning --- #}
+    <div class="card mb-3">
+        <div class="card-header d-flex align-items-center gap-2">
+            <i class="ti ti-clock"></i>
+            <strong>{{ __('Planning', 'activity') }}</strong>
+        </div>
+        <div class="card-body">
+
+            <div class="row mb-3">
+                <label class="col-sm-5 col-form-label">{{ __('Use time repartition', 'activity') }}</label>
+                <div class="col-sm-7">{{ use_timerepartition_html|raw }}</div>
+            </div>
+
+            <div class="row mb-3" id="activity_timerepartition" {% if not fields.use_timerepartition %}style="display:none"{% endif %}>
+                <label class="col-sm-5 col-form-label">{{ __('Use the view by day men in planning', 'activity') }}</label>
+                <div class="col-sm-7">{{ use_mandaydisplay_html|raw }}</div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-5 col-form-label">{{ __('Use pairs schedules', 'activity') }}</label>
+                <div class="col-sm-7">{{ use_pairs_html|raw }}</div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-5 col-form-label">{{ __('Authorize only the whole schedules', 'activity') }}</label>
+                <div class="col-sm-7">{{ use_integerschedules_html|raw }}</div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-5 col-form-label">{{ __('Authorize activities on week-ends', 'activity') }}</label>
+                <div class="col-sm-7">{{ use_weekend_html|raw }}</div>
+            </div>
+
+        </div>
+    </div>
+
+    {# --- Holidays --- #}
+    <div class="card mb-3">
+        <div class="card-header d-flex align-items-center gap-2">
+            <i class="ti ti-beach"></i>
+            <strong>{{ __('Holidays', 'activity') }}</strong>
+        </div>
+        <div class="card-body">
+
+            <div class="row mb-3">
+                <label class="col-sm-5 col-form-label">{{ __('Use group manager as holiday manager', 'activity') }}</label>
+                <div class="col-sm-7">{{ use_groupmanager_html|raw }}</div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-5 col-form-label">{{ __('Default validation percent', 'activity') }}</label>
+                <div class="col-sm-7">{{ default_validation_percent_html|raw }}</div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-5 col-form-label">{{ __('Used mail for holidays', 'activity') }}</label>
+                <div class="col-sm-7">
+                    <input type="text" name="used_mail_for_holidays" class="form-control"
+                           value="{{ fields.used_mail_for_holidays|e }}">
+                </div>
+            </div>
+
+        </div>
+        <div class="card-footer d-flex justify-content-end">
+            {% if canedit %}
+                <button type="submit" name="update" class="btn btn-primary">
+                    <i class="ti ti-device-floppy me-1"></i>{{ _x('button', 'Save') }}
+                </button>
+            {% endif %}
+        </div>
+    </div>
+</form>
+
+<script>
+function activity_changetimerepartition() {
+    if ($('#dropdown_use_timerepartition{{ rand_timerep }}').val() != 0) {
+        $('#activity_timerepartition').show();
+    } else {
+        $('#activity_timerepartition').hide();
+    }
+}
+function activity_change_useproject() {
+    if ($('#dropdown_use_project{{ rand_project }}').val() != 0) {
+        $('#activity_display_use_project').show();
+    } else {
+        $('#activity_display_use_project').hide();
+    }
+}
+$(function () {
+    activity_changetimerepartition();
+    activity_change_useproject();
+});
+</script>

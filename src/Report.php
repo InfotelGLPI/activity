@@ -216,23 +216,31 @@ class Report extends CommonDBTM
             unset($input['delete_snapshot']);
         }
 
-        $query = "SELECT glpi_documents.id AS documents_id
-               FROM glpi_documents
-               JOIN glpi_documents_items ON glpi_documents.id = glpi_documents_items.documents_id
-               JOIN glpi_plugin_activity_snapshots ON glpi_documents.id = glpi_plugin_activity_snapshots.documents_id
-               WHERE glpi_documents.is_deleted = '0'
-               AND glpi_documents_items.itemtype='User'
-               AND glpi_documents_items.items_id=" . $users_id . "
-               AND glpi_plugin_activity_snapshots.month = " . $mois_courant . "
-               AND glpi_plugin_activity_snapshots.year = " . $annee_courante;
-
-        $result = $DB->doQuery($query);
-        if (!$result || $DB->numrows($result) === 0) {
+        $iterator = $DB->request([
+            'SELECT' => ['glpi_documents.id AS documents_id'],
+            'FROM'   => 'glpi_documents',
+            'JOIN'   => [
+                'glpi_documents_items' => [
+                    'ON' => ['glpi_documents_items' => 'documents_id', 'glpi_documents' => 'id']
+                ],
+                'glpi_plugin_activity_snapshots' => [
+                    'ON' => ['glpi_plugin_activity_snapshots' => 'documents_id', 'glpi_documents' => 'id']
+                ],
+            ],
+            'WHERE'  => [
+                'glpi_documents.is_deleted'              => 0,
+                'glpi_documents_items.itemtype'          => 'User',
+                'glpi_documents_items.items_id'          => $users_id,
+                'glpi_plugin_activity_snapshots.month'   => $mois_courant,
+                'glpi_plugin_activity_snapshots.year'    => $annee_courante,
+            ],
+        ]);
+        if (count($iterator) === 0) {
             return;
         }
 
         $entries = [];
-        while ($data = $DB->fetchArray($result)) {
+        foreach ($iterator as $data) {
             $doc->getFromDB($data['documents_id']);
             $name_link   = "<a href='" . htmlspecialchars($CFG_GLPI['root_doc'] . '/front/document.form.php?id=' . $doc->fields['id'], ENT_QUOTES) . "' target='_blank'>"
                          . htmlspecialchars($doc->fields['name']) . "</a>";
@@ -373,6 +381,7 @@ class Report extends CommonDBTM
             $snapshot_hidden = '';
             $post_without_snapshot = $_POST;
             unset($post_without_snapshot['snapshot']);
+            unset($post_without_snapshot['_glpi_csrf_token']);
             foreach ($post_without_snapshot as $key => $val) {
                 if (is_array($val)) {
                     foreach ($val as $k => $v) {
@@ -476,15 +485,23 @@ class Report extends CommonDBTM
             $result = $DB->doQuery($query);
             $number = $DB->numrows($result);
             // planningexternalevents total time
-            $query1 = "SELECT SUM(`glpi_plugin_activity_planningexternalevents`.`actiontime`) AS total
-                  FROM `glpi_plugin_activity_planningexternalevents`
-                   LEFT JOIN `glpi_planningexternalevents`
-                     ON (`glpi_plugin_activity_planningexternalevents`.`planningexternalevents_id` = `glpi_planningexternalevents`.`id`)";
-            $query1 .= " WHERE (`begin` <= '" . $crit["end"] . "'
-                           AND `end` >= '" . $crit["begin"] . "')
-                              AND `users_id` = '" . $crit["users_id"] . "'";
-            if ($result1 = $DB->doQuery($query1)) {
-                $data1 = $DB->fetchArray($result1);
+            $iterator1 = $DB->request([
+                'SELECT' => [new \Glpi\DBAL\QueryExpression('SUM(`glpi_plugin_activity_planningexternalevents`.`actiontime`) AS total')],
+                'FROM'   => 'glpi_plugin_activity_planningexternalevents',
+                'LEFT JOIN' => [
+                    'glpi_planningexternalevents' => [
+                        'ON' => ['glpi_plugin_activity_planningexternalevents' => 'planningexternalevents_id',
+                                 'glpi_planningexternalevents'                 => 'id']
+                    ]
+                ],
+                'WHERE'  => [
+                    ['glpi_planningexternalevents.begin' => ['<=', $crit["end"]]],
+                    ['glpi_planningexternalevents.end'   => ['>=', $crit["begin"]]],
+                    'glpi_planningexternalevents.users_id' => $crit["users_id"],
+                ],
+            ]);
+            if (count($iterator1)) {
+                $data1 = $iterator1->current();
                 $total = $data1["total"];
             }
         } else {
@@ -592,13 +609,16 @@ class Report extends CommonDBTM
 
       // 1.1 Plugin holiday
        // TODO implement holidays with !$use_planning_activity_hours
-        $queryh  = "SELECT SUM(actiontime) AS total
-                  FROM `glpi_plugin_activity_holidays`";
-        $queryh  .= " WHERE (`begin` >= '" . $crit["begin"] . "'
-                           AND `begin` <= '" . $crit["end"] . "')
-                        AND `users_id` = '" . $crit["users_id"] . "'";
-        $resulth = $DB->doQuery($queryh);
-        $numberh = $DB->numrows($resulth);
+        $iteratorh = $DB->request([
+            'SELECT' => [new \Glpi\DBAL\QueryExpression('SUM(actiontime) AS total')],
+            'FROM'   => 'glpi_plugin_activity_holidays',
+            'WHERE'  => [
+                ['begin' => ['>=', $crit["begin"]]],
+                ['begin' => ['<=', $crit["end"]]],
+                'users_id' => $crit["users_id"],
+            ],
+        ]);
+        $numberh = count($iteratorh);
 
       // ProjectTask
         $tickets  = ProjectTask::queryProjectTask($crit);
@@ -935,22 +955,29 @@ class Report extends CommonDBTM
                 if ($numberm != "0") {
                    // TODO implement $use_planning_activity_hours
                     while ($datam = $DB->fetchArray($resultm)) {
-                         $queryTask = "SELECT `glpi_tickettasks`.*
-                                 FROM `glpi_tickettasks`
-                                 LEFT JOIN `glpi_plugin_manageentities_cridetails`
-                                    ON (`glpi_plugin_manageentities_cridetails`.`tickets_id` = `glpi_tickettasks`.`tickets_id`)
-                                 LEFT JOIN `glpi_plugin_activity_tickettasks`
-                                    ON (`glpi_plugin_activity_tickettasks`.`tickettasks_id` = `glpi_tickettasks`.`id`)
-                                 WHERE `glpi_tickettasks`.`tickets_id` = '" . $datam['tickets_id'] . "'
-                                       AND (`glpi_tickettasks`.`begin` >= '" . $crit["begin"] . "'
-                                       AND `glpi_tickettasks`.`end` <= '" . $crit["end"] . "')
-                                       AND `glpi_plugin_activity_tickettasks`.`is_oncra` = 1
-                                       AND `glpi_tickettasks`.`users_id_tech` = '" . $crit["users_id"] . "'";
-
-                         $resultTask = $DB->doQuery($queryTask);
-                         $numberTask = $DB->numrows($resultTask);
-                        if ($numberTask != "0") {
-                            while ($dataTask = $DB->fetchArray($resultTask)) {
+                         $iteratorTask = $DB->request([
+                             'SELECT' => ['glpi_tickettasks.*'],
+                             'FROM'   => 'glpi_tickettasks',
+                             'LEFT JOIN' => [
+                                 'glpi_plugin_manageentities_cridetails' => [
+                                     'ON' => ['glpi_plugin_manageentities_cridetails' => 'tickets_id',
+                                              'glpi_tickettasks'                       => 'tickets_id']
+                                 ],
+                                 'glpi_plugin_activity_tickettasks' => [
+                                     'ON' => ['glpi_plugin_activity_tickettasks' => 'tickettasks_id',
+                                              'glpi_tickettasks'                  => 'id']
+                                 ],
+                             ],
+                             'WHERE' => [
+                                 'glpi_tickettasks.tickets_id'                        => $datam['tickets_id'],
+                                 ['glpi_tickettasks.begin'                            => ['>=', $crit["begin"]]],
+                                 ['glpi_tickettasks.end'                              => ['<=', $crit["end"]]],
+                                 'glpi_plugin_activity_tickettasks.is_oncra'          => 1,
+                                 'glpi_tickettasks.users_id_tech'                     => $crit["users_id"],
+                             ],
+                         ]);
+                        if (count($iteratorTask)) {
+                            foreach ($iteratorTask as $dataTask) {
                                 $mtitle = self::strtoupper_auto($datam["entity"]) . " > ";
                                 if ($datam["withcontract"]) {
                                     $contract = new Contract();
@@ -1277,6 +1304,7 @@ class Report extends CommonDBTM
                // Si l'utilisateur souhaite réaliser un snapshot
                 if (isset($input['snapshot'])) {
                     self::takeASnapshot($crit, $input, $PDF);
+                    Html::back();
                 } else { // Si il ne souhaite pas -> on affiche le CRA pdf dans une Popup
                     $user = new User();
                     $user->getFromDB($input["users_id"]);
@@ -1307,31 +1335,46 @@ class Report extends CommonDBTM
                             ? $data["total_actiontime"] * 100 / $total
                             : 0;
 
-                        $comment = "";
-                        $dbu     = new DbUtils();
-                        $queryt  = "SELECT `glpi_planningexternalevents`.`text` AS text,
-                                 `glpi_plugin_activity_planningexternalevents`.`actiontime`
-                     FROM `glpi_planningexternalevents`
-                     INNER JOIN `glpi_planningeventcategories`
-                        ON (`glpi_planningeventcategories`.`id` = `glpi_planningexternalevents`.`planningeventcategories_id`)
-                     INNER JOIN `glpi_plugin_activity_planningexternalevents`
-                              ON (`glpi_planningexternalevents`.`id` = `glpi_plugin_activity_planningexternalevents`.`planningexternalevents_id`)";
-                        $queryt  .= "WHERE (`glpi_planningexternalevents`.`begin` >= '" . $crit["begin"] . "'
-                           AND `glpi_planningexternalevents`.`begin` <= '" . $crit["end"] . "')
-                           AND `glpi_planningexternalevents`.`planningeventcategories_id` = '" . $data["type"] . "'";
-
+                        $comment  = "";
+                        $dbu      = new DbUtils();
+                        $whereInner = [
+                            ['glpi_planningexternalevents.begin' => ['>=', $crit["begin"]]],
+                            ['glpi_planningexternalevents.begin' => ['<=', $crit["end"]]],
+                            'glpi_planningexternalevents.planningeventcategories_id' => $data["type"],
+                            'glpi_planningexternalevents.users_id'                   => $crit["users_id"],
+                        ];
+                        $whereInner[] = new \Glpi\DBAL\QueryExpression(
+                            $dbu->getEntitiesRestrictRequest("", "glpi_planningexternalevents")
+                        );
                         if ($use_subcategory) {
-                            $queryt .= "AND `glpi_plugin_activity_planningexternalevents`.`planningeventsubcategories_id`";
-                            $queryt .= $data['subtype'] ?  " = '".$data["subtype"]."' " : ' IS NULL ';
+                            if ($data['subtype']) {
+                                $whereInner['glpi_plugin_activity_planningexternalevents.planningeventsubcategories_id'] = $data["subtype"];
+                            } else {
+                                $whereInner[] = new \Glpi\DBAL\QueryExpression(
+                                    '`glpi_plugin_activity_planningexternalevents`.`planningeventsubcategories_id` IS NULL'
+                                );
+                            }
                         }
-
-                        $queryt  .= "  AND `glpi_planningexternalevents`.`users_id` = '" . $crit["users_id"] . "' "
-                        . $dbu->getEntitiesRestrictRequest("AND", "glpi_planningexternalevents");
-
-                        $resultt = $DB->doQuery($queryt);
-                        $numbert = $DB->numrows($resultt);
-                        if ($numbert != "0") {
-                            while ($datat = $DB->fetchArray($resultt)) {
+                        $iteratort = $DB->request([
+                            'SELECT' => [
+                                'glpi_planningexternalevents.text AS text',
+                                'glpi_plugin_activity_planningexternalevents.actiontime',
+                            ],
+                            'FROM'       => 'glpi_planningexternalevents',
+                            'INNER JOIN' => [
+                                'glpi_planningeventcategories' => [
+                                    'ON' => ['glpi_planningeventcategories' => 'id',
+                                             'glpi_planningexternalevents'  => 'planningeventcategories_id']
+                                ],
+                                'glpi_plugin_activity_planningexternalevents' => [
+                                    'ON' => ['glpi_planningexternalevents'                    => 'id',
+                                             'glpi_plugin_activity_planningexternalevents'    => 'planningexternalevents_id']
+                                ],
+                            ],
+                            'WHERE' => $whereInner,
+                        ]);
+                        if (count($iteratort)) {
+                            foreach ($iteratort as $datat) {
                                 $comment .= RichText::getTextFromHtml($datat["text"])
                                     . " (" . self::TotalTpsPassesArrondis($datat["actiontime"] / $AllDay, $options) . ")<br>";
                             }

@@ -273,7 +273,7 @@ class CraPDF extends Fpdf
         $this->SetY($this->margin_top);
 
         /* Logo. */
-        $image  = '../public/pics/logo.jpg';
+        $image = Option::getCraLogoPath() ?? (GLPI_ROOT . '/public/pics/logo.jpg');
         $target = 30;
         [$width, $height, $type, $attr] = getimagesize($image);
         [$width, $height] = $this->imageResize($width, $height, $target);
