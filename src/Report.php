@@ -1109,7 +1109,11 @@ class Report extends CommonDBTM
             echo Search::showEndLine($output_type);
 
            /*days*/
-            echo Search::showNewLine($output_type, true);
+            if ($output_type == Search::HTML_OUTPUT) {
+                echo "<tr class='tab_bg_1' style='background-color:#f3f4f5;font-weight:bold'>";
+            } else {
+                echo Search::showNewLine($output_type, true);
+            }
             self::showTitle($output_type, $num, __('Project', 'activity'), '', false);
             self::showTitle($output_type, $num, __('Activity', 'activity'), '', false);
             for ($i = 0; $i != $count; $i++) {
