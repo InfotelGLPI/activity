@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Activity - Accounts plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-18 07:00+0000\n"
+"POT-Creation-Date: 2026-07-02 12:02+0000\n"
 "PO-Revision-Date: 2020-11-02 13:59+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/114456/fr_FR/)\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #: front/menu.php:52 src/Profile.php:57 src/Profile.php:108
-#: src/Report.php:1156 src/Preference.php:69 src/Config.php:50
+#: src/Report.php:1114 src/Preference.php:69 src/Config.php:50
 #: src/Option.php:48 src/Menu.php:39 ajax/loadscripts.php:49 setup.php:212
 msgid "Activity"
 msgid_plural "Activities"
@@ -208,7 +208,7 @@ msgstr "Utiliser ce congé dans le compteur"
 msgid "Sickness"
 msgstr "Maladie"
 
-#: src/HolidayType.php:97 src/Report.php:1881 src/CraPDF.php:516
+#: src/HolidayType.php:97 src/Report.php:1836 src/CraPDF.php:516
 msgid "Part time"
 msgstr "Temps partiel"
 
@@ -399,69 +399,49 @@ msgstr "Valide jusqu'au"
 msgid "Cumul"
 msgstr "Cumul"
 
-#: src/Report.php:194
+#: src/Report.php:195
 msgid "Take a snapshot of the CRA"
 msgstr "Prendre un instantané du CRA"
 
-#: src/Report.php:246
-msgid "Snapshots of the month"
-msgstr "Instantanés du mois"
-
-#: src/Report.php:305
+#: src/Report.php:289
 msgid "Snapshot taken in"
 msgstr "Instantané pris le"
 
-#: src/Report.php:343
+#: src/Report.php:327
 msgid "Export CRA"
 msgstr "Exporter le CRA"
 
-#: src/Report.php:378
-msgid "Activity report"
-msgstr "Rapport d'activités"
-
-#: src/Report.php:403
-msgid "Next month"
-msgstr "Mois suivant"
-
-#: src/Report.php:404
-msgid "Previous month"
-msgstr "Mois précédent"
-
-#: src/Report.php:698 src/Report.php:718 src/Report.php:776 src/Report.php:796
-#: src/Report.php:852 src/Report.php:862 src/Report.php:906
+#: src/Report.php:653 src/Report.php:673 src/Report.php:731 src/Report.php:751
+#: src/Report.php:807 src/Report.php:817 src/Report.php:861
 #: src/Dashboard.php:467 src/Dashboard.php:500
 msgid "No defined type"
 msgstr "Pas de type défini"
 
-#: src/Report.php:931 src/Report.php:948
+#: src/Report.php:886 src/Report.php:903
 msgid "Unbilled"
 msgstr "Non facturé"
 
-#: src/Report.php:1155
+#: src/Report.php:1113
 msgid "Project"
 msgstr "Projet"
 
-#: src/Report.php:1274 src/CraPDF.php:553
+#: src/Report.php:1232 src/CraPDF.php:553
 msgid "Absences"
 msgstr "Absences"
 
-#: src/Report.php:1341
-msgid "Activities detail"
-msgstr "Détail des activités"
-
-#: src/Report.php:1351
+#: src/Report.php:1384
 msgid "Percent"
 msgstr "Pourcentage"
 
-#: src/Report.php:1441
+#: src/Report.php:1396
 msgid "No activity found"
 msgstr "Aucune activité trouvée"
 
-#: src/Report.php:1879 src/CraPDF.php:517
+#: src/Report.php:1834 src/CraPDF.php:517
 msgid "Holidays or exceptional absences"
 msgstr "Congés ou absences exceptionnelles"
 
-#: src/Report.php:1883 src/CraPDF.php:518
+#: src/Report.php:1838 src/CraPDF.php:518
 msgid "Sickness or maternity"
 msgstr "Maladie ou maternité"
 
