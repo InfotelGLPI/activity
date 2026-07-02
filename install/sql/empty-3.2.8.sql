@@ -74,6 +74,7 @@ CREATE TABLE `glpi_plugin_activity_options`
     `show_planningevents_entity`     tinyint DEFAULT '0',
     `use_planning_activity_hours`    tinyint DEFAULT '1',
     `show_planningevents_project`    int unsigned NOT NULL DEFAULT '0',
+    `cra_logo_id`                    int unsigned NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 

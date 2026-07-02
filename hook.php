@@ -271,10 +271,6 @@ function plugin_activity_install()
         $DB->runFile(PLUGIN_ACTIVITY_DIR . "/install/sql/update-3.2.8.sql");
     }
 
-    if (!$DB->fieldExists("glpi_plugin_activity_options", "cra_logo_id")) {
-        $DB->runFile(PLUGIN_ACTIVITY_DIR . "/install/sql/update-3.2.9.sql");
-    }
-
     return true;
 }
 

@@ -1,2 +1,4 @@
 ALTER TABLE glpi_plugin_activity_planningexternalevents ADD COLUMN `projects_id` int unsigned NOT NULL DEFAULT '0';
 ALTER TABLE glpi_plugin_activity_options ADD COLUMN `show_planningevents_project` int unsigned NOT NULL DEFAULT '0';
+ALTER TABLE `glpi_plugin_activity_options`
+    ADD `cra_logo_id` int unsigned NOT NULL DEFAULT '0';
