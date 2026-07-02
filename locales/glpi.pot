@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-02 12:13+0000\n"
+"POT-Creation-Date: 2026-07-02 13:01+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,7 +27,7 @@ msgstr ""
 msgid "A new holiday request has been submitted"
 msgstr ""
 
-#: src/Report.php:1232 src/CraPDF.php:553
+#: src/Report.php:1236 src/CraPDF.php:553
 msgid "Absences"
 msgstr ""
 
@@ -39,7 +39,7 @@ msgstr ""
 msgid "Activities detail"
 msgstr ""
 
-#: front/menu.php:52 src/Profile.php:57 src/Profile.php:108 src/Report.php:1114
+#: front/menu.php:52 src/Profile.php:57 src/Profile.php:108 src/Report.php:1118
 #: src/Preference.php:69 src/Config.php:50 src/Option.php:48 src/Menu.php:39
 #: ajax/loadscripts.php:49 setup.php:212
 msgid "Activity"
@@ -283,7 +283,7 @@ msgid_plural "Holidays validation"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Report.php:1834 src/CraPDF.php:517
+#: src/Report.php:1838 src/CraPDF.php:517
 msgid "Holidays or exceptional absences"
 msgstr ""
 
@@ -355,7 +355,7 @@ msgstr ""
 msgid "Next month"
 msgstr ""
 
-#: src/Report.php:1396
+#: src/Report.php:1400
 msgid "No activity found"
 msgstr ""
 
@@ -401,11 +401,11 @@ msgstr ""
 msgid "Only whole hours are allowed (no split times)"
 msgstr ""
 
-#: src/HolidayType.php:97 src/Report.php:1836 src/CraPDF.php:516
+#: src/HolidayType.php:97 src/Report.php:1840 src/CraPDF.php:516
 msgid "Part time"
 msgstr ""
 
-#: src/Report.php:1384
+#: src/Report.php:1388
 msgid "Percent"
 msgstr ""
 
@@ -459,7 +459,7 @@ msgid_plural "Private holidays"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Report.php:1113
+#: src/Report.php:1117
 msgid "Project"
 msgstr ""
 
@@ -556,7 +556,7 @@ msgstr ""
 msgid "Sickness"
 msgstr ""
 
-#: src/Report.php:1838 src/CraPDF.php:518
+#: src/Report.php:1842 src/CraPDF.php:518
 msgid "Sickness or maternity"
 msgstr ""
 
