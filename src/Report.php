@@ -38,6 +38,7 @@ use DateTimeZone;
 use DbUtils;
 use Document;
 use Document_Item;
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Manageentities\Config as ManageentitiesConfig;
 use Html;
@@ -202,21 +203,9 @@ class Report extends CommonDBTM
     {
         global $DB, $CFG_GLPI;
 
-        if (!isset($input["users_id"]) || empty($input["users_id"])) {
-            $users_id = Session::getLoginUserID();
-        } else {
-            $users_id = (int)$input["users_id"];
-        }
-        $mois_courant = intval(date('m', time()));
-        if (isset($input["month"])
-          && $input["month"] > 0) {
-            $mois_courant = (int)$input["month"];
-        }
-        $annee_courante = date('Y', time());
-        if (isset($input["year"])
-          && $input["year"] > 0) {
-            $annee_courante = (int)$input["year"];
-        }
+        $users_id = !empty($input["users_id"]) ? (int)$input["users_id"] : Session::getLoginUserID();
+        $mois_courant   = isset($input["month"]) && $input["month"] > 0 ? (int)$input["month"] : intval(date('m'));
+        $annee_courante = isset($input["year"])  && $input["year"]  > 0 ? (int)$input["year"]  : (int)date('Y');
 
         $doc = new Document();
         if (isset($input['delete_snapshot'])) {
@@ -235,39 +224,34 @@ class Report extends CommonDBTM
                AND glpi_documents_items.itemtype='User'
                AND glpi_documents_items.items_id=" . $users_id . "
                AND glpi_plugin_activity_snapshots.month = " . $mois_courant . "
-               AND glpi_plugin_activity_snapshots.year = " . $annee_courante . "
-              ;";
+               AND glpi_plugin_activity_snapshots.year = " . $annee_courante;
 
         $result = $DB->doQuery($query);
-        if ($result && $DB->numrows($result) > 0) {
-            echo "<div id='listSnapshots' style='margin-top:20px'>";
-            echo "<form id='snapshot_form' method='POST' action='" . PLUGIN_ACTIVITY_WEBDIR . "/front/cra.php'>";
-            echo "<table class='tab_cadre_fixehov'>";
-            echo "<tr><th colspan='4'>" . __("Snapshots of the month", "activity") . "</th></tr>";
-            echo "<tr><th>" . __("Name") . "</th>"
-              . "<th>" . __("Document") . "</th>"
-              . "<th>" . __("Date") . "</th>"
-              . "<th></th></tr>";
-            while ($data = $DB->fetchArray($result)) {
-                $doc->getFromDB($data['documents_id']);
-                echo "<tr>";
-                echo "<td><a href='" . $CFG_GLPI['root_doc'] . "/front/document.form.php?id=" . $doc->fields['id'] . "' target='_blank'>" . $doc->fields['name'] . "</a></td>";
-                echo "<td>" . $doc->getDownloadLink() . "</td>";
-                echo "<td>" . Html::convDateTime($doc->fields['date_mod']) . "</td>";
-                echo "<td>";
-                $name = "delete_snapshot[" . $doc->fields['id'] . "]";
-                echo Html::submit(__("Put in trashbin"), ['name' => $name, 'class' => 'btn btn-primary']);
-                echo "</td>";
-                echo "</tr>";
-            }
-            echo "</table>";
-           //We copy the input
-            echo Html::hidden('month', ['value' => $input['month']]);
-            echo Html::hidden('year', ['value' => $input['year']]);
-            echo Html::hidden('users_id', ['value' => $input['users_id']]);
-            Html::closeForm();
-            echo "</div>";
+        if (!$result || $DB->numrows($result) === 0) {
+            return;
         }
+
+        $entries = [];
+        while ($data = $DB->fetchArray($result)) {
+            $doc->getFromDB($data['documents_id']);
+            $name_link   = "<a href='" . htmlspecialchars($CFG_GLPI['root_doc'] . '/front/document.form.php?id=' . $doc->fields['id'], ENT_QUOTES) . "' target='_blank'>"
+                         . htmlspecialchars($doc->fields['name']) . "</a>";
+            $delete_name = "delete_snapshot[" . (int)$doc->fields['id'] . "]";
+            $entries[] = [
+                'name'     => $name_link,
+                'download' => $doc->getDownloadLink(),
+                'date'     => Html::convDateTime($doc->fields['date_mod']),
+                'action'   => Html::submit(__("Put in trashbin"), ['name' => $delete_name, 'class' => 'btn btn-sm btn-danger']),
+            ];
+        }
+
+        TemplateRenderer::getInstance()->display('@activity/cra_snapshots.html.twig', [
+            'snapshots' => $entries,
+            'month'     => $input['month']    ?? $mois_courant,
+            'year'      => $input['year']     ?? $annee_courante,
+            'users_id'  => $input['users_id'] ?? $users_id,
+            'webdir'    => PLUGIN_ACTIVITY_WEBDIR,
+        ]);
     }
 
 
@@ -375,90 +359,63 @@ class Report extends CommonDBTM
         if ($output_type == Search::HTML_OUTPUT) {
             Html::header(PlanningExternalEvent::getTypeName(2));
 
-            echo "<div class='center'><b>" . __('Activity report', 'activity') . "</b></div><br>";
-            echo "<div class='center'>";
-            echo "<form method=\"post\" id=\"form_cra\" name=\"form\" action=\"cra.php\">";
-            echo "<table class='tab_cadre' width='800'>";
-            echo "<tr class='tab_bg_2'>";
-            echo "<td><ul id='last_month_report'></ul></td>";
-            echo "<td align='right'>";
-            echo __('Date') . "</td>";
-            echo "<td>";
             $mois_courant = intval(date('m', time()));
-            if (isset($input["month"])
-             && $input["month"] > 0) {
+            if (isset($input["month"]) && $input["month"] > 0) {
                 $mois_courant = (int)$input["month"];
             }
-            echo self::monthDropdown("month", $mois_courant);
-            echo "&nbsp;";
             $annee_courante = date('Y', time());
-            if (isset($input["year"])
-             && $input["year"] > 0) {
+            if (isset($input["year"]) && $input["year"] > 0) {
                 $annee_courante = (int)$input["year"];
             }
-            echo self::YearDropdown("year", $annee_courante);
-            echo "</td>";
-            echo "<td><ul id='next_month_report'></ul></td>";
 
-            $script = "monthActivityButton('#next_month_report', '" . __('Next month', 'activity') . "' );";
-            $script .= "monthActivityButton('#last_month_report', '" . __('Previous month', 'activity') . "' );";
-
-            echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
-
-            echo "<td class='tab_bg_2' class='center'>";
-
-            if (Session::haveRight("plugin_activity_all_users", 1)) {
-                User::dropdown(['name'     => "users_id",
-                            'value'    => $users_id,
-                            'right'    => "interface",
-                            'comments' => 1,
-                            'entity'   => $_SESSION["glpiactiveentities"]]);
-            } else {
-                echo Html::hidden('users_id', ['value' => $users_id]);
-            }
-            echo "</td>";
-            echo "<td class='center'>";
-            echo Html::submit(_sx('button', 'Post'), ['name' => 'submit', 'class' => 'btn btn-primary']);
-            echo "</td>";
-            echo "</tr>";
-            echo "</table>";
-            Html::closeForm();
-            echo "</div>";
-
-            echo "<form method='POST' action='cra.php'>\n";
-            echo "<table class='tab_cadre'>";
-            echo "<tr class='tab_bg_2'><td class='center'>";
-
-            $param = "";
-           //We clear post datas before cloning
-            if (isset($_POST['snapshot'])) {
-                unset($_POST['snapshot']);
-            }
-            foreach ($_POST as $key => $val) {
+            // Build hidden fields for export + snapshot forms
+            $export_hidden = '';
+            $snapshot_hidden = '';
+            $post_without_snapshot = $_POST;
+            unset($post_without_snapshot['snapshot']);
+            foreach ($post_without_snapshot as $key => $val) {
                 if (is_array($val)) {
                     foreach ($val as $k => $v) {
-                        $name = "' . $key . '[$k]";
-                        echo Html::hidden($name, ['value' => $v]);
-      //                  echo "<input type='hidden' name='" . $key . "[$k]' value='$v' >";
-                        if (!empty($param)) {
-                            $param .= "&";
-                        }
-                        $param .= $key . "[" . $k . "]=" . urlencode($v);
+                        $export_hidden .= Html::hidden($key . "[$k]", ['value' => $v]);
                     }
                 } else {
-                    echo Html::hidden($key, ['value' => $val]);
-                    if (!empty($param)) {
-                        $param .= "&";
-                    }
-                    $param .= "$key=" . urlencode($val);
+                    $export_hidden .= Html::hidden($key, ['value' => $val]);
                 }
             }
-            self::showOutputFormat();
-            echo "</td></tr>";
-            echo "</table>";
-            Html::closeForm();
+            $snapshot_hidden  = Html::hidden('month',    ['value' => $input['month']  ?? '']);
+            $snapshot_hidden .= Html::hidden('year',     ['value' => $input['year']   ?? '']);
+            $snapshot_hidden .= Html::hidden('users_id', ['value' => $input['users_id'] ?? Session::getLoginUserID()]);
+            $snapshot_hidden .= Html::hidden('display_type', ['value' => Search::PDF_OUTPUT_LANDSCAPE]);
+            $snapshot_hidden .= Html::hidden('snapshot', ['value' => 'snapshot']);
 
-            self::showSnapshotTrigger($input);
+            ob_start();
+            self::showOutputFormat();
+            $output_format_html = ob_get_clean();
+
+            ob_start();
+            if (Session::haveRight("plugin_activity_all_users", 1)) {
+                User::dropdown([
+                    'name'     => 'users_id',
+                    'value'    => $users_id,
+                    'right'    => 'interface',
+                    'comments' => 1,
+                    'entity'   => $_SESSION["glpiactiveentities"],
+                ]);
+            }
+            $user_dropdown_html = ob_get_clean();
+
+            TemplateRenderer::getInstance()->display('@activity/cra_search.html.twig', [
+                'month_dropdown'       => self::monthDropdown('month', $mois_courant),
+                'year_dropdown'        => self::YearDropdown('year', $annee_courante),
+                'can_see_all_users'    => Session::haveRight("plugin_activity_all_users", 1),
+                'user_dropdown'        => $user_dropdown_html,
+                'user_hidden'          => Html::hidden('users_id', ['value' => $users_id]),
+                'export_hidden_fields' => $export_hidden,
+                'output_format_selector' => $output_format_html,
+                'snapshot_hidden_fields' => $snapshot_hidden,
+            ]);
+
+            self::showSnapshots($input);
         }
 
        // Title
@@ -467,8 +424,6 @@ class Report extends CommonDBTM
           && !empty($input["year"])) {
             $this->showCRA($input, $output_type, $PDF, $pdfMode);
         }
-
-        self::showSnapshots($input);
 
         if ($output_type == Search::HTML_OUTPUT) {
             if (Session::getCurrentInterface() == 'central') {
@@ -1118,6 +1073,9 @@ class Report extends CommonDBTM
             $countweekend = 0;
             $days         = [];
             $num          = 1;
+            if ($output_type == Search::HTML_OUTPUT) {
+                echo '<div class="card mt-3"><div class="card-body p-0">';
+            }
             echo Search::showHeader($output_type, $number + $numberm + $numbert, 3, false);
             echo Search::showNewLine($output_type);
             self::showTitle($output_type, $num, '', '', false);
@@ -1151,7 +1109,7 @@ class Report extends CommonDBTM
             echo Search::showEndLine($output_type);
 
            /*days*/
-            echo Search::showNewLine($output_type);
+            echo Search::showNewLine($output_type, true);
             self::showTitle($output_type, $num, __('Project', 'activity'), '', false);
             self::showTitle($output_type, $num, __('Activity', 'activity'), '', false);
             for ($i = 0; $i != $count; $i++) {
@@ -1332,42 +1290,19 @@ class Report extends CommonDBTM
             }
 
             echo Search::showFooter($output_type, PlanningExternalEvent::getTypeName(1));
+            if ($output_type == Search::HTML_OUTPUT) {
+                echo '</div></div>';
+            }
 
-            if ($number != "0") {
-                $num = 1;
-                echo "<br>";
-                echo Search::showHeader($output_type, $number + $numberm + $numbert, 3, true);
-                echo Search::showNewLine($output_type);
-                self::showTitle($output_type, $num, __('Activities detail', 'activity'), '', false);
-                echo Search::showEndLine($output_type);
-                echo Search::showHeader($output_type, $number + $numberm + $numbert, 3, true);
-                echo Search::showNewLine($output_type);
-                self::showTitle($output_type, $num, PlanningEventCategory::getTypeName(2), 'activitytype', false);
-                if ($opt->getUseSubcategory()) {
-                    self::showTitle($output_type, $num, PlanningEventSubCategory::getTypeName(2), 'activitysubtype', false);
-                }
-                self::showTitle($output_type, $num, __('Comments'), 'comment', false);
-                self::showTitle($output_type, $num, __('Total'), 'hours', false);
-                self::showTitle($output_type, $num, __('Percent', 'activity'), 'percent', false);
-                echo Search::showEndLine($output_type);
+            if ($number != "0" && $output_type == Search::HTML_OUTPUT) {
+                $details_entries = [];
 
-               // 2.1 Spew out the data in a table
-                $row_num = 1;
                 if ($use_planning_activity_hours) {
                     while ($data = $DB->fetchArray($result)) {
-                        if ($data["total_actiontime"] > 0) {
-                            $percent = $data["total_actiontime"] * 100 / $total;
-                        } else {
-                            $percent = 0;
-                        }
+                        $percent = $data["total_actiontime"] > 0
+                            ? $data["total_actiontime"] * 100 / $total
+                            : 0;
 
-                        $row_num++;
-                        $num = 1;
-                        echo Search::showNewLine($output_type);
-                        echo Search::showItem($output_type, $data["name"], $num, $row_num);
-                        if ($opt->getUseSubcategory()) {
-                             echo Search::showItem($output_type, $data["subname"], $num, $row_num);
-                        }
                         $comment = "";
                         $dbu     = new DbUtils();
                         $queryt  = "SELECT `glpi_planningexternalevents`.`text` AS text,
@@ -1381,7 +1316,7 @@ class Report extends CommonDBTM
                            AND `glpi_planningexternalevents`.`begin` <= '" . $crit["end"] . "')
                            AND `glpi_planningexternalevents`.`planningeventcategories_id` = '" . $data["type"] . "'";
 
-                        if ($opt->getUseSubcategory()) {
+                        if ($use_subcategory) {
                             $queryt .= "AND `glpi_plugin_activity_planningexternalevents`.`planningeventsubcategories_id`";
                             $queryt .= $data['subtype'] ?  " = '".$data["subtype"]."' " : ' IS NULL ';
                         }
@@ -1393,47 +1328,67 @@ class Report extends CommonDBTM
                         $numbert = $DB->numrows($resultt);
                         if ($numbert != "0") {
                             while ($datat = $DB->fetchArray($resultt)) {
-                                $comment .= $datat["text"] . " (" . (self::TotalTpsPassesArrondis($datat["actiontime"] / $AllDay, $options)) . ")<br>";
+                                $comment .= RichText::getTextFromHtml($datat["text"])
+                                    . " (" . self::TotalTpsPassesArrondis($datat["actiontime"] / $AllDay, $options) . ")<br>";
                             }
                         }
-                        echo Search::showItem($output_type, nl2br(RichText::getTextFromHtml($comment)), $num, $row_num);
-                        $total_ouvres = self::TotalTpsPassesArrondis($data["total_actiontime"] / $AllDay, $options);
-                        echo Search::showItem($output_type, Html::formatNumber($total_ouvres, false, 3), $num, $row_num);
-                        echo Search::showItem($output_type, Html::formatNumber($percent) . "%", $num, $row_num);
-                        echo Search::showEndLine($output_type);
+
+                        $total_ouvres      = self::TotalTpsPassesArrondis($data["total_actiontime"] / $AllDay, $options);
+                        $entry             = [
+                            'category' => htmlspecialchars($data["name"], ENT_QUOTES),
+                            'comment'  => $comment,
+                            'total'    => Html::formatNumber($total_ouvres, false, 3),
+                            'percent'  => Html::formatNumber($percent) . '%',
+                        ];
+                        if ($use_subcategory) {
+                            $entry['subcategory'] = htmlspecialchars($data["subname"] ?? '', ENT_QUOTES);
+                        }
+                        $details_entries[] = $entry;
                     }
                 } else {
-                    foreach ($actiontimeByCategories as $category => $data) {
-                        if ($data['total_actiontime'] > 0) {
-                            $percent = $data['total_actiontime'] * 100 / $total;
-                        } else {
-                            $percent = 0;
-                        }
+                    foreach ($actiontimeByCategories as $data) {
+                        $percent = $data['total_actiontime'] > 0
+                            ? $data['total_actiontime'] * 100 / $total
+                            : 0;
 
-                        $row_num++;
-                        $num = 1;
-                        echo Search::showNewLine($output_type);
-                        echo Search::showItem($output_type, $data["category_name"], $num, $row_num);
-                        if ($opt->getUseSubcategory()) {
-                            echo Search::showItem($output_type, $data["subcategory_name"], $num, $row_num);
-                        }
                         $comment = "";
-
-                        $numbert = count($data['events']);
-                        if ($numbert != "0") {
-                            foreach ($data['events'] as $datat) {
-                                $comment .= $datat["text"] . " (" . (self::TotalTpsPassesArrondis($datat["actiontime"] / $AllDay, $options)) . ")<br>";
-                            }
+                        foreach ($data['events'] as $datat) {
+                            $comment .= RichText::getTextFromHtml($datat["text"])
+                                . " (" . self::TotalTpsPassesArrondis($datat["actiontime"] / $AllDay, $options) . ")<br>";
                         }
-                        echo Search::showItem($output_type, nl2br(RichText::getTextFromHtml($comment)), $num, $row_num);
-                        $total_ouvres = self::TotalTpsPassesArrondis($data["total_actiontime"] / $AllDay, $options);
-                        echo Search::showItem($output_type, Html::formatNumber($total_ouvres, false, 3), $num, $row_num);
-                        echo Search::showItem($output_type, Html::formatNumber($percent) . "%", $num, $row_num);
-                        echo Search::showEndLine($output_type);
+
+                        $total_ouvres      = self::TotalTpsPassesArrondis($data["total_actiontime"] / $AllDay, $options);
+                        $entry             = [
+                            'category' => htmlspecialchars($data["category_name"], ENT_QUOTES),
+                            'comment'  => $comment,
+                            'total'    => Html::formatNumber($total_ouvres, false, 3),
+                            'percent'  => Html::formatNumber($percent) . '%',
+                        ];
+                        if ($use_subcategory) {
+                            $entry['subcategory'] = htmlspecialchars($data["subcategory_name"] ?? '', ENT_QUOTES);
+                        }
+                        $details_entries[] = $entry;
                     }
                 }
 
-                echo Search::showFooter($output_type, PlanningExternalEvent::getTypeName(1));
+                $details_columns    = [];
+                $details_formatters = [];
+                $details_columns['category'] = PlanningEventCategory::getTypeName(2);
+                $details_formatters['category'] = 'raw_html';
+                if ($use_subcategory) {
+                    $details_columns['subcategory']    = PlanningEventSubCategory::getTypeName(2);
+                    $details_formatters['subcategory'] = 'raw_html';
+                }
+                $details_columns['comment']  = __('Comments');
+                $details_columns['total']    = __('Total');
+                $details_columns['percent']  = __('Percent', 'activity');
+                $details_formatters['comment'] = 'raw_html';
+
+                TemplateRenderer::getInstance()->display('@activity/cra_details.html.twig', [
+                    'details'    => $details_entries,
+                    'columns'    => $details_columns,
+                    'formatters' => $details_formatters,
+                ]);
             }
         } else {
             echo Search::showHeader($output_type, 1, 1, true);

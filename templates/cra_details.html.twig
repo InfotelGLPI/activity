@@ -1,0 +1,28 @@
+{#
+ * activity plugin for GLPI
+ * Copyright (C) 2019-2026 by the activity Development Team.
+ --------------------------------------------------------------------------
+ #}
+
+{% if details|length > 0 %}
+<div class="card mt-3">
+    <div class="card-header d-flex align-items-center gap-2">
+        <i class="ti ti-list-details"></i>
+        <strong>{{ __('Activities detail', 'activity') }}</strong>
+        <span class="badge bg-outline-secondary ms-1">{{ details|length }}</span>
+    </div>
+    <div class="card-body p-0">
+        {{ include('components/datatable.html.twig', {
+            'datatable_id': 'cra_details_table',
+            'nosort': true,
+            'nofilter': true,
+            'columns': columns,
+            'formatters': formatters,
+            'entries': details,
+            'total_number': details|length,
+            'filtered_number': details|length,
+            'table_class_style': 'table-hover table-sm'
+        }) }}
+    </div>
+</div>
+{% endif %}

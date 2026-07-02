@@ -1,0 +1,71 @@
+{#
+ * activity plugin for GLPI
+ * Copyright (C) 2019-2026 by the activity Development Team.
+ --------------------------------------------------------------------------
+ #}
+
+<div class="card mb-3">
+    <div class="card-header d-flex align-items-center gap-2">
+        <i class="ti ti-calendar-stats"></i>
+        <strong>{{ __('Activity report', 'activity') }}</strong>
+    </div>
+    <div class="card-body">
+        <form method="post" id="form_cra" name="form" action="cra.php">
+            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+            <div class="row g-3 align-items-end">
+                <div class="col-auto">
+                    <ul id="last_month_report" class="list-unstyled mb-0"></ul>
+                </div>
+                <div class="col-auto">
+                    <label class="col-form-label fw-bold">{{ __('Date') }}</label>
+                </div>
+                <div class="col-auto">
+                    {{ month_dropdown|raw }}
+                </div>
+                <div class="col-auto">
+                    {{ year_dropdown|raw }}
+                </div>
+                <div class="col-auto">
+                    <ul id="next_month_report" class="list-unstyled mb-0"></ul>
+                </div>
+                {% if can_see_all_users %}
+                <div class="col-auto">
+                    {{ user_dropdown|raw }}
+                </div>
+                {% else %}
+                    {{ user_hidden|raw }}
+                {% endif %}
+                <div class="col-auto">
+                    <button type="submit" name="submit" class="btn btn-primary">
+                        <i class="ti ti-search me-1"></i>{{ __('Post') }}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="card-footer d-flex gap-2 align-items-center flex-wrap">
+        {# Export PDF #}
+        <form method="POST" action="cra.php" class="d-inline-flex align-items-center gap-2">
+            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+            {{ export_hidden_fields|raw }}
+            {{ output_format_selector|raw }}
+        </form>
+
+        {# Snapshot trigger #}
+        <form method="POST" action="cra.php" class="d-inline-flex align-items-center gap-2">
+            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+            {{ snapshot_hidden_fields|raw }}
+            <button type="submit" name="submit" class="btn btn-outline-secondary">
+                <i class="ti ti-camera me-1"></i>{{ __('Take a snapshot of the CRA', 'activity') }}
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+$(document).ready(function () {
+    monthActivityButton('#next_month_report', {{ __('Next month', 'activity')|json_encode|raw }});
+    monthActivityButton('#last_month_report', {{ __('Previous month', 'activity')|json_encode|raw }});
+});
+</script>

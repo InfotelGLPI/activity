@@ -1,0 +1,44 @@
+{#
+ * activity plugin for GLPI
+ * Copyright (C) 2019-2026 by the activity Development Team.
+ --------------------------------------------------------------------------
+ #}
+
+{% if snapshots|length > 0 %}
+<div class="card mb-3">
+    <div class="card-header d-flex align-items-center gap-2">
+        <i class="ti ti-polaroid"></i>
+        <strong>{{ __('Snapshots of the month', 'activity') }}</strong>
+        <span class="badge bg-outline-secondary ms-1">{{ snapshots|length }}</span>
+    </div>
+    <div class="card-body p-0">
+        <form id="snapshot_form" method="POST" action="{{ webdir }}/front/cra.php">
+            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+            {{ include('components/datatable.html.twig', {
+                'datatable_id': 'snapshots_table',
+                'nosort': true,
+                'nofilter': true,
+                'columns': {
+                    'name':     __('Name'),
+                    'download': __('Document'),
+                    'date':     __('Date'),
+                    'action':   ''
+                },
+                'formatters': {
+                    'name':     'raw_html',
+                    'download': 'raw_html',
+                    'date':     'raw_html',
+                    'action':   'raw_html'
+                },
+                'entries': snapshots,
+                'total_number': snapshots|length,
+                'filtered_number': snapshots|length,
+                'table_class_style': 'table-hover table-sm'
+            }) }}
+            <input type="hidden" name="month"    value="{{ month }}">
+            <input type="hidden" name="year"     value="{{ year }}">
+            <input type="hidden" name="users_id" value="{{ users_id }}">
+        </form>
+    </div>
+</div>
+{% endif %}
