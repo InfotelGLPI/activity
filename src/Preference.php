@@ -32,6 +32,7 @@ namespace GlpiPlugin\Activity;
 use CommonDBTM;
 use CommonGLPI;
 use DbUtils;
+use Glpi\Application\View\TemplateRenderer;
 use Group_User;
 use Html;
 use Session;
@@ -103,7 +104,6 @@ class Preference extends CommonDBTM
      */
     public function showPreferenceForm($user_id)
     {
-
         $use_groupmanager = 0;
         $opt = new Option();
         $opt->getFromDB(1);
@@ -112,125 +112,83 @@ class Preference extends CommonDBTM
         }
 
         if ($use_groupmanager == 0) {
-            // Liste des managers déclarés
-            $restrict = ["users_id" => $user_id];
-
-            $managers = getAllDataFromTable('glpi_plugin_activity_preferences', $restrict);
-
-            echo "<form method='post' action='" . Toolbox::getItemTypeFormURL(Preference::class) . "'>";
-            echo "<table class='tab_cadre_fixe'>";
-            echo "<tr class='tab_bg_1' >";
-            echo "<th colspan='2'>" . __('List of my managers', 'activity') . "</th>";
-            echo "</tr>";
-            if (sizeof($managers) == 0) {
-                echo "<tr class='tab_bg_1' id='no_manager_left'>";
-                echo "<td colspan='2'>" . __('You have not declared any manager yet.', 'activity') . "</td>";
-                echo "</tr>";
-            } else {
-                echo "<tr class='tab_bg_1'>";
-                echo "<th>" . _n('User', 'Users', 1) . "</th>";
-                echo "<th>" . _n('Action', 'Actions', 1) . "</th>";
-                echo "</tr>";
-                foreach ($managers as $manager) {
-                    echo "<tr class='tab_bg_1'>";
-                    echo "<td>" . getUserName($manager['users_id_validate']) . "</td>";
-                    echo "<td>";
-                    echo Html::hidden('id', ['value' => $manager['id']]);
-                    echo Html::submit(
-                        _sx('button', 'Delete permanently'),
-                        ['name' => 'delete', 'class' => 'btn btn-primary']
-                    );
-                    echo "</td>";
-                    echo "</tr>";
-                }
-            }
-            echo "</table>";
-            Html::closeForm();
+            $raw_managers = getAllDataFromTable('glpi_plugin_activity_preferences', ['users_id' => $user_id]);
+            $managers = array_map(static function (array $row): array {
+                return [
+                    'id'       => $row['id'],
+                    'username' => getUserName($row['users_id_validate']),
+                    'users_id_validate' => $row['users_id_validate'],
+                ];
+            }, $raw_managers);
         } else {
             $groupusers = Group_User::getUserGroups($user_id);
-            $groups = [];
-            foreach ($groupusers as $groupuser) {
-                $groups[] = $groupuser["id"];
-            }
+            $groups = array_column($groupusers, 'id');
 
-            $restrict = ["groups_id" => $groups,
-                "is_manager" => 1,
-                "NOT" => ["users_id"  => $user_id]];
-            $managers = getAllDataFromTable('glpi_groups_users', $restrict);
-
-            echo "<table class='tab_cadre_fixe'>";
-            echo "<tr class='tab_bg_1' >";
-            echo "<th colspan='2'>" . __('List of my managers', 'activity') . "</th>";
-            echo "</tr>";
-
-            if (sizeof($managers) <= 0) {
-                echo "<tr class='tab_bg_1' id='no_manager_left'>";
-                echo "<td colspan='2'>" . __('There is no manager for your groups', 'activity') . "</td>";
-                echo "</tr>";
-            } else {
-                echo "<tr class='tab_bg_1'>";
-                echo "<th>" . _n('User', 'Users', count($managers)) . "</th>";
-                echo "</tr>";
-                foreach ($managers as $manager) {
-                    echo "<tr class='tab_bg_1'>";
-                    echo "<td>" . getUserName($manager['users_id']) . "</td>";
-                    echo "</tr>";
-                }
-            }
-
-            echo "</table>";
+            $raw_managers = getAllDataFromTable('glpi_groups_users', [
+                'groups_id' => $groups,
+                'is_manager' => 1,
+                'NOT' => ['users_id' => $user_id],
+            ]);
+            $managers = array_map(static function (array $row): array {
+                return [
+                    'id'       => $row['id'],
+                    'username' => getUserName($row['users_id']),
+                ];
+            }, $raw_managers);
         }
 
-        $this->showAddManagerView($managers);
+        TemplateRenderer::getInstance()->display('@activity/preference_form.html.twig', [
+            'form_url'         => Toolbox::getItemTypeFormURL(Preference::class),
+            'use_groupmanager' => $use_groupmanager,
+            'managers'         => $managers,
+        ]);
+
+        $this->showAddManagerView($managers, $use_groupmanager);
     }
 
     /**
-     * @param $managers
+     * @param array $managers     Already-normalized manager rows (with 'users_id_validate' key when use_groupmanager==0)
+     * @param int   $use_groupmanager
      *
      * @return void
      */
-    public function showAddManagerView($managers)
+    public function showAddManagerView(array $managers, int $use_groupmanager = -1)
     {
-
-        $use_groupmanager = 0;
-        $opt = new Option();
-        $opt->getFromDB(1);
-        if ($opt) {
-            $use_groupmanager = $opt->fields['use_groupmanager'];
+        if ($use_groupmanager === -1) {
+            // Fallback: called standalone without the pre-computed flag
+            $use_groupmanager = 0;
+            $opt = new Option();
+            $opt->getFromDB(1);
+            if ($opt) {
+                $use_groupmanager = $opt->fields['use_groupmanager'];
+            }
         }
 
-        if ($use_groupmanager == 0) {
-            echo "<br/>";
-            echo "<form method='post' action='" . Toolbox::getItemTypeFormURL(Preference::class) . "'>";
-            echo "<table class='tab_cadre_fixe'> ";
-            echo "<tr class='tab_bg_1' >";
-            echo "<th colspan='2'>" . __('Add a manager', 'activity') . "</th>";
-            echo "</tr>";
+        if ($use_groupmanager != 0) {
+            return;
+        }
 
-            echo "<tr class='tab_bg_1' >";
-            echo "<td>";
-            $used = [Session::getLoginUserID()];
-
-            foreach ($managers as $manager) {
+        $used = [Session::getLoginUserID()];
+        foreach ($managers as $manager) {
+            if (isset($manager['users_id_validate'])) {
                 $used[] = $manager['users_id_validate'];
             }
-
-            $rand = User::dropdown([
-                'name' => 'users_id_validate',
-                'entity' => $_SESSION['glpiactiveentities'],
-                'right' => 'all',
-                'used' => $used]);
-
-            echo "</td>";
-            echo "<td>";
-
-            echo Html::hidden('users_id', ['value' => Session::getLoginUserID()]);
-            echo Html::submit(_sx('button', 'Add'), ['name' => 'add', 'class' => 'btn btn-primary']);
-            echo "</td>";
-            echo "</tr>";
-
-            echo "</table>";
-            Html::closeForm();
         }
+
+        ob_start();
+        User::dropdown([
+            'name'   => 'users_id_validate',
+            'entity' => $_SESSION['glpiactiveentities'],
+            'right'  => 'all',
+            'used'   => $used,
+        ]);
+        $user_dropdown_html = ob_get_clean();
+
+        TemplateRenderer::getInstance()->display('@activity/preference_add_manager.html.twig', [
+            'form_url'          => Toolbox::getItemTypeFormURL(Preference::class),
+            'use_groupmanager'  => $use_groupmanager,
+            'users_id'          => Session::getLoginUserID(),
+            'user_dropdown_html' => $user_dropdown_html,
+        ]);
     }
 }

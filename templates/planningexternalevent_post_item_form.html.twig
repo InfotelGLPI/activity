@@ -1,0 +1,76 @@
+{#
+ -------------------------------------------------------------------------
+ activity plugin for GLPI
+ Copyright (C) 2019-2026 by the activity Development Team.
+
+ https://github.com/InfotelGLPI/activity
+ -------------------------------------------------------------------------
+
+ LICENSE
+
+ This file is part of activity.
+
+ activity is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 3 of the License, or
+ (at your option) any later version.
+
+ activity is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with activity. If not, see <http://www.gnu.org/licenses/>.
+ --------------------------------------------------------------------------
+ #}
+
+{% if can_use_cra %}
+    <table class="tab_cadre_fixe">
+        <tr class="tab_bg_2">
+            <td>{{ __('Use in CRA', 'activity') }}</td>
+            <td>{{ is_oncra_dropdown_html|raw }}</td>
+            <td colspan="2" style="width:250px"></td>
+        </tr>
+    </table>
+{% else %}
+    <input type="hidden" name="is_oncra" value="1">
+{% endif %}
+
+{% if use_subcategories %}
+    {# The subcategory dropdown is injected into the category row via JS #}
+    <div style="display:none">{{ subcategory_dropdown_html|raw }}</div>
+    <script>
+    (function () {
+        if (!window.plugin_activity) {
+            window.plugin_activity = {};
+        }
+        plugin_activity.subCategoryDropdownField = document.getElementById('{{ field_id }}').parentElement;
+        plugin_activity.categorySelect = document.getElementsByName('planningeventcategories_id');
+        if (plugin_activity.categorySelect.length) {
+            plugin_activity.categorySelect = plugin_activity.categorySelect[0];
+            plugin_activity.newRow = document.createElement('tr');
+            plugin_activity.labelTd = document.createElement('td');
+            plugin_activity.labelTd.innerText = {{ subcategory_label|json_encode }};
+            plugin_activity.newRow.append(plugin_activity.labelTd);
+            plugin_activity.dropdownTd = document.createElement('td');
+            plugin_activity.dropdownTd.colSpan = 3;
+            plugin_activity.dropdownTd.append(plugin_activity.subCategoryDropdownField);
+            plugin_activity.newRow.append(plugin_activity.dropdownTd);
+            plugin_activity.categoryRow = plugin_activity.categorySelect.parentElement.parentElement.parentElement;
+            plugin_activity.categoryRow.parentElement.insertBefore(plugin_activity.newRow, plugin_activity.categoryRow.nextElementSibling);
+        }
+        plugin_activity = {};
+    }());
+    </script>
+{% endif %}
+
+{% if show_project %}
+    <table class="tab_cadre_fixe">
+        <tr class="tab_bg_2">
+            <td>{{ __('Project') }}</td>
+            <td>{{ project_dropdown_html|raw }}</td>
+            <td colspan="2" style="width:250px"></td>
+        </tr>
+    </table>
+{% endif %}

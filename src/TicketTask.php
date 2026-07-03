@@ -32,6 +32,7 @@ namespace GlpiPlugin\Activity;
 use CommonDBTM;
 use DbUtils;
 use Dropdown;
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\RichText\RichText;
 use Html;
 use Plugin;
@@ -90,24 +91,19 @@ class TicketTask extends CommonDBTM
             $is_cra_default = $opt->fields['is_cra_default'];
         }
 
-        if (Session::haveRight("plugin_activity_statistics", 1)) {
-            echo "<tr class='tab_bg_1'>";
-            echo "<td colspan='3'></td>";
-            echo '<td>';
-            echo "<div id='is_oncra_" . $item->getID() . "' class='label right'>
-               <i class='ti ti-flag'
-                  title='" . __('Use in CRA', 'activity') . "'></i>";
-            Dropdown::showYesNo(
-                'is_oncra',
-                (isset($self->fields['id']) && $self->fields['id']) > 0 ? $self->fields['is_oncra'] : $is_cra_default,
-                -1,
-                ['value' => 1]
-            );
-            echo '</div></td>';
-            echo '</tr>';
-        } else {
-            echo Html::hidden('is_oncra', ['value' => 1]);
-        }
+        $is_oncra_value = (isset($self->fields['id']) && $self->fields['id'] > 0)
+            ? $self->fields['is_oncra']
+            : $is_cra_default;
+
+        ob_start();
+        Dropdown::showYesNo('is_oncra', $is_oncra_value, -1, ['value' => 1]);
+        $is_oncra_dropdown_html = ob_get_clean();
+
+        TemplateRenderer::getInstance()->display('@activity/tickettask_post_form.html.twig', [
+            'can_use_cra'           => Session::haveRight('plugin_activity_statistics', 1),
+            'item_id'               => $item->getID(),
+            'is_oncra_dropdown_html' => $is_oncra_dropdown_html,
+        ]);
     }
 
 

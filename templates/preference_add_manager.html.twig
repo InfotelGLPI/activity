@@ -1,0 +1,52 @@
+{#
+ -------------------------------------------------------------------------
+ activity plugin for GLPI
+ Copyright (C) 2019-2026 by the activity Development Team.
+
+ https://github.com/InfotelGLPI/activity
+ -------------------------------------------------------------------------
+
+ LICENSE
+
+ This file is part of activity.
+
+ activity is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 3 of the License, or
+ (at your option) any later version.
+
+ activity is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with activity. If not, see <http://www.gnu.org/licenses/>.
+ --------------------------------------------------------------------------
+ #}
+
+{% if use_groupmanager == 0 %}
+<div class="card mt-3">
+    <div class="card-header d-flex align-items-center gap-2">
+        <i class="ti ti-user-plus"></i>
+        <strong>{{ __('Add a manager', 'activity') }}</strong>
+    </div>
+    <div class="card-body">
+        <form method="post" action="{{ form_url }}">
+            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="users_id" value="{{ users_id }}">
+
+            <div class="row g-3 align-items-end">
+                <div class="col-sm-8">
+                    {{ user_dropdown_html|raw }}
+                </div>
+                <div class="col-sm-4">
+                    <button type="submit" name="add" class="btn btn-primary w-100">
+                        <i class="ti ti-plus me-1"></i>{{ _x('button', 'Add') }}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}

@@ -71,7 +71,8 @@ class LateralMenu extends CommonDBTM
             ['title'         => __('Create a holiday request', 'activity'),
             'reloadonclose' => false,
             'width'         => 1180,
-            'height'        => 500,
+            'height'        => 700,
+            'dialog_class'  => 'modal-xl',
             ]
         );
 

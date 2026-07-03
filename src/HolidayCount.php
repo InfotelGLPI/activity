@@ -32,6 +32,7 @@ namespace GlpiPlugin\Activity;
 use CommonDBTM;
 use DbUtils;
 use Dropdown;
+use Glpi\Application\View\TemplateRenderer;
 use Html;
 use Session;
 
@@ -189,50 +190,36 @@ class HolidayCount extends CommonDBTM
     * */
     function showForm($ID, $options = [])
     {
-        global $CFG_GLPI;
+        $dbu = new DbUtils();
 
         $this->initForm($ID, $options);
         $this->showFormHeader($options);
-        $dbu = new DbUtils();
 
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
-        echo _n('User', 'Users', 1);
-        echo "</td>";
-        echo "<td>";
-        echo $dbu->getUserName(Session::getLoginUserID());
-        echo Html::hidden('users_id', ['value' => Session::getLoginUserID()]);
-        echo "</td>";
-        echo "<td>";
+        ob_start();
+        Dropdown::show(HolidayType::class, [
+            'name'     => 'plugin_activity_holidaytypes_id',
+            'value'    => $this->fields['plugin_activity_holidaytypes_id'],
+            'comments' => 1,
+        ]);
+        $holiday_type_dropdown_html = ob_get_clean();
 
-        echo HolidayType::getTypeName(1) . "</td><td>";
+        ob_start();
+        Dropdown::show(HolidayPeriod::class, [
+            'name'     => 'plugin_activity_holidayperiods_id',
+            'value'    => $this->fields['plugin_activity_holidayperiods_id'],
+            'comments' => 1,
+        ]);
+        $holiday_period_dropdown_html = ob_get_clean();
 
-        $options = [
-         'name'     => "plugin_activity_holidaytypes_id",
-         'value'    => $this->fields["plugin_activity_holidaytypes_id"],
-         'comments' => 1];
-        Dropdown::show(HolidayType::class, $options);
-
-        echo "</td></tr>";
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
-
-        echo HolidayPeriod::getTypeName(1) . "</td><td>";
-
-        $options = [
-         'name'     => "plugin_activity_holidayperiods_id",
-         'value'    => $this->fields["plugin_activity_holidayperiods_id"],
-         'comments' => 1];
-        Dropdown::show(HolidayPeriod::class, $options);
-
-        echo "</td>";
-
-        echo "<td>" . __('Counter', 'activity') . "</td>";
-        echo "<td>";
-        echo Html::input('count', ['value' => Html::formatNumber($this->fields["count"], true), 'size' => 14]);
-        echo "</td>";
-        echo "</tr>";
+        TemplateRenderer::getInstance()->display('@activity/holiday_count_form.html.twig', [
+            'users_id'                    => Session::getLoginUserID(),
+            'username'                    => $dbu->getUserName(Session::getLoginUserID()),
+            'holiday_type_label'          => HolidayType::getTypeName(1),
+            'holiday_type_dropdown_html'  => $holiday_type_dropdown_html,
+            'holiday_period_label'        => HolidayPeriod::getTypeName(1),
+            'holiday_period_dropdown_html' => $holiday_period_dropdown_html,
+            'count'                       => Html::formatNumber($this->fields['count'], true),
+        ]);
 
         $this->showFormButtons($options);
 

@@ -1,0 +1,102 @@
+{#
+ -------------------------------------------------------------------------
+ activity plugin for GLPI
+ Copyright (C) 2019-2026 by the activity Development Team.
+
+ https://github.com/InfotelGLPI/activity
+ -------------------------------------------------------------------------
+
+ LICENSE
+
+ This file is part of activity.
+
+ activity is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 3 of the License, or
+ (at your option) any later version.
+
+ activity is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with activity. If not, see <http://www.gnu.org/licenses/>.
+ --------------------------------------------------------------------------
+ #}
+
+<table class="tab_cadre_fixe" id="mainformtable">
+
+    {% if is_validator and status_waiting %}
+        {# --- Accept / Refuse actions --- #}
+        <tr class="tab_bg_2">
+            <th colspan="4">{{ __('Do you approve this holiday ?', 'activity') }}</th>
+        </tr>
+        <tr class="tab_bg_1">
+            <td>{{ __('Status of the approval request') }}</td>
+            <td class="center">
+                <div style="color:forestgreen;">
+                    <i id="accept_holiday" style="font-size:3.5em;" class="question ti ti-circle-check"></i>
+                    <br>{{ __('Accept holiday', 'activity') }}
+                </div>
+                <input type="hidden" name="accept_holiday" value="0">
+            </td>
+            <td class="center">
+                <div style="color:darkred;">
+                    <i id="refuse_holiday" style="font-size:3.5em;" class="question ti ti-circle-x"></i>
+                    <br>{{ __('Refuse holiday', 'activity') }}
+                </div>
+                <input type="hidden" name="refuse_holiday" value="0">
+                <input type="hidden" name="validation_date" value="{{ validation_date }}">
+                <input type="hidden" name="id" value="{{ id }}">
+            </td>
+        </tr>
+    {% endif %}
+
+    {% if id > 0 %}
+        {% if is_validator %}
+            <tr class="tab_bg_1">
+                <td>
+                    {{ __('Approval comments') }}<br>
+                    <small>({{ __('Optional when approved') }})</small>
+                </td>
+                <td colspan="2">{{ comment_textarea_html|raw }}</td>
+            </tr>
+        {% else %}
+            <tr class="tab_bg_1">
+                <td>{{ __('Status of the approval request') }}</td>
+                <td colspan="2">{{ status_label }}</td>
+            </tr>
+            <tr class="tab_bg_1">
+                <td>{{ __('Comments') }}</td>
+                <td colspan="2">{{ comment_validation|e }}</td>
+            </tr>
+        {% endif %}
+    {% endif %}
+
+    {# --- Common fields --- #}
+    <tr class="tab_bg_1">
+        <td>{{ __('Approval requester') }}</td>
+        <td colspan="2">{{ requester_name }}</td>
+    </tr>
+    <tr class="tab_bg_1">
+        <td>{{ __('Approver') }}</td>
+        <td colspan="2">{{ validator_name }}</td>
+    </tr>
+
+</table>
+
+{% if is_validator and status_waiting %}
+<script>
+$("#accept_holiday").click(function () {
+    $("#formvalidation").append("<input type='hidden' name='accept_holiday' value='1' />");
+    $("#formvalidation").append("<input type='hidden' name='update' value='1' />");
+    $("#formvalidation").submit();
+});
+$("#refuse_holiday").click(function () {
+    $("#formvalidation").append("<input type='hidden' name='refuse_holiday' value='1' />");
+    $("#formvalidation").append("<input type='hidden' name='update' value='1' />");
+    $("#formvalidation").submit();
+});
+</script>
+{% endif %}

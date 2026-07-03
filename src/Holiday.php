@@ -34,6 +34,7 @@ use CommonGLPI;
 use DbUtils;
 use Dropdown;
 use Entity;
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\RichText\RichText;
 use Group_User;
 use Html;
@@ -885,10 +886,8 @@ class Holiday extends CommonDBTM
         }
     }
 
-    private function checkUserHasManager()
+    private function checkUserHasManager(): bool
     {
-        global $CFG_GLPI;
-
         $use_groupmanager = 0;
         $opt              = new Option();
         $opt->getFromDB(1);
@@ -907,42 +906,18 @@ class Holiday extends CommonDBTM
                 $groups[] = $groupuser["id"];
             }
 
-            $restrict = ["groups_id"  => $groups,
-                      "is_manager" => 1,
-                      "NOT"        => ["users_id" => $user_id]];
+            $restrict = [
+                "groups_id"  => $groups,
+                "is_manager" => 1,
+                "NOT"        => ["users_id" => $user_id],
+            ];
             $managers = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
             foreach ($managers as $manager) {
                 $datas['users_id_validate'] = $manager['users_id'];
             }
         }
 
-        if (sizeof($datas) == 0) {
-            $url     = $CFG_GLPI["root_doc"] . "/front/preference.php?glpi_tab=GlpiPlugin\Activity\Preference$1";
-            $urlHtml = "<a href='" . $url . "' target='_blank' title='" . __('My settings') . "' >" . __('My settings') . "</a>";
-
-            echo "<table class='tab_cadre_fixe'>";
-            echo "<tr class='tab_bg_1'>";
-            echo "<th>" . __('Warning') . " !</th>";
-            echo "</tr>";
-
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>";
-            echo __("You don't have any manager filled in you personal settings.", 'activity');
-            echo "<br/>";
-            echo __("In order to make a holiday demand, please fill at least one manager in your personal settings", 'activity');
-            echo "<br/>";
-            echo "<br/>";
-            echo __("See the page", 'activity');
-            echo " " . $urlHtml;
-            echo "</td>";
-            echo "</tr>";
-
-            echo "</table>";
-
-            return false;
-        } else {
-            return true;
-        }
+        return count($datas) > 0;
     }
 
     public function getPeriodForTemplate($at)
@@ -1123,7 +1098,6 @@ class Holiday extends CommonDBTM
         $AllDay = Report::getAllDay();
 
         $_SESSION['notification_holidayvalidation'] = "false";
-
         $options['colspan'] = 1;
 
         $this->initForm($ID, $options);
@@ -1144,26 +1118,21 @@ class Holiday extends CommonDBTM
             }
         }
 
-        if (isset($this->fields['actiontime']) && $this->fields['actiontime'] > 0) {
-            $actionTime = $this->fields['actiontime'];
-        } else {
-            $actionTime = $AllDay;
-        }
+        $actionTime = (isset($this->fields['actiontime']) && $this->fields['actiontime'] > 0)
+            ? $this->fields['actiontime']
+            : $AllDay;
 
         $listCbs        = $this->getCbsForPeriod($actionTime);
         $cbBeginChecked = $listCbs['cbBegin']['checked'];
         $cbEndChecked   = $listCbs['cbEnd']['checked'];
 
-        if (isset($options['from_planning_edit_ajax'])
-          && $options['from_planning_edit_ajax']) {
+        if (isset($options['from_planning_edit_ajax']) && $options['from_planning_edit_ajax']) {
             echo Html::hidden('from_planning_edit_ajax');
         }
 
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
+        $is_existing = isset($this->fields['id']) && $this->fields['id'] > 0;
 
-        echo "<table width='100%'>";
-
+        // Dates
         if (isset($this->fields["begin"]) && !empty($this->fields["begin"])) {
             $begin = $this->fields["begin"];
             $end   = $this->fields["end"];
@@ -1172,267 +1141,212 @@ class Holiday extends CommonDBTM
             $end   = date("Y-m-d") . " " . Report::getAmBegin();
         }
 
-        echo "<tr><td>" . HolidayType::getTypeName(1) . "</td><td>";
-
-        if (isset($this->fields['id']) && $this->fields['id'] > 0) {
+        // Holiday type
+        $holiday_type_name = '';
+        if ($is_existing
+            && isset($this->fields['plugin_activity_holidaytypes_id'])
+            && $this->fields['plugin_activity_holidaytypes_id'] > 0) {
             $htype = new HolidayType();
-            if (isset($this->fields['plugin_activity_holidaytypes_id'])
-             && $this->fields['plugin_activity_holidaytypes_id'] > 0) {
-                $htype->getFromDB($this->fields["plugin_activity_holidaytypes_id"]);
-                echo $htype->fields['name'];
-            }
-        } else {
-            $params = [
-            'name'      => "plugin_activity_holidaytypes_id",
-            'value'     => $this->fields["plugin_activity_holidaytypes_id"],
-            'on_change' => "plugin_activity_show_periods(\"" . PLUGIN_ACTIVITY_WEBDIR . "\", this.value);",
-            'comments'  => 1];
-            Dropdown::show(HolidayType::class, $params);
+            $htype->getFromDB($this->fields["plugin_activity_holidaytypes_id"]);
+            $holiday_type_name = $htype->fields['name'];
         }
 
-        echo "</td></tr>";
+        ob_start();
+        if (!$is_existing) {
+            Dropdown::show(HolidayType::class, [
+                'name'      => 'plugin_activity_holidaytypes_id',
+                'value'     => $this->fields["plugin_activity_holidaytypes_id"],
+                'on_change' => 'plugin_activity_show_periods("' . PLUGIN_ACTIVITY_WEBDIR . '", this.value);',
+                'comments'  => 1,
+            ]);
+        }
+        $holiday_type_dropdown_html = ob_get_clean();
 
-        $visibility = 'display: none';
+        // Period row visibility
+        $show_period = false;
         if ($ID) {
-            $holidaytype = new HolidayType();
-            $holidaytype->getFromDB($this->fields["plugin_activity_holidaytypes_id"]);
-            if ($holidaytype->fields['is_period']) {
-                $visibility = '';
-            }
+            $htype_period = new HolidayType();
+            $htype_period->getFromDB($this->fields["plugin_activity_holidaytypes_id"]);
+            $show_period = (bool) ($htype_period->fields['is_period'] ?? false);
         }
 
-        echo "<tr id='tr_plugin_activity_holidayperiods_id' style='$visibility'>";
-        echo "<td>" . HolidayPeriod::getTypeName(1) . "</td><td>";
-
-        $params = [
-         'name'     => "plugin_activity_holidayperiods_id",
-         'value'    => $this->fields["plugin_activity_holidayperiods_id"],
-         'comments' => 1];
-
+        // Holiday period dropdown
+        $period_params = [
+            'name'     => 'plugin_activity_holidayperiods_id',
+            'value'    => $this->fields["plugin_activity_holidayperiods_id"],
+            'comments' => 1,
+        ];
         if (empty($ID)) {
-            $params['condition'] = ['archived' => 0];
-            $params['on_change'] = "plugin_activity_show_details(\"" . PLUGIN_ACTIVITY_WEBDIR . "\", this.value);";
+            $period_params['condition'] = ['archived' => 0];
+            $period_params['on_change'] = 'plugin_activity_show_details("' . PLUGIN_ACTIVITY_WEBDIR . '", this.value);';
         }
+        ob_start();
+        Dropdown::show(HolidayPeriod::class, $period_params);
+        $holiday_period_dropdown_html = ob_get_clean();
 
-        Dropdown::show(HolidayPeriod::class, $params);
-
-        echo "</td></tr>";
-        $params_begin = [];
-
-
-       // ------------------------------------------------------------------------
-       // BEGIN DATE
-       // ------------------------------------------------------------------------
-        echo "<tr><td>" . __('Start date') . "</td><td>";
-        if (!isset($this->fields['id']) || $this->fields['id'] == '') {
-            echo Html::hidden('is_planned', ['value' => '1']);
-            echo Html::hidden('actiontime', ['value' => ($actionTime / $AllDay), 'id' => 'actiontime']);
-           //$params_begin['value']     = date('d-m-Y', strtotime($begin));
-            $params_begin['on_change'] = "updateDuration(this, '" . PLUGIN_ACTIVITY_WEBDIR . "');";
-            Html::showDateField("begin", $params_begin);
-        } else {
-            echo "<input class='form-control' disabled='disabled' ";
-            echo "value='" . date('d-m-Y', strtotime($begin)) . "' />";
+        // Begin date field
+        ob_start();
+        if (!$is_existing) {
+            Html::showDateField("begin", [
+                'on_change' => "updateDuration(this, '" . PLUGIN_ACTIVITY_WEBDIR . "');",
+            ]);
         }
-        echo "</td></tr>";
+        $begin_date_html = ob_get_clean();
 
-        if ($ID <= 0) {
-            echo "<tr><td>&nbsp;</td><td>";
-
-            $params = [
-            'value'    => Report::$AM_LABEL,
-            'name'     => 'radio_cb_begindate',
-            'cb_id'    => 'cb_begindate_am',
-            'checked'  => $cbBeginChecked == Report::$AM_LABEL,
-            'disabled' => $listCbs['cbBegin'][Report::$AM_LABEL]['disabled'],
-            'title'    => __('Only on morning', 'activity')
-            ];
-            $this->showCbPeriod($params);
-
-            $params = [
-            'value'    => Report::$PM_LABEL,
-            'name'     => 'radio_cb_begindate',
-            'cb_id'    => 'cb_begindate_pm',
-            'checked'  => $cbBeginChecked == Report::$PM_LABEL,
-            'disabled' => $listCbs['cbBegin'][Report::$PM_LABEL]['disabled'],
-            'title'    => __('Only on afternoon', 'activity')
-            ];
-            $this->showCbPeriod($params);
-
-            echo "<br/>";
-            $params = [
-            'value'    => Report::$ALL_DAY_LABEL,
-            'name'     => 'radio_cb_begindate',
-            'cb_id'    => 'cb_begindate_allday',
-            'checked'  => $cbBeginChecked == Report::$ALL_DAY_LABEL,
-            'disabled' => $listCbs['cbBegin'][Report::$ALL_DAY_LABEL]['disabled'],
-            'title'    => __('All day', 'activity')
-            ];
-            $this->showCbPeriod($params);
-
-            echo "</td>";
-            echo "</tr>";
+        // End date field
+        ob_start();
+        if (!$is_existing) {
+            Html::showDateField("end", [
+                'on_change' => 'updateDuration(this,"' . PLUGIN_ACTIVITY_WEBDIR . '");',
+            ]);
         }
+        $end_date_html = ob_get_clean();
 
-        $params_end = [];
+        // Radio button data arrays
+        $cb_onclick = 'updateDuration(this, ' . json_encode(PLUGIN_ACTIVITY_WEBDIR) . ');';
 
-       // ------------------------------------------------------------------------
-       // END DATE
-       // ------------------------------------------------------------------------
-        echo "<tr><td>" . __('End date') . "</td><td>";
-        if (!isset($this->fields['id']) || $this->fields['id'] == '') {
-           //$params_end['value'] = date('d-m-Y', strtotime($end));
-            $params_end['on_change'] = "updateDuration(this,\"" . PLUGIN_ACTIVITY_WEBDIR . "\");";
-            Html::showDateField("end", $params_end);
-        } else {
-            echo "<input class='form-control' disabled='disabled' ";
-            echo " value='" . date('d-m-Y', strtotime($end)) . "' />";
-        }
+        $cbs_begin = [
+            [
+                'value'   => Report::$AM_LABEL,
+                'cb_id'   => 'cb_begindate_am',
+                'checked' => $cbBeginChecked == Report::$AM_LABEL,
+                'disabled' => $listCbs['cbBegin'][Report::$AM_LABEL]['disabled'],
+                'title'   => __('Only on morning', 'activity'),
+                'onclick' => $cb_onclick,
+            ],
+            [
+                'value'   => Report::$PM_LABEL,
+                'cb_id'   => 'cb_begindate_pm',
+                'checked' => $cbBeginChecked == Report::$PM_LABEL,
+                'disabled' => $listCbs['cbBegin'][Report::$PM_LABEL]['disabled'],
+                'title'   => __('Only on afternoon', 'activity'),
+                'onclick' => $cb_onclick,
+            ],
+            [
+                'value'   => Report::$ALL_DAY_LABEL,
+                'cb_id'   => 'cb_begindate_allday',
+                'checked' => $cbBeginChecked == Report::$ALL_DAY_LABEL,
+                'disabled' => $listCbs['cbBegin'][Report::$ALL_DAY_LABEL]['disabled'],
+                'title'   => __('All day', 'activity'),
+                'onclick' => $cb_onclick,
+            ],
+        ];
 
-        echo "</td></tr>";
-        if ($ID <= 0) {
-            echo "<tr><td>&nbsp;</td><td>";
+        $cbs_end = [
+            [
+                'value'   => Report::$AM_LABEL,
+                'cb_id'   => 'cb_enddate_am',
+                'checked' => $cbEndChecked == Report::$AM_LABEL,
+                'disabled' => $listCbs['cbEnd'][Report::$AM_LABEL]['disabled'],
+                'title'   => __('Only on morning', 'activity'),
+                'onclick' => $cb_onclick,
+            ],
+            [
+                'value'   => Report::$PM_LABEL,
+                'cb_id'   => 'cb_enddate_pm',
+                'checked' => $cbEndChecked == Report::$PM_LABEL,
+                'disabled' => $listCbs['cbEnd'][Report::$PM_LABEL]['disabled'],
+                'title'   => __('Only on afternoon', 'activity'),
+                'onclick' => $cb_onclick,
+            ],
+            [
+                'value'   => Report::$ALL_DAY_LABEL,
+                'cb_id'   => 'cb_enddate_allday',
+                'checked' => $cbEndChecked == Report::$ALL_DAY_LABEL,
+                'disabled' => $listCbs['cbEnd'][Report::$ALL_DAY_LABEL]['disabled'],
+                'title'   => __('All day', 'activity'),
+                'onclick' => $cb_onclick,
+            ],
+        ];
 
-            $params = [
-            'value'    => Report::$AM_LABEL,
-            'name'     => 'radio_cb_enddate',
-            'cb_id'    => 'cb_enddate_am',
-            'checked'  => $cbEndChecked == Report::$AM_LABEL,
-            'disabled' => $listCbs['cbEnd'][Report::$AM_LABEL]['disabled'],
-            'title'    => __('Only on morning', 'activity')
-            ];
-            $this->showCbPeriod($params);
+        // Duration
+        $period        = $this->getPeriodForTemplate($actionTime);
+        $duration_html = Report::TotalTpsPassesArrondis($actionTime / $AllDay);
 
-            $params = [
-            'value'    => Report::$PM_LABEL,
-            'name'     => 'radio_cb_enddate',
-            'cb_id'    => 'cb_enddate_pm',
-            'checked'  => $cbEndChecked == Report::$PM_LABEL,
-            'disabled' => $listCbs['cbEnd'][Report::$PM_LABEL]['disabled'],
-            'title'    => __('Only on afternoon', 'activity')
-            ];
-            $this->showCbPeriod($params);
-
-            echo "<br/>";
-            $params = [
-            'value'    => Report::$ALL_DAY_LABEL,
-            'name'     => 'radio_cb_enddate',
-            'cb_id'    => 'cb_enddate_allday',
-            'checked'  => $cbEndChecked == Report::$ALL_DAY_LABEL,
-            'disabled' => $listCbs['cbEnd'][Report::$ALL_DAY_LABEL]['disabled'],
-            'title'    => __('All day', 'activity')
-            ];
-            $this->showCbPeriod($params);
-
-            echo "</td>";
-            echo "</tr>";
-        }
-
-       // ------------------------------------------------------------------------
-       // DURATION
-       // ------------------------------------------------------------------------
-
-        echo "<tr>";
-        echo "<td>" . __('Duration') . "</td><td>";
-
-        $params['value'] = $this->fields["actiontime"];
-
-
-        echo "<div id='div_duration'>" . Report::TotalTpsPassesArrondis($actionTime / $AllDay) . "</div>";
-        $period = $this->getPeriodForTemplate($actionTime);
-
-        echo $period["lang"];
-
-        echo "</td></tr>";
-
-        echo "</table>";
-
-        echo "</td>";
-
-        echo "<td align='left'  valign='top'>";
-
-        echo "<table width='100%'>";
-
-        echo "<tr class='tab_bg_2'>";
-        echo "<td>";
-        echo _n('User', 'Users', 1);
-        echo "</td>";
-        echo "</tr>";
-        echo "<tr>";
-
-        echo "<td>";
-
+        // User widget
+        ob_start();
         if (empty($ID) && Session::haveRight("plugin_activity_all_users", 1)) {
-            User::dropdown(['name'      => "users_id",
-                         'value'     => Session::getLoginUserID(),
-                         'right'     => "interface",
-                         'comment'   => 1,
-                         'on_change' => "plugin_activity_show_details_users(\"" . PLUGIN_ACTIVITY_WEBDIR . "\", this.value);"
-                        ]);
-        } elseif (empty($ID) && !Session::haveRight("plugin_activity_all_users", 1)) {
+            User::dropdown([
+                'name'      => 'users_id',
+                'value'     => Session::getLoginUserID(),
+                'right'     => 'interface',
+                'comment'   => 1,
+                'on_change' => 'plugin_activity_show_details_users("' . PLUGIN_ACTIVITY_WEBDIR . '", this.value);',
+            ]);
+        } elseif (empty($ID)) {
             echo $dbu->getUserName(Session::getLoginUserID());
             echo Html::hidden('users_id', ['value' => Session::getLoginUserID()]);
-        }
-
-        if (!empty($ID) && Session::haveRight("plugin_activity_all_users", 1)) {
-            if (!(isset($this->fields['id'])) || $this->fields['id'] == '') {
-                User::dropdown(['name'    => "users_id",
-                            'value'   => $this->fields["users_id"],
-                            'right'   => "interface",
-                            'comment' => 1
-                           ]);
-            } else {
-                $user = new User();
-                $user->getFromDB($this->fields['users_id']);
-                echo $user->getName();
-            }
-        } elseif (!empty($ID) && !Session::haveRight("plugin_activity_all_users", 1)) {
+        } elseif (!$is_existing && Session::haveRight("plugin_activity_all_users", 1)) {
+            User::dropdown([
+                'name'    => 'users_id',
+                'value'   => $this->fields["users_id"],
+                'right'   => 'interface',
+                'comment' => 1,
+            ]);
+        } elseif ($is_existing && Session::haveRight("plugin_activity_all_users", 1)) {
+            $user_obj = new User();
+            $user_obj->getFromDB($this->fields['users_id']);
+            echo $user_obj->getName();
+        } else {
             echo $dbu->getUserName($this->fields["users_id"]);
             echo Html::hidden('users_id', ['value' => $this->fields["users_id"]]);
         }
+        $user_html = ob_get_clean();
 
-        echo "</td>";
-        echo "</tr>";
+        // Comment textarea
+        ob_start();
+        Html::textarea([
+            'name'            => 'comment',
+            'value'           => $this->fields['comment'],
+            'disabled'        => $is_existing ? 'disabled' : '',
+            'cols'            => 75,
+            'rows'            => 7,
+            'enable_richtext' => false,
+        ]);
+        $comment_textarea_html = ob_get_clean();
 
-        echo "<tr class='tab_bg_2'>";
-        echo "<td>" . __('Description') . "</td>";
-        echo "</tr>";
-        echo "<tr>";
-        echo "<td>";
-        Html::textarea(['name'            => 'comment',
-                      'value'           => $this->fields["comment"],
-                      'disabled'           => (isset($this->fields['id']) && $this->fields['id'] != '')?'disabled':'',
-                      'cols'       => 75,
-                      'rows'       => 7,
-                      'enable_richtext' => false]);
-        echo "</td>";
-        echo "</tr>";
-        echo "</table>";
+        // Manager checks
+        $has_manager = $this->checkUserHasManager();
+        $preference_url = $CFG_GLPI['root_doc'] . '/front/preference.php?glpi_tab=GlpiPlugin\Activity\Preference$1';
 
-        echo "</td>";
-        echo "</tr>";
+        $can_purge_as_manager = $ID
+            && $this->fields["users_id"] != Session::getLoginUserID()
+            && $this->checkUserIsManager($this->fields["users_id"])
+            && Session::haveRight("plugin_activity_can_requestholiday", 1);
+
+        TemplateRenderer::getInstance()->display('@activity/holiday_form.html.twig', [
+            'id'                           => $this->fields['id'] ?? '',
+            'is_existing'                  => $is_existing,
+            'holiday_type_label'           => HolidayType::getTypeName(1),
+            'holiday_type_name'            => $holiday_type_name,
+            'holiday_type_dropdown_html'   => $holiday_type_dropdown_html,
+            'show_period'                  => $show_period,
+            'holiday_period_label'         => HolidayPeriod::getTypeName(1),
+            'holiday_period_dropdown_html' => $holiday_period_dropdown_html,
+            'actiontime_days'              => $actionTime / $AllDay,
+            'begin_date_html'              => $begin_date_html,
+            'end_date_html'                => $end_date_html,
+            'begin_display'                => date('d-m-Y', strtotime($begin)),
+            'end_display'                  => date('d-m-Y', strtotime($end)),
+            'cbs_begin'                    => $cbs_begin,
+            'cbs_end'                      => $cbs_end,
+            'duration_html'                => $duration_html,
+            'period_lang'                  => $period['lang'],
+            'user_html'                    => $user_html,
+            'comment_textarea_html'        => $comment_textarea_html,
+            'can_purge_as_manager'         => $can_purge_as_manager,
+            'has_manager'                  => $has_manager,
+            'preference_url'               => $preference_url,
+        ]);
 
         if ($ID) {
-            if (($this->fields["users_id"] != Session::getLoginUserID()
-              && $this->checkUserIsManager($this->fields["users_id"])
-              && Session::haveRight("plugin_activity_can_requestholiday", 1))) {
-                echo "<tr class='tab_bg_2'>";
-                echo "<td class='right' colspan='4' >\n";
-                echo Html::submit(_x('button', 'Delete permanently'), [
-                'name'      => 'purge',
-                'class' => 'btn btn-primary',
-                'confirm'   => __('Confirm the final deletion?')
-                ]);
-                echo "</td></tr>";
-                echo Html::hidden('id', ['value' => $this->fields["id"]]);
-            } elseif ($this->fields["users_id"] == Session::getLoginUserID()) {
+            if (!$can_purge_as_manager && $this->fields["users_id"] == Session::getLoginUserID()) {
                 $this->showFormButtons($options);
             }
-
             echo "</table></div>";
             Html::closeForm();
         } else {
-            if ($this->checkUserHasManager()) {
+            if ($has_manager) {
                 $this->showFormButtons($options);
             }
         }
@@ -1503,7 +1417,6 @@ class Holiday extends CommonDBTM
 
     private function showErrorRegistrationNumber()
     {
-        global $CFG_GLPI;
 
         $user = new User();
         $dbu  = new DbUtils();
@@ -1547,7 +1460,6 @@ class Holiday extends CommonDBTM
 
     public function showLinkTXTFile($holidaysId)
     {
-        global $CFG_GLPI;
 
         $holiday = new Holiday();
         $holiday->getFromDB($holidaysId);

@@ -1,0 +1,134 @@
+{#
+ -------------------------------------------------------------------------
+ activity plugin for GLPI
+ Copyright (C) 2019-2026 by the activity Development Team.
+
+ https://github.com/InfotelGLPI/activity
+ -------------------------------------------------------------------------
+
+ LICENSE
+
+ This file is part of activity.
+
+ activity is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 3 of the License, or
+ (at your option) any later version.
+
+ activity is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with activity. If not, see <http://www.gnu.org/licenses/>.
+ --------------------------------------------------------------------------
+ #}
+
+{# --- Options panel (global status + validation percent) --- #}
+<div id="hideopt" class="options">
+    {{ __('See validation options', 'activity') }}&nbsp;<i style="color:#004F91;" class="ti ti-chevrons-down"></i>
+</div>
+
+<div class="panelopt" style="display:none;">
+    {% if canedit %}
+        <form method="post" name="form" action="{{ form_url }}">
+            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+    {% endif %}
+
+    <table class="tab_cadre_fixe">
+        <tr>
+            <th colspan="3">{{ typename }}</th>
+        </tr>
+
+        <tr class="tab_bg_1">
+            <td>{{ __('Global approval status') }}</td>
+            <td colspan="2">{{ global_validation_dropdown_html|raw }}</td>
+        </tr>
+
+        <tr>
+            <th colspan="2">{{ 'State'|_x('item') }}</th>
+            <th colspan="2">{{ validation_stats }}</th>
+        </tr>
+
+        <tr class="tab_bg_1">
+            <td>{{ __('Minimum approval required (%)') }}</td>
+            {% if canedit %}
+                <td>{{ validation_percent_html|raw }}</td>
+                <td>
+                    <button type="submit" name="update" class="btn btn-primary">
+                        {{ _x('button', 'Save') }}
+                    </button>
+                    {% if holiday_id %}
+                        <input type="hidden" name="id" value="{{ holiday_id }}">
+                    {% endif %}
+                </td>
+            {% else %}
+                <td colspan="2">{{ validation_percent_display }}</td>
+            {% endif %}
+        </tr>
+    </table>
+
+    {% if canedit %}
+        </form>
+    {% endif %}
+</div>
+
+{# --- Per-validator action form (injected by PHP before this template) --- #}
+{{ validator_form_html|raw }}
+
+{# --- Validation list --- #}
+{% if validations|length > 0 %}
+    <table class="tab_cadre_fixe">
+        <tr>
+            <th colspan="5">
+                {{ validations|length > 1
+                    ? _n('Validation for this holiday', 'Validations for this holiday', 2, 'activity')
+                    : _n('Validation for this holiday', 'Validations for this holiday', 1, 'activity') }}
+            </th>
+        </tr>
+        <tr>
+            <th>{{ 'State'|_x('item') }}</th>
+            <th>{{ __('Request') ~ ': ' ~ __('Date') }}</th>
+            <th>{{ __('Approval date') }}</th>
+            <th>{{ __('Approver') }}</th>
+            <th>{{ __('Approval') ~ ': ' ~ __('Comments') }}</th>
+        </tr>
+        {% for row in validations %}
+            <tr class="tab_bg_1">
+                <td class="center">
+                    {% if row.status == STATUS_ACCEPTED %}
+                        <div style="color:forestgreen;">
+                            <i style="font-size:3.5em;" class="ti ti-circle-check"></i><br>{{ row.status_label }}
+                        </div>
+                    {% elseif row.status == STATUS_REFUSED %}
+                        <div style="color:darkred;">
+                            <i style="font-size:3.5em;" class="ti ti-circle-x"></i><br>{{ row.status_label }}
+                        </div>
+                    {% else %}
+                        <div style="color:orange;">
+                            <i style="font-size:3.5em;" class="ti ti-question-mark"></i><br>{{ row.status_label }}
+                        </div>
+                    {% endif %}
+                </td>
+                <td>{{ row.submission_date }}</td>
+                <td>{{ row.validation_date }}</td>
+                <td>{{ row.validator_name }}</td>
+                <td>{{ row.comment_validation|e }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <div class="center b">{{ __('No holiday validation request found', 'activity') }}</div>
+{% endif %}
+
+<script>
+$(document).ready(function () {
+    if ($('.panelopt').size() === 0) {
+        $('#hideopt').hide();
+    }
+    $('#hideopt').click(function () {
+        $('.panelopt').toggle();
+    });
+});
+</script>
