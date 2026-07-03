@@ -1493,64 +1493,50 @@ class Holiday extends CommonDBTM
         $end       = $options['end'];
 
        // Get items to print
-        $ASSIGN = "";
+        $where = [
+            'glpi_plugin_activity_holidays.is_planned'        => 1,
+            'glpi_plugin_activity_holidays.global_validation'  => CommonValidation::ACCEPTED,
+            'glpi_plugin_activity_holidays.end'   => ['>', $begin],
+            'glpi_plugin_activity_holidays.begin' => ['<', $end],
+        ];
 
-       //      if ($who_group === "mine") {
-       //         if (count($_SESSION["glpigroups"])) {
-       //            $groups = implode("','", $_SESSION['glpigroups']);
-       //            $ASSIGN = "`users_id`
-       //                           IN (SELECT DISTINCT `users_id`
-       //                               FROM `glpi_groups_users`
-       //                               WHERE `glpi_groups_users`.`groups_id` IN ('$groups'))
-       //                                     AND ";
-       //         } else { // Only personal ones
-       //            $ASSIGN = "`users_id` = '$who'
-       //                       AND ";
-       //         }
-       //      } else {
         if ($who > 0) {
-            $ASSIGN = "`users_id` = '$who'
-                       AND ";
+            $where['glpi_plugin_activity_holidays.users_id'] = $who;
         }
         if ($who_group > 0) {
-            $ASSIGN = "`users_id` IN (SELECT `users_id`
-                                     FROM `glpi_groups_users`
-                                     WHERE `groups_id` = '$who_group')
-                                           AND ";
+            $sub         = $DB->request(['SELECT' => 'users_id', 'FROM' => 'glpi_groups_users', 'WHERE' => ['groups_id' => $who_group]]);
+            $group_users = array_column(iterator_to_array($sub), 'users_id');
+            if (!empty($group_users)) {
+                $where['glpi_plugin_activity_holidays.users_id'] = $group_users;
+            }
         }
-       //      if ($who_group > 0) {
-       //         $ASSIGN = "`groups_id` = '$who_group'
-       //                       AND ";
-       //      }
-       //      }
 
-        $query = " SELECT `glpi_plugin_activity_holidays`.`id`,
-                              `glpi_plugin_activity_holidays`.`name`,
-                              `glpi_plugin_activity_holidays`.`global_validation` AS global_validation,
-                              `begin`,
-                              `end`,
-                              `actiontime`,
-                              `users_id`,
-                              `glpi_plugin_activity_holidaytypes`.`name` AS type,
-                              `glpi_plugin_activity_holidays`.`comment`";
-        $query .= " FROM `glpi_plugin_activity_holidays` ";
-        $query .= "LEFT JOIN `glpi_plugin_activity_holidaytypes`
-                      ON (`glpi_plugin_activity_holidaytypes`.`id` = `glpi_plugin_activity_holidays`.`plugin_activity_holidaytypes_id`) ";
-        $query .= " WHERE ";
-        $query .= " $ASSIGN ";
-        $query .= " `is_planned`= 1 ";
-        $query .= " AND `glpi_plugin_activity_holidays`.`global_validation`= " . CommonValidation::ACCEPTED;
+        $iterator = $DB->request([
+            'SELECT'    => [
+                'glpi_plugin_activity_holidays.id',
+                'glpi_plugin_activity_holidays.name',
+                'glpi_plugin_activity_holidays.global_validation',
+                'glpi_plugin_activity_holidays.begin',
+                'glpi_plugin_activity_holidays.end',
+                'glpi_plugin_activity_holidays.actiontime',
+                'glpi_plugin_activity_holidays.users_id',
+                'glpi_plugin_activity_holidays.comment',
+                new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidaytypes`.`name` AS `type`'),
+            ],
+            'FROM'      => 'glpi_plugin_activity_holidays',
+            'LEFT JOIN' => [
+                'glpi_plugin_activity_holidaytypes' => [
+                    'ON' => [
+                        'glpi_plugin_activity_holidaytypes' => 'id',
+                        'glpi_plugin_activity_holidays'     => 'plugin_activity_holidaytypes_id',
+                    ],
+                ],
+            ],
+            'WHERE' => $where,
+            'ORDER' => 'glpi_plugin_activity_holidays.begin',
+        ]);
 
-       //$query.= getEntitiesRestrictRequest("AND","glpi_plugin_activity_holidays", '',
-       //                                       $_SESSION["glpiactiveentities"],false);
-
-        $query .= " AND '$begin' < `end` AND '$end' > `begin`
-                  ORDER BY `begin` ";
-
-        $result = $DB->doQuery($query);
-
-        if ($DB->numrows($result) > 0) {
-            for ($i = 0; $data = $DB->fetchArray($result); $i++) {
+        foreach ($iterator as $data) {
                 $key                              = $data["begin"] . "$$" . "GlpiPlugin\Activity\Holiday" . $data["id"];
                 $interv[$key]['color']            = $options['color'];
                 $interv[$key]['event_type_color'] = $options['event_type_color'];
@@ -1587,7 +1573,6 @@ class Holiday extends CommonDBTM
                 if ($holiday->countWe($interv[$key]["begin"], $interv[$key]["end"]) != 0) {
                     $holiday->excludeWe($interv[$key]["begin"], $interv[$key]["end"], $interv, $key, $data['id']);
                 }
-            }
         }
         return $interv;
     }
@@ -1640,41 +1625,48 @@ class Holiday extends CommonDBTM
 
     static function queryUserHolidays($criteria)
     {
-
-        $query = "SELECT `glpi_plugin_activity_holidays`.`name` AS name,
-                             `glpi_plugin_activity_holidays`.`id` AS id,
-                             `glpi_plugin_activity_holidays`.`actiontime` AS actiontime,
-                             `glpi_plugin_activity_holidays`.`comment` AS comment,
-                             `glpi_plugin_activity_holidaytypes`.`name` AS type,
-                             `glpi_plugin_activity_holidaytypes`.`is_holiday` AS is_holiday,
-                             `glpi_plugin_activity_holidaytypes`.`is_sickness` AS is_sickness,
-                             `glpi_plugin_activity_holidaytypes`.`is_part_time` AS is_part_time,
-                             `glpi_plugin_activity_holidays`.`allDay`,
-                             `glpi_plugin_activity_holidays`.`begin` AS begin,
-                             `glpi_plugin_activity_holidays`.`end` AS end,
-                             `glpi_plugin_activity_holidays`.`global_validation` AS global_validation,
-                             `glpi_plugin_activity_holidays`.`plugin_activity_holidaytypes_id` AS type_id
-
-                     FROM `glpi_plugin_activity_holidays` ";//,`glpi_entities`.`name` AS entity
-        $query .= " LEFT JOIN `glpi_users`
-                           ON (`glpi_users`.`id` = `glpi_plugin_activity_holidays`.`users_id`)";
-        $query .= " LEFT JOIN `glpi_plugin_activity_holidaytypes`
-                           ON (`glpi_plugin_activity_holidaytypes`.`id` = `glpi_plugin_activity_holidays`.`plugin_activity_holidaytypes_id`)";
-        $query .= " WHERE ";
-        $query .= "  `glpi_plugin_activity_holidays`.`users_id` = '" . $criteria["users_id"] . "' ";
+        $where = [
+            'glpi_plugin_activity_holidays.users_id'    => $criteria['users_id'],
+            'glpi_plugin_activity_holidays.actiontime'  => ['!=', 0],
+        ];
 
         if (isset($criteria['begin'])) {
-            $query .= " AND (`glpi_plugin_activity_holidays`.`begin` >= '" . $criteria["begin"] . "'
-                        AND `glpi_plugin_activity_holidays`.`begin` <= '" . $criteria["end"] . "') ";
+            $where[] = ['glpi_plugin_activity_holidays.begin' => ['>=', $criteria['begin']]];
+            $where[] = ['glpi_plugin_activity_holidays.begin' => ['<=', $criteria['end']]];
         }
-        if (isset($criteria['global_validation'])) {
-            $query .= "AND `global_validation` = " . $criteria['global_validation'];
-        }
-       //.getEntitiesRestrictRequest("AND", "glpi_plugin_activity_holidays")."
-        $query .= " AND `glpi_plugin_activity_holidays`.`actiontime` != 0";
-        $query .= " ORDER BY `glpi_plugin_activity_holidays`.`name`";
 
-        return $query;
+        if (isset($criteria['global_validation'])) {
+            $where['global_validation'] = $criteria['global_validation'];
+        }
+
+        return [
+            'SELECT' => [
+                new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidays`.`name` AS `name`'),
+                new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidays`.`id` AS `id`'),
+                new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidays`.`actiontime` AS `actiontime`'),
+                new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidays`.`comment` AS `comment`'),
+                new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidaytypes`.`name` AS `type`'),
+                new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidaytypes`.`is_holiday` AS `is_holiday`'),
+                new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidaytypes`.`is_sickness` AS `is_sickness`'),
+                new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidaytypes`.`is_part_time` AS `is_part_time`'),
+                'glpi_plugin_activity_holidays.allDay',
+                new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidays`.`begin` AS `begin`'),
+                new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidays`.`end` AS `end`'),
+                new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidays`.`global_validation` AS `global_validation`'),
+                new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidays`.`plugin_activity_holidaytypes_id` AS `type_id`'),
+            ],
+            'FROM'      => 'glpi_plugin_activity_holidays',
+            'LEFT JOIN' => [
+                'glpi_users' => [
+                    'ON' => ['glpi_users' => 'id', 'glpi_plugin_activity_holidays' => 'users_id'],
+                ],
+                'glpi_plugin_activity_holidaytypes' => [
+                    'ON' => ['glpi_plugin_activity_holidaytypes' => 'id', 'glpi_plugin_activity_holidays' => 'plugin_activity_holidaytypes_id'],
+                ],
+            ],
+            'WHERE' => $where,
+            'ORDER' => 'glpi_plugin_activity_holidays.name',
+        ];
     }
 
 
@@ -1684,32 +1676,36 @@ class Holiday extends CommonDBTM
 
         $in_holiday = [];
 
-        $query = "SELECT `glpi_plugin_activity_holidays`.`name` AS name,
-                             `glpi_plugin_activity_holidays`.`id` AS id,
-                             `glpi_users`.`realname`,
-                             `glpi_users`.`name`,
-                             `glpi_users`.`firstname`
-                      FROM `glpi_plugin_activity_holidays`
-                      LEFT JOIN `glpi_users`
-                         ON (`glpi_users`.`id` = `glpi_plugin_activity_holidays`.`users_id`)
-                      WHERE `glpi_plugin_activity_holidays`.`users_id` IN ('" . implode("','", $users) . "')
-                      AND `glpi_plugin_activity_holidays`.`end` >= '" . $date . "'
-                      AND `glpi_plugin_activity_holidays`.`begin` <= '" . $date . "'";
+        $iterator = $DB->request([
+            'SELECT'    => [
+                'glpi_plugin_activity_holidays.name',
+                'glpi_plugin_activity_holidays.id',
+                'glpi_users.realname',
+                'glpi_users.firstname',
+            ],
+            'FROM'      => 'glpi_plugin_activity_holidays',
+            'LEFT JOIN' => [
+                'glpi_users' => [
+                    'ON' => [
+                        'glpi_users'                        => 'id',
+                        'glpi_plugin_activity_holidays'     => 'users_id',
+                    ],
+                ],
+            ],
+            'WHERE' => [
+                'glpi_plugin_activity_holidays.users_id'          => $users,
+                'glpi_plugin_activity_holidays.global_validation' => CommonValidation::ACCEPTED,
+                'glpi_plugin_activity_holidays.end'   => ['>=', $date],
+                'glpi_plugin_activity_holidays.begin' => ['<=', $date],
+            ],
+            'ORDER' => 'glpi_plugin_activity_holidays.name',
+        ]);
 
-        $query .= " AND `global_validation`= " . CommonValidation::ACCEPTED;
-        $query .= " ORDER BY `glpi_plugin_activity_holidays`.`name`";
-
-       //"
-       //                .getEntitiesRestrictRequest("AND", "glpi_plugin_activity_holidays")."
-        $result = $DB->doQuery($query);
-        if ($DB->numrows($result)) {
-            while ($data = $DB->fetchArray($result)) {
-                $in_holiday[] = $data['realname'] . ' ' . $data['firstname'];
-            }
-            return $in_holiday;
+        foreach ($iterator as $data) {
+            $in_holiday[] = $data['realname'] . ' ' . $data['firstname'];
         }
 
-        return false;
+        return !empty($in_holiday) ? $in_holiday : false;
     }
 
 
@@ -1803,18 +1799,28 @@ class Holiday extends CommonDBTM
 
         $calendars_id = Entity::getUsedConfig('calendars_strategy', $entities_id, 'calendars_id', 0);
         if ($calendars_id > 0) {
-            $query = "SELECT `glpi_holidays`.*
-                      FROM `glpi_calendars_holidays`
-                      INNER JOIN `glpi_holidays`
-                           ON (`glpi_calendars_holidays`.`holidays_id` = `glpi_holidays`.`id`)
-                      WHERE `glpi_calendars_holidays`.`calendars_id` = '" . $calendars_id . "'";
+            $iterator = $DB->request([
+                'SELECT'     => ['glpi_holidays.*'],
+                'FROM'       => 'glpi_calendars_holidays',
+                'INNER JOIN' => [
+                    'glpi_holidays' => [
+                        'ON' => [
+                            'glpi_calendars_holidays' => 'holidays_id',
+                            'glpi_holidays'           => 'id',
+                        ],
+                    ],
+                ],
+                'WHERE' => [
+                    'glpi_calendars_holidays.calendars_id' => $calendars_id,
+                ],
+            ]);
 
-            if ($result = $DB->doQuery($query)) {
-                while ($data = $DB->fetchArray($result)) {
-                    $holidays[] = ['begin'        => $data['begin_date'],
-                              'end'          => $data['end_date'],
-                              'is_perpetual' => $data['is_perpetual']];
-                }
+            foreach ($iterator as $data) {
+                $holidays[] = [
+                    'begin'        => $data['begin_date'],
+                    'end'          => $data['end_date'],
+                    'is_perpetual' => $data['is_perpetual'],
+                ];
             }
         }
         return $holidays;
@@ -2083,30 +2089,39 @@ class Holiday extends CommonDBTM
         foreach ($periods as $period) {
             $nb_jours['period'][$period['id']] = 0;
 
-            $query = "SELECT `glpi_plugin_activity_holidays`.`begin` AS begin, "
-                  . "  `glpi_plugin_activity_holidays`.`end` AS end, "
-                  . "  `glpi_plugin_activity_holidays`.`actiontime` AS actiontime, "
-                  . "  `glpi_plugin_activity_holidaytypes`.`id` AS types_id, "
-                  . "  `glpi_plugin_activity_holidaytypes`.`name`, "
-                  . "  `glpi_plugin_activity_holidaytypes`.`is_holiday`, "
-                  . "  `glpi_plugin_activity_holidaytypes`.`is_holiday_counter`, "
-                  . "  `glpi_plugin_activity_holidaytypes`.`is_sickness`, "
-                  . "  `glpi_plugin_activity_holidaytypes`.`is_part_time` "
-                  . "FROM `glpi_plugin_activity_holidays` "
-                  . "LEFT JOIN `glpi_plugin_activity_holidaytypes`"
-                  . "  ON (`glpi_plugin_activity_holidaytypes`.`id` = `glpi_plugin_activity_holidays`.`plugin_activity_holidaytypes_id`)"
-                  . "WHERE `glpi_plugin_activity_holidays`.`users_id` = " . $users_id . " "
-                  . "AND `glpi_plugin_activity_holidays`.`global_validation` = " . CommonValidation::ACCEPTED . " AND "
-                  . "`glpi_plugin_activity_holidays`.`plugin_activity_holidayperiods_id` = '" . $period['id'] . "' "
-                  . "AND `is_holiday` = 1 AND `is_holiday_counter` = 1";
+            $iterator = $DB->request([
+                'SELECT'    => [
+                    'glpi_plugin_activity_holidays.begin',
+                    'glpi_plugin_activity_holidays.end',
+                    'glpi_plugin_activity_holidays.actiontime',
+                    new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidaytypes`.`id` AS `types_id`'),
+                    'glpi_plugin_activity_holidaytypes.name',
+                    'glpi_plugin_activity_holidaytypes.is_holiday',
+                    'glpi_plugin_activity_holidaytypes.is_holiday_counter',
+                    'glpi_plugin_activity_holidaytypes.is_sickness',
+                    'glpi_plugin_activity_holidaytypes.is_part_time',
+                ],
+                'FROM'      => 'glpi_plugin_activity_holidays',
+                'LEFT JOIN' => [
+                    'glpi_plugin_activity_holidaytypes' => [
+                        'ON' => [
+                            'glpi_plugin_activity_holidaytypes' => 'id',
+                            'glpi_plugin_activity_holidays'     => 'plugin_activity_holidaytypes_id',
+                        ],
+                    ],
+                ],
+                'WHERE' => [
+                    'glpi_plugin_activity_holidays.users_id'                      => $users_id,
+                    'glpi_plugin_activity_holidays.global_validation'             => CommonValidation::ACCEPTED,
+                    'glpi_plugin_activity_holidays.plugin_activity_holidayperiods_id' => $period['id'],
+                    'glpi_plugin_activity_holidaytypes.is_holiday'                => 1,
+                    'glpi_plugin_activity_holidaytypes.is_holiday_counter'        => 1,
+                ],
+            ]);
 
-            $result = $DB->doQuery($query);
-
-            if ($DB->numrows($result)) {
-                while ($data = $DB->fetchArray($result)) {
-                    $nb_jours['total']                 += $data['actiontime'] / $AllDay;
-                    $nb_jours['period'][$period['id']] += $data['actiontime'] / $AllDay;
-                }
+            foreach ($iterator as $data) {
+                $nb_jours['total']                 += $data['actiontime'] / $AllDay;
+                $nb_jours['period'][$period['id']] += $data['actiontime'] / $AllDay;
             }
         }
         return $nb_jours;
@@ -2134,39 +2149,52 @@ class Holiday extends CommonDBTM
         }
 
         foreach ($periods as $period) {
-            $AllDay = Report::getAllDay();
-            $query  = "SELECT `glpi_plugin_activity_holidays`.`begin` AS begin,
-                     `glpi_plugin_activity_holidays`.`end` AS end,
-                     `glpi_plugin_activity_holidays`.`actiontime` AS actiontime,
-                     `glpi_plugin_activity_holidaytypes`.`id` AS types_id,
-                     `glpi_plugin_activity_holidaytypes`.`name`,
-                     `glpi_plugin_activity_holidaytypes`.`is_holiday`,
-                     `glpi_plugin_activity_holidaytypes`.`is_holiday_counter`,
-                     `glpi_plugin_activity_holidaytypes`.`is_sickness`,
-                     `glpi_plugin_activity_holidaytypes`.`is_part_time`
-                   FROM `glpi_plugin_activity_holidays`
-                   LEFT JOIN `glpi_plugin_activity_holidaytypes`
-                     ON (`glpi_plugin_activity_holidaytypes`.`id` = `glpi_plugin_activity_holidays`.`plugin_activity_holidaytypes_id`)
-                   LEFT JOIN `glpi_plugin_activity_holidayperiods`
-                     ON (`glpi_plugin_activity_holidays`.`plugin_activity_holidayperiods_id` = `glpi_plugin_activity_holidayperiods`.`id`)
-                   WHERE `glpi_plugin_activity_holidays`.`global_validation` = $statut
-                   AND `glpi_plugin_activity_holidays`.`users_id` = " . $users_id . "
-                   AND `glpi_plugin_activity_holidayperiods`.`id` = '" . $period['id'] . "'";
-            $result = $DB->doQuery($query);
+            $AllDay   = Report::getAllDay();
+            $iterator = $DB->request([
+                'SELECT'    => [
+                    'glpi_plugin_activity_holidays.begin',
+                    'glpi_plugin_activity_holidays.end',
+                    'glpi_plugin_activity_holidays.actiontime',
+                    new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidaytypes`.`id` AS `types_id`'),
+                    'glpi_plugin_activity_holidaytypes.name',
+                    'glpi_plugin_activity_holidaytypes.is_holiday',
+                    'glpi_plugin_activity_holidaytypes.is_holiday_counter',
+                    'glpi_plugin_activity_holidaytypes.is_sickness',
+                    'glpi_plugin_activity_holidaytypes.is_part_time',
+                ],
+                'FROM'      => 'glpi_plugin_activity_holidays',
+                'LEFT JOIN' => [
+                    'glpi_plugin_activity_holidaytypes' => [
+                        'ON' => [
+                            'glpi_plugin_activity_holidaytypes' => 'id',
+                            'glpi_plugin_activity_holidays'     => 'plugin_activity_holidaytypes_id',
+                        ],
+                    ],
+                    'glpi_plugin_activity_holidayperiods' => [
+                        'ON' => [
+                            'glpi_plugin_activity_holidays'     => 'plugin_activity_holidayperiods_id',
+                            'glpi_plugin_activity_holidayperiods' => 'id',
+                        ],
+                    ],
+                ],
+                'WHERE' => [
+                    'glpi_plugin_activity_holidays.global_validation' => $statut,
+                    'glpi_plugin_activity_holidays.users_id'          => $users_id,
+                    'glpi_plugin_activity_holidayperiods.id'          => $period['id'],
+                ],
+            ]);
 
-            if ($DB->numrows($result)) {
-                while ($data = $DB->fetchArray($result)) {
-                    if ($data['is_holiday'] && $data['is_holiday_counter']) {
-                        $nb_jours_i[Report::$HOLIDAY]['total'] += $data['actiontime'] / $AllDay;
-                        if (!isset($nb_jours_i[Report::$HOLIDAY]['sub_types'][$data['types_id']])) {
-                             $nb_jours_i[Report::$HOLIDAY]['sub_types'][$data['types_id']] = 0;
-                        }
-                        $nb_jours_i[Report::$HOLIDAY]['sub_types'][$data['types_id']] += $data['actiontime'] / $AllDay;
-                    } elseif ($data['is_sickness']) {
-                        $nb_jours_i[Report::$SICKNESS]['total'] += $data['actiontime'] / $AllDay;
-                    } elseif ($data['is_part_time']) {
-                        $nb_jours_i[Report::$PART_TIME]['total'] += $data['actiontime'] / $AllDay;
+            foreach ($iterator as $data) {
+                if ($data['is_holiday'] && $data['is_holiday_counter']) {
+                    $nb_jours_i[Report::$HOLIDAY]['total'] += $data['actiontime'] / $AllDay;
+                    if (!isset($nb_jours_i[Report::$HOLIDAY]['sub_types'][$data['types_id']])) {
+                         $nb_jours_i[Report::$HOLIDAY]['sub_types'][$data['types_id']] = 0;
                     }
+                    $nb_jours_i[Report::$HOLIDAY]['sub_types'][$data['types_id']] += $data['actiontime'] / $AllDay;
+                } elseif ($data['is_sickness']) {
+                    $nb_jours_i[Report::$SICKNESS]['total'] += $data['actiontime'] / $AllDay;
+                } elseif ($data['is_part_time']) {
+                    $nb_jours_i[Report::$PART_TIME]['total'] += $data['actiontime'] / $AllDay;
                 }
             }
         }
@@ -2259,14 +2287,18 @@ class Holiday extends CommonDBTM
     {
         global $DB;
 
-        $query = "SELECT SUM(`glpi_plugin_activity_holidays`.`actiontime`) AS actiontime
-               FROM `glpi_plugin_activity_holidays`
-               WHERE `glpi_plugin_activity_holidays`.`users_id` = $users_id
-               AND `glpi_plugin_activity_holidays`.`global_validation` IN (" . implode(",", $states) . ")
-               AND `plugin_activity_holidayperiods_id` = $holiday_period_id";
+        $iterator = $DB->request([
+            'SELECT' => [new \Glpi\DBAL\QueryExpression('SUM(`glpi_plugin_activity_holidays`.`actiontime`) AS `actiontime`')],
+            'FROM'   => 'glpi_plugin_activity_holidays',
+            'WHERE'  => [
+                'glpi_plugin_activity_holidays.users_id'                       => $users_id,
+                'glpi_plugin_activity_holidays.global_validation'              => $states,
+                'glpi_plugin_activity_holidays.plugin_activity_holidayperiods_id' => $holiday_period_id,
+            ],
+        ]);
 
-        $result     = $DB->doQuery($query);
-        $actiontime = $DB->result($result, 0, "actiontime");
+        $row        = $iterator->current();
+        $actiontime = $row['actiontime'] ?? 0;
 
         $AllDay = Report::getAllDay();
         return $actiontime / $AllDay;

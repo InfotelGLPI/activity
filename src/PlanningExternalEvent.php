@@ -39,6 +39,7 @@ use DbUtils;
 use Dropdown;
 use Entity;
 use Glpi\Application\View\TemplateRenderer;
+use Glpi\DBAL\QueryExpression;
 use Glpi\DBAL\QuerySubQuery;
 use GlpiPlugin\Manageentities\CriDetail;
 use GlpiPlugin\Manageentities\CriTechnician;
@@ -775,114 +776,198 @@ class PlanningExternalEvent extends CommonDBTM
 
     static function queryAllExternalEvents($criteria)
     {
-        $dbu = new DbUtils();
         $options = Option::getConfigFromDB()[1];
-        $subcategoriesSelect = $options['use_planningeventsubcategories'] ? '`glpi_plugin_activity_planningexternalevents`.`planningeventsubcategories_id` AS subtype, `glpi_plugin_activity_planningeventsubcategories`.`name` AS subname, ' : '';
-        $subcategoriesJoin = $options['use_planningeventsubcategories'] ? 'LEFT JOIN `glpi_plugin_activity_planningeventsubcategories`
-                         ON (`glpi_plugin_activity_planningexternalevents`.`planningeventsubcategories_id` = `glpi_plugin_activity_planningeventsubcategories`.`id`)' : '';
-        $query = "SELECT `glpi_planningexternalevents`.`planningeventcategories_id` AS type,
-                $subcategoriesSelect
-                    SUM(`glpi_plugin_activity_planningexternalevents`.`actiontime`) AS total_actiontime,
-                        `glpi_planningeventcategories`.`name` AS name
-                     FROM `glpi_planningexternalevents`
-                     INNER JOIN `glpi_planningeventcategories`
-                        ON (`glpi_planningeventcategories`.`id` = `glpi_planningexternalevents`.`planningeventcategories_id`)
-                        INNER JOIN `glpi_plugin_activity_planningexternalevents`
-                         ON (`glpi_planningexternalevents`.`id` = `glpi_plugin_activity_planningexternalevents`.`planningexternalevents_id`)
-                        $subcategoriesJoin
-                         ";
-        $query .= "WHERE (`glpi_planningexternalevents`.`begin` >= '" . $criteria["begin"] . "'
-                  AND `glpi_planningexternalevents`.`begin` <= '" . $criteria["end"] . "') ";
-        $query .= "  AND `glpi_planningexternalevents`.`users_id` = '" . $criteria["users_id"] . "' "
-            . $dbu->getEntitiesRestrictRequest("AND", "glpi_planningexternalevents");
-        $subcategoriesGroup = $options['use_planningeventsubcategories'] ? ', `glpi_plugin_activity_planningexternalevents`.`planningeventsubcategories_id` ' : '';
-        $query .= " GROUP BY `glpi_planningexternalevents`.`planningeventcategories_id` $subcategoriesGroup
-                 ORDER BY name";
 
-        return $query;
+        $select = [
+            new QueryExpression('`glpi_planningexternalevents`.`planningeventcategories_id` AS `type`'),
+            new QueryExpression('SUM(`glpi_plugin_activity_planningexternalevents`.`actiontime`) AS `total_actiontime`'),
+            new QueryExpression('`glpi_planningeventcategories`.`name` AS `name`'),
+        ];
+        $leftJoin = [];
+        $groupBy  = ['glpi_planningexternalevents.planningeventcategories_id'];
+
+        if ($options['use_planningeventsubcategories']) {
+            $select[] = new QueryExpression('`glpi_plugin_activity_planningexternalevents`.`planningeventsubcategories_id` AS `subtype`');
+            $select[] = new QueryExpression('`glpi_plugin_activity_planningeventsubcategories`.`name` AS `subname`');
+            $leftJoin['glpi_plugin_activity_planningeventsubcategories'] = [
+                'ON' => [
+                    'glpi_plugin_activity_planningexternalevents'  => 'planningeventsubcategories_id',
+                    'glpi_plugin_activity_planningeventsubcategories' => 'id',
+                ],
+            ];
+            $groupBy[] = 'glpi_plugin_activity_planningexternalevents.planningeventsubcategories_id';
+        }
+
+        $where = array_merge(
+            [
+                'glpi_planningexternalevents.users_id' => $criteria['users_id'],
+                ['glpi_planningexternalevents.begin'   => ['>=', $criteria['begin']]],
+                ['glpi_planningexternalevents.begin'   => ['<=', $criteria['end']]],
+            ],
+            getEntitiesRestrictCriteria('glpi_planningexternalevents')
+        );
+
+        return [
+            'SELECT'     => $select,
+            'FROM'       => 'glpi_planningexternalevents',
+            'INNER JOIN' => [
+                'glpi_planningeventcategories' => [
+                    'ON' => [
+                        'glpi_planningeventcategories'   => 'id',
+                        'glpi_planningexternalevents'    => 'planningeventcategories_id',
+                    ],
+                ],
+                'glpi_plugin_activity_planningexternalevents' => [
+                    'ON' => [
+                        'glpi_planningexternalevents'                 => 'id',
+                        'glpi_plugin_activity_planningexternalevents' => 'planningexternalevents_id',
+                    ],
+                ],
+            ],
+            'LEFT JOIN'  => $leftJoin,
+            'WHERE'      => $where,
+            'GROUPBY'    => $groupBy,
+            'ORDER'      => 'glpi_planningeventcategories.name',
+        ];
     }
 
     static function queryManageentities($criteria)
     {
-        $dbu = new DbUtils();
-        $query = "SELECT `glpi_tickets_users`.`users_id`,
-                       `glpi_entities`.`name` AS entity,
-                       `glpi_plugin_manageentities_cridetails`.`date`,
-                       `glpi_plugin_manageentities_cridetails`.`technicians`,
-                       `glpi_plugin_manageentities_cridetails`.`plugin_manageentities_critypes_id`,
-                       `glpi_plugin_manageentities_cridetails`.`withcontract`,
-                       `glpi_plugin_manageentities_cridetails`.`contracts_id`,
-                       `glpi_tickets`.`id`AS tickets_id "
-            . " FROM `glpi_plugin_manageentities_cridetails` "
-            . " LEFT JOIN `glpi_tickets` ON (`glpi_plugin_manageentities_cridetails`.`tickets_id` = `glpi_tickets`.`id`)"
-            . " LEFT JOIN `glpi_entities` ON (`glpi_tickets`.`entities_id` = `glpi_entities`.`id`)"
-            . " LEFT JOIN `glpi_tickets_users` ON (`glpi_tickets_users`.`tickets_id` = `glpi_tickets`.`id`)"
-            . " LEFT JOIN `glpi_tickettasks` ON (`glpi_tickettasks`.`tickets_id` = `glpi_tickets`.`id`)"
-            . " LEFT JOIN `glpi_plugin_manageentities_critechnicians` ON (`glpi_plugin_manageentities_cridetails`.`tickets_id` = `glpi_plugin_manageentities_critechnicians`.`tickets_id`) "
-            . " WHERE `glpi_tickets_users`.`type` = " . Ticket::ASSIGNED . "
-                  AND (`glpi_tickettasks`.`begin` >= '" . $criteria["begin"] . "'
-                  AND `glpi_tickettasks`.`end` <= '" . $criteria["end"] . "') "
-            . " AND `glpi_tickets`.`is_deleted` = 0"
-            . " AND (`glpi_tickets_users`.`users_id` ='" . $criteria["users_id"] . "' OR `glpi_plugin_manageentities_critechnicians`.`users_id` ='" . $criteria["users_id"] . "') ";
-        $query .= $dbu->getEntitiesRestrictRequest(
-            "AND",
-            "glpi_tickets",
-            '',
-            $_SESSION["glpiactiveentities"],
-            false
-        );
-        $query .= " AND `glpi_tickettasks`.`actiontime` != 0";
-        $query .= " GROUP BY `glpi_plugin_manageentities_cridetails`.`tickets_id` ";
-        $query .= " ORDER BY `glpi_plugin_manageentities_cridetails`.`date` ASC";
-
-        return $query;
+        return [
+            'SELECT'    => [
+                'glpi_tickets_users.users_id',
+                new QueryExpression('`glpi_entities`.`name` AS `entity`'),
+                'glpi_plugin_manageentities_cridetails.date',
+                'glpi_plugin_manageentities_cridetails.technicians',
+                'glpi_plugin_manageentities_cridetails.plugin_manageentities_critypes_id',
+                'glpi_plugin_manageentities_cridetails.withcontract',
+                'glpi_plugin_manageentities_cridetails.contracts_id',
+                new QueryExpression('`glpi_tickets`.`id` AS `tickets_id`'),
+            ],
+            'FROM'      => 'glpi_plugin_manageentities_cridetails',
+            'LEFT JOIN' => [
+                'glpi_tickets' => [
+                    'ON' => [
+                        'glpi_plugin_manageentities_cridetails' => 'tickets_id',
+                        'glpi_tickets'                          => 'id',
+                    ],
+                ],
+                'glpi_entities' => [
+                    'ON' => [
+                        'glpi_tickets'  => 'entities_id',
+                        'glpi_entities' => 'id',
+                    ],
+                ],
+                'glpi_tickets_users' => [
+                    'ON' => [
+                        'glpi_tickets'       => 'id',
+                        'glpi_tickets_users' => 'tickets_id',
+                    ],
+                ],
+                'glpi_tickettasks' => [
+                    'ON' => [
+                        'glpi_tickets'    => 'id',
+                        'glpi_tickettasks' => 'tickets_id',
+                    ],
+                ],
+                'glpi_plugin_manageentities_critechnicians' => [
+                    'ON' => [
+                        'glpi_plugin_manageentities_cridetails'    => 'tickets_id',
+                        'glpi_plugin_manageentities_critechnicians' => 'tickets_id',
+                    ],
+                ],
+            ],
+            'WHERE' => array_merge(
+                [
+                    'glpi_tickets_users.type'     => Ticket::ASSIGNED,
+                    'glpi_tickets.is_deleted'     => 0,
+                    'glpi_tickettasks.actiontime'  => ['!=', 0],
+                    ['glpi_tickettasks.begin'     => ['>=', $criteria['begin']]],
+                    ['glpi_tickettasks.end'       => ['<=', $criteria['end']]],
+                    [
+                        'OR' => [
+                            'glpi_tickets_users.users_id'                        => $criteria['users_id'],
+                            'glpi_plugin_manageentities_critechnicians.users_id' => $criteria['users_id'],
+                        ],
+                    ],
+                ],
+                getEntitiesRestrictCriteria('glpi_tickets', '', $_SESSION['glpiactiveentities'], false)
+            ),
+            'GROUPBY' => 'glpi_plugin_manageentities_cridetails.tickets_id',
+            'ORDER'   => 'glpi_plugin_manageentities_cridetails.date ASC',
+        ];
     }
 
     static function queryTickets($criteria)
     {
-        $query = "SELECT    `glpi_tickettasks`.*,
-                          `glpi_plugin_activity_tickettasks`.`is_oncra`,
-                          `glpi_entities`.`name` AS entity,
-                          `glpi_entities`.`id` AS entities_id
-                     FROM `glpi_tickettasks`
-                     INNER JOIN `glpi_tickets`
-                        ON (`glpi_tickets`.`id` = `glpi_tickettasks`.`tickets_id` AND `glpi_tickets`.`is_deleted` = 0)
-                     LEFT JOIN `glpi_entities`
-                        ON (`glpi_tickets`.`entities_id` = `glpi_entities`.`id`)
-                     LEFT JOIN `glpi_plugin_activity_tickettasks`
-                        ON (`glpi_tickettasks`.`id` = `glpi_plugin_activity_tickettasks`.`tickettasks_id`) ";
-        $query .= "WHERE ";
-        if (Plugin::isPluginActive('manageentities')) {
-            $query .= "`glpi_tickettasks`.`tickets_id`
-                     NOT IN (SELECT `tickets_id`
-                              FROM `glpi_plugin_manageentities_cridetails`) AND ";
-        }
-        $dbu = new DbUtils();
-        $query .= "((`glpi_tickettasks`.`begin` >= '" . $criteria["begin"] . "'
-                           AND `glpi_tickettasks`.`end` <= '" . $criteria["end"] . "'
-                           AND `glpi_tickettasks`.`users_id_tech` = '" . $criteria["users_id"] . "' " .
-            $dbu->getEntitiesRestrictRequest(
-                "AND",
-                "glpi_tickets",
-                '',
-                $_SESSION["glpiactiveentities"],
-                false
-            );
-        $query .= "                     )
-                           OR (`glpi_tickettasks`.`date` >= '" . $criteria["begin"] . "'
-                           AND `glpi_tickettasks`.`date` <= '" . $criteria["end"] . "'
-                           AND `glpi_tickettasks`.`users_id_tech` = '" . $criteria["users_id"] . "'
-                           AND `glpi_tickettasks`.`begin` IS NULL " . $dbu->getEntitiesRestrictRequest(
-                "AND",
-                "glpi_tickets",
-                '',
-                $_SESSION["glpiactiveentities"],
-                false
-            );
-        $query .= " )) AND `glpi_tickettasks`.`actiontime` != 0 AND `glpi_plugin_activity_tickettasks`.`is_oncra` = 1";
-        $query .= " ORDER BY `glpi_tickettasks`.`begin` ASC";
+        $entityRestrict = getEntitiesRestrictCriteria('glpi_tickets', '', $_SESSION['glpiactiveentities'], false);
 
-        return $query;
+        $where = array_merge(
+            [
+                'glpi_tickettasks.actiontime'                   => ['!=', 0],
+                'glpi_plugin_activity_tickettasks.is_oncra'     => 1,
+                'OR' => [
+                    [
+                        'AND' => array_merge([
+                            ['glpi_tickettasks.begin'        => ['>=', $criteria['begin']]],
+                            ['glpi_tickettasks.end'          => ['<=', $criteria['end']]],
+                            'glpi_tickettasks.users_id_tech' => $criteria['users_id'],
+                        ], $entityRestrict),
+                    ],
+                    [
+                        'AND' => array_merge([
+                            ['glpi_tickettasks.date'         => ['>=', $criteria['begin']]],
+                            ['glpi_tickettasks.date'         => ['<=', $criteria['end']]],
+                            'glpi_tickettasks.users_id_tech' => $criteria['users_id'],
+                            'glpi_tickettasks.begin'         => null,
+                        ], $entityRestrict),
+                    ],
+                ],
+            ],
+            []
+        );
+
+        if (Plugin::isPluginActive('manageentities')) {
+            $where['glpi_tickettasks.tickets_id'] = ['NOT IN', new QuerySubQuery([
+                'SELECT' => 'tickets_id',
+                'FROM'   => 'glpi_plugin_manageentities_cridetails',
+            ])];
+        }
+
+        return [
+            'SELECT'     => [
+                'glpi_tickettasks.*',
+                'glpi_plugin_activity_tickettasks.is_oncra',
+                new QueryExpression('`glpi_entities`.`name` AS `entity`'),
+                new QueryExpression('`glpi_entities`.`id` AS `entities_id`'),
+            ],
+            'FROM'       => 'glpi_tickettasks',
+            'INNER JOIN' => [
+                'glpi_tickets' => [
+                    'ON' => [
+                        'glpi_tickets'    => 'id',
+                        'glpi_tickettasks' => 'tickets_id',
+                        ['AND' => ['glpi_tickets.is_deleted' => 0]],
+                    ],
+                ],
+            ],
+            'LEFT JOIN'  => [
+                'glpi_entities' => [
+                    'ON' => [
+                        'glpi_tickets'  => 'entities_id',
+                        'glpi_entities' => 'id',
+                    ],
+                ],
+                'glpi_plugin_activity_tickettasks' => [
+                    'ON' => [
+                        'glpi_tickettasks'                  => 'id',
+                        'glpi_plugin_activity_tickettasks'  => 'tickettasks_id',
+                    ],
+                ],
+            ],
+            'WHERE' => $where,
+            'ORDER' => 'glpi_tickettasks.begin ASC',
+        ];
     }
 
     static function queryUserExternalEvents($criteria)
@@ -890,76 +975,117 @@ class PlanningExternalEvent extends CommonDBTM
         $opt = new Option();
         $opt->getFromDB(1);
 
-        $dbu = new DbUtils();
-        $query = "SELECT `glpi_planningexternalevents`.`name` AS name,
-                       `glpi_planningexternalevents`.`id` AS id,
-                       `glpi_plugin_activity_planningexternalevents`.`actiontime` AS actiontime,
-                       `glpi_planningexternalevents`.`text` AS text,
-                       `glpi_planningeventcategories`.`name` AS type,
-                       `glpi_plugin_activity_planningeventsubcategories`.`name` as subtype,
-                       `glpi_planningexternalevents`.`begin` AS begin,
-                       `glpi_planningexternalevents`.`end` AS end,
-                       `glpi_planningexternalevents`.`rrule` AS rrule,
-                       `glpi_planningexternalevents`.`planningeventcategories_id` AS type_id,
-                        `glpi_plugin_activity_planningexternalevents`.`planningeventsubcategories_id` as subtype_id,
-                       `glpi_entities`.`name` AS entity,
-                       `glpi_projects`.`name` AS project
-               FROM `glpi_planningexternalevents` ";
-        $query .= " LEFT JOIN `glpi_plugin_activity_planningexternalevents`
-                     ON (`glpi_planningexternalevents`.`id` = `glpi_plugin_activity_planningexternalevents`.`planningexternalevents_id`)";
-        $query .= " LEFT JOIN `glpi_plugin_activity_planningeventsubcategories`
-                     ON (`glpi_plugin_activity_planningeventsubcategories`.`id` = `glpi_plugin_activity_planningexternalevents`.`planningeventsubcategories_id`)";
-        $query .= " LEFT JOIN `glpi_users`
-                     ON (`glpi_users`.`id` = `glpi_planningexternalevents`.`users_id`)";
-        $query .= " LEFT JOIN `glpi_planningeventcategories`
-                     ON (`glpi_planningeventcategories`.`id` = `glpi_planningexternalevents`.`planningeventcategories_id`)";
-        $query .= " LEFT JOIN `glpi_entities`
-                     ON (`glpi_planningexternalevents`.`entities_id` = `glpi_entities`.`id`)";
-        $query .= " LEFT JOIN `glpi_projects`
-                     ON (`glpi_plugin_activity_planningexternalevents`.`projects_id` = `glpi_projects`.`id`)";
-        $query .= " WHERE ";
-        $query .= "  `glpi_planningexternalevents`.`users_id` = '" . $criteria["users_id"] . "' "
-            . $dbu->getEntitiesRestrictRequest("AND", "glpi_planningexternalevents") . "
-                  AND ((`glpi_planningexternalevents`.`begin` >= '" . $criteria["begin"] . "'
-                  AND `glpi_planningexternalevents`.`begin` <= '" . $criteria["end"] . "') ";
-        // reoccuring events where the serie started before the ending date and ended during the ending month or later
-        $year = date('Y', strtotime($criteria["end"]));
-        $month = date('m', strtotime($criteria["end"]));
-        $query .= "OR (
-        `glpi_planningexternalevents`.`begin` < '" . $criteria["end"] . "'
-         AND (
-            `glpi_planningexternalevents`.`rrule` REGEXP '\"until\":\"" . $year . "-(";
-        // regexp to add recurring events that can happen until the end of the year
-        $months = [];
+        // Build REGEXP patterns for recurring events
+        $year  = date('Y', strtotime($criteria['end']));
+        $month = date('m', strtotime($criteria['end']));
+
+        $monthParts = [];
         for ($m = (int)$month; $m < 13; $m++) {
-            $value = $m < 10 ? '0' . $m : $m;
-            $months[] = $value;
+            $monthParts[] = $m < 10 ? '0' . $m : (string)$m;
         }
-        $query .= implode('|', $months);
-        $query .= ")'
-            OR `glpi_planningexternalevents`.`rrule` REGEXP '\"until\":\"(";
-        // regexp to add recurring events which continue up to 5 years into the future
+        $monthRegex = '"until":"' . $year . '-(' . implode('|', $monthParts) . ')';
+
+        $yearParts = [];
         for ($i = 0; $i < 5; $i++) {
             $year++;
-            if ($i != 0) {
-                $query .= '|';
-            }
-            $query .= "$year";
+            $yearParts[] = (string)$year;
         }
-        $query .= ")')))";
+        $yearRegex = '"until":"(' . implode('|', $yearParts) . ')';
 
-        if ($criteria["is_usedbycra"]) {
-            $query .= " AND `glpi_plugin_activity_planningexternalevents`.`is_oncra` ";
+        $where = array_merge(
+            [
+                'glpi_planningexternalevents.users_id'    => $criteria['users_id'],
+                'glpi_plugin_activity_planningexternalevents.actiontime' => ['!=', 0],
+                'OR' => [
+                    [
+                        ['glpi_planningexternalevents.begin' => ['>=', $criteria['begin']]],
+                        ['glpi_planningexternalevents.begin' => ['<=', $criteria['end']]],
+                    ],
+                    [
+                        ['glpi_planningexternalevents.begin' => ['<', $criteria['end']]],
+                        'OR' => [
+                            ['glpi_planningexternalevents.rrule' => ['REGEXP', $monthRegex]],
+                            ['glpi_planningexternalevents.rrule' => ['REGEXP', $yearRegex]],
+                        ],
+                    ],
+                ],
+            ],
+            getEntitiesRestrictCriteria('glpi_planningexternalevents')
+        );
+
+        if (!empty($criteria['is_usedbycra'])) {
+            $where['glpi_plugin_activity_planningexternalevents.is_oncra'] = 1;
         }
-        $query .= " AND `glpi_plugin_activity_planningexternalevents`.`actiontime` != 0";
-        $query .= " ORDER BY `glpi_planningexternalevents`.`name`, `subtype`";
+
+        $order = [
+            'glpi_planningexternalevents.name',
+            'glpi_plugin_activity_planningeventsubcategories.name',
+        ];
         if ($opt->fields['show_planningevents_entity']) {
-            $query .= ", `entity`";
+            $order[] = 'glpi_entities.name';
         }
         if ($opt->fields['show_planningevents_project']) {
-            $query .= ", `glpi_projects`.`name`";
+            $order[] = 'glpi_projects.name';
         }
-        return $query;
+
+        return [
+            'SELECT'    => [
+                new QueryExpression('`glpi_planningexternalevents`.`name` AS `name`'),
+                new QueryExpression('`glpi_planningexternalevents`.`id` AS `id`'),
+                new QueryExpression('`glpi_plugin_activity_planningexternalevents`.`actiontime` AS `actiontime`'),
+                new QueryExpression('`glpi_planningexternalevents`.`text` AS `text`'),
+                new QueryExpression('`glpi_planningeventcategories`.`name` AS `type`'),
+                new QueryExpression('`glpi_plugin_activity_planningeventsubcategories`.`name` AS `subtype`'),
+                new QueryExpression('`glpi_planningexternalevents`.`begin` AS `begin`'),
+                new QueryExpression('`glpi_planningexternalevents`.`end` AS `end`'),
+                new QueryExpression('`glpi_planningexternalevents`.`rrule` AS `rrule`'),
+                new QueryExpression('`glpi_planningexternalevents`.`planningeventcategories_id` AS `type_id`'),
+                new QueryExpression('`glpi_plugin_activity_planningexternalevents`.`planningeventsubcategories_id` AS `subtype_id`'),
+                new QueryExpression('`glpi_entities`.`name` AS `entity`'),
+                new QueryExpression('`glpi_projects`.`name` AS `project`'),
+            ],
+            'FROM'      => 'glpi_planningexternalevents',
+            'LEFT JOIN' => [
+                'glpi_plugin_activity_planningexternalevents' => [
+                    'ON' => [
+                        'glpi_planningexternalevents'                 => 'id',
+                        'glpi_plugin_activity_planningexternalevents' => 'planningexternalevents_id',
+                    ],
+                ],
+                'glpi_plugin_activity_planningeventsubcategories' => [
+                    'ON' => [
+                        'glpi_plugin_activity_planningeventsubcategories'  => 'id',
+                        'glpi_plugin_activity_planningexternalevents'      => 'planningeventsubcategories_id',
+                    ],
+                ],
+                'glpi_users' => [
+                    'ON' => [
+                        'glpi_users'                     => 'id',
+                        'glpi_planningexternalevents'    => 'users_id',
+                    ],
+                ],
+                'glpi_planningeventcategories' => [
+                    'ON' => [
+                        'glpi_planningeventcategories' => 'id',
+                        'glpi_planningexternalevents'  => 'planningeventcategories_id',
+                    ],
+                ],
+                'glpi_entities' => [
+                    'ON' => [
+                        'glpi_planningexternalevents' => 'entities_id',
+                        'glpi_entities'               => 'id',
+                    ],
+                ],
+                'glpi_projects' => [
+                    'ON' => [
+                        'glpi_plugin_activity_planningexternalevents' => 'projects_id',
+                        'glpi_projects'                               => 'id',
+                    ],
+                ],
+            ],
+            'WHERE' => $where,
+            'ORDER' => $order,
+        ];
     }
 
     static function dateAdd($v, $d = null, $f = "Y-m-d")

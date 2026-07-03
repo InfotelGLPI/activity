@@ -33,6 +33,7 @@ use CommonDBTM;
 use DbUtils;
 use Dropdown;
 use Glpi\Application\View\TemplateRenderer;
+use Glpi\DBAL\QuerySubQuery;
 
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
@@ -149,60 +150,60 @@ class ProjectTask extends CommonDBTM
 
     public static function queryProjectTask($criteria)
     {
-
-        $dbu = new DbUtils();
         $begin = $criteria["begin"];
         $end   = $criteria["end"];
         $who   = $criteria["users_id"];
 
+        $where = [
+            'glpi_plugin_activity_projecttasks.is_oncra' => 1,
+            'glpi_projecttasks.percent_done'             => ['<', 100],
+            ['glpi_projecttasks.plan_end_date'   => ['>', $begin]],
+            ['glpi_projecttasks.plan_start_date' => ['<', $end]],
+            'OR' => [
+                ['glpi_projectstates.is_finished' => 0],
+                ['glpi_projectstates.is_finished' => null],
+            ],
+        ];
+
         if ($who > 0) {
-            $ASSIGN = "`glpi_projecttaskteams`.`itemtype` = 'User'
-                       AND `glpi_projecttaskteams`.`items_id` = '$who'
-                       AND ";
+            $where['glpi_projecttaskteams.itemtype']  = 'User';
+            $where['glpi_projecttaskteams.items_id']  = $who;
+        } else {
+            $where['glpi_projecttaskteams.itemtype'] = 'User';
+            $where['glpi_projecttaskteams.items_id'] = ['IN', new QuerySubQuery([
+                'SELECT DISTINCT' => 'glpi_profiles_users.users_id',
+                'FROM'            => 'glpi_profiles',
+                'LEFT JOIN'       => [
+                    'glpi_profiles_users' => [
+                        'ON' => ['glpi_profiles' => 'id', 'glpi_profiles_users' => 'profiles_id'],
+                    ],
+                ],
+                'WHERE' => array_merge(
+                    ['glpi_profiles.interface' => 'central'],
+                    getEntitiesRestrictCriteria('glpi_profiles_users', '', $_SESSION["glpiactive_entity"], true)
+                ),
+            ])];
         }
 
-        if (empty($ASSIGN)) {
-            $ASSIGN = "`glpi_projecttaskteams`.`itemtype` = 'User'
-                       AND `glpi_projecttaskteams`.`items_id`
-                        IN (SELECT DISTINCT `glpi_profiles_users`.`users_id`
-                            FROM `glpi_profiles`
-                            LEFT JOIN `glpi_profiles_users`
-                                 ON (`glpi_profiles`.`id` = `glpi_profiles_users`.`profiles_id`)
-                            WHERE `glpi_profiles`.`interface` = 'central' "
-                      . $dbu->getEntitiesRestrictRequest(
-                          "AND",
-                          "glpi_profiles_users",
-                          '',
-                          $_SESSION["glpiactive_entity"],
-                          1
-                      ) . ")
-                     AND ";
-        }
-
-        $DONE_EVENTS = '';
-        //      if (!isset($options['display_done_events']) || !$options['display_done_events']) {
-        $DONE_EVENTS = "`glpi_projecttasks`.`percent_done` < 100
-                         AND (glpi_projectstates.is_finished = 0
-                              OR glpi_projectstates.is_finished IS NULL)
-                         AND ";
-        //      }
-
-        $query = "SELECT `glpi_projecttasks`.*
-                FROM `glpi_projecttaskteams`
-                INNER JOIN `glpi_projecttasks`
-                  ON (`glpi_projecttasks`.`id` = `glpi_projecttaskteams`.`projecttasks_id`)
-                LEFT JOIN `glpi_projectstates`
-                  ON (`glpi_projecttasks`.`projectstates_id` = `glpi_projectstates`.`id`)
-                LEFT JOIN `glpi_plugin_activity_projecttasks`
-                ON `glpi_plugin_activity_projecttasks`.`projecttasks_id` = `glpi_projecttasks`.`id`
-                WHERE `glpi_plugin_activity_projecttasks`.`is_oncra` = 1
-                      AND $ASSIGN
-                      $DONE_EVENTS
-                      '$begin' < `glpi_projecttasks`.`plan_end_date`
-                      AND '$end' > `glpi_projecttasks`.`plan_start_date`
-                ORDER BY `glpi_projecttasks`.`plan_start_date`";
-
-        return $query;
+        return [
+            'SELECT'     => ['glpi_projecttasks.*'],
+            'FROM'       => 'glpi_projecttaskteams',
+            'INNER JOIN' => [
+                'glpi_projecttasks' => [
+                    'ON' => ['glpi_projecttasks' => 'id', 'glpi_projecttaskteams' => 'projecttasks_id'],
+                ],
+            ],
+            'LEFT JOIN'  => [
+                'glpi_projectstates' => [
+                    'ON' => ['glpi_projecttasks' => 'projectstates_id', 'glpi_projectstates' => 'id'],
+                ],
+                'glpi_plugin_activity_projecttasks' => [
+                    'ON' => ['glpi_plugin_activity_projecttasks' => 'projecttasks_id', 'glpi_projecttasks' => 'id'],
+                ],
+            ],
+            'WHERE' => $where,
+            'ORDER' => 'glpi_projecttasks.plan_start_date',
+        ];
     }
 
 }

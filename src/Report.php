@@ -481,9 +481,8 @@ class Report extends CommonDBTM
 
        // 1.1 Plugin Activity
         if ($use_planning_activity_hours) {
-            $query  = PlanningExternalEvent::queryAllExternalEvents($crit);
-            $result = $DB->doQuery($query);
-            $number = $DB->numrows($result);
+            $result = $DB->request(PlanningExternalEvent::queryAllExternalEvents($crit));
+            $number = count($result);
             // planningexternalevents total time
             $iterator1 = $DB->request([
                 'SELECT' => [new \Glpi\DBAL\QueryExpression('SUM(`glpi_plugin_activity_planningexternalevents`.`actiontime`) AS total')],
@@ -578,9 +577,8 @@ class Report extends CommonDBTM
             $crit["documentcategories_id"] = $config->fields["documentcategories_id"];
 
             if ($use_planning_activity_hours) {
-                $manage  = PlanningExternalEvent::queryManageentities($crit);
-                $resultm = $DB->doQuery($manage);
-                $numberm = $DB->numrows($resultm);
+                $resultm = $DB->request(PlanningExternalEvent::queryManageentities($crit));
+                $numberm = count($resultm);
             } else {
                 $manageentitiesTasks = PlanningExternalEvent::getTicketTasksManageentities(
                     $crit['begin'],
@@ -593,9 +591,8 @@ class Report extends CommonDBTM
 
        // 1.3 Tickets
         if ($use_planning_activity_hours) {
-            $tickets  = PlanningExternalEvent::queryTickets($crit);
-            $resultt1 = $DB->doQuery($tickets);
-            $numbert  = $DB->numrows($resultt1);
+            $resultt1 = $DB->request(PlanningExternalEvent::queryTickets($crit));
+            $numbert  = count($resultt1);
         } else {
             $ticketTasks = PlanningExternalEvent::getTicketTaskWithActivityOnPeriod(
                 $crit['begin'],
@@ -622,8 +619,8 @@ class Report extends CommonDBTM
 
       // ProjectTask
         $tickets  = ProjectTask::queryProjectTask($crit);
-        $resultpt = $DB->doQuery($tickets);
-        $numberpt = $DB->numrows($resultpt);
+        $resultpt = $DB->request($tickets);
+        $numberpt = count($resultpt);
 
         if ($number != "0" || $numberm != "0" || $numbert != "0" || $numberh != "0" || $numberpt != "0") {
            // 2.2 Details
@@ -633,11 +630,9 @@ class Report extends CommonDBTM
            // 2.3 Plugin Activity
             if ($use_planning_activity_hours) {
                 $crit["is_usedbycra"] = true;
-                $query2 = PlanningExternalEvent::queryUserExternalEvents($crit);
-
-                $result2 = $DB->doQuery($query2);
-                if ($DB->numrows($result2)) {
-                    while ($data2 = $DB->fetchArray($result2)) {
+                $result2 = $DB->request(PlanningExternalEvent::queryUserExternalEvents($crit));
+                if (count($result2)) {
+                    foreach ($result2 as $data2) {
                         if (isset($data2['rrule']) && !empty($data2['rrule'])) {
                             $duration = strtotime($data2['end']) - strtotime($data2['begin']);
                             $rrule = json_decode($data2['rrule'], 1);
@@ -874,9 +869,9 @@ class Report extends CommonDBTM
                     'global_validation' => CommonValidation::ACCEPTED]
                 ));
 
-                $resulth = $DB->doQuery($queryh);
-                if ($DB->numrows($resulth)) {
-                    while ($datah = $DB->fetchArray($resulth)) {
+                $resulth = $DB->request($queryh);
+                if (count($resulth)) {
+                    foreach ($resulth as $datah) {
                         if (empty($datah["type"])) {
                             $type = $datah["entity"] . " > " . __('No defined type', 'activity');
                         } else {
@@ -902,7 +897,7 @@ class Report extends CommonDBTM
            // 1.3 Tickets
             if ($numbert != "0") {
                 if ($use_planning_activity_hours) {
-                    while ($datat = $DB->fetchArray($resultt1)) {
+                    foreach ($resultt1 as $datat) {
                         $mtitle = self::strtoupper_auto($datat['entity']) . " > " . __('Unbilled', 'activity');
                         $internal = Config::getConfigFromDB($datat['entities_id']);
                         if ($internal) {
@@ -954,7 +949,7 @@ class Report extends CommonDBTM
             if (Plugin::isPluginActive('manageentities')) {
                 if ($numberm != "0") {
                    // TODO implement $use_planning_activity_hours
-                    while ($datam = $DB->fetchArray($resultm)) {
+                    foreach ($resultm as $datam) {
                          $iteratorTask = $DB->request([
                              'SELECT' => ['glpi_tickettasks.*'],
                              'FROM'   => 'glpi_tickettasks',
@@ -1000,7 +995,7 @@ class Report extends CommonDBTM
             $opt = new Option();
             if ($opt->getFromDB(1) && $opt->getUseProject()) {
                 if ($numberpt != "0") {
-                    while ($datapt = $DB->fetchArray($resultpt)) {
+                    foreach ($resultpt as $datapt) {
                          $project = new Project();
                          $project->getFromDB($datapt["projects_id"]);
                          $mtitle = self::strtoupper_auto($project->getName()) . " > " . ProjectTask::getTypeName();
@@ -1330,7 +1325,7 @@ class Report extends CommonDBTM
                 $details_entries = [];
 
                 if ($use_planning_activity_hours) {
-                    while ($data = $DB->fetchArray($result)) {
+                    foreach ($result as $data) {
                         $percent = $data["total_actiontime"] > 0
                             ? $data["total_actiontime"] * 100 / $total
                             : 0;

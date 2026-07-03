@@ -32,7 +32,6 @@ namespace GlpiPlugin\Activity;
 use AllowDynamicProperties;
 use CommonGLPI;
 use Contract;
-use DBmysql;
 use DbUtils;
 use Dropdown;
 use GlpiPlugin\Manageentities\Config;
@@ -317,57 +316,58 @@ class Dashboard extends CommonGLPI
                 } else {
                     $mois = 12;
                 }
-                $entity = $_SESSION['glpiactive_entity'];
-                $query  = "SELECT `glpi_tickettasks`.`date`,
-                              `glpi_tickets`.`entities_id`,
-                              `glpi_tickettasks`.`tickets_id`,
-                              `glpi_tickets`.`name` AS tickets_name,
-                              `glpi_tickettasks`.`content`,
-                              `glpi_tickettasks`.`actiontime`
-                              FROM `glpi_tickettasks`
-                        LEFT JOIN `glpi_tickets`
-                                             ON (`glpi_tickets`.`id` = `glpi_tickettasks`.`tickets_id`)
-                        LEFT JOIN `glpi_plugin_activity_tickettasks`
-                                             ON (`glpi_tickettasks`.`id` = `glpi_plugin_activity_tickettasks`.`tickettasks_id`)
-                        WHERE `glpi_plugin_activity_tickettasks`.`is_oncra` = 0
-                        AND `glpi_tickettasks`.`is_private` = 1
-                        AND `glpi_tickets`.`status` NOT IN ('5', '6') AND `glpi_tickettasks`.`date` >= '$annee-$mois-01 00:00:01'
-                        AND `glpi_tickets`.`entities_id` IN  (" . implode(",", $dbu->getSonsOf("glpi_entities", $entity)) . ") ORDER BY `glpi_tickettasks`.`date` ";
-
-
-                $widget  = Helper::getWidgetsFromDBQuery('table', $query);
-                $datas   = [];
-                $headers = [__('Creation date'),
-                            __('Client'),
-                            __('Ticket'),
-                            __('Description'),
-                            __('Total duration')];
-                $widget->setTabNames($headers);
-
-                $result      = $DB->doQuery($query);
-                $nb          = $DB->numrows($result);
+                $entity      = $_SESSION['glpiactive_entity'];
                 $link_ticket = Toolbox::getItemTypeFormURL(\Ticket::class);
 
-                $i = 0;
-                if ($nb) {
-                    while ($data = $DB->fetchAssoc($result)) {
-                        $datas[$i]["date"] = Html::convDateTime($data['date']);
+                $iterator = $DB->request([
+                    'SELECT' => [
+                        'glpi_tickettasks.date',
+                        'glpi_tickets.entities_id',
+                        'glpi_tickettasks.tickets_id',
+                        'glpi_tickets.name AS tickets_name',
+                        'glpi_tickettasks.content',
+                        'glpi_tickettasks.actiontime',
+                    ],
+                    'FROM'       => 'glpi_tickettasks',
+                    'LEFT JOIN'  => [
+                        'glpi_tickets' => [
+                            'ON' => ['glpi_tickets' => 'id', 'glpi_tickettasks' => 'tickets_id'],
+                        ],
+                        'glpi_plugin_activity_tickettasks' => [
+                            'ON' => ['glpi_plugin_activity_tickettasks' => 'tickettasks_id', 'glpi_tickettasks' => 'id'],
+                        ],
+                    ],
+                    'WHERE'      => [
+                        'glpi_plugin_activity_tickettasks.is_oncra' => 0,
+                        'glpi_tickettasks.is_private'               => 1,
+                        ['NOT' => ['glpi_tickets.status' => [5, 6]]],
+                        ['glpi_tickettasks.date' => ['>=', "$annee-$mois-01 00:00:01"]],
+                        'glpi_tickets.entities_id' => $dbu->getSonsOf('glpi_entities', $entity),
+                    ],
+                    'ORDER'      => 'glpi_tickettasks.date',
+                ]);
 
-                        $datas[$i]["entity"] = Dropdown::getDropdownName(
-                            "glpi_entities",
-                            $data['entities_id']
-                        );
+                $widget  = Helper::getWidgetsFromDBQuery('table', '');
+                $headers = [
+                    __('Creation date'),
+                    __('Client'),
+                    __('Ticket'),
+                    __('Description'),
+                    __('Total duration'),
+                ];
+                $widget->setTabNames($headers);
 
-
-                        $name_ticket               = "<a href='" . $link_ticket . "?id=" . $data['tickets_id'] . "' target='_blank'>";
-                        $name_ticket               .= $data['tickets_name'] . "</a>";
-                        $datas[$i]["tickets_name"] = $name_ticket;
-
-                        $datas[$i]["content"] =  htmlspecialchars_decode(stripslashes($data['content']));
-
-                        $datas[$i]["actiontime"] = Html::timestampToString($data["actiontime"], 0);
-                        $i++;
-                    }
+                $datas = [];
+                foreach ($iterator as $data) {
+                    $name_ticket = "<a href='" . $link_ticket . "?id=" . $data['tickets_id'] . "' target='_blank'>"
+                        . $data['tickets_name'] . "</a>";
+                    $datas[] = [
+                        'date'         => Html::convDateTime($data['date']),
+                        'entity'       => Dropdown::getDropdownName('glpi_entities', $data['entities_id']),
+                        'tickets_name' => $name_ticket,
+                        'content'      => htmlspecialchars_decode(stripslashes($data['content'])),
+                        'actiontime'   => Html::timestampToString($data['actiontime'], 0),
+                    ];
                 }
                 $widget->setTabDatas($datas);
                 $widget->setOption("bSort", false);
@@ -397,21 +397,26 @@ class Dashboard extends CommonGLPI
         $crit["global_validation"] = CommonValidation::ACCEPTED;
 
         # 1.1 Plugin Activity
-        $query  = PlanningExternalEvent::queryAllExternalEvents($crit);
-        $result = $DB->doQuery($query);
-        $number = $DB->numrows($result);
+        $result = $DB->request(PlanningExternalEvent::queryAllExternalEvents($crit));
+        $number = count($result);
         $total  = 0;
 
-        $query1 = "SELECT SUM(`glpi_plugin_activity_planningexternalevents`.`actiontime`) AS total
-                  FROM `glpi_plugin_activity_planningexternalevents`
-                   LEFT JOIN `glpi_planningexternalevents`
-                     ON (`glpi_plugin_activity_planningexternalevents`.`planningexternalevents_id` = `glpi_planningexternalevents`.`id`)";
-        $query1.= " WHERE (`begin` >= '".$crit["begin"]."'
-                           AND `begin` <= '".$crit["end"]."')
-                              AND `users_id` = '".$crit["users_id"]."'";
-        if ($result1 = $DB->doQuery($query1)) {
-            $data1 = $DB->fetchArray($result1);
-            $total = $data1["total"];
+        $iter1 = $DB->request([
+            'SELECT'    => ['SUM' => 'glpi_plugin_activity_planningexternalevents.actiontime AS total'],
+            'FROM'      => 'glpi_plugin_activity_planningexternalevents',
+            'LEFT JOIN' => [
+                'glpi_planningexternalevents' => [
+                    'ON' => ['glpi_planningexternalevents' => 'id', 'glpi_plugin_activity_planningexternalevents' => 'planningexternalevents_id'],
+                ],
+            ],
+            'WHERE'     => [
+                ['glpi_planningexternalevents.begin' => ['>=', $crit['begin']]],
+                ['glpi_planningexternalevents.begin' => ['<=', $crit['end']]],
+                'glpi_planningexternalevents.users_id' => $crit['users_id'],
+            ],
+        ]);
+        if ($row1 = $iter1->current()) {
+            $total = $row1['total'];
         }
 
 
@@ -423,24 +428,25 @@ class Dashboard extends CommonGLPI
 
             $crit["documentcategories_id"] = $config->fields["documentcategories_id"];
 
-            $manage  = PlanningExternalEvent::queryManageentities($crit);
-            $resultm = $DB->doQuery($manage);
-            $numberm = $DB->numrows($resultm);
+            $resultm = $DB->request(PlanningExternalEvent::queryManageentities($crit));
+            $numberm = count($resultm);
         }
 
         # 1.3 Tickets
-        $tickets  = PlanningExternalEvent::queryTickets($crit);
-        $resultt1 = $DB->doQuery($tickets);
-        $numbert  = $DB->numrows($resultt1);
+        $resultt1 = $DB->request(PlanningExternalEvent::queryTickets($crit));
+        $numbert  = count($resultt1);
 
         # 1.1 Plugin holiday
-        $queryh  = "SELECT SUM(actiontime) AS total
-                  FROM `glpi_plugin_activity_holidays`";
-        $queryh  .= " WHERE (`begin` >= '" . $crit["begin"] . "'
-                           AND `begin` <= '" . $crit["end"] . "')
-                        AND `users_id` = '" . $crit["users_id"] . "'";
-        $resulth = $DB->doQuery($queryh);
-        $numberh = $DB->numrows($resulth);
+        $iterh   = $DB->request([
+            'SELECT' => ['SUM' => 'actiontime AS total'],
+            'FROM'   => 'glpi_plugin_activity_holidays',
+            'WHERE'  => [
+                ['begin' => ['>=', $crit['begin']]],
+                ['begin' => ['<=', $crit['end']]],
+                'users_id' => $crit['users_id'],
+            ],
+        ]);
+        $numberh = count($iterh);
 
         $pie = [];
 
@@ -451,7 +457,7 @@ class Dashboard extends CommonGLPI
 
             # 2.3 Plugin Activity
             if ($number != "0") {
-                while ($data = $DB->fetchArray($result)) {
+                foreach ($result as $data) {
                     if ($data["total_actiontime"] > 0) {
                         $percent = $data["total_actiontime"] * 100 / $total;
                     } else {
@@ -492,10 +498,10 @@ class Dashboard extends CommonGLPI
                 $queryh = Holiday::queryUserHolidays($opt);
 
 
-                $resulth = $DB->doQuery($queryh);
-                if ($DB->numrows($resulth)) {
+                $resulth = $DB->request($queryh);
+                if (count($resulth)) {
                     $tmp = [];
-                    while ($datah = $DB->fetchArray($resulth)) {
+                    foreach ($resulth as $datah) {
                         if (empty($datah["type"])) {
                             $type = $datah["entity"] . " > " . __('No defined type', 'activity');
                         } else {
@@ -522,7 +528,7 @@ class Dashboard extends CommonGLPI
                 $sums   = [];
                 $sum    = 0;
                 $report = new Report();
-                while ($datat = $DB->fetchArray($resultt1)) {
+                foreach ($resultt1 as $datat) {
                     $mtitle   = strtoupper($datat["entity"]) . " > " . _n('Ticket', 'Tickets', 2);
                     $internal = ActivityConfig::getConfigFromDB($datat['entities_id']);
                     if ($internal) {
@@ -557,23 +563,27 @@ class Dashboard extends CommonGLPI
          //         # 2.4 Plugin Manageentities
             if (Plugin::isPluginActive('manageentities')) {
                 if ($numberm != "0") {
-                    while ($datam = $DB->fetchArray($resultm)) {
-                        $queryTask = "SELECT `glpi_tickettasks`.*
-                                 FROM `glpi_tickettasks`
-                                 LEFT JOIN `glpi_plugin_manageentities_cridetails`
-                                    ON (`glpi_plugin_manageentities_cridetails`.`tickets_id` = `glpi_tickettasks`.`tickets_id`)
-                                 LEFT JOIN `glpi_plugin_activity_tickettasks`
-                                    ON (`glpi_plugin_activity_tickettasks`.`tickettasks_id` = `glpi_tickettasks`.`id`)
-                                 WHERE `glpi_tickettasks`.`tickets_id` = '" . $datam['tickets_id'] . "'
-                                       AND (`glpi_tickettasks`.`begin` >= '" . $crit["begin"] . "'
-                                       AND `glpi_tickettasks`.`end` <= '" . $crit["end"] . "')
-                                       AND `glpi_plugin_activity_tickettasks`.`is_oncra` = 1
-                                       AND `glpi_tickettasks`.`users_id_tech` = '" . $crit["users_id"] . "'";
-
-                        $resultTask = $DB->doQuery($queryTask);
-                        $numberTask = $DB->numrows($resultTask);
-                        if ($numberTask != "0") {
-                            while ($dataTask = $DB->fetchArray($resultTask)) {
+                    foreach ($resultm as $datam) {
+                        $iterTask = $DB->request([
+                            'FROM'      => 'glpi_tickettasks',
+                            'LEFT JOIN' => [
+                                'glpi_plugin_manageentities_cridetails' => [
+                                    'ON' => ['glpi_plugin_manageentities_cridetails' => 'tickets_id', 'glpi_tickettasks' => 'tickets_id'],
+                                ],
+                                'glpi_plugin_activity_tickettasks' => [
+                                    'ON' => ['glpi_plugin_activity_tickettasks' => 'tickettasks_id', 'glpi_tickettasks' => 'id'],
+                                ],
+                            ],
+                            'WHERE' => [
+                                'glpi_tickettasks.tickets_id'                    => $datam['tickets_id'],
+                                ['glpi_tickettasks.begin'                        => ['>=', $crit['begin']]],
+                                ['glpi_tickettasks.end'                          => ['<=', $crit['end']]],
+                                'glpi_plugin_activity_tickettasks.is_oncra'      => 1,
+                                'glpi_tickettasks.users_id_tech'                 => $crit['users_id'],
+                            ],
+                        ]);
+                        if (count($iterTask)) {
+                            foreach ($iterTask as $dataTask) {
                                 $mtitle = $datam["entity"] . " > ";
                                 if ($datam["withcontract"]) {
                                     $contract = new Contract();
@@ -606,28 +616,8 @@ class Dashboard extends CommonGLPI
 
         $month = date('m', time());
 
-        $queryMinDate = "SELECT MIN(`date`)
-                  FROM `glpi_tickettasks`";
-
-        if ($resultMinDate = $DB->doQuery($queryMinDate)) {
-            if ($DB->numrows($resultMinDate)) {
-                $MinDate = ($DB->result($resultMinDate, 0, 0));
-            }
-        }
-
-        $queryMinBeginDate = "SELECT MIN(`begin`)
-                  FROM `glpi_tickettasks`";
-
-        if ($resultMinBeginDate = $DB->doQuery($queryMinBeginDate)) {
-            if ($DB->numrows($resultMinBeginDate)) {
-                $MinBeginDate = ($DB->result($resultMinBeginDate, 0, 0));
-            }
-        }
-
-        $first = $MinDate;
-        if ($MinBeginDate < $MinDate) {
-            $first = $MinBeginDate;
-        }
+        $rowMinDate      = $DB->request(['SELECT' => ['MIN' => 'date AS min_date'], 'FROM' => 'glpi_tickettasks'])->current();
+        $rowMinBeginDate = $DB->request(['SELECT' => ['MIN' => 'begin AS min_begin'], 'FROM' => 'glpi_tickettasks'])->current();
         $crit["begin"]        = date("Y-m-d") . " 00:00:00";
         $lastday              = cal_days_in_month(CAL_GREGORIAN, $month, date("Y"));
         $crit["end"]          = date("Y") . "-" . $month . "-" . date("d") . " 23:59:59";
@@ -646,13 +636,10 @@ class Dashboard extends CommonGLPI
         $dbu           = new DbUtils();
         $allActivities = $dbu->getAllDataFromTable($activity->getTable());
 
-        $query  = PlanningExternalEvent::queryUserExternalEvents($crit);
-        $result = $DB->doQuery($query);
-
-        $number = $DB->numrows($result);
-        $values = [];
-        if ($DB->numrows($result)) {
-            while ($data = DBmysql::fetchArray($result)) {
+        $result  = $DB->request(PlanningExternalEvent::queryUserExternalEvents($crit));
+        $values  = [];
+        if (count($result)) {
+            foreach ($result as $data) {
                 $values = $report->timeRepartition($data['actiontime'] / $AllDay, $data["begin"], $values, Report::$WORK, $data['id'], $holiday->getHolidays(), ['real_hour' => true]);
             }
             $currentime = date("Y-m-d H:i:s");
@@ -711,7 +698,7 @@ class Dashboard extends CommonGLPI
         $values       = [];
         $holidaytypes = [];
         if ($DB->numrows($resulth)) {
-            while ($datah = DBmysql::fetchArray($resulth)) {
+            while ($datah = $DB->fetchArray($resulth)) {
                 //$isallday = false;
                 //if ($datah['allDay'] == 1) {
                 //   $isallday = true;
@@ -754,9 +741,8 @@ class Dashboard extends CommonGLPI
         }
 
         // TICKETS
-        $tickets = PlanningExternalEvent::queryTickets($crit);
-        $resultt = $DB->doQuery($tickets);
-        $numbert = $DB->numrows($resultt);
+        $resultt = $DB->request(PlanningExternalEvent::queryTickets($crit));
+        $numbert = count($resultt);
 
         if ($numbert != "0") {
             $mtitle     = "";
@@ -765,7 +751,7 @@ class Dashboard extends CommonGLPI
             $alltickets = [];
             $all        = [];
             $tickets    = [];
-            while ($datat = $DB->fetchArray($resultt)) {
+            foreach ($resultt as $datat) {
                 $mtitle   = strtoupper($datat["entity"]) . " > " . __('Ticket');
                 $internal = ActivityConfig::getConfigFromDB($datat['entities_id']);
                 if ($internal) {

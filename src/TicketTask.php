@@ -33,6 +33,8 @@ use CommonDBTM;
 use DbUtils;
 use Dropdown;
 use Glpi\Application\View\TemplateRenderer;
+use Glpi\DBAL\QueryExpression;
+use Glpi\DBAL\QuerySubQuery;
 use Glpi\RichText\RichText;
 use Html;
 use Plugin;
@@ -213,61 +215,82 @@ class TicketTask extends CommonDBTM
         $begin      = $options['begin'];
         $end        = $options['end'];
 
-        $query = "SELECT    `glpi_tickettasks`.*,
-                          `glpi_plugin_activity_tickettasks`.`is_oncra`,
-                          `glpi_entities`.`name` AS entity,
-                          `glpi_tickets`.`name`,
-                          `glpi_tickets`.`id` AS tickets_id,
-                          `glpi_entities`.`id` AS entities_id
-                     FROM `glpi_tickettasks`
-                     INNER JOIN `glpi_tickets`
-                        ON (`glpi_tickets`.`id` = `glpi_tickettasks`.`tickets_id` AND `glpi_tickets`.`is_deleted` = 0)
-                     LEFT JOIN `glpi_entities`
-                        ON (`glpi_tickets`.`entities_id` = `glpi_entities`.`id`)
-                     LEFT JOIN `glpi_plugin_activity_tickettasks`
-                        ON (`glpi_tickettasks`.`id` = `glpi_plugin_activity_tickettasks`.`tickettasks_id`) ";
-        $query .= "WHERE ";
+        $entityRestrict = getEntitiesRestrictCriteria('glpi_tickets', '', $_SESSION["glpiactiveentities"], false);
+
+        $where = [
+            'glpi_tickettasks.actiontime'                    => ['!=', 0],
+            'glpi_plugin_activity_tickettasks.is_oncra'      => 1,
+            'OR' => [
+                [
+                    'AND' => array_merge([
+                        ['glpi_tickettasks.begin' => ['>=', $begin]],
+                        ['glpi_tickettasks.end'   => ['<=', $end]],
+                        'glpi_tickettasks.users_id_tech' => $who,
+                    ], $entityRestrict),
+                ],
+                [
+                    'AND' => array_merge([
+                        ['glpi_tickettasks.date'  => ['>=', $begin]],
+                        ['glpi_tickettasks.date'  => ['<=', $end]],
+                        'glpi_tickettasks.users_id' => $who,
+                        'glpi_tickettasks.begin'    => null,
+                    ], $entityRestrict),
+                ],
+            ],
+        ];
+
         if (Plugin::isPluginActive('manageentities')) {
-            $query .= "`glpi_tickettasks`.`tickets_id`
-                     NOT IN (SELECT `tickets_id`
-                              FROM `glpi_plugin_manageentities_cridetails`) AND ";
+            $where['glpi_tickettasks.tickets_id'] = ['NOT IN', new QuerySubQuery([
+                'SELECT' => 'tickets_id',
+                'FROM'   => 'glpi_plugin_manageentities_cridetails',
+            ])];
         }
-        $dbu = new DbUtils();
-        $query .= "((`glpi_tickettasks`.`begin` >= '".$begin."'
-                           AND `glpi_tickettasks`.`end` <= '".$end."'
-                           AND `glpi_tickettasks`.`users_id_tech` = '".$who."' ".
-                $dbu->getEntitiesRestrictRequest(
-                    "AND",
-                    "glpi_tickets",
-                    '',
-                    $_SESSION["glpiactiveentities"],
-                    false
-                );
-        $query.= "                     )
-                           OR (`glpi_tickettasks`.`date` >= '".$begin."'
-                           AND `glpi_tickettasks`.`date` <= '".$end."'
-                           AND `glpi_tickettasks`.`users_id` = '".$who."'
-                           AND `glpi_tickettasks`.`begin` IS NULL ".$dbu->getEntitiesRestrictRequest(
-                               "AND",
-                               "glpi_tickets",
-                               '',
-                               $_SESSION["glpiactiveentities"],
-                               false
-                           );
-        $query.= " )) AND `glpi_tickettasks`.`actiontime` != 0
-                  AND `glpi_plugin_activity_tickettasks`.`is_oncra` = 1";
-        $query.= " ORDER BY `glpi_tickettasks`.`begin` ASC";
-        $result = $DB->doQuery($query);
 
-        $number = $DB->numrows($result);
+        $iterator = $DB->request([
+            'SELECT'     => [
+                'glpi_tickettasks.*',
+                'glpi_plugin_activity_tickettasks.is_oncra',
+                new QueryExpression('`glpi_entities`.`name` AS `entity`'),
+                'glpi_tickets.name',
+                new QueryExpression('`glpi_tickets`.`id` AS `tickets_id`'),
+                new QueryExpression('`glpi_entities`.`id` AS `entities_id`'),
+            ],
+            'FROM'       => 'glpi_tickettasks',
+            'INNER JOIN' => [
+                'glpi_tickets' => [
+                    'ON' => [
+                        'glpi_tickets'    => 'id',
+                        'glpi_tickettasks' => 'tickets_id',
+                        ['AND' => ['glpi_tickets.is_deleted' => 0]],
+                    ],
+                ],
+            ],
+            'LEFT JOIN'  => [
+                'glpi_entities' => [
+                    'ON' => [
+                        'glpi_tickets'  => 'entities_id',
+                        'glpi_entities' => 'id',
+                    ],
+                ],
+                'glpi_plugin_activity_tickettasks' => [
+                    'ON' => [
+                        'glpi_tickettasks'                  => 'id',
+                        'glpi_plugin_activity_tickettasks'  => 'tickettasks_id',
+                    ],
+                ],
+            ],
+            'WHERE' => $where,
+            'ORDER' => 'glpi_tickettasks.begin ASC',
+        ]);
 
-        $activities     = [];
+        $activities = [];
 
-        if ($number) {
-            $allTickets       = [];
-            $privateTickets   = [];
+        if (count($iterator)) {
+            $allTickets     = [];
+            $privateTickets = [];
+            $self           = new self();
 
-            while ($datat = $DB->fetchArray($result)) {
+            foreach ($iterator as $datat) {
                 $mtitle   = $datat["entity"]." > ".__('Ticket');
                 $internal = Config::getConfigFromDB($datat['entities_id']);
                 if ($internal) {
@@ -281,10 +304,9 @@ class TicketTask extends CommonDBTM
                 } else {
                     $begin = $datat["date"];
                 }
-                $report     = new Report();
-                $holiday    = new Holiday();
-                $self        = new self();
-                $AllDay     = Report::getAllDay();
+                $report  = new Report();
+                $holiday = new Holiday();
+                $AllDay  = Report::getAllDay();
                 $opt        = new Option();
                 $opt->getFromDB(1);
 

@@ -242,22 +242,27 @@ class HolidayCount extends CommonDBTM
             $next_annee = intval(date('Y', time()) + 1);
         }
 
-        $query = " SELECT `glpi_plugin_activity_holidaycounts`.*
-                              FROM `glpi_plugin_activity_holidaycounts`
-                              LEFT JOIN `glpi_plugin_activity_holidayperiods`
-                                 ON (`glpi_plugin_activity_holidaycounts`.`plugin_activity_holidayperiods_id` = `glpi_plugin_activity_holidayperiods`.`id`)
-                              WHERE `users_id`='" . $user_id . "'
-                                 AND `glpi_plugin_activity_holidaycounts`.`plugin_activity_holidaytypes_id` = '" . $plugin_activity_holidaytypes_id . "'
-                                 AND `glpi_plugin_activity_holidayperiods`.`begin` >= '" . $old_annee . "-06-01'
-                                 AND `glpi_plugin_activity_holidayperiods`.`end` <= '" . $next_annee . "-05-31'";
+        $iterator = $DB->request([
+            'SELECT'    => ['glpi_plugin_activity_holidaycounts.*'],
+            'FROM'      => 'glpi_plugin_activity_holidaycounts',
+            'LEFT JOIN' => [
+                'glpi_plugin_activity_holidayperiods' => [
+                    'ON' => [
+                        'glpi_plugin_activity_holidaycounts' => 'plugin_activity_holidayperiods_id',
+                        'glpi_plugin_activity_holidayperiods' => 'id',
+                    ],
+                ],
+            ],
+            'WHERE' => [
+                'glpi_plugin_activity_holidaycounts.users_id'                        => $user_id,
+                'glpi_plugin_activity_holidaycounts.plugin_activity_holidaytypes_id' => $plugin_activity_holidaytypes_id,
+                'glpi_plugin_activity_holidayperiods.begin' => ['>=', $old_annee . '-06-01'],
+                'glpi_plugin_activity_holidayperiods.end'   => ['<=', $next_annee . '-05-31'],
+            ],
+        ]);
 
-        $result = $DB->doQuery($query);
-        $number = $DB->numrows($result);
-
-        if ($number) {
-            while ($data = $DB->fetchArray($result)) {
-                $count += $data['count'];
-            }
+        foreach ($iterator as $data) {
+            $count += $data['count'];
         }
         return $count;
     }
@@ -278,17 +283,15 @@ class HolidayCount extends CommonDBTM
 
         $hcounts = [];
 
-        $query = " SELECT *
-               FROM `glpi_plugin_activity_holidayperiods`
-               WHERE NOT `archived`";
+        $iterator = $DB->request([
+            'FROM'  => 'glpi_plugin_activity_holidayperiods',
+            'WHERE' => [
+                'NOT' => ['archived' => 1],
+            ],
+        ]);
 
-        $result = $DB->doQuery($query);
-        $number = $DB->numrows($result);
-
-        if ($number) {
-            while ($data = $DB->fetchArray($result)) {
-                $hcounts[] = $data;
-            }
+        foreach ($iterator as $data) {
+            $hcounts[] = $data;
         }
         return $hcounts;
     }
@@ -307,23 +310,30 @@ class HolidayCount extends CommonDBTM
             }
         }
 
-        $query = " SELECT `glpi_plugin_activity_holidaycounts`.*
-                              FROM `glpi_plugin_activity_holidaycounts`
-                              LEFT JOIN `glpi_plugin_activity_holidayperiods`
-                                 ON (`glpi_plugin_activity_holidaycounts`.`plugin_activity_holidayperiods_id` = `glpi_plugin_activity_holidayperiods`.`id`)
-                              WHERE `users_id`='" . $user_id . "'
-                                 AND `glpi_plugin_activity_holidayperiods`.`short_name` LIKE '" . $period . "' ";
+        $where = [
+            'glpi_plugin_activity_holidaycounts.users_id'       => $user_id,
+            'glpi_plugin_activity_holidayperiods.short_name'   => ['LIKE', $period]
+        ];
         if (count($period_id) > 0) {
-            $query .= "AND `glpi_plugin_activity_holidaycounts`.`plugin_activity_holidayperiods_id` IN (" . implode(',', $period_id) . ")";
+            $where['glpi_plugin_activity_holidaycounts.plugin_activity_holidayperiods_id'] = $period_id;
         }
 
-        $result = $DB->doQuery($query);
-        $number = $DB->numrows($result);
+        $iterator = $DB->request([
+            'SELECT'    => ['glpi_plugin_activity_holidaycounts.*'],
+            'FROM'      => 'glpi_plugin_activity_holidaycounts',
+            'LEFT JOIN' => [
+                'glpi_plugin_activity_holidayperiods' => [
+                    'ON' => [
+                        'glpi_plugin_activity_holidaycounts' => 'plugin_activity_holidayperiods_id',
+                        'glpi_plugin_activity_holidayperiods' => 'id',
+                    ],
+                ],
+            ],
+            'WHERE' => $where,
+        ]);
 
-        if ($number) {
-            while ($data = $DB->fetchArray($result)) {
-                $hcounts[] = $data;
-            }
+        foreach ($iterator as $data) {
+            $hcounts[] = $data;
         }
         return $hcounts;
     }
