@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-03 10:39+0000\n"
+"POT-Creation-Date: 2026-07-03 11:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -103,6 +103,7 @@ msgstr ""
 msgid "Answer to a personal holiday request"
 msgstr ""
 
+#: templates/holiday_massive_action_subform.html.twig:30
 #: templates/holiday_validation_summary.html.twig:95
 msgid "Approval"
 msgstr ""
@@ -125,7 +126,7 @@ msgstr ""
 msgid "Approval requester"
 msgstr ""
 
-#: src/Holiday.php:496 src/Holiday.php:2076
+#: src/Holiday.php:496 src/Holiday.php:1981
 msgid "Approve holiday"
 msgid_plural "Approve holidays"
 msgstr[0] ""
@@ -181,11 +182,11 @@ msgstr ""
 msgid "Child entities"
 msgstr ""
 
-#: src/Holiday.php:2052
+#: src/Holiday.php:1957
 msgid "Choose the DD, MM d"
 msgstr ""
 
-#: src/Holiday.php:2054
+#: src/Holiday.php:1959
 msgid "Choose the date"
 msgstr ""
 
@@ -197,11 +198,11 @@ msgstr ""
 msgid "Client"
 msgstr ""
 
-#: src/Holiday.php:2041
+#: src/Holiday.php:1946
 msgid "Close without clearing"
 msgstr ""
 
-#: src/Holiday.php:2105
+#: templates/holiday_massive_action_subform.html.twig:34
 msgid "Comment"
 msgid_plural "Comments"
 msgstr[0] ""
@@ -225,11 +226,11 @@ msgid "Counter"
 msgstr ""
 
 #: src/Profile.php:115 src/PlanningExternalEvent.php:121 src/Holiday.php:483
-#: src/LateralMenu.php:71
+#: src/LateralMenu.php:69
 msgid "Create a holiday request"
 msgstr ""
 
-#: src/HolidayCount.php:411
+#: templates/lateral_menu.html.twig:58
 msgid "Cumul"
 msgstr ""
 
@@ -247,6 +248,13 @@ msgstr ""
 #: templates/holiday_validation_summary.html.twig:92
 msgid "Date"
 msgstr ""
+
+#: templates/holiday_details_row.html.twig:30
+#: templates/holiday_details_row.html.twig:31
+msgid "Day"
+msgid_plural "Days"
+msgstr[0] ""
+msgstr[1] ""
 
 #: templates/option_form.html.twig:150
 msgid "Default validation percent"
@@ -320,7 +328,7 @@ msgstr ""
 msgid "Failed Mail send"
 msgstr ""
 
-#: src/Holiday.php:1483
+#: templates/holiday_link_txt.html.twig:34
 msgid "Generate TXT file for this holiday"
 msgstr ""
 
@@ -394,7 +402,7 @@ msgstr ""
 msgid "Interventions not in CRA"
 msgstr ""
 
-#: src/Holiday.php:2356
+#: templates/holiday_details_row.html.twig:31
 msgid "Leave awaiting validation"
 msgstr ""
 
@@ -592,11 +600,11 @@ msgstr ""
 msgid "Refuse holiday"
 msgstr ""
 
-#: src/HolidayCount.php:336
+#: templates/lateral_menu.html.twig:41
 msgid "Remaining holidays"
 msgstr ""
 
-#: src/Holiday.php:2355
+#: templates/holiday_details_row.html.twig:30
 msgid "Remaining holidays for the period"
 msgstr ""
 
@@ -624,23 +632,23 @@ msgctxt "button"
 msgid "Save"
 msgstr ""
 
-#: src/Holiday.php:2047
+#: src/Holiday.php:1952
 msgid "See another month"
 msgstr ""
 
-#: src/Holiday.php:2047
+#: src/Holiday.php:1952
 msgid "See another year"
 msgstr ""
 
-#: src/Holiday.php:2044
+#: src/Holiday.php:1949
 msgid "See current month"
 msgstr ""
 
-#: src/Holiday.php:2043
+#: src/Holiday.php:1948
 msgid "See next month"
 msgstr ""
 
-#: src/Holiday.php:2042
+#: src/Holiday.php:1947
 msgid "See previous month"
 msgstr ""
 
@@ -648,7 +656,7 @@ msgstr ""
 msgid "See the page"
 msgstr ""
 
-#: src/Holiday.php:1429
+#: templates/holiday_error_registration.html.twig:33
 msgid "See this page"
 msgstr ""
 
@@ -755,7 +763,7 @@ msgstr ""
 msgid "Unbilled"
 msgstr ""
 
-#: src/Holiday.php:2052
+#: src/Holiday.php:1957
 msgid "Use DD as first day of week"
 msgstr ""
 
@@ -771,8 +779,8 @@ msgstr ""
 msgid "Use hour on cra and not half day"
 msgstr ""
 
-#: src/ProjectTask.php:142
 #: templates/planningexternalevent_post_item_form.html.twig:31
+#: templates/projecttask_post_form.html.twig:29
 #: templates/tickettask_post_form.html.twig:33
 msgid "Use in CRA"
 msgstr ""
@@ -819,7 +827,7 @@ msgstr[1] ""
 msgid "User is mandatory field"
 msgstr ""
 
-#: src/HolidayCount.php:356 src/HolidayCount.php:392
+#: templates/lateral_menu.html.twig:52
 msgid "Valid until"
 msgstr ""
 
@@ -856,7 +864,7 @@ msgstr ""
 msgid "You have not declared any manager yet."
 msgstr ""
 
-#: src/Holiday.php:1427
+#: templates/holiday_error_registration.html.twig:31
 msgid ""
 "You must fill a registration number for this user before generating the TXT "
 "file."
