@@ -31,6 +31,7 @@ namespace GlpiPlugin\Activity;
 
 use Ajax;
 use CommonDBTM;
+use Glpi\Application\View\TemplateRenderer;
 use Session;
 
 if (!defined('GLPI_ROOT')) {
@@ -51,19 +52,16 @@ class LateralMenu extends CommonDBTM
             Action::APPROVE_HOLIDAYS,
         ];
 
-        echo "<div class='d-grid gap-2 mb-3'>";
+        $actions = [];
         foreach ($listActions as $key => $action) {
             if (in_array($key, $types) && $action['rights']) {
-                echo "<a href=\"" . $action['link'] . "\" class='btn btn-info'";
-                if (isset($action['onclick']) && !empty($action['onclick'])) {
-                    echo $action['onclick'];
-                }
-                echo ">";
-                echo $action['label'];
-                echo "</a>";
+                $actions[] = [
+                    'link'    => $action['link'],
+                    'label'   => $action['label'],
+                    'onclick' => $action['onclick'] ?? '',
+                ];
             }
         }
-        echo "</div>";
 
         Ajax::createIframeModalWindow(
             'holiday',
@@ -76,19 +74,21 @@ class LateralMenu extends CommonDBTM
             ]
         );
 
+        $holidays_summary = [];
         if (Session::haveRight("plugin_activity_can_requestholiday", 1)) {
             $holiday = new Holiday();
             $hcount  = new HolidayCount();
-
             $periods = $hcount->getCurrentPeriods();
-
             if (count($periods) > 0) {
-                $nbHolidays = $holiday->countNbHolidayByPeriod(Session::getLoginUserID(true), $periods);
-                echo "<table class='tab_cadre' width='100%'>";
-                $hcount->showHolidayDetailsByPeriod($nbHolidays);
-                echo "</table>";
+                $nbHolidays      = $holiday->countNbHolidayByPeriod(Session::getLoginUserID(true), $periods);
+                $holidays_summary = $hcount->buildHolidayDetailsByPeriod($nbHolidays);
             }
         }
+
+        TemplateRenderer::getInstance()->display('@activity/lateral_menu.html.twig', [
+            'actions'          => $actions,
+            'holidays_summary' => $holidays_summary,
+        ]);
     }
 
     /**

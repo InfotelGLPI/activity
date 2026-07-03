@@ -1377,57 +1377,17 @@ class Holiday extends CommonDBTM
         $this->initJQDatepicker();
     }
 
-   /**
-    * Show a checkbox on view
-    *
-    * @param $params :
-    *    value    : value of the checkbox
-    *    cb_id    : id of the checkbox
-    *    name     : name of the checkbox
-    *    checked  : true for a checked checkbox
-    *    disabled : true for a disabled checkbox
-    *    title    : text to show for the  checkbox
-    *
-    * Optional :
-    *    onclick  : onclick event on the checkbox
-    */
-    private function showCbPeriod($params)
-    {
-        global $CFG_GLPI;
-
-        $root_doc = json_encode(PLUGIN_ACTIVITY_WEBDIR);
-
-        if (isset($params['onclick'])) {
-            $onclick = $params['onclick'];
-        } else {
-            $onclick = "updateDuration(this, $root_doc);";
-        }
-
-        echo "<label for='" . $params['cb_id'] . "'>";
-        echo "   <input type='radio' name='" . $params['name'] . "' id='" . $params['cb_id'] . "' ";
-       //         echo "      onclick='updateRadioBtnDate(this);'";
-        echo "      value='" . $params['value'] . "'" . ($params['checked'] == true ? " checked='checked' " : '');
-        echo "      " . ($params['disabled'] == true ? " disabled='disabled' " : '');
-        echo "      onclick='" . $onclick . "'";
-        echo "   />";
-        echo "   &nbsp" . $params['title'];
-        echo "</label>&nbsp&nbsp;";
-    }
-
 
     private function showErrorRegistrationNumber()
     {
-
         $user = new User();
         $dbu  = new DbUtils();
         $user->getFromDB($this->fields['users_id']);
-        echo "<table class='tab_cadre_fixe'>";
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>\n";
-        echo "<i class='ti ti-info-circle'></i>&nbsp;" . __("You must fill a registration number for this user before generating the TXT file.", "activity");
-        echo "<br/>";
-        echo __("See this page", "activity") . " - <a href='" . $user->getLinkURL() . "' target='_blank'>" . $dbu->getUserName($user->fields['id']) . " </a>";
-        echo "</td></tr></table>";
+
+        TemplateRenderer::getInstance()->display('@activity/holiday_error_registration.html.twig', [
+            'user_url' => $user->getLinkURL(),
+            'username' => $dbu->getUserName($user->fields['id']),
+        ]);
     }
 
 
@@ -1474,67 +1434,13 @@ class Holiday extends CommonDBTM
         $url = PLUGIN_ACTIVITY_WEBDIR . "/front/generateTXTFile.php?holidays_id=$holidaysId";
 
         if (HolidayValidation::canValidate($holidaysId)) {
-            echo "<table class='tab_cadre_fixe'>";
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>\n";
-
-            echo "<ul style='list-style: none' >";
-            echo "<li style='margin-left:16px'><a href='$url' target='_blank' style='cursor:pointer;'>";
-            echo "<i style='font-size: 2em;' class='ti ti-file'></i>&nbsp;" . __('Generate TXT file for this holiday', 'activity');
-            echo "</a></li>";
-
-            $used_mail_for_holidays = "";
-            $opt                    = new Option();
-            $opt->getFromDB(1);
-            if ($opt) {
-                $used_mail_for_holidays = $opt->fields['used_mail_for_holidays'];
-            }
-           //         if (!empty($used_mail_for_holidays)) {
-           //            echo "<li style='margin-left:16px;'><a href='mailto:" . $used_mail_for_holidays;
-           //            echo "&Subject=" . __("Holiday request from", "activity") . " " . $userName . " " . __("of", "activity") . " " . $dateBegin;
-           //            echo "&Body=" . $this->getBodyMail($dateBegin, date("d/m/Y", strtotime($holiday->fields['begin'])), $userName, $approverFullname);
-           //
-           //            echo "'>";
-           //            echo "<i class='ti ti-mail'></i>&nbsp;" . __('Generate mail for this holiday', 'activity');
-           //            echo "</a></li>";
-           //         }
-//            echo "<li style='margin-left:16px;'><a href ='javascript:send()' id='send'><i style='font-size: 2em;' class='ti ti-mail'></i>&nbsp;" . __('Send the mail for this holiday', 'activity') . "</a>";
-
-//            echo "</li>";
-//            echo Html::scriptBlock("
-//
-//                        function send(){
-//                           $.ajax({
-//                              url:  '" . PLUGIN_ACTIVITY_WEBDIR . "/ajax/sendmail.php?holidays_id=$holidaysId',
-//                              type: 'GET'
-//
-//
-//                           }).done(function(data) {
-//                              window.location.reload()
-//                           })
-//                        }
-//                    ;");
-            echo "</ul>";
-            echo "</td></tr></table>";
+            TemplateRenderer::getInstance()->display('@activity/holiday_link_txt.html.twig', [
+                'url' => $url,
+            ]);
         }
     }
 
 
-   /**
-    * This function allows to show javascript headers, needed to javascript and ajax purpose.
-    */
-    public function showHeaderJS()
-    {
-        echo "\n<script type='text/javascript'>\n";
-    }
-
-   /**
-    * This function close a javascript block (used after showHeaderJs() ).
-    */
-    public function closeFormJS()
-    {
-        echo "</script>\n";
-    }
 
 
     static function getAlreadyPlannedInformation($val)
@@ -1999,8 +1905,7 @@ class Holiday extends CommonDBTM
     */
     public function initDate($id)
     {
-        global $CFG_GLPI;
-        $this->showHeaderJS();
+        echo "\n<script type='text/javascript'>\n";
         echo "$(document).ready(function() {
                $('#" . $id . "').datepicker({
                        showOn: 'both',
@@ -2017,7 +1922,7 @@ class Holiday extends CommonDBTM
                       $(this).css('cursor', 'pointer');
                    });
                });";
-        $this->closeFormJS();
+        echo "</script>\n";
     }
 
 
@@ -2081,38 +1986,31 @@ class Holiday extends CommonDBTM
 
     static function showMassiveActionsSubForm(MassiveAction $ma)
     {
+        if ($ma->getAction() === 'updateAllValidations') {
+            ob_start();
+            CommonValidation::dropdownStatus('global_validation', [
+                'name'    => _n('Status', 'Statuses', 1),
+                'field'   => 'global_validation',
+                'display' => true,
+                'value'   => CommonValidation::WAITING,
+                'id'      => '',
+            ]);
+            $validation_status_dropdown_html = ob_get_clean();
 
-        switch ($ma->getAction()) {
-            case "updateAllValidations":
-                $options['name']    = _n('Status', 'Statuses', 1);
-                $options['field']   = 'global_validation';
-                $options['display'] = true;
-                $options['value']   = CommonValidation::WAITING;
-                $options['id']      = '';
+            ob_start();
+            Html::textarea([
+                'name'            => 'comment_validation',
+                'id'              => 'comment_validation',
+                'cols'            => 30,
+                'rows'            => 8,
+                'enable_richtext' => false,
+            ]);
+            $comment_textarea_html = ob_get_clean();
 
-                echo "<table class='tab_cadre'>";
-                echo "   <tr class='tab_bg_1'>";
-                echo "      <td >";
-                echo __('Approval');
-                echo "      </td>";
-
-                echo "      <td >";
-                CommonValidation::dropdownStatus($options['field'], $options);
-                echo "      </td>";
-                echo "   </tr>";
-
-                echo "   <tr class='tab_bg_1'>";
-                echo "      <td>" . _n('Comment', 'Comments', 1, 'activity') . "</td>";
-                echo "      <td>";
-                Html::textarea(['name'            => 'comment_validation',
-                            'id'           => 'comment_validation',
-                            'cols'       => 30,
-                            'rows'       => 8,
-                            'enable_richtext' => false]);
-                echo "</td>";
-                echo " </tr>";
-                echo "</table>";
-                break;
+            TemplateRenderer::getInstance()->display('@activity/holiday_massive_action_subform.html.twig', [
+                'validation_status_dropdown_html' => $validation_status_dropdown_html,
+                'comment_textarea_html'           => $comment_textarea_html,
+            ]);
         }
 
         return parent::showMassiveActionsSubForm($ma);
@@ -2312,28 +2210,29 @@ class Holiday extends CommonDBTM
    /*from lateralmenu*/
     function showHolidayDetailsByType($nbHolidays)
     {
-
-       //echo "<table style='margin:10px'>";
-
+        $rows = [];
         foreach ($nbHolidays as $type => $val) {
             if ($val['total'] > 0) {
-                echo "<tr><td>" . Report::getHolidayName($type) . "</td><td>" . $val['total'] . "</td></tr>";
+                $sub_types = [];
                 if (isset($val['sub_types'])) {
                     foreach ($val['sub_types'] as $subType => $subVal) {
-                        echo "<tr>";
-                        echo "<td><span class='activity_tree'></span>" . Dropdown::getDropdownName('glpi_plugin_activity_holidaytypes', $subType) . "</td>";
-                        echo "<td>" . $subVal . "</td>";
-                        //echo "<td>";
-                        //$hcount = new HolidayCount();
-                        //$count = $hcount->showCountForHolidayType($subType);
-                        //echo "(".$count.")";
-                        //echo "</td>";
-                        echo "</tr>";
+                        $sub_types[] = [
+                            'name'  => Dropdown::getDropdownName('glpi_plugin_activity_holidaytypes', $subType),
+                            'count' => $subVal,
+                        ];
                     }
                 }
+                $rows[] = [
+                    'name'      => Report::getHolidayName($type),
+                    'total'     => $val['total'],
+                    'sub_types' => $sub_types,
+                ];
             }
         }
-       //echo "</table>";
+
+        TemplateRenderer::getInstance()->display('@activity/holiday_details_by_type.html.twig', [
+            'rows' => $rows,
+        ]);
     }
 
     function getDetails($users_id, $holiday_period_id)
@@ -2345,16 +2244,14 @@ class Holiday extends CommonDBTM
             $nbdays  = $holiday->getNbDayByHolidayPeriod($users_id, $holiday_period_id, [CommonValidation::ACCEPTED,
              CommonValidation::WAITING]);
 
-           //Total remaining
             $total_remaining_validated = $holidaycount->fields['count'] - $nbdays;
 
-            $holiday         = new Holiday();
             $total_remaining = $holiday->getNbDayByHolidayPeriod($users_id, $holiday_period_id, [CommonValidation::WAITING]);
 
-            echo "<tr id='tr_plugin_activity_details'><td colspan='2'>";
-            echo __('Remaining holidays for the period', 'activity') . ": " . $total_remaining_validated . " " . strtolower(_n('Day', 'Days', 2)) . "<br>";
-            echo __('Leave awaiting validation', 'activity') . ": " . $total_remaining . " " . strtolower(_n('Day', 'Days', 2));
-            echo "</td></tr>";
+            TemplateRenderer::getInstance()->display('@activity/holiday_details_row.html.twig', [
+                'total_remaining_validated' => $total_remaining_validated,
+                'total_remaining'           => $total_remaining,
+            ]);
         }
     }
 

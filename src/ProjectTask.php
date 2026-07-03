@@ -32,6 +32,7 @@ namespace GlpiPlugin\Activity;
 use CommonDBTM;
 use DbUtils;
 use Dropdown;
+use Glpi\Application\View\TemplateRenderer;
 
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
@@ -137,16 +138,13 @@ class ProjectTask extends CommonDBTM
             $is_cra_default = $projecttask->fields['is_oncra'] ?? $is_cra_default;
         }
 
-        echo '<tr class="tab_bg_1">';
-        echo '<td>';
-        echo __('Use in CRA', 'activity');
-        echo '</td>';
-        echo '<td>';
-
+        ob_start();
         Dropdown::showYesNo('is_oncra', $is_cra_default, -1, ['value' => 1]);
-        echo '</td>';
-        echo '<td colspan="2"></td>';
-        echo '</tr>';
+        $is_oncra_dropdown_html = ob_get_clean();
+
+        TemplateRenderer::getInstance()->display('@activity/projecttask_post_form.html.twig', [
+            'is_oncra_dropdown_html' => $is_oncra_dropdown_html,
+        ]);
     }
 
     public static function queryProjectTask($criteria)

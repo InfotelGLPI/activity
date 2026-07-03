@@ -329,92 +329,59 @@ class HolidayCount extends CommonDBTM
     }
 
    /*from lateralmenu*/
-    function showHolidayDetailsByPeriod($nbHolidays)
+    function buildHolidayDetailsByPeriod($nbHolidays): array
     {
-
-        if ($nbHolidays['total'] != 0) {
-            echo "<tr class='tab_bg_1'><td colspan='2'><b>" . __('Remaining holidays', 'activity') . " : </b></td></tr>";
-            $total         = 0;
-            $total_holiday = 0;
-
-            $CP       = $this->showCountForHolidayTypeAndPeriod(HolidayType::CP, $nbHolidays);
-            $total_CP = 0;
-            foreach ($CP as $key => $val) {
-                $total_by_period = $val['count'];
-
-                $CP = $total_by_period - $nbHolidays['period'][$val['plugin_activity_holidayperiods_id']];
-                if ($CP > 0) {
-                    echo "<tr>";
-                    echo "<td colspan='2'>" . Dropdown::getDropdownName('glpi_plugin_activity_holidayperiods', $val['plugin_activity_holidayperiods_id']) . "</td>";
-                    echo "</tr>";
-
-                    $holidayperiod = new HolidayPeriod();
-                    $holidayperiod->getFromDB($val['plugin_activity_holidayperiods_id']);
-
-                    echo "<tr>";
-                    echo "<td><span class='activity_tree'></span>";
-                    echo __('Valid until', 'activity');
-                    echo "&nbsp;";
-
-                    echo Html::convDate($holidayperiod->fields['end']);
-                    echo "</td>";
-
-
-                    echo "<td>";
-                    echo $CP;
-                    echo "</td>";
-                    echo "</tr>";
-                }
-
-                $total_CP += $CP;
-            }
-
-            $RT        = $this->showCountForHolidayTypeAndPeriod(HolidayType::RTT, $nbHolidays);
-            $total_RTT = 0;
-
-            foreach ($RT as $key => $val) {
-                $total_by_period = $val['count'];
-
-                $RTT = $total_by_period - $nbHolidays['period'][$val['plugin_activity_holidayperiods_id']];
-                if ($RTT > 0) {
-                    $holidayperiod = new HolidayPeriod();
-                    $holidayperiod->getFromDB($val['plugin_activity_holidayperiods_id']);
-
-                    echo "<tr>";
-                    echo "<td colspan='2'>";
-                    echo $holidayperiod->getName();
-                    //echo __('RTT', 'activity');
-                    echo "</td>";
-                    echo "</tr>";
-
-                    echo "<tr>";
-                    echo "<td><span class='activity_tree'></span>";
-                    echo __('Valid until', 'activity');
-                    echo "&nbsp;";
-
-                    echo Html::convDate($holidayperiod->fields['end']);
-                    echo "</td>";
-
-
-
-                    echo "<td>";
-                    echo $RTT;
-                    echo "</td>";
-                    echo "</tr>";
-                }
-
-                $total_RTT += $RTT;
-            }
-
-            echo "<tr>";
-            echo "<td>";
-            echo __('Cumul', 'activity');
-            echo "</td>";
-
-            echo "<td>";
-            echo $total_CP + $total_RTT;
-            echo "</td>";
-            echo "</tr>";
+        if ($nbHolidays['total'] == 0) {
+            return ['has_data' => false, 'rows' => []];
         }
+
+        $rows     = [];
+        $total_CP = 0;
+
+        $CP = $this->showCountForHolidayTypeAndPeriod(HolidayType::CP, $nbHolidays);
+        foreach ($CP as $val) {
+            $remaining = $val['count'] - $nbHolidays['period'][$val['plugin_activity_holidayperiods_id']];
+            if ($remaining > 0) {
+                $holidayperiod = new HolidayPeriod();
+                $holidayperiod->getFromDB($val['plugin_activity_holidayperiods_id']);
+                $rows[] = [
+                    'type'  => 'period_header',
+                    'label' => Dropdown::getDropdownName('glpi_plugin_activity_holidayperiods', $val['plugin_activity_holidayperiods_id']),
+                ];
+                $rows[] = [
+                    'type'     => 'period_detail',
+                    'end_date' => Html::convDate($holidayperiod->fields['end']),
+                    'count'    => $remaining,
+                ];
+            }
+            $total_CP += $remaining;
+        }
+
+        $RT        = $this->showCountForHolidayTypeAndPeriod(HolidayType::RTT, $nbHolidays);
+        $total_RTT = 0;
+        foreach ($RT as $val) {
+            $remaining = $val['count'] - $nbHolidays['period'][$val['plugin_activity_holidayperiods_id']];
+            if ($remaining > 0) {
+                $holidayperiod = new HolidayPeriod();
+                $holidayperiod->getFromDB($val['plugin_activity_holidayperiods_id']);
+                $rows[] = [
+                    'type'  => 'period_header',
+                    'label' => $holidayperiod->getName(),
+                ];
+                $rows[] = [
+                    'type'     => 'period_detail',
+                    'end_date' => Html::convDate($holidayperiod->fields['end']),
+                    'count'    => $remaining,
+                ];
+            }
+            $total_RTT += $remaining;
+        }
+
+        $rows[] = [
+            'type'  => 'total',
+            'count' => $total_CP + $total_RTT,
+        ];
+
+        return ['has_data' => true, 'rows' => $rows];
     }
 }
