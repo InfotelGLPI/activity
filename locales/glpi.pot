@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-03 11:33+0000\n"
+"POT-Creation-Date: 2026-07-03 11:40+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -694,6 +694,12 @@ msgstr ""
 
 #: templates/holiday_form.html.twig:54
 msgid "Start date"
+msgstr ""
+
+#: templates/holiday_validation_summary.html.twig:50
+#: templates/holiday_validation_summary.html.twig:91
+msgctxt "item"
+msgid "State"
 msgstr ""
 
 #: src/Profile.php:129
