@@ -691,14 +691,13 @@ class Dashboard extends CommonGLPI
 
         // HOLIDAYS
         $crit['global_validation'] = CommonValidation::ACCEPTED;
-        $queryh                    = Holiday::queryUserHolidays($crit);
-        $resulth                   = $DB->doQuery($queryh);
-        $numberh                   = $DB->numrows($resulth);
+        $resulth                   = $DB->request(Holiday::queryUserHolidays($crit));
+        $numberh                   = count($resulth);
 
         $values       = [];
         $holidaytypes = [];
-        if ($DB->numrows($resulth)) {
-            while ($datah = $DB->fetchArray($resulth)) {
+        if ($numberh) {
+            foreach ($resulth as $datah) {
                 //$isallday = false;
                 //if ($datah['allDay'] == 1) {
                 //   $isallday = true;

@@ -56,14 +56,18 @@ function plugin_activity_install()
     //TODO update tech_num & realtime (to `actiontime` int(11) NOT NULL DEFAULT '0') & use_planning -> is_planned (tinyint(1) NOT NULL DEFAULT '0',)
 
     if ($install || $update200) {
-        $query_id = "SELECT `id` FROM `glpi_notificationtemplates` WHERE `itemtype`='GlpiPlugin\\Activity\\Holiday' AND `name` = 'Holidays validation'";
-        $result = $DB->doQuery($query_id) or die ($DB->error());
-        $itemtype = $DB->result($result, 0, 'id');
+        $template = $DB->request([
+            'SELECT' => 'id',
+            'FROM'   => 'glpi_notificationtemplates',
+            'WHERE'  => [
+                'itemtype' => 'GlpiPlugin\\Activity\\Holiday',
+                'name'     => 'Holidays validation',
+            ],
+        ])->current();
+        $itemtype = $template['id'] ?? 0;
 
         if ($itemtype) {
-            $query = "INSERT INTO `glpi_notificationtemplatetranslations`
-                                 VALUES(NULL, " . $itemtype . ", '','##lang.activity.title##',
-'##lang.activity.title##
+            $content_text = '##lang.activity.title##
 ##lang.activity.url## : ##activity.url##
 ##lang.holiday.status## : ##holiday.status##
 ##lang.holiday.applicant.name## : ##holiday.applicant.name##
@@ -75,36 +79,49 @@ function plugin_activity_install()
 ##IFlang.holiday.date.validation####lang.holiday.date.validation## : ##holiday.date.validation####ENDIFlang.holiday.date.validation##
 ##IFlang.holiday.commentvalidation####lang.holiday.commentvalidation## : ##holiday.commentvalidation####endiflang.holiday.commentvalidation##
 ##lang.holiday.holidaytype## : ##holiday.holidaytype##
-##lang.activity.url## : ##activity.url##',
-      '&lt;strong&gt;##lang.activity.title## &lt;/strong&gt;&lt;ul&gt;&lt;li&gt;&lt;strong&gt;##lang.holiday.status## :&lt;/strong&gt; ##holiday.status##&lt;/li&gt;&lt;li&gt;&lt;strong&gt;##lang.activity.url## :&lt;/strong&gt; ##activity.url##&lt;/li&gt;&lt;li&gt;&lt;strong&gt;##lang.holiday.applicant.name## :&lt;/strong&gt; ##holiday.applicant.name##&lt;/li&gt;&lt;li&gt;&lt;strong&gt;##lang.holiday.begin.date## :&lt;/strong&gt; ##holiday.begin.date##&lt;/li&gt;&lt;li&gt;&lt;strong&gt;##lang.holiday.end.date## :&lt;/strong&gt; ##holiday.end.date##&lt;/li&gt;&lt;li&gt;&lt;strong&gt;##lang.holiday.nbdays## :&lt;/strong&gt; ##holiday.nbdays##&lt;/li&gt;&lt;li&gt;&lt;strong&gt;##lang.holiday.date.submission## :&lt;/strong&gt; ##holiday.date.submission##&lt;/li&gt;##IFlang.holiday.date.validation##&lt;li&gt;&lt;strong&gt;##lang.holiday.date.validation## :&lt;/strong&gt; ##holiday.date.validation##&lt;/li&gt;##ENDIFlang.holiday.date.validation####IFlang.holiday.commentvalidation##&lt;li&gt;&lt;strong&gt;##lang.holiday.commentvalidation## :&lt;/strong&gt; ##holiday.commentvalidation##&lt;/li&gt;##ENDIFlang.holiday.commentvalidation##&lt;li&gt;&lt;strong&gt;##lang.holiday.holidaytype## :&lt;/strong&gt; ##holiday.holidaytype##&lt;/li&gt;&lt;/ul&gt;');";
+##lang.activity.url## : ##activity.url##';
 
-            $DB->doQuery($query);
+            $content_html = '&lt;strong&gt;##lang.activity.title## &lt;/strong&gt;&lt;ul&gt;&lt;li&gt;&lt;strong&gt;##lang.holiday.status## :&lt;/strong&gt; ##holiday.status##&lt;/li&gt;&lt;li&gt;&lt;strong&gt;##lang.activity.url## :&lt;/strong&gt; ##activity.url##&lt;/li&gt;&lt;li&gt;&lt;strong&gt;##lang.holiday.applicant.name## :&lt;/strong&gt; ##holiday.applicant.name##&lt;/li&gt;&lt;li&gt;&lt;strong&gt;##lang.holiday.begin.date## :&lt;/strong&gt; ##holiday.begin.date##&lt;/li&gt;&lt;li&gt;&lt;strong&gt;##lang.holiday.end.date## :&lt;/strong&gt; ##holiday.end.date##&lt;/li&gt;&lt;li&gt;&lt;strong&gt;##lang.holiday.nbdays## :&lt;/strong&gt; ##holiday.nbdays##&lt;/li&gt;&lt;li&gt;&lt;strong&gt;##lang.holiday.date.submission## :&lt;/strong&gt; ##holiday.date.submission##&lt;/li&gt;##IFlang.holiday.date.validation##&lt;li&gt;&lt;strong&gt;##lang.holiday.date.validation## :&lt;/strong&gt; ##holiday.date.validation##&lt;/li&gt;##ENDIFlang.holiday.date.validation####IFlang.holiday.commentvalidation##&lt;li&gt;&lt;strong&gt;##lang.holiday.commentvalidation## :&lt;/strong&gt; ##holiday.commentvalidation##&lt;/li&gt;##ENDIFlang.holiday.commentvalidation##&lt;li&gt;&lt;strong&gt;##lang.holiday.holidaytype## :&lt;/strong&gt; ##holiday.holidaytype##&lt;/li&gt;&lt;/ul&gt;';
 
-            $query = "INSERT INTO `glpi_notifications` (`name`, `entities_id`, `itemtype`, `event`, `is_recursive`, `is_active`)
-                   VALUES ('New validation', 0, 'GlpiPlugin\\Activity\\Holiday', 'newvalidation', 1, 1);";
-            $DB->doQuery($query);
+            $DB->insert('glpi_notificationtemplatetranslations', [
+                'notificationtemplates_id' => $itemtype,
+                'language'                 => '',
+                'subject'                  => '##lang.activity.title##',
+                'content_text'             => $content_text,
+                'content_html'             => $content_html,
+            ]);
 
-            $query_id = "SELECT `id` FROM `glpi_notifications`
-               WHERE `name` = 'New validation' AND `itemtype` = 'GlpiPlugin\\Activity\\Holiday' AND `event` = 'newvalidation'";
-            $result = $DB->doQuery($query_id) or die ($DB->error());
-            $notification = $DB->result($result, 0, 'id');
+            $DB->insert('glpi_notifications', [
+                'name'         => 'New validation',
+                'entities_id'  => 0,
+                'itemtype'     => 'GlpiPlugin\\Activity\\Holiday',
+                'event'        => 'newvalidation',
+                'is_recursive' => 1,
+                'is_active'    => 1,
+            ]);
+            $notification = $DB->insertId();
 
-            $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`)
-               VALUES (" . $notification . ", 'mailing', " . $itemtype . ");";
-            $DB->doQuery($query);
+            $DB->insert('glpi_notifications_notificationtemplates', [
+                'notifications_id'         => $notification,
+                'mode'                     => 'mailing',
+                'notificationtemplates_id' => $itemtype,
+            ]);
 
-            $query = "INSERT INTO `glpi_notifications` (`name`, `entities_id`, `itemtype`, `event`, `is_recursive`, `is_active`)
-                   VALUES ('Answer validation', 0, 'GlpiPlugin\\Activity\\Holiday', 'answervalidation', 1, 1);";
-            $DB->doQuery($query);
+            $DB->insert('glpi_notifications', [
+                'name'         => 'Answer validation',
+                'entities_id'  => 0,
+                'itemtype'     => 'GlpiPlugin\\Activity\\Holiday',
+                'event'        => 'answervalidation',
+                'is_recursive' => 1,
+                'is_active'    => 1,
+            ]);
+            $notification = $DB->insertId();
 
-            $query_id = "SELECT `id` FROM `glpi_notifications`
-               WHERE `name` = 'Answer validation' AND `itemtype` = 'GlpiPlugin\\Activity\\Holiday' AND `event` = 'answervalidation'";
-            $result = $DB->doQuery($query_id) or die ($DB->error());
-            $notification = $DB->result($result, 0, 'id');
-
-            $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`)
-               VALUES (" . $notification . ", 'mailing', " . $itemtype . ");";
-            $DB->doQuery($query);
+            $DB->insert('glpi_notifications_notificationtemplates', [
+                'notifications_id'         => $notification,
+                'mode'                     => 'mailing',
+                'notificationtemplates_id' => $itemtype,
+            ]);
         }
     }
 

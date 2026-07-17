@@ -36,5 +36,13 @@ header("Content-Type: text/html; charset=UTF-8");
 $holiday = new Holiday();
 
 if (isset($_POST['load_holiday_details'])) {
-   $holiday->getDetails($_POST['users_id'], $_POST['holiday_period_id']);
+   $target_users_id = (int) $_POST['users_id'];
+   // Only the session user may read their own leave balance, unless the profile
+   // holds the "all users" right (the right gating every other cross-user view).
+   if ($target_users_id !== Session::getLoginUserID()
+       && !Session::haveRight('plugin_activity_all_users', 1)) {
+      http_response_code(403);
+      return;
+   }
+   $holiday->getDetails($target_users_id, $_POST['holiday_period_id']);
 }
