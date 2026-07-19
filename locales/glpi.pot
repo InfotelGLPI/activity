@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-17 14:19+0000\n"
+"POT-Creation-Date: 2026-07-19 21:14+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -51,7 +51,7 @@ msgstr ""
 
 #: src/Report.php:1140 src/Config.php:51 src/Menu.php:39 src/Profile.php:57
 #: src/Profile.php:108 src/Preference.php:70 front/menu.php:52 setup.php:212
-#: ajax/loadscripts.php:49
+#: ajax/loadscripts.php:50
 msgid "Activity"
 msgid_plural "Activity"
 msgstr[0] ""
@@ -91,11 +91,11 @@ msgstr ""
 msgid "All day"
 msgstr ""
 
-#: ajax/preferenceactions.php:53
+#: ajax/preferenceactions.php:56
 msgid "An error happend while adding the manager"
 msgstr ""
 
-#: ajax/preferenceactions.php:60
+#: ajax/preferenceactions.php:63
 msgid "An error happend while deleting the manager"
 msgstr ""
 
@@ -360,7 +360,7 @@ msgstr[1] ""
 msgid "Holiday period is mandatory field"
 msgstr ""
 
-#: ajax/sendmail.php:73
+#: ajax/sendmail.php:81
 msgid "Holiday request from"
 msgstr ""
 
@@ -433,11 +433,11 @@ msgstr ""
 msgid "Mail sent to %s"
 msgstr ""
 
-#: ajax/preferenceactions.php:51
+#: ajax/preferenceactions.php:54
 msgid "Manager sucessfully added."
 msgstr ""
 
-#: ajax/preferenceactions.php:68
+#: ajax/preferenceactions.php:71
 msgid "Manager sucessfully deleted."
 msgstr ""
 
@@ -551,7 +551,7 @@ msgstr ""
 msgid "Please fill an end date"
 msgstr ""
 
-#: ajax/preferenceactions.php:44
+#: ajax/preferenceactions.php:47
 msgid "Please select a manager"
 msgstr ""
 
@@ -612,7 +612,7 @@ msgstr ""
 msgid "Replace activity name by the activity type"
 msgstr ""
 
-#: src/CraPDF.php:284 front/cra.php:47
+#: src/CraPDF.php:284 front/cra.php:50
 msgid "Report of Activities"
 msgstr ""
 
@@ -888,6 +888,6 @@ msgstr ""
 msgid "is on CRA by default"
 msgstr ""
 
-#: ajax/sendmail.php:73
+#: ajax/sendmail.php:81
 msgid "of"
 msgstr ""
