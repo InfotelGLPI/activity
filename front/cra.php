@@ -31,6 +31,9 @@ use GlpiPlugin\Activity\Menu;
 use GlpiPlugin\Activity\Report;
 
 Session::checkLoginUser();
+// checkLoginUser() is not authorization on GLPI 11: gate this activity report on
+// the plugin READ right.
+Session::checkRight('plugin_activity', READ);
 
 if (isset($_GET['itemtype'])) {
    unset($_GET['root_doc']);
@@ -53,7 +56,11 @@ if (isset($_GET['itemtype'])) {
       $_POST["year"] = date('Y', time());
    }
 
-   if (!isset($_POST["users_id"])
+   // Only profiles holding plugin_activity_all_users may read another user's CRA;
+   // everyone else is forced onto their own report regardless of the posted
+   // users_id, otherwise any user could read anyone's activity by id.
+   if (!Session::haveRight("plugin_activity_all_users", 1)
+           || !isset($_POST["users_id"])
            || empty($_POST["users_id"])) {
       $_POST["users_id"] = Session::getLoginUserID();
    }

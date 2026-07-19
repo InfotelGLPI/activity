@@ -30,7 +30,7 @@
 namespace GlpiPlugin\Activity;
 
 use AllowDynamicProperties;
-use Fpdf\Fpdf;
+use FPDF;
 use Toolbox;
 
 if (!defined('GLPI_ROOT')) {
@@ -38,7 +38,7 @@ if (!defined('GLPI_ROOT')) {
 }
 
 #[AllowDynamicProperties]
-class CraPDF extends Fpdf
+class CraPDF extends FPDF
 {
     /* Attributs d'un rapport envoyés par l'utilisateur avant la génération. */
 

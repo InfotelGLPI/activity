@@ -29,6 +29,7 @@
 
 use Glpi\Exception\Http\NotFoundHttpException;
 use GlpiPlugin\Activity\Holiday;
+use GlpiPlugin\Activity\HolidayValidation;
 
 Session::checkLoginUser();
 Session::checkRight("plugin_activity_can_validate", READ);
@@ -38,16 +39,18 @@ if (!isset($_POST['holidays_id']) && !isset($_GET['holidays_id'])) {
 }
 
 if (isset($_POST['holidays_id'])) {
-   $hId = $_POST['holidays_id'];
+   $hId = (int) $_POST['holidays_id'];
 }
 if (isset($_GET['holidays_id'])) {
-   $hId = $_GET['holidays_id'];
+   $hId = (int) $_GET['holidays_id'];
 }
 
 $holiday = new Holiday();
 $holiday->getFromDB($hId);
 
-if (isset($holiday->fields['id'])) {
+// Same scoping as front/generateTXTFile.php: the global can_validate right is
+// not enough, the caller must be the registered validator for THIS holiday.
+if (isset($holiday->fields['id']) && HolidayValidation::canValidate($hId)) {
 
    $user = new User();
    $user->getFromDB($holiday->fields['users_id']);

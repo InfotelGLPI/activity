@@ -27,19 +27,29 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Activity\Holiday;
 use GlpiPlugin\Activity\PlanningExternalEvent;
 use GlpiPlugin\Activity\Report;
 
 Session::checkLoginUser();
+// checkLoginUser() is not authorization on GLPI 11: gate this popup on the
+// plugin READ right like front/cra.php does.
+Session::checkRight('plugin_activity', READ);
 
 if (isset($_GET["users_id"])) {
-   $users_id = $_GET["users_id"];
+   $users_id = (int) $_GET["users_id"];
 
 } else if (isset($_POST["users_id"])) {
-   $users_id = $_POST["users_id"];
+   $users_id = (int) $_POST["users_id"];
 
 } else {
+   $users_id = Session::getLoginUserID();
+}
+
+// Only profiles holding plugin_activity_all_users may target another user;
+// everyone else is forced onto their own data regardless of the requested id.
+if (!Session::haveRight("plugin_activity_all_users", 1)) {
    $users_id = Session::getLoginUserID();
 }
 
@@ -61,6 +71,11 @@ if (isset($_SESSION["glpipopup"]["name"])) {
          break;
       case "holiday" :
          $holiday = new Holiday();
+         // showForm() does not enforce rights on its own: check the holiday can
+         // be read (entity + ownership) before rendering it.
+         if (!$holiday->can((int) $_GET["id"], READ)) {
+             throw new AccessDeniedHttpException();
+         }
          Html::popHeader(Holiday::getTypeName(2), $_SERVER['PHP_SELF']);
          $holiday->showForm($_GET["id"], ['users_id' => $users_id]);
          break;

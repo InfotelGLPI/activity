@@ -34,14 +34,24 @@ Session::checkLoginUser();
 $pref = new Preference();
 
 if (isset($_POST["add"])) {
-   if ($pref->canCreate() && isset($_POST['users_id'])) {
-      $pref->add($_POST);
+   // Force the owner to the session user: $_POST['users_id'] is attacker-controlled,
+   // so a Preference row can only ever be created for oneself (mirrors the
+   // self-scoping already done in ajax/preferenceactions.php).
+   if ($pref->canCreate()) {
+      $input             = $_POST;
+      $input['users_id'] = Session::getLoginUserID();
+      $pref->add($input);
    }
    Html::back();
 
 } else if (isset($_POST["delete"])) {
-   if ($pref->canCreate()) {
-      $pref->delete(['id' => $_POST["id"]]);
+   // Only delete the row when it belongs to the session user: canCreate() is the
+   // global plugin_activity right and does not tie the operation to the owner, so
+   // an arbitrary id must be ownership-checked before delete.
+   if ($pref->canCreate()
+       && $pref->getFromDB((int) $_POST["id"])
+       && (int) $pref->fields['users_id'] === Session::getLoginUserID()) {
+      $pref->delete(['id' => (int) $pref->fields['id']]);
    }
    Html::back();
 

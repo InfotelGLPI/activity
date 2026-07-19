@@ -34,6 +34,9 @@ Html::header_nocache();
 $preferences = new Preference();
 
 Session::checkLoginUser();
+// This endpoint writes to the DB (add/delete manager mapping); state the
+// authorization explicitly instead of relying on implicit self-scoping.
+Session::checkRight("plugin_activity", READ);
 
 switch ($_POST ['action']) {
    case 'add_manager_view':

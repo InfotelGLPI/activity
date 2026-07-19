@@ -29,6 +29,7 @@
 
 use Glpi\Exception\Http\NotFoundHttpException;
 use GlpiPlugin\Activity\Holiday;
+use GlpiPlugin\Activity\HolidayValidation;
 use GlpiPlugin\Activity\Notification;
 
 Session::checkLoginUser();
@@ -39,16 +40,20 @@ if (!isset($_POST['holidays_id']) && !isset($_GET['holidays_id'])) {
 }
 
 if (isset($_POST['holidays_id'])) {
-   $hId = $_POST['holidays_id'];
+   $hId = (int) $_POST['holidays_id'];
 }
 if (isset($_GET['holidays_id'])) {
-   $hId = $_GET['holidays_id'];
+   $hId = (int) $_GET['holidays_id'];
 }
 
 $holiday = new Holiday();
 $holiday->getFromDB($hId);
 
-if (isset($holiday->fields['id'])) {
+// Holiday::canViewItem() only checks the global plugin_activity_can_validate
+// right, not that the caller is the registered validator for THIS holiday.
+// HolidayValidation::canValidate() ties the action to the specific record,
+// preventing a validator from acting on a holiday outside their scope.
+if (isset($holiday->fields['id']) && HolidayValidation::canValidate($hId)) {
 
    $user = new User();
    $user->getFromDB($holiday->fields['users_id']);
@@ -62,6 +67,9 @@ if (isset($holiday->fields['id'])) {
    $strTxtFile = $holiday->createTxtFile($hId);
 
    $filename = "DC " . $userName . " " . date('Y') . " " . $dateBegin . ".txt";
+   // $userName comes from the target user's display name: strip any path
+   // component so a "../" in the name cannot escape GLPI_TMP_DIR on write.
+   $filename = basename($filename);
 
    $f = fopen(GLPI_TMP_DIR . "/" . $filename, 'w');
    fwrite($f, $strTxtFile);

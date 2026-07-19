@@ -31,6 +31,7 @@ use GlpiPlugin\Activity\Holiday;
 use GlpiPlugin\Activity\Report;
 
 Session::checkLoginUser();
+Session::checkRight("plugin_activity", READ);
 
 $values  = [];
 $report  = new Report();

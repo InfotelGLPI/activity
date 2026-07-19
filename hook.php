@@ -456,13 +456,13 @@ function plugin_activity_addDefaultWhere($type)
 {
     switch ($type) {
         case Holiday::class :
-            $who = Session::getLoginUserID();
+            $who = (int) Session::getLoginUserID();
             if (!Session::haveRight("plugin_activity_all_users", 1)) {
                 return " `glpi_plugin_activity_holidays`.`users_id` = '$who' ";
             }
             break;
         case HolidayCount::class :
-            $who = Session::getLoginUserID();
+            $who = (int) Session::getLoginUserID();
             return " `glpi_plugin_activity_holidaycounts`.`users_id` = '$who' ";
             break;
     }
@@ -472,17 +472,21 @@ function plugin_activity_addDefaultWhere($type)
 
 function plugin_activity_addWhere($link, $nott, $itemtype, $ID, $val, $searchtype)
 {
+    global $DB;
+
     switch ($itemtype) {
         case Holiday::class :
             $searchoptions = Search::getOptions($itemtype);
             if ($searchoptions[$ID]['table'] == 'glpi_plugin_activity_holidayvalidations') {
-                $who = Session::getLoginUserID();
                 if ($nott) {
                     $nott = 'NOT';
                 } else {
                     $nott = '';
                 }
-                return " $link $nott `glpi_plugin_activity_holidayvalidations`.`users_id_validate` = '$val' ";
+                // This hook must return a raw WHERE string, so the value cannot be
+                // bound as a parameter: quote it via the DB layer to prevent SQL
+                // injection from the search criteria value.
+                return " $link $nott `glpi_plugin_activity_holidayvalidations`.`users_id_validate` = " . $DB->quoteValue($val) . " ";
             }
     }
     return "";

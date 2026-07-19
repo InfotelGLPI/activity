@@ -27,6 +27,7 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use Glpi\Exception\Http\NotFoundHttpException;
 use GlpiPlugin\Activity\Holiday;
 use GlpiPlugin\Activity\HolidayValidation;
@@ -35,6 +36,9 @@ header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
 Session::checkLoginUser();
+// checkLoginUser() is not authorization on GLPI 11: gate the validation view on
+// the dedicated validation right.
+Session::checkRight('plugin_activity_can_validate', READ);
 
 if (!isset($_POST['type'])) {
     throw new NotFoundHttpException();
@@ -56,6 +60,11 @@ if (($item = $dbu->getItemForItemtype($_POST['type']))
    if (isset($_POST[$parent->getForeignKeyField()])
        && isset($_POST["id"])
        && $parent->getFromDB($_POST[$parent->getForeignKeyField()])) {
+      // showForm() does not enforce rights on its own: check the item can be
+      // read (entity + ownership) before rendering the validation details.
+      if (!$item->can((int) $_POST["id"], READ)) {
+          throw new AccessDeniedHttpException();
+      }
       $item->showForm($_POST["id"], ['parent' => $parent]);
 
    } else {

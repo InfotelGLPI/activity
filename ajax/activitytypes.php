@@ -31,6 +31,8 @@ use GlpiPlugin\Activity\HolidayType;
 
 Html::header_nocache();
 Session::checkLoginUser();
+// Serves the holiday-request form widget; gate on the same right the form uses.
+Session::checkRight("plugin_activity_can_requestholiday", READ);
 header("Content-Type: text/html; charset=UTF-8");
 
 $holiday = new HolidayType();

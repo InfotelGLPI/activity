@@ -32,6 +32,7 @@ use GlpiPlugin\Activity\LateralMenu;
 Html::header_nocache();
 
 Session::checkLoginUser();
+Session::checkRight("plugin_activity", READ);
 
 header("Content-Type: text/html; charset=UTF-8");
 
