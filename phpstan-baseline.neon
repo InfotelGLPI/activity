@@ -1,0 +1,1891 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^You should not use the `http_response_code` function to change the response code\. Due to a PHP bug, it may not provide the expected result \(see https\://bugs\.php\.net/bug\.php\?id\=81451\)\.$#'
+			identifier: glpi.forbidHttpResponseCode
+			count: 1
+			path: ajax/activityholidays.php
+
+		-
+			message: '#^Variable \$hId might not be defined\.$#'
+			identifier: variable.undefined
+			count: 3
+			path: ajax/generateTXTFile.php
+
+		-
+			message: '#^You should not use the `exit` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: ajax/loadscripts.php
+
+		-
+			message: '#^Call to an undefined method GlpiPlugin\\Activity\\Preference\:\:addManagerToView\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: ajax/preferenceactions.php
+
+		-
+			message: '#^Call to an undefined method GlpiPlugin\\Activity\\Preference\:\:removeManagerFroMView\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: ajax/preferenceactions.php
+
+		-
+			message: '#^Call to an undefined method GlpiPlugin\\Activity\\Preference\:\:showMessage\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: ajax/preferenceactions.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\Preference\:\:showAddManagerView\(\) invoked with 0 parameters, 1\-2 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: ajax/preferenceactions.php
+
+		-
+			message: '#^Variable \$hId might not be defined\.$#'
+			identifier: variable.undefined
+			count: 4
+			path: ajax/sendmail.php
+
+		-
+			message: '#^You should not use the `exit` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: ajax/sendmail.php
+
+		-
+			message: '#^You should not use the `http_response_code` function to change the response code\. Due to a PHP bug, it may not provide the expected result \(see https\://bugs\.php\.net/bug\.php\?id\=81451\)\.$#'
+			identifier: glpi.forbidHttpResponseCode
+			count: 1
+			path: ajax/viewsubvalidation.php
+
+		-
+			message: '#^Parameter \#2 \$previous of class Glpi\\Exception\\Http\\BadRequestHttpException constructor expects Throwable\|null, true given\.$#'
+			identifier: argument.type
+			count: 3
+			path: front/cra.send.php
+
+		-
+			message: '#^You should not use the `exit` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: front/generateTXTFile.php
+
+		-
+			message: '#^Parameter \#2 \$force of method CommonDBTM\:\:delete\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: front/holiday.form.php
+
+		-
+			message: '#^Parameter \#2 \$rightname of static method Profile_User\:\:getUserEntitiesForRight\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: front/planning.php
+
+		-
+			message: '#^Static method Profile_User\:\:getUserEntitiesForRight\(\) invoked with 2 parameters, 3\-4 required\.$#'
+			identifier: arguments.count
+			count: 2
+			path: front/planning.php
+
+		-
+			message: '#^Right side of \|\| is always false\.$#'
+			identifier: booleanOr.rightAlwaysFalse
+			count: 1
+			path: hook.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: hook.php
+
+		-
+			message: '#^Negated boolean expression is always true\.$#'
+			identifier: booleanNot.alwaysTrue
+			count: 2
+			path: install/update_223_224.php
+
+		-
+			message: '#^Parameter \#1 \$ver of class Migration constructor expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: install/update_223_224.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 2
+			path: install/update_251_300.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Action.php
+
+		-
+			message: '#^Access to offset mixed on an unknown class GlpiPlugin\\Activity\\an\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/CommonValidation.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\CommonValidation\:\:dropdownStatus\(\) has invalid return type GlpiPlugin\\Activity\\nothing\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CommonValidation.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\CommonValidation\:\:dropdownStatus\(\) should return GlpiPlugin\\Activity\\nothing but returns int\|string\.$#'
+			identifier: return.type
+			count: 1
+			path: src/CommonValidation.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\CommonValidation\:\:dropdownValidator\(\) has invalid return type GlpiPlugin\\Activity\\nothing\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CommonValidation.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\CommonValidation\:\:dropdownValidator\(\) should return GlpiPlugin\\Activity\\nothing but return statement is missing\.$#'
+			identifier: return.missing
+			count: 2
+			path: src/CommonValidation.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\CommonValidation\:\:getAllStatusArray\(\) has invalid return type GlpiPlugin\\Activity\\an\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CommonValidation.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\CommonValidation\:\:getAllStatusArray\(\) should return GlpiPlugin\\Activity\\an but returns array\<int\|string, string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/CommonValidation.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\CommonValidation\:\:getSpecificValueToDisplay\(\) has invalid return type GlpiPlugin\\Activity\\return\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CommonValidation.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\CommonValidation\:\:getSpecificValueToDisplay\(\) has invalid return type GlpiPlugin\\Activity\\status\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CommonValidation.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\CommonValidation\:\:getSpecificValueToSelect\(\) has invalid return type GlpiPlugin\\Activity\\nothing\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CommonValidation.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\CommonValidation\:\:getSpecificValueToSelect\(\) has invalid return type GlpiPlugin\\Activity\\return\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CommonValidation.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\CommonValidation\:\:getSpecificValueToSelect\(\) should return GlpiPlugin\\Activity\\nothing\|GlpiPlugin\\Activity\\return but returns string\.$#'
+			identifier: return.type
+			count: 1
+			path: src/CommonValidation.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\CommonValidation\:\:getStatus\(\) has invalid return type GlpiPlugin\\Activity\\status\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CommonValidation.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(status ID\)\: Unexpected token "ID", expected variable at offset 73 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/CommonValidation.php
+
+		-
+			message: '#^Parameter \#2 \$elements of static method Dropdown\:\:showFromArray\(\) expects array, GlpiPlugin\\Activity\\an given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/CommonValidation.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$ID$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/Config.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Config.php
+
+		-
+			message: '#^Access to an undefined property GlpiPlugin\\Activity\\CraPDF\:\:\$total_bigwidth\.$#'
+			identifier: property.notFound
+			count: 8
+			path: src/CraPDF.php
+
+		-
+			message: '#^Default value of the parameter \#4 \$border \(string\) of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) is incompatible with type GlpiPlugin\\Activity\\type\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Default value of the parameter \#4 \$border \(string\) of method GlpiPlugin\\Activity\\CraPDF\:\:MultiCellValue\(\) is incompatible with type GlpiPlugin\\Activity\\type\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Default value of the parameter \#5 \$align \(string\) of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) is incompatible with type GlpiPlugin\\Activity\\type\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Default value of the parameter \#5 \$align \(string\) of method GlpiPlugin\\Activity\\CraPDF\:\:MultiCellValue\(\) is incompatible with type GlpiPlugin\\Activity\\type\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Default value of the parameter \#6 \$color \(string\) of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) is incompatible with type GlpiPlugin\\Activity\\type\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Default value of the parameter \#6 \$color \(string\) of method GlpiPlugin\\Activity\\CraPDF\:\:MultiCellValue\(\) is incompatible with type GlpiPlugin\\Activity\\type\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Default value of the parameter \#7 \$bold \(false\) of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) is incompatible with type GlpiPlugin\\Activity\\type\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Default value of the parameter \#7 \$bold \(false\) of method GlpiPlugin\\Activity\\CraPDF\:\:MultiCellValue\(\) is incompatible with type GlpiPlugin\\Activity\\type\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Default value of the parameter \#8 \$size \(string\) of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) is incompatible with type GlpiPlugin\\Activity\\type\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Default value of the parameter \#8 \$size \(string\) of method GlpiPlugin\\Activity\\CraPDF\:\:MultiCellValue\(\) is incompatible with type GlpiPlugin\\Activity\\type\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Default value of the parameter \#9 \$fontColor \(string\) of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) is incompatible with type GlpiPlugin\\Activity\\type\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Default value of the parameter \#9 \$fontColor \(string\) of method GlpiPlugin\\Activity\\CraPDF\:\:MultiCellValue\(\) is incompatible with type GlpiPlugin\\Activity\\type\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\CraPDF\:\:CompleterAvec0\(\) has invalid return type GlpiPlugin\\Activity\\La\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\CraPDF\:\:GetDateFormatee\(\) has invalid return type GlpiPlugin\\Activity\\La\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\CraPDF\:\:GetDateFormatee\(\) should return GlpiPlugin\\Activity\\La but returns string\.$#'
+			identifier: return.type
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\CraPDF\:\:GetNoCra\(\) has invalid return type GlpiPlugin\\Activity\\Le\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^PHPDoc tag @return has invalid value \(L''heure donnée au format hh\:mm\.\)\: Unexpected token "''heure", expected TOKEN_HORIZONTAL_WS at offset 113 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \#1 \$string of static method Toolbox\:\:decodeFromUtf8\(\) expects string, float given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \#1 \$value of static method GlpiPlugin\\Activity\\Report\:\:isIncorrectValue\(\) expects string, \(float\|int\) given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \#1 \$w of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) expects GlpiPlugin\\Activity\\type, \(float\|int\) given\.$#'
+			identifier: argument.type
+			count: 17
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \#1 \$w of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) expects GlpiPlugin\\Activity\\type, int given\.$#'
+			identifier: argument.type
+			count: 6
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \#2 \$h of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) expects GlpiPlugin\\Activity\\type, float given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \#2 \$h of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) expects GlpiPlugin\\Activity\\type, int given\.$#'
+			identifier: argument.type
+			count: 7
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \#3 \$value of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) expects GlpiPlugin\\Activity\\type, float\|int\<min, \-1\>\|int\<1, max\>\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \#3 \$value of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) expects GlpiPlugin\\Activity\\type, string given\.$#'
+			identifier: argument.type
+			count: 36
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \#4 \$border of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) expects GlpiPlugin\\Activity\\type, int given\.$#'
+			identifier: argument.type
+			count: 15
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \#4 \$border of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) expects GlpiPlugin\\Activity\\type, string given\.$#'
+			identifier: argument.type
+			count: 27
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \#5 \$align of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) expects GlpiPlugin\\Activity\\type, string given\.$#'
+			identifier: argument.type
+			count: 43
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \#6 \$color of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) expects GlpiPlugin\\Activity\\type, string given\.$#'
+			identifier: argument.type
+			count: 32
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \#7 \$bold of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) expects GlpiPlugin\\Activity\\type, int given\.$#'
+			identifier: argument.type
+			count: 28
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \#8 \$size of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) expects GlpiPlugin\\Activity\\type, float given\.$#'
+			identifier: argument.type
+			count: 5
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \#8 \$size of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) expects GlpiPlugin\\Activity\\type, int given\.$#'
+			identifier: argument.type
+			count: 9
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \#8 \$size of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) expects GlpiPlugin\\Activity\\type, string given\.$#'
+			identifier: argument.type
+			count: 9
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \#9 \$fontColor of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) expects GlpiPlugin\\Activity\\type, string given\.$#'
+			identifier: argument.type
+			count: 9
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \$align of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \$align of method GlpiPlugin\\Activity\\CraPDF\:\:MultiCellValue\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \$bold of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \$bold of method GlpiPlugin\\Activity\\CraPDF\:\:MultiCellValue\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \$bold of method GlpiPlugin\\Activity\\CraPDF\:\:SetFontNormal\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \$border of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \$border of method GlpiPlugin\\Activity\\CraPDF\:\:MultiCellValue\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \$color of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \$color of method GlpiPlugin\\Activity\\CraPDF\:\:MultiCellValue\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \$color of method GlpiPlugin\\Activity\\CraPDF\:\:SetFontNormal\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \$fontColor of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \$fontColor of method GlpiPlugin\\Activity\\CraPDF\:\:MultiCellValue\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \$h of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \$h of method GlpiPlugin\\Activity\\CraPDF\:\:MultiCellValue\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \$size of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \$size of method GlpiPlugin\\Activity\\CraPDF\:\:MultiCellValue\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \$size of method GlpiPlugin\\Activity\\CraPDF\:\:SetFontNormal\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \$value of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \$value of method GlpiPlugin\\Activity\\CraPDF\:\:MultiCellValue\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \$w of method GlpiPlugin\\Activity\\CraPDF\:\:CellValue\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Parameter \$w of method GlpiPlugin\\Activity\\CraPDF\:\:MultiCellValue\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Variable \$font_color might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Variable \$times might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Variable \$working_days might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/CraPDF.php
+
+		-
+			message: '#^Access to an undefined property GlpiPlugin\\Activity\\Dashboard\:\:\$interfaces\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Access to property \$fields on an unknown class GlpiPlugin\\Manageentities\\Config\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Access to static property \$PIE on an unknown class GlpiPlugin\\Mydashboard\\Widget\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Access to static property \$TABLE on an unknown class GlpiPlugin\\Mydashboard\\Widget\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Dashboard.php
+
+		-
+			message: '#^Access to static property \$TOOLS on an unknown class GlpiPlugin\\Mydashboard\\Menu\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Call to function current\(\) on a separate line has no effect\.$#'
+			identifier: function.resultUnused
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Call to method GetFromDB\(\) on an unknown class GlpiPlugin\\Manageentities\\Config\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Call to method appendWidgetHtmlContent\(\) on an unknown class GlpiPlugin\\Mydashboard\\Html\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Call to method setWidgetComment\(\) on an unknown class GlpiPlugin\\Mydashboard\\Html\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Call to method setWidgetHtmlContent\(\) on an unknown class GlpiPlugin\\Mydashboard\\Html\.$#'
+			identifier: class.notFound
+			count: 3
+			path: src/Dashboard.php
+
+		-
+			message: '#^Call to method setWidgetId\(\) on an unknown class GlpiPlugin\\Mydashboard\\Html\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Call to method setWidgetTitle\(\) on an unknown class GlpiPlugin\\Mydashboard\\Html\.$#'
+			identifier: class.notFound
+			count: 3
+			path: src/Dashboard.php
+
+		-
+			message: '#^Call to method toggleWidgetRefresh\(\) on an unknown class GlpiPlugin\\Mydashboard\\Html\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Call to static method getFormHeader\(\) on an unknown class GlpiPlugin\\Mydashboard\\Helper\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Call to static method getGraphHeader\(\) on an unknown class GlpiPlugin\\Mydashboard\\Helper\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Call to static method getWidgetsFromDBQuery\(\) on an unknown class GlpiPlugin\\Mydashboard\\Helper\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Call to static method launchPieGraph\(\) on an unknown class GlpiPlugin\\Mydashboard\\Charts\\PieChart\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 2
+			path: src/Dashboard.php
+
+		-
+			message: '#^Instantiated class GlpiPlugin\\Manageentities\\Config not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Instantiated class GlpiPlugin\\Mydashboard\\Html not found\.$#'
+			identifier: class.notFound
+			count: 4
+			path: src/Dashboard.php
+
+		-
+			message: '#^Parameter \#2 \$display_sec of static method Html\:\:timestampToString\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Parameter \#2 \$month of function cal_days_in_month expects int, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Parameter \#3 \$year of function cal_days_in_month expects int, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Property GlpiPlugin\\Activity\\Dashboard\:\:\$form is never written, only read\.$#'
+			identifier: property.onlyRead
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Property GlpiPlugin\\Activity\\Dashboard\:\:\$options is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 3
+			path: src/Dashboard.php
+
+		-
+			message: '#^Variable \$lang_days_short might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Variable \$lang_month_short might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Variable \$mtitle might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Variable \$use_timerepartition might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^$#'
+			identifier: class.notFound
+			count: 4
+			path: src/Holiday.php
+
+		-
+			message: '#^Access to offset GlpiPlugin\\Activity\\type on an unknown class GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Access to offset GlpiPlugin\\Activity\\type\|non\-falsy\-string on an unknown class GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Access to offset non\-falsy\-string on an unknown class GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 3
+			path: src/Holiday.php
+
+		-
+			message: '#^Call to an undefined method GlpiPlugin\\Activity\\Holiday\:\:closeFormJS\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Call to an undefined method GlpiPlugin\\Activity\\Holiday\:\:showHeaderJS\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Call to an undefined static method CommonDBTM\:\:doSpecificMassiveActions\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Default value of the parameter \#3 \$holidays \(array\) of method GlpiPlugin\\Activity\\Holiday\:\:countWe\(\) is incompatible with type GlpiPlugin\\Activity\\type\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 6
+			path: src/Holiday.php
+
+		-
+			message: '#^Iterating over an object of an unknown class GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Loose comparison using \=\= between 0 and 0 will always evaluate to true\.$#'
+			identifier: equal.alwaysTrue
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\Holiday\:\:countNbHoliday\(\) has invalid return type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\Holiday\:\:countNbHoliday\(\) should return GlpiPlugin\\Activity\\type but returns array\<array\<string, array\<\(float\|int\)\>\|GlpiPlugin\\Activity\\Le\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\Holiday\:\:countNbHolidayByPeriod\(\) has invalid return type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\Holiday\:\:countNbHolidayByPeriod\(\) should return GlpiPlugin\\Activity\\type but returns array\<string, array\<\(float\|int\)\>\|float\|int\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\Holiday\:\:displayPlanningItem\(\) has invalid return type GlpiPlugin\\Activity\\Nothing\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\Holiday\:\:displayPlanningItem\(\) should return GlpiPlugin\\Activity\\Nothing but returns string\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\Holiday\:\:excludeWe\(\) has invalid return type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\Holiday\:\:excludeWe\(\) should return GlpiPlugin\\Activity\\type but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\Holiday\:\:getSpecificMassiveActions\(\) has invalid return type GlpiPlugin\\Activity\\an\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\Holiday\:\:getSpecificMassiveActions\(\) should return GlpiPlugin\\Activity\\an but returns array\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\Holiday\:\:getSpecificValueToSelect\(\) should return string but returns GlpiPlugin\\Activity\\nothing\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\Holiday\:\:post_addItem\(\) with return type void returns false but should not return anything\.$#'
+			identifier: return.void
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\Holiday\:\:post_addItem\(\) with return type void returns null but should not return anything\.$#'
+			identifier: return.void
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\Holiday\:\:processMassiveActionsForOneItemtype\(\) with return type void returns mixed but should not return anything\.$#'
+			identifier: return.void
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$end$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$start$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Parameter \#1 \$datetime of function strtotime expects string, GlpiPlugin\\Activity\\type given\.$#'
+			identifier: argument.type
+			count: 4
+			path: src/Holiday.php
+
+		-
+			message: '#^Parameter \#2 \$replace of function str_ireplace expects array\<string\>\|string, \(float\|int\) given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Parameter \#4 \$key of method GlpiPlugin\\Activity\\Holiday\:\:excludeWe\(\) expects GlpiPlugin\\Activity\\type, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Parameter \$debut of method GlpiPlugin\\Activity\\Holiday\:\:countWe\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Parameter \$debut of method GlpiPlugin\\Activity\\Holiday\:\:excludeWe\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Parameter \$fin of method GlpiPlugin\\Activity\\Holiday\:\:countWe\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Parameter \$fin of method GlpiPlugin\\Activity\\Holiday\:\:excludeWe\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Parameter \$holidays of method GlpiPlugin\\Activity\\Holiday\:\:countWe\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Parameter \$interv of method GlpiPlugin\\Activity\\Holiday\:\:excludeWe\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Parameter \$key of method GlpiPlugin\\Activity\\Holiday\:\:excludeWe\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Parameter \$periods of method GlpiPlugin\\Activity\\Holiday\:\:countNbHolidayByPeriod\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Parameter \$users_id of method GlpiPlugin\\Activity\\Holiday\:\:countNbHoliday\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Parameter \$users_id of method GlpiPlugin\\Activity\\Holiday\:\:countNbHolidayByPeriod\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Result of method CommonDBTM\:\:post_addItem\(\) \(void\) is used\.$#'
+			identifier: staticMethod.void
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Return type \(GlpiPlugin\\Activity\\an\) of method GlpiPlugin\\Activity\\Holiday\:\:getSpecificMassiveActions\(\) should be compatible with return type \(array\) of method CommonDBTM\:\:getSpecificMassiveActions\(\)$#'
+			identifier: method.childReturnType
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Variable \$langDaysMin might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Variable \$langDaysShort might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Variable \$langMonthShort might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Holiday.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\HolidayCount\:\:getCurrentPeriods\(\) has invalid return type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/HolidayCount.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\HolidayCount\:\:getCurrentPeriods\(\) should return GlpiPlugin\\Activity\\type but returns list\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/HolidayCount.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$end$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/HolidayCount.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$start$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/HolidayCount.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/HolidayCount.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/HolidayPeriod.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/HolidayType.php
+
+		-
+			message: '#^Access to offset \(int\|string\) on an unknown class GlpiPlugin\\Activity\\an\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/HolidayValidation.php
+
+		-
+			message: '#^Iterating over an object of an unknown class GlpiPlugin\\Activity\\an\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/HolidayValidation.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\HolidayValidation\:\:getHistoryChangeWhenUpdateField\(\) should return array but returns false\.$#'
+			identifier: return.type
+			count: 1
+			path: src/HolidayValidation.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\HolidayValidation\:\:getTabNameForItem\(\) should return array\<string\>\|string but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: src/HolidayValidation.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\HolidayValidation\:\:getValidationStats\(\) should return array but returns string\.$#'
+			identifier: return.type
+			count: 1
+			path: src/HolidayValidation.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/HolidayValidation.php
+
+		-
+			message: '#^Parameter \#1 \$users_id of method GlpiPlugin\\Activity\\Holiday\:\:countNbHolidayByPeriod\(\) expects GlpiPlugin\\Activity\\type, int\|string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/LateralMenu.php
+
+		-
+			message: '#^Parameter \#1 \$value of function count expects array\|Countable, GlpiPlugin\\Activity\\type given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/LateralMenu.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/LateralMenu.php
+
+		-
+			message: '#^Missing PHPDoc tag @var for global variable \$_FILES$#'
+			identifier: glpi.missingGlobalVarType
+			count: 1
+			path: src/Notification.php
+
+		-
+			message: '#^Parameter \#2 \$check_once of static method Session\:\:addMessageAfterRedirect\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Notification.php
+
+		-
+			message: '#^Variable \$validate_email might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Notification.php
+
+		-
+			message: '#^Variable \$validate_name might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Notification.php
+
+		-
+			message: '#^Access to an undefined property CommonGLPI\:\:\$fields\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/NotificationTargetHoliday.php
+
+		-
+			message: '#^Call to an undefined method CommonGLPI\:\:getField\(\)\.$#'
+			identifier: method.notFound
+			count: 12
+			path: src/NotificationTargetHoliday.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\NotificationTargetHoliday\:\:addSpecificTargets\(\) with return type void returns mixed but should not return anything\.$#'
+			identifier: return.void
+			count: 2
+			path: src/NotificationTargetHoliday.php
+
+		-
+			message: '#^Property NotificationTarget\<CommonGLPI\>\:\:\$data \(array\<string, array\<string\>\|string\>\) does not accept array\<string, array\<string\>\|GlpiPlugin\\Activity\\status\|string\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/NotificationTargetHoliday.php
+
+		-
+			message: '#^Property NotificationTarget\<CommonGLPI\>\:\:\$data \(array\<string, array\<string\>\|string\>\) does not accept array\<string, array\<string\>\|float\|int\|string\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/NotificationTargetHoliday.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 2
+			path: src/NotificationTargetHoliday.php
+
+		-
+			message: '#^Variable \$res might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/NotificationTargetHoliday.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/NotificationTargetHoliday.php
+
+		-
+			message: '#^Call to an undefined method CommonGLPI\:\:showOptionsForm\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Option.php
+
+		-
+			message: '#^Default value of the parameter \#1 \$history \(int\) of method GlpiPlugin\\Activity\\Option\:\:post_updateItem\(\) is incompatible with type bool\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/Option.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\Option\:\:getConfigFromDB\(\) should return bool but returns array\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Option.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$ID$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/Option.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Option.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/PlanningEventSubCategory.php
+
+		-
+			message: '#^Call to static method getInstance\(\) on an unknown class GlpiPlugin\\Planningoptions\\Config\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/PlanningExternalEvent.php
+
+		-
+			message: '#^Call to static method getTable\(\) on an unknown class GlpiPlugin\\Manageentities\\CriDetail\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/PlanningExternalEvent.php
+
+		-
+			message: '#^Call to static method getTable\(\) on an unknown class GlpiPlugin\\Manageentities\\CriTechnician\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/PlanningExternalEvent.php
+
+		-
+			message: '#^Cannot access offset 1 on bool\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: src/PlanningExternalEvent.php
+
+		-
+			message: '#^Constant PLUGIN_PLANNINGOPTIONS_DIR not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: src/PlanningExternalEvent.php
+
+		-
+			message: '#^Expression in empty\(\) is not falsy\.$#'
+			identifier: empty.expr
+			count: 1
+			path: src/PlanningExternalEvent.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 2
+			path: src/PlanningExternalEvent.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 2
+			path: src/PlanningExternalEvent.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$subcat$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/PlanningExternalEvent.php
+
+		-
+			message: '#^Parameter \#2 \$associative of function json_decode expects bool\|null, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/PlanningExternalEvent.php
+
+		-
+			message: '#^Parameter \#2 \$month of function cal_days_in_month expects int, string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/PlanningExternalEvent.php
+
+		-
+			message: '#^Parameter \#3 \$values of method GlpiPlugin\\Activity\\Report\:\:getActionTimeForExternalEvent\(\) expects array, string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/PlanningExternalEvent.php
+
+		-
+			message: '#^Parameter \#3 \$year of function cal_days_in_month expects int, string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/PlanningExternalEvent.php
+
+		-
+			message: '#^Parameter \#5 \$type of method GlpiPlugin\\Activity\\Report\:\:getActionTimeForExternalEvent\(\) expects int, string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/PlanningExternalEvent.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/PlanningExternalEvent.php
+
+		-
+			message: '#^Default value of the parameter \#2 \$withtemplate \(int\) of method GlpiPlugin\\Activity\\Preference\:\:getTabNameForItem\(\) is incompatible with type bool\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/Preference.php
+
+		-
+			message: '#^Default value of the parameter \#3 \$withtemplate \(int\) of method GlpiPlugin\\Activity\\Preference\:\:displayTabContentForItem\(\) is incompatible with type bool\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/Preference.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 2
+			path: src/Preference.php
+
+		-
+			message: '#^Parameter \#2 \$withtemplate \(bool\) of method GlpiPlugin\\Activity\\Preference\:\:getTabNameForItem\(\) should be compatible with parameter \$withtemplate \(int\) of method CommonGLPI\:\:getTabNameForItem\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/Preference.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Preference.php
+
+		-
+			message: '#^Call to an undefined method CommonGLPI\:\:getField\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^Call to an undefined method DBmysql\:\:add\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\Profile\:\:migrateOneProfile\(\) should return bool but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/ProjectTask.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/ProjectTask.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\PublicHoliday\:\:displayPlanningItem\(\) has invalid return type GlpiPlugin\\Activity\\Nothing\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/PublicHoliday.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\PublicHoliday\:\:displayPlanningItem\(\) should return GlpiPlugin\\Activity\\Nothing but returns string\.$#'
+			identifier: return.type
+			count: 1
+			path: src/PublicHoliday.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/PublicHoliday.php
+
+		-
+			message: '#^Access to an undefined property GlpiPlugin\\Activity\\Report\:\:\$holiday_type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Access to property \$fields on an unknown class GlpiPlugin\\Manageentities\\Config\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Argument of an invalid type string supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Binary operation "\." between DateTime and '' 00\:01'' results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Call to method GetFromDB\(\) on an unknown class GlpiPlugin\\Manageentities\\Config\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Comparison operation "\<" between int\<0, max\> and GlpiPlugin\\Activity\\type results in an error\.$#'
+			identifier: smaller.invalid
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Instantiated class GlpiPlugin\\Manageentities\\Config not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\Report\:\:TotalTpsPassesArrondis\(\) has invalid return type GlpiPlugin\\Activity\\Le\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\Report\:\:TotalTpsPassesArrondis\(\) should return GlpiPlugin\\Activity\\Le but returns float\|int\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\Report\:\:getHolidayName\(\) should return string but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\Report\:\:isIncorrectValue\(\) should return string but returns false\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\Report\:\:isIncorrectValue\(\) should return string but returns true\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Negated boolean expression is always true\.$#'
+			identifier: booleanNot.alwaysTrue
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$activity$#'
+			identifier: parameter.notFound
+			count: 2
+			path: src/Report.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$time$#'
+			identifier: parameter.notFound
+			count: 2
+			path: src/Report.php
+
+		-
+			message: '#^PHPDoc tag @throws with type GlpiPlugin\\Activity\\Exception is not subtype of Throwable$#'
+			identifier: throws.notThrowable
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#1 \$activity of method GlpiPlugin\\Activity\\Report\:\:showActivity\(\) expects string, array\<array\<array\<string, mixed\>\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#1 \$activity of method GlpiPlugin\\Activity\\Report\:\:showActivity\(\) expects string, array\<array\<string, mixed\>\> given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#1 \$datetime of function strtotime expects string, DateTime given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#1 \$debut of method GlpiPlugin\\Activity\\Holiday\:\:countWe\(\) expects GlpiPlugin\\Activity\\type, \(int\|string\) given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#1 \$debut of method GlpiPlugin\\Activity\\Holiday\:\:countWe\(\) expects GlpiPlugin\\Activity\\type, DateTime given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#1 \$debut of method GlpiPlugin\\Activity\\Holiday\:\:countWe\(\) expects GlpiPlugin\\Activity\\type, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#1 \$hour of method DateTime\:\:setTime\(\) expects int, string given\.$#'
+			identifier: argument.type
+			count: 4
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#1 \$number of static method Html\:\:formatNumber\(\) expects float, GlpiPlugin\\Activity\\Le given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#1 \$number of static method Html\:\:formatNumber\(\) expects float, GlpiPlugin\\Activity\\type given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#1 \$time of static method GlpiPlugin\\Activity\\Report\:\:setTimes\(\) expects int, float given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#1 \$tot of method GlpiPlugin\\Activity\\Report\:\:showTotal\(\) expects GlpiPlugin\\Activity\\type, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#1 \$type of static method Search\:\:showEndLine\(\) expects int, GlpiPlugin\\Activity\\type given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#1 \$type of static method Search\:\:showItem\(\) expects int, GlpiPlugin\\Activity\\type given\.$#'
+			identifier: argument.type
+			count: 7
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#1 \$type of static method Search\:\:showNewLine\(\) expects int, GlpiPlugin\\Activity\\type given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#1 \$value of method GlpiPlugin\\Activity\\Report\:\:getItemLink\(\) expects int, GlpiPlugin\\Activity\\Le given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#2 \$associative of function json_decode expects bool\|null, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#2 \$fin of method GlpiPlugin\\Activity\\Holiday\:\:countWe\(\) expects GlpiPlugin\\Activity\\type, \(int\|string\) given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#2 \$fin of method GlpiPlugin\\Activity\\Holiday\:\:countWe\(\) expects GlpiPlugin\\Activity\\type, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#2 \$minute of method DateTime\:\:setTime\(\) expects int, string given\.$#'
+			identifier: argument.type
+			count: 4
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#3 \$begin of method GlpiPlugin\\Activity\\Report\:\:getItemLink\(\) expects GlpiPlugin\\Activity\\date, string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#3 \$countopened of method GlpiPlugin\\Activity\\Report\:\:showTotal\(\) expects GlpiPlugin\\Activity\\type, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#3 \$second of method DateTime\:\:setTime\(\) expects int, string given\.$#'
+			identifier: argument.type
+			count: 4
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#4 \$month of function mktime expects int\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#5 \$day of function mktime expects int\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#5 \$issort of static method Search\:\:showHeaderItem\(\) expects bool\|int, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#5 \$row_num of method GlpiPlugin\\Activity\\Report\:\:showTotal\(\) expects GlpiPlugin\\Activity\\type, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \#6 \$year of function mktime expects int\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \$begin of method GlpiPlugin\\Activity\\Report\:\:getItemLink\(\) has invalid type GlpiPlugin\\Activity\\date\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \$countAllDays of method GlpiPlugin\\Activity\\Report\:\:showTotal\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \$countopened of method GlpiPlugin\\Activity\\Report\:\:showTotal\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \$output_type of method GlpiPlugin\\Activity\\Report\:\:showTotal\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \$row_num of method GlpiPlugin\\Activity\\Report\:\:showTotal\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Parameter \$tot of method GlpiPlugin\\Activity\\Report\:\:showTotal\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Variable \$class might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Report.php
+
+		-
+			message: '#^Variable \$delimiter might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Variable \$filename might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Variable \$resultm might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Variable \$showPopUp might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Variable \$style might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^Variable \$total might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Report.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 3
+			path: src/Report.php
+
+		-
+			message: '#^$#'
+			identifier: class.notFound
+			count: 1
+			path: src/TicketTask.php
+
+		-
+			message: '#^Access to an offset on an unknown class GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/TicketTask.php
+
+		-
+			message: '#^Default value of the parameter \#1 \$ticket \(array\) of method GlpiPlugin\\Activity\\TicketTask\:\:setTicketActivity\(\) is incompatible with type GlpiPlugin\\Activity\\type\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/TicketTask.php
+
+		-
+			message: '#^Default value of the parameter \#2 \$activities \(array\) of method GlpiPlugin\\Activity\\TicketTask\:\:setTicketActivity\(\) is incompatible with type GlpiPlugin\\Activity\\type\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/TicketTask.php
+
+		-
+			message: '#^Default value of the parameter \#3 \$is_private \(false\) of method GlpiPlugin\\Activity\\TicketTask\:\:setTicketActivity\(\) is incompatible with type GlpiPlugin\\Activity\\type\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/TicketTask.php
+
+		-
+			message: '#^Expression in empty\(\) is not falsy\.$#'
+			identifier: empty.expr
+			count: 1
+			path: src/TicketTask.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 2
+			path: src/TicketTask.php
+
+		-
+			message: '#^Iterating over an object of an unknown class GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/TicketTask.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\TicketTask\:\:displayPlanningItem\(\) has invalid return type GlpiPlugin\\Activity\\Nothing\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/TicketTask.php
+
+		-
+			message: '#^Method GlpiPlugin\\Activity\\TicketTask\:\:displayPlanningItem\(\) should return GlpiPlugin\\Activity\\Nothing but returns string\.$#'
+			identifier: return.type
+			count: 1
+			path: src/TicketTask.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$color$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/TicketTask.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$tag$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/TicketTask.php
+
+		-
+			message: '#^Parameter \#1 \$ticket of method GlpiPlugin\\Activity\\TicketTask\:\:setTicketActivity\(\) expects GlpiPlugin\\Activity\\type, array given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/TicketTask.php
+
+		-
+			message: '#^Parameter \#2 \$activities of method GlpiPlugin\\Activity\\TicketTask\:\:setTicketActivity\(\) expects GlpiPlugin\\Activity\\type, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/TicketTask.php
+
+		-
+			message: '#^Parameter \#3 \$is_private of method GlpiPlugin\\Activity\\TicketTask\:\:setTicketActivity\(\) expects GlpiPlugin\\Activity\\type, true given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/TicketTask.php
+
+		-
+			message: '#^Parameter \$activities of method GlpiPlugin\\Activity\\TicketTask\:\:setTicketActivity\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/TicketTask.php
+
+		-
+			message: '#^Parameter \$is_private of method GlpiPlugin\\Activity\\TicketTask\:\:setTicketActivity\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/TicketTask.php
+
+		-
+			message: '#^Parameter \$ticket of method GlpiPlugin\\Activity\\TicketTask\:\:setTicketActivity\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/TicketTask.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/TicketTask.php

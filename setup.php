@@ -59,7 +59,6 @@ function plugin_init_activity()
 {
     global $PLUGIN_HOOKS, $CFG_GLPI;
 
-    $PLUGIN_HOOKS['csrf_compliant']['activity'] = true;
     $PLUGIN_HOOKS[Hooks::CHANGE_PROFILE]['activity'] = [Profile::class, 'initProfile'];
     if (isset($_SESSION["glpiactiveprofile"]["interface"])
         && $_SESSION["glpiactiveprofile"]["interface"] != "helpdesk") {
