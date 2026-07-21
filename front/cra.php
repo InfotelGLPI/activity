@@ -48,6 +48,17 @@ if (isset($_GET['itemtype'])) {
 
 } else {
    Html::header(__('Report of Activities', 'activity'), '', "tools", Menu::class);
+
+   // After taking a snapshot we redirect here with the report criteria in the
+   // query string (PRG pattern). Rehydrate $_POST from those GET values so the
+   // existing POST-based rendering keeps the displayed period/user instead of
+   // falling back to the current month.
+   foreach (['month', 'year', 'users_id'] as $activity_crit) {
+      if (empty($_POST[$activity_crit]) && isset($_GET[$activity_crit])) {
+         $_POST[$activity_crit] = $_GET[$activity_crit];
+      }
+   }
+
    if (empty($_POST["month"])) {
       $_POST["month"] = date('m', time());
    }

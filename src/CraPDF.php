@@ -30,15 +30,13 @@
 namespace GlpiPlugin\Activity;
 
 use AllowDynamicProperties;
-use FPDF;
-use Toolbox;
 
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
 #[AllowDynamicProperties]
-class CraPDF extends FPDF
+class CraPDF extends \TCPDF
 {
     /* Attributs d'un rapport envoyés par l'utilisateur avant la génération. */
 
@@ -60,12 +58,84 @@ class CraPDF extends FPDF
     public $generalinformations_width = 125;     // Largeur de cellule information générale
     public $total_width               = 12;
     public $activityname_width        = 79;
-    public $pol_def                   = 'arial'; // Police par défaut;
+    public $pol_def                   = 'helvetica'; // Police par défaut;
     public $tail_pol_def              = 6.5;     // Taille par défaut de la police.
     public $tail_titre                = 14;      // Taille du titre.
     public $margin_top                = 20;      // Marge du haut.
     public $margin_left               = 5;       // Marge de gauche et de droite accessoirement.
     public $largeur_grande_cell       = 280;     // Largeur d'une cellule qui prend toute la page.
+
+    /**
+     * CraPDF constructor.
+     *
+     * Kept FPDF-compatible: the report instantiates `new CraPDF('L', 'mm', 'A4')`.
+     * The whole document is UTF-8 (last arg), so no latin1 conversion
+     * (Toolbox::decodeFromUtf8) is needed anymore.
+     *
+     * @param mixed $orientation
+     * @param mixed $unit
+     * @param mixed $size
+     */
+    public function __construct($orientation = 'P', $unit = 'mm', $size = 'A4')
+    {
+        parent::__construct($orientation, $unit, $size, true, 'UTF-8');
+
+        // Reproduce the FPDF defaults the layout relied on: 10 mm page margins,
+        // ~1 mm horizontal cell padding, 20 mm auto page-break and no promo link.
+        $this->SetMargins(10, 10, 10);
+        $this->SetAutoPageBreak(true, 20);
+        $this->setCellPaddings(1, 0, 1, 0);
+        $this->tcpdflink = false;
+        $this->SetFont($this->pol_def, '', $this->tail_pol_def);
+    }
+
+    /**
+     * FPDF-compatible Cell() shim.
+     *
+     * The report draws a very dense 31-column day grid with rows shorter than a
+     * font line, so force $ignore_min_height=true (10th arg) to render exactly
+     * $h as FPDF did, and centre the text vertically ($valign='M') as FPDF did.
+     * $fill is cast to bool (FPDF passed 1/0). Trailing TCPDF positions are
+     * neutralised to safe defaults.
+     *
+     * @param mixed $w
+     * @param mixed $h
+     * @param mixed $txt
+     * @param mixed $border
+     * @param mixed $ln
+     * @param mixed $align
+     * @param mixed $fill
+     * @param mixed $link
+     */
+    public function Cell($w, $h = 0, $txt = '', $border = 0, $ln = 0, $align = '', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M')
+    {
+        return parent::Cell($w, $h, $txt, $border, $ln, $align, (bool) $fill, $link, 0, true, 'T', 'M');
+    }
+
+    /**
+     * FPDF-compatible MultiCell() shim.
+     *
+     * FPDF sized *each* wrapped line at $h (total = lines x $h); TCPDF treats $h
+     * as the whole-cell minimum, halving multi-line rows. Multiply $h by the
+     * wrapped line count to restore the FPDF height. $valign is pinned to 'M'
+     * (FPDF centred; TCPDF top-aligns), $ln forced to 1 (FPDF always broke to the
+     * next line at the left margin), and $fill cast to bool.
+     *
+     * @param mixed $w
+     * @param mixed $h
+     * @param mixed $txt
+     * @param mixed $border
+     * @param mixed $align
+     * @param mixed $fill
+     * @param mixed $x
+     * @param mixed $y
+     */
+    public function MultiCell($w, $h = 0, $txt = '', $border = 0, $align = 'J', $fill = false, $ln = 1, $x = '', $y = '', $reseth = true, $stretch = 0, $ishtml = false, $autopadding = true, $maxh = 0, $valign = 'T', $fitcell = false)
+    {
+        $nlines = max(1, $this->getNumLines((string) $txt, $w));
+
+        return parent::MultiCell($w, ((float) $h) * $nlines, $txt, $border, $align, (bool) $fill, 1, null, null, true, 0, false, true, 0, 'M', false);
+    }
 
     /*    * ************************************ */
     /* Methodes génériques de mise en forme. */
@@ -195,9 +265,9 @@ class CraPDF extends FPDF
     /**
      * Redéfinit une fonte
      *
-     * @param type $color
-     * @param type $bold
-     * @param type $size
+     * @param mixed $color
+     * @param mixed $bold
+     * @param mixed $size
      */
     public function SetFontNormal($color, $bold, $size)
     {
@@ -212,15 +282,15 @@ class CraPDF extends FPDF
     /**
      * Permet de dessiner une cellule.
      *
-     * @param type $w
-     * @param type $h
-     * @param type $value
-     * @param type $border
-     * @param type $align
-     * @param type $color
-     * @param type $bold
-     * @param type $size
-     * @param type $fontColor
+     * @param mixed $w
+     * @param mixed $h
+     * @param mixed $value
+     * @param mixed $border
+     * @param mixed $align
+     * @param mixed $color
+     * @param mixed $bold
+     * @param mixed $size
+     * @param mixed $fontColor
      */
     public function CellValue($w, $h, $value, $border = 'LRB', $align = 'L', $color = '', $bold = false, $size = '', $fontColor = '')
     {
@@ -235,15 +305,15 @@ class CraPDF extends FPDF
     /**
      * Permet de dessiner une cellule multiligne.
      *
-     * @param type $w
-     * @param type $h
-     * @param type $value
-     * @param type $border
-     * @param type $align
-     * @param type $color
-     * @param type $bold
-     * @param type $size
-     * @param type $fontColor
+     * @param mixed $w
+     * @param mixed $h
+     * @param mixed $value
+     * @param mixed $border
+     * @param mixed $align
+     * @param mixed $color
+     * @param mixed $bold
+     * @param mixed $size
+     * @param mixed $fontColor
      */
     public function MultiCellValue($w, $h, $value, $border = 'LRB', $align = 'C', $color = '', $bold = false, $size = '', $fontColor = '')
     {
@@ -264,6 +334,10 @@ class CraPDF extends FPDF
      */
     public function Header()
     {
+        // TCPDF forces setCellPadding(0) just before calling Header(), so
+        // re-assert this report's 1 mm horizontal padding.
+        $this->setCellPaddings(1, 0, 1, 0);
+
         /* Constantes pour les largeurs de cellules de l'entéte (doivent étre = $largeur_grande_cell). */
         $logo_width  = 30;
         $logo_height = 30;
@@ -281,7 +355,12 @@ class CraPDF extends FPDF
         $this->Cell($logo_width, $logo_height, '', 0, 0, 'C');
 
         // Title
-        $this->CellValue(55, $logo_height / 2, Toolbox::decodeFromUtf8(__('Report of Activities', 'activity')), 0, 'C', '', 1, $this->tail_titre);
+        $this->CellValue(55, $logo_height / 2, (__('Report of Activities', 'activity')), 0, 'C', '', 1, $this->tail_titre);
+
+        // TCPDF resets the cursor to (lMargin, tMargin) after Header() returns.
+        // Pin tMargin to the header's bottom so the body starts just below it,
+        // as it did under FPDF (which left the cursor where Header() ended).
+        $this->SetTopMargin($this->GetY());
     }
 
     /**
@@ -303,30 +382,30 @@ class CraPDF extends FPDF
             $this->SetX(147);
             switch ($type) {
                 case 'name':
-                    $this->CellValue(15, $this->line_height, Toolbox::decodeFromUtf8(__('from')) . ' : ', 0, 'R');
-                    $this->CellValue($this->generalinformations_width, $this->line_height + 1.15, Toolbox::decodeFromUtf8($value), 'LRBT', 'C', 'blue', 1, $this->tail_pol_def * 1.5, 'darkblue');
+                    $this->CellValue(15, $this->line_height, (__('from')) . ' : ', 0, 'R');
+                    $this->CellValue($this->generalinformations_width, $this->line_height + 1.15, ($value), 'LRBT', 'C', 'blue', 1, $this->tail_pol_def * 1.5, 'darkblue');
                     $this->Ln(5.5);
                     $this->SetX(182);
-                    $this->CellValue($this->generalinformations_width / 3, 2, Toolbox::decodeFromUtf8(__('Name')), 0, 'C');
-                    $this->CellValue($this->generalinformations_width / 3, 2, Toolbox::decodeFromUtf8(__('First name')), 0, 'C');
+                    $this->CellValue($this->generalinformations_width / 3, 2, (__('Name')), 0, 'C');
+                    $this->CellValue($this->generalinformations_width / 3, 2, (__('First name')), 0, 'C');
                     $this->Ln(3);
                     break;
                 case 'date':
-                    $this->CellValue(15, $this->line_height, Toolbox::decodeFromUtf8(__('during', 'activity')) . ' : ', 0, 'R');
-                    $this->CellValue($this->generalinformations_width, $this->line_height + 1.15, Toolbox::decodeFromUtf8($value), 'LRBT', 'C', 'hardgrey', 1, $this->tail_pol_def * 1.5, 'black');
+                    $this->CellValue(15, $this->line_height, (__('during', 'activity')) . ' : ', 0, 'R');
+                    $this->CellValue($this->generalinformations_width, $this->line_height + 1.15, ($value), 'LRBT', 'C', 'hardgrey', 1, $this->tail_pol_def * 1.5, 'black');
                     $this->Ln(5.5);
                     $this->SetX(182);
-                    $this->CellValue($this->generalinformations_width / 3, 2, Toolbox::decodeFromUtf8(__('Month')), 0, 'C');
-                    $this->CellValue($this->generalinformations_width / 3, 2, Toolbox::decodeFromUtf8(__('Year', 'activity')), 0, 'C');
+                    $this->CellValue($this->generalinformations_width / 3, 2, (__('Month')), 0, 'C');
+                    $this->CellValue($this->generalinformations_width / 3, 2, (__('Year', 'activity')), 0, 'C');
                     $this->Ln(3);
                     break;
                 case 'client':
-                    $this->CellValue(15, $this->line_height, Toolbox::decodeFromUtf8(__('for', 'activity')) . ' : ', 0, 'R');
-                    $this->CellValue($this->generalinformations_width, $this->line_height + 1.15, Toolbox::decodeFromUtf8($value), 'LRBT', 'C', 'yellow', 1, $this->tail_pol_def * 1.5, 'darkblue');
+                    $this->CellValue(15, $this->line_height, (__('for', 'activity')) . ' : ', 0, 'R');
+                    $this->CellValue($this->generalinformations_width, $this->line_height + 1.15, ($value), 'LRBT', 'C', 'yellow', 1, $this->tail_pol_def * 1.5, 'darkblue');
                     $this->Ln(5.5);
                     $this->SetX(182);
-                    $this->CellValue($this->generalinformations_width / 3, 2, Toolbox::decodeFromUtf8(__('Client', 'activity')), 0, 'C');
-                    $this->CellValue($this->generalinformations_width / 3, 2, Toolbox::decodeFromUtf8(__('Service')), 0, 'C');
+                    $this->CellValue($this->generalinformations_width / 3, 2, (__('Client', 'activity')), 0, 'C');
+                    $this->CellValue($this->generalinformations_width / 3, 2, (__('Service')), 0, 'C');
                     $this->Ln(3);
                     break;
             }
@@ -374,25 +453,25 @@ class CraPDF extends FPDF
         $this->CellValue($this->activityname_width, $this->line_height, '', 0, 'C', 'white');
         foreach ($this->getTimeHeader() as $num => $header) {
             if (isset($header['options']['weekend'])) {
-                $this->CellValue($this->day_width, $this->line_height, Toolbox::decodeFromUtf8($header['header']), 'LRBT', 'C', 'hardgrey');
+                $this->CellValue($this->day_width, $this->line_height, ($header['header']), 'LRBT', 'C', 'hardgrey');
             } else {
-                $this->CellValue($this->day_width, $this->line_height, Toolbox::decodeFromUtf8($header['header']), 'LRBT', 'C');
+                $this->CellValue($this->day_width, $this->line_height, ($header['header']), 'LRBT', 'C');
             }
         }
         $this->completeTable(count($this->getTimeHeader()), $this->line_height, 'LRBT');
         $this->Ln();
 
-        $this->CellValue($this->activityname_width, $this->line_height, Toolbox::decodeFromUtf8(__('Project / activity', 'activity')), 'LRBT', 'C', 'blue', 0, 8);
+        $this->CellValue($this->activityname_width, $this->line_height, (__('Project / activity', 'activity')), 'LRBT', 'C', 'blue', 0, 8);
         foreach ($this->getTimeHeader() as $num => $header) {
             $num = (float) $num;
             if (isset($header['options']['weekend'])) {
-                $this->CellValue($this->day_width, $this->line_height, Toolbox::decodeFromUtf8($num), 'LRBT', 'C', 'hardgrey');
+                $this->CellValue($this->day_width, $this->line_height, ($num), 'LRBT', 'C', 'hardgrey');
             } else {
-                $this->CellValue($this->day_width, $this->line_height, Toolbox::decodeFromUtf8($num), 'LRBT', 'C');
+                $this->CellValue($this->day_width, $this->line_height, ($num), 'LRBT', 'C');
             }
         }
         $this->completeTable(count($this->getTimeHeader()), $this->line_height, 'LRBT');
-        $this->CellValue($this->total_width, $this->line_height, Toolbox::decodeFromUtf8(__('Total')), 'LRBT', 'C', 'hardgrey', 1);
+        $this->CellValue($this->total_width, $this->line_height, (__('Total')), 'LRBT', 'C', 'hardgrey', 1);
         $this->Ln();
     }
 
@@ -431,11 +510,11 @@ class CraPDF extends FPDF
 
             $activity_data = $this->getActivityName($activity);
             if ($type == Report::$WORK) {
-                $this->CellValue($this->activityname_width / 2, $this->line_height, Toolbox::decodeFromUtf8($activity_data['parent']), str_replace('R', '', $border), 'L', $line_color, 0, '', 'darkblue');
-                $this->CellValue($this->activityname_width / 2, $this->line_height, Toolbox::decodeFromUtf8($activity_data['child']), str_replace('L', '', $border), 'C', $line_color, 0, '', 'darkblue');
+                $this->CellValue($this->activityname_width / 2, $this->line_height, ($activity_data['parent']), str_replace('R', '', $border), 'L', $line_color, 0, '', 'darkblue');
+                $this->CellValue($this->activityname_width / 2, $this->line_height, ($activity_data['child']), str_replace('L', '', $border), 'C', $line_color, 0, '', 'darkblue');
             } else {
-                $this->CellValue($this->activityname_width / 2, $this->line_height, Toolbox::decodeFromUtf8($activity_data['child']), $border, 'L', $line_color, 0, '');
-                $this->CellValue($this->activityname_width / 2, $this->line_height, Toolbox::decodeFromUtf8($activity_data['parent']), $border, 'L', $line_color, 0, '');
+                $this->CellValue($this->activityname_width / 2, $this->line_height, ($activity_data['child']), $border, 'L', $line_color, 0, '');
+                $this->CellValue($this->activityname_width / 2, $this->line_height, ($activity_data['parent']), $border, 'L', $line_color, 0, '');
             }
 
             $total_activity = 0;
@@ -550,8 +629,8 @@ class CraPDF extends FPDF
         if (($count % 2) != 1) {
             $line_color = 'yellow';
         }
-        $this->CellValue($this->activityname_width / 2, $this->line_height, Toolbox::decodeFromUtf8(__('Absences', 'activity')), 'LRBT', 'C', 'blue', 0, 8);
-        $this->CellValue($this->activityname_width / 2, $this->line_height, Toolbox::decodeFromUtf8(__('Comments')), 'LRBT', 'C', 'blue', 0, 8);
+        $this->CellValue($this->activityname_width / 2, $this->line_height, (__('Absences', 'activity')), 'LRBT', 'C', 'blue', 0, 8);
+        $this->CellValue($this->activityname_width / 2, $this->line_height, (__('Comments')), 'LRBT', 'C', 'blue', 0, 8);
         foreach ($this->getTimeHeader() as $header) {
             $color = $line_color;
             if (isset($header['options']['weekend'])) {
@@ -589,9 +668,9 @@ class CraPDF extends FPDF
             $line_color = 'yellow';
         }
 
-        $this->CellValue($this->total_bigwidth / 3, $this->line_height, Toolbox::decodeFromUtf8(strtoupper(__('Total'))), 'LBT', 'L', 'hardgrey', 1);
+        $this->CellValue($this->total_bigwidth / 3, $this->line_height, (strtoupper(__('Total'))), 'LBT', 'L', 'hardgrey', 1);
         if (!$use_hour_on_cra) {
-            $this->CellValue($this->total_bigwidth / 3, $this->line_height, Toolbox::decodeFromUtf8(__('Entry except in the month, the total must be equal to the number of working days this month', 'activity') . ' : '), 'BT', 'R', 'hardgrey', 0, 6);
+            $this->CellValue($this->total_bigwidth / 3, $this->line_height, (__('Entry except in the month, the total must be equal to the number of working days this month', 'activity') . ' : '), 'BT', 'R', 'hardgrey', 0, 6);
             $this->CellValue($this->total_bigwidth / 3, $this->line_height, $this->getWorkingDays(), 'BT', 'C', 'hardgrey', 1, 6);
             if ($this->total_all != $this->working_days) {
                 $this->CellValue($this->total_width, $this->line_height, $this->getTotal(), 'LRBT', 'C', $line_color, 1, '', 'red');
@@ -600,9 +679,9 @@ class CraPDF extends FPDF
             }
             $this->Ln(4);
             if ($this->total_all != $this->working_days) {
-                $this->CellValue($this->total_bigwidth, $this->line_height, Toolbox::decodeFromUtf8(strtoupper(__('Total incorrect', 'activity'))), 0, 'R', '', 0, 8);
+                $this->CellValue($this->total_bigwidth, $this->line_height, (strtoupper(__('Total incorrect', 'activity'))), 0, 'R', '', 0, 8);
             } else {
-                $this->CellValue($this->total_bigwidth, $this->line_height, Toolbox::decodeFromUtf8(strtoupper(__('Total OK', 'activity'))), 0, 'R', '', 0, 8);
+                $this->CellValue($this->total_bigwidth, $this->line_height, (strtoupper(__('Total OK', 'activity'))), 0, 'R', '', 0, 8);
             }
         } else {
             $this->CellValue($this->total_bigwidth / 3, $this->line_height, '', 'BT', 'R', 'hardgrey', 0, 6);
@@ -652,11 +731,11 @@ class CraPDF extends FPDF
             $this->Ln(-6);
             foreach ($this->getFooterInformations() as $value) {
                 $this->SetX(60);
-                $this->CellValue(180, $this->line_height, Toolbox::decodeFromUtf8($value), 0, 'C', '', 0, 5.5);
+                $this->CellValue(180, $this->line_height, ($value), 0, 'C', '', 0, 5.5);
                 $this->Ln();
             }
             $this->SetX(60);
-            $this->CellValue(180, $this->line_height, Toolbox::decodeFromUtf8(__('Generated with GLPI on', 'activity') . ' ' . date('d/m/Y')), 0, 'C', '', 0, 5.5);
+            $this->CellValue(180, $this->line_height, (__('Generated with GLPI on', 'activity') . ' ' . date('d/m/Y')), 0, 'C', '', 0, 5.5);
         }
     }
 
@@ -665,7 +744,6 @@ class CraPDF extends FPDF
      */
     public function DrawCra()
     {
-        $this->AliasNbPages();
         $this->AddPage();
         $this->Separator();
 

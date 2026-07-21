@@ -1299,7 +1299,16 @@ class Report extends CommonDBTM
                // Si l'utilisateur souhaite réaliser un snapshot
                 if (isset($input['snapshot'])) {
                     self::takeASnapshot($crit, $input, $PDF);
-                    Html::back();
+                    // Redirect back to the report while preserving the displayed
+                    // period/user: Html::back() would return to the referer with no
+                    // POST body, so cra.php fell back to the current month.
+                    Html::redirect(
+                        PLUGIN_ACTIVITY_WEBDIR . "/front/cra.php?" . Toolbox::append_params([
+                            'month'    => $input['month'],
+                            'year'     => $input['year'],
+                            'users_id' => $input['users_id'],
+                        ], '&'),
+                    );
                 } else { // Si il ne souhaite pas -> on affiche le CRA pdf dans une Popup
                     $user = new User();
                     $user->getFromDB($input["users_id"]);
@@ -1444,7 +1453,7 @@ class Report extends CommonDBTM
             echo Ajax::createIframeModalWindow(
                 'activity_displayPdf',
                 PLUGIN_ACTIVITY_WEBDIR . "/front/cra.send.php?file=_plugins/activity/$filename",
-                ['title'   => 'cra',
+                ['title'   => __('Activity report', 'activity'),
                                             'display' => false,
                                             'autoopen' => true]
             );
