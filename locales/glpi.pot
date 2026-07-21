@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-21 08:37+0000\n"
+"POT-Creation-Date: 2026-07-21 09:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,7 +27,7 @@ msgstr ""
 msgid "A new holiday request has been submitted"
 msgstr ""
 
-#: src/Report.php:1258 src/CraPDF.php:553
+#: src/Report.php:1258 src/CraPDF.php:632
 msgid "Absences"
 msgstr ""
 
@@ -65,7 +65,7 @@ msgstr ""
 msgid "Activity in the month"
 msgstr ""
 
-#: templates/cra_search.html.twig:10
+#: src/Report.php:1456 templates/cra_search.html.twig:10
 msgid "Activity report"
 msgstr ""
 
@@ -194,7 +194,7 @@ msgstr ""
 msgid "Choose your project when entering externals events and display on CRA"
 msgstr ""
 
-#: src/CraPDF.php:328
+#: src/CraPDF.php:407
 msgid "Client"
 msgstr ""
 
@@ -303,7 +303,7 @@ msgstr ""
 msgid "Entity"
 msgstr ""
 
-#: src/CraPDF.php:594
+#: src/CraPDF.php:673
 msgid ""
 "Entry except in the month, the total must be equal to the number of working "
 "days this month"
@@ -332,7 +332,7 @@ msgstr ""
 msgid "Generate TXT file for this holiday"
 msgstr ""
 
-#: src/CraPDF.php:659
+#: src/CraPDF.php:738
 msgid "Generated with GLPI on"
 msgstr ""
 
@@ -384,7 +384,7 @@ msgstr[1] ""
 msgid "Holidays"
 msgstr ""
 
-#: src/Report.php:1876 src/CraPDF.php:517
+#: src/Report.php:1885 src/CraPDF.php:596
 msgid "Holidays or exceptional absences"
 msgstr ""
 
@@ -465,7 +465,7 @@ msgstr ""
 msgid "Next month"
 msgstr ""
 
-#: src/Report.php:1438
+#: src/Report.php:1447
 msgid "No activity found"
 msgstr ""
 
@@ -515,11 +515,11 @@ msgstr ""
 msgid "Optional when approved"
 msgstr ""
 
-#: src/Report.php:1878 src/HolidayType.php:97 src/CraPDF.php:516
+#: src/Report.php:1887 src/HolidayType.php:97 src/CraPDF.php:595
 msgid "Part time"
 msgstr ""
 
-#: src/Report.php:1426
+#: src/Report.php:1435
 msgid "Percent"
 msgstr ""
 
@@ -582,7 +582,7 @@ msgstr[1] ""
 msgid "Project"
 msgstr ""
 
-#: src/CraPDF.php:385
+#: src/CraPDF.php:464
 msgid "Project / activity"
 msgstr ""
 
@@ -612,7 +612,7 @@ msgstr ""
 msgid "Replace activity name by the activity type"
 msgstr ""
 
-#: src/CraPDF.php:284 front/cra.php:50
+#: src/CraPDF.php:358 front/cra.php:50
 msgid "Report of Activities"
 msgstr ""
 
@@ -681,7 +681,7 @@ msgstr ""
 msgid "Sickness"
 msgstr ""
 
-#: src/Report.php:1880 src/CraPDF.php:518
+#: src/Report.php:1889 src/CraPDF.php:597
 msgid "Sickness or maternity"
 msgstr ""
 
@@ -754,11 +754,11 @@ msgstr ""
 msgid "There is no manager for your groups"
 msgstr ""
 
-#: src/CraPDF.php:605
+#: src/CraPDF.php:684
 msgid "Total OK"
 msgstr ""
 
-#: src/CraPDF.php:603
+#: src/CraPDF.php:682
 msgid "Total incorrect"
 msgstr ""
 
@@ -854,7 +854,7 @@ msgstr[1] ""
 msgid "Validation of your holiday request"
 msgstr ""
 
-#: src/CraPDF.php:320
+#: src/CraPDF.php:399
 msgid "Year"
 msgstr ""
 
@@ -876,11 +876,11 @@ msgid ""
 "file."
 msgstr ""
 
-#: src/CraPDF.php:315
+#: src/CraPDF.php:394
 msgid "during"
 msgstr ""
 
-#: src/CraPDF.php:324
+#: src/CraPDF.php:403
 msgid "for"
 msgstr ""
 
