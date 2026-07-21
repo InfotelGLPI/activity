@@ -35,6 +35,7 @@ use DbUtils;
 use Dropdown;
 use Entity;
 use Glpi\Application\View\TemplateRenderer;
+use Glpi\DBAL\QueryExpression;
 use Glpi\RichText\RichText;
 use Group_User;
 use Html;
@@ -1263,9 +1264,15 @@ class Holiday extends CommonDBTM
         $period        = $this->getPeriodForTemplate($actionTime);
         $duration_html = Report::TotalTpsPassesArrondis($actionTime / $AllDay);
 
-        // User widget
-        ob_start();
+        // User widget: keep the GLPI dropdown as raw widget markup, but expose
+        // the DB-stored display name as a plain string so the Twig template
+        // auto-escapes it ({{ }}). Echoing getUserName()/getName() as raw HTML
+        // would let an XSS in realname/firstname execute for the validator.
+        $user_dropdown_html = '';
+        $user_name          = '';
+        $users_id_hidden    = '';
         if (empty($ID) && Session::haveRight("plugin_activity_all_users", 1)) {
+            ob_start();
             User::dropdown([
                 'name'      => 'users_id',
                 'value'     => Session::getLoginUserID(),
@@ -1273,25 +1280,27 @@ class Holiday extends CommonDBTM
                 'comment'   => 1,
                 'on_change' => 'plugin_activity_show_details_users("' . PLUGIN_ACTIVITY_WEBDIR . '", this.value);',
             ]);
+            $user_dropdown_html = ob_get_clean();
         } elseif (empty($ID)) {
-            echo $dbu->getUserName(Session::getLoginUserID());
-            echo Html::hidden('users_id', ['value' => Session::getLoginUserID()]);
+            $user_name       = $dbu->getUserName(Session::getLoginUserID());
+            $users_id_hidden = Html::hidden('users_id', ['value' => Session::getLoginUserID()]);
         } elseif (!$is_existing && Session::haveRight("plugin_activity_all_users", 1)) {
+            ob_start();
             User::dropdown([
                 'name'    => 'users_id',
                 'value'   => $this->fields["users_id"],
                 'right'   => 'interface',
                 'comment' => 1,
             ]);
+            $user_dropdown_html = ob_get_clean();
         } elseif ($is_existing && Session::haveRight("plugin_activity_all_users", 1)) {
             $user_obj = new User();
             $user_obj->getFromDB($this->fields['users_id']);
-            echo $user_obj->getName();
+            $user_name = $user_obj->getName();
         } else {
-            echo $dbu->getUserName($this->fields["users_id"]);
-            echo Html::hidden('users_id', ['value' => $this->fields["users_id"]]);
+            $user_name       = $dbu->getUserName($this->fields["users_id"]);
+            $users_id_hidden = Html::hidden('users_id', ['value' => $this->fields["users_id"]]);
         }
-        $user_html = ob_get_clean();
 
         // Comment textarea
         ob_start();
@@ -1332,7 +1341,9 @@ class Holiday extends CommonDBTM
             'cbs_end'                      => $cbs_end,
             'duration_html'                => $duration_html,
             'period_lang'                  => $period['lang'],
-            'user_html'                    => $user_html,
+            'user_dropdown_html'           => $user_dropdown_html,
+            'user_name'                    => $user_name,
+            'users_id_hidden'              => $users_id_hidden,
             'comment_textarea_html'        => $comment_textarea_html,
             'can_purge_as_manager'         => $can_purge_as_manager,
             'has_manager'                  => $has_manager,
@@ -1521,7 +1532,7 @@ class Holiday extends CommonDBTM
                 'glpi_plugin_activity_holidays.actiontime',
                 'glpi_plugin_activity_holidays.users_id',
                 'glpi_plugin_activity_holidays.comment',
-                new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidaytypes`.`name` AS `type`'),
+                new QueryExpression('`glpi_plugin_activity_holidaytypes`.`name` AS `type`'),
             ],
             'FROM'      => 'glpi_plugin_activity_holidays',
             'LEFT JOIN' => [
@@ -1641,19 +1652,19 @@ class Holiday extends CommonDBTM
 
         return [
             'SELECT' => [
-                new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidays`.`name` AS `name`'),
-                new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidays`.`id` AS `id`'),
-                new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidays`.`actiontime` AS `actiontime`'),
-                new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidays`.`comment` AS `comment`'),
-                new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidaytypes`.`name` AS `type`'),
-                new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidaytypes`.`is_holiday` AS `is_holiday`'),
-                new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidaytypes`.`is_sickness` AS `is_sickness`'),
-                new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidaytypes`.`is_part_time` AS `is_part_time`'),
+                new QueryExpression('`glpi_plugin_activity_holidays`.`name` AS `name`'),
+                new QueryExpression('`glpi_plugin_activity_holidays`.`id` AS `id`'),
+                new QueryExpression('`glpi_plugin_activity_holidays`.`actiontime` AS `actiontime`'),
+                new QueryExpression('`glpi_plugin_activity_holidays`.`comment` AS `comment`'),
+                new QueryExpression('`glpi_plugin_activity_holidaytypes`.`name` AS `type`'),
+                new QueryExpression('`glpi_plugin_activity_holidaytypes`.`is_holiday` AS `is_holiday`'),
+                new QueryExpression('`glpi_plugin_activity_holidaytypes`.`is_sickness` AS `is_sickness`'),
+                new QueryExpression('`glpi_plugin_activity_holidaytypes`.`is_part_time` AS `is_part_time`'),
                 'glpi_plugin_activity_holidays.allDay',
-                new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidays`.`begin` AS `begin`'),
-                new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidays`.`end` AS `end`'),
-                new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidays`.`global_validation` AS `global_validation`'),
-                new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidays`.`plugin_activity_holidaytypes_id` AS `type_id`'),
+                new QueryExpression('`glpi_plugin_activity_holidays`.`begin` AS `begin`'),
+                new QueryExpression('`glpi_plugin_activity_holidays`.`end` AS `end`'),
+                new QueryExpression('`glpi_plugin_activity_holidays`.`global_validation` AS `global_validation`'),
+                new QueryExpression('`glpi_plugin_activity_holidays`.`plugin_activity_holidaytypes_id` AS `type_id`'),
             ],
             'FROM'      => 'glpi_plugin_activity_holidays',
             'LEFT JOIN' => [
@@ -1830,9 +1841,9 @@ class Holiday extends CommonDBTM
    /**
     * Get the number of days that are in week end
     *
-    * @param type $debut
-    * @param type $fin
-    * @param type $holidays
+    * @param  $debut
+    * @param  $fin
+    * @param  $holidays
     *
     * @return int
     */
@@ -1862,12 +1873,13 @@ class Holiday extends CommonDBTM
    /**
     * Delete week end days
     *
-    * @param type $debut
-    * @param type $fin
-    * @param type $interv
-    * @param type $key
+    * @param  $debut
+    * @param  $fin
+    * @param  $interv
+    * @param  $key
+    * @param  $id
     *
-    * @return type
+    * @return
     */
     function excludeWe($debut, $fin, &$interv, $key, $id)
     {
@@ -2072,11 +2084,11 @@ class Holiday extends CommonDBTM
 
    /**
     *
-    * @param type  $users_id
-    * @param type  $periods
+    * @param mixed $users_id
+    * @param mixed $periods
     *
-    * @return type
-    * @global type $DB
+    * @return mixed
+    * @global mixed $DB
     *
     */
     function countNbHolidayByPeriod($users_id, $periods)
@@ -2094,7 +2106,7 @@ class Holiday extends CommonDBTM
                     'glpi_plugin_activity_holidays.begin',
                     'glpi_plugin_activity_holidays.end',
                     'glpi_plugin_activity_holidays.actiontime',
-                    new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidaytypes`.`id` AS `types_id`'),
+                    new QueryExpression('`glpi_plugin_activity_holidaytypes`.`id` AS `types_id`'),
                     'glpi_plugin_activity_holidaytypes.name',
                     'glpi_plugin_activity_holidaytypes.is_holiday',
                     'glpi_plugin_activity_holidaytypes.is_holiday_counter',
@@ -2130,12 +2142,12 @@ class Holiday extends CommonDBTM
    /**
     * Counts number of days of holiday between two dates for a user
     *
-    * @param type  $users_id
-    * @param type  $start
-    * @param type  $end
+    * @param mixed $users_id
+    * @param mixed $start
+    * @param mixed $end
     *
-    * @return type
-    * @global type $DB
+    * @return mixed
+    * @global mixed $DB
     *
     */
 
@@ -2155,7 +2167,7 @@ class Holiday extends CommonDBTM
                     'glpi_plugin_activity_holidays.begin',
                     'glpi_plugin_activity_holidays.end',
                     'glpi_plugin_activity_holidays.actiontime',
-                    new \Glpi\DBAL\QueryExpression('`glpi_plugin_activity_holidaytypes`.`id` AS `types_id`'),
+                    new QueryExpression('`glpi_plugin_activity_holidaytypes`.`id` AS `types_id`'),
                     'glpi_plugin_activity_holidaytypes.name',
                     'glpi_plugin_activity_holidaytypes.is_holiday',
                     'glpi_plugin_activity_holidaytypes.is_holiday_counter',
@@ -2288,7 +2300,7 @@ class Holiday extends CommonDBTM
         global $DB;
 
         $iterator = $DB->request([
-            'SELECT' => [new \Glpi\DBAL\QueryExpression('SUM(`glpi_plugin_activity_holidays`.`actiontime`) AS `actiontime`')],
+            'SELECT' => [new QueryExpression('SUM(`glpi_plugin_activity_holidays`.`actiontime`) AS `actiontime`')],
             'FROM'   => 'glpi_plugin_activity_holidays',
             'WHERE'  => [
                 'glpi_plugin_activity_holidays.users_id'                       => $users_id,

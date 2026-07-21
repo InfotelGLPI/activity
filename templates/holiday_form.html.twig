@@ -139,7 +139,14 @@
                 <td>{{ _n('User', 'Users', 1) }}</td>
             </tr>
             <tr>
-                <td>{{ user_html|raw }}</td>
+                <td>
+                    {% if user_dropdown_html %}
+                        {{ user_dropdown_html|raw }}
+                    {% else %}
+                        {{ user_name }}
+                        {{ users_id_hidden|raw }}
+                    {% endif %}
+                </td>
             </tr>
 
             {# --- Comment --- #}

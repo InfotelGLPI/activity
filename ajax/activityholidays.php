@@ -31,6 +31,9 @@ use GlpiPlugin\Activity\Holiday;
 
 Html::header_nocache();
 Session::checkLoginUser();
+// checkLoginUser() is not authorization on GLPI 11: require the plugin READ
+// right like every other endpoint, even when a user loads their own balance.
+Session::checkRight('plugin_activity', READ);
 header("Content-Type: text/html; charset=UTF-8");
 
 $holiday = new Holiday();

@@ -270,12 +270,12 @@ class HolidayCount extends CommonDBTM
    /**
     * Get the current periods with the date
     *
-    * @global type $DB
+    * @global mixed $DB
     *
-    * @param type  $start
-    * @param type  $end
+    * @param mixed $start
+    * @param mixed $end
     *
-    * @return type
+    * @return mixed
     */
     function getCurrentPeriods()
     {

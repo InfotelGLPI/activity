@@ -232,8 +232,8 @@ class Option extends CommonDBTM {
    /**
     * getConfigFromDB : get all configs in the database
     *
-    * @global type $DB
-    * @param type $ID : configs_id
+    * @global mixed $DB
+    * @param mixed $ID : configs_id
     * @return boolean
     */
    static function getConfigFromDB() {

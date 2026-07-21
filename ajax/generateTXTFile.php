@@ -65,10 +65,8 @@ if (isset($holiday->fields['id']) && HolidayValidation::canValidate($hId)) {
 
    $filename = "DC ".$userName." ".date('Y')." ".$dateBegin.".txt";
 
-   $f = fopen("php://output", 'w');
-   fwrite($f, $strTxtFile);
-   fclose($f);
-
+   // Emit the HTTP headers BEFORE writing the body, otherwise the download
+   // headers land after output has started ("headers already sent").
    header('Pragma: public');
    header('Expires: 0');
    header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
@@ -78,8 +76,9 @@ if (isset($holiday->fields['id']) && HolidayValidation::canValidate($hId)) {
    header('Content-Disposition: attachment; filename="'. basename($filename) . '";');
    header('Content-Transfer-Encoding: binary');
 
+   $f = fopen("php://output", 'w');
+   fwrite($f, $strTxtFile);
+   fclose($f);
 } else {
     throw new NotFoundHttpException();
 }
-
-throw new NotFoundHttpException();

@@ -95,9 +95,9 @@ class Config extends CommonDBTM
     /**
      * getConfigFromDB : get all configs in the database
      *
-     * @param type $ID : configs_id
+     * @param mixed $ID : configs_id
      * @return array
-     *@global type $DB
+     *@global mixed $DB
      */
     public static function getConfigFromDB($entities_id)
     {

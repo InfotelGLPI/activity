@@ -38,9 +38,13 @@ Session::checkRight('plugin_activity', READ);
 if (isset($_GET['itemtype'])) {
    unset($_GET['root_doc']);
 
+   // Guard against a missing/non-array 'criteria': count(null) is a fatal
+   // TypeError under PHP 8, turning a crafted GET into a self-inflicted 500.
+   $criteria = (isset($_GET['criteria']) && is_array($_GET['criteria'])) ? $_GET['criteria'] : [];
+
    $_SESSION['glpisearch'][] = $_GET;
    $_SESSION['glpisearch'][$_GET['itemtype']] = $_GET;
-   $_SESSION['glpisearchcount'] = [$_GET['itemtype'] => count($_GET['criteria'])];
+   $_SESSION['glpisearchcount'] = [$_GET['itemtype'] => count($criteria)];
 
    $target = Toolbox::getItemTypeSearchURL($_GET['itemtype']);
 

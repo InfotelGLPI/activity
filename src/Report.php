@@ -39,6 +39,7 @@ use DbUtils;
 use Document;
 use Document_Item;
 use Glpi\Application\View\TemplateRenderer;
+use Glpi\DBAL\QueryExpression;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Manageentities\Config as ManageentitiesConfig;
 use Html;
@@ -485,7 +486,7 @@ class Report extends CommonDBTM
             $number = count($result);
             // planningexternalevents total time
             $iterator1 = $DB->request([
-                'SELECT' => [new \Glpi\DBAL\QueryExpression('SUM(`glpi_plugin_activity_planningexternalevents`.`actiontime`) AS total')],
+                'SELECT' => [new QueryExpression('SUM(`glpi_plugin_activity_planningexternalevents`.`actiontime`) AS total')],
                 'FROM'   => 'glpi_plugin_activity_planningexternalevents',
                 'LEFT JOIN' => [
                     'glpi_planningexternalevents' => [
@@ -607,7 +608,7 @@ class Report extends CommonDBTM
       // 1.1 Plugin holiday
        // TODO implement holidays with !$use_planning_activity_hours
         $iteratorh = $DB->request([
-            'SELECT' => [new \Glpi\DBAL\QueryExpression('SUM(actiontime) AS total')],
+            'SELECT' => [new QueryExpression('SUM(actiontime) AS total')],
             'FROM'   => 'glpi_plugin_activity_holidays',
             'WHERE'  => [
                 ['begin' => ['>=', $crit["begin"]]],
@@ -1347,14 +1348,14 @@ class Report extends CommonDBTM
                             'glpi_planningexternalevents.planningeventcategories_id' => $data["type"],
                             'glpi_planningexternalevents.users_id'                   => $crit["users_id"],
                         ];
-                        $whereInner[] = new \Glpi\DBAL\QueryExpression(
+                        $whereInner[] = new QueryExpression(
                             $dbu->getEntitiesRestrictRequest("", "glpi_planningexternalevents")
                         );
                         if ($use_subcategory) {
                             if ($data['subtype']) {
                                 $whereInner['glpi_plugin_activity_planningexternalevents.planningeventsubcategories_id'] = $data["subtype"];
                             } else {
-                                $whereInner[] = new \Glpi\DBAL\QueryExpression(
+                                $whereInner[] = new QueryExpression(
                                     '`glpi_plugin_activity_planningexternalevents`.`planningeventsubcategories_id` IS NULL'
                                 );
                             }
@@ -1767,21 +1768,35 @@ class Report extends CommonDBTM
                 } elseif (strstr($key, '&gt;') !== false) {
                     $delimiter = "&gt;";
                 }
+                // Activity grouping labels come from task category names stored
+                // raw in the database (GLPI 10+). The HTML search output does not
+                // escape the values it receives, so escape them here to prevent a
+                // stored XSS. Escaping only applies to the HTML context: PDF/other
+                // outputs are not HTML and must keep the raw text.
+                $is_html = ($output_type == Search::HTML_OUTPUT);
                 if (strstr($key, '>') || strstr($key, '&gt;')) {
                     $childs = explode($delimiter, $key);
-                    echo Search::showItem($output_type, trim($childs[0]), $num, $row_num);
-                    if (isset($childs[2])) {
-                        echo Search::showItem($output_type, trim($childs[2]), $num, $row_num);
-                    } else {
-                        echo Search::showItem($output_type, trim($childs[1]), $num, $row_num);
+                    $part1  = trim($childs[0]);
+                    $part2  = isset($childs[2]) ? trim($childs[2]) : trim($childs[1]);
+                    if ($is_html) {
+                        $part1 = htmlspecialchars($part1, ENT_QUOTES, 'UTF-8');
+                        $part2 = htmlspecialchars($part2, ENT_QUOTES, 'UTF-8');
                     }
+                    echo Search::showItem($output_type, $part1, $num, $row_num);
+                    echo Search::showItem($output_type, $part2, $num, $row_num);
                 } else {
+                    $parent_item = (string) $parent;
+                    $child_item  = (string) $child;
+                    if ($is_html) {
+                        $parent_item = htmlspecialchars($parent_item, ENT_QUOTES, 'UTF-8');
+                        $child_item  = htmlspecialchars($child_item, ENT_QUOTES, 'UTF-8');
+                    }
                     if ($type == self::$WORK) {
-                        echo Search::showItem($output_type, $child, $num, $row_num);
-                        echo Search::showItem($output_type, $parent, $num, $row_num);
+                        echo Search::showItem($output_type, $child_item, $num, $row_num);
+                        echo Search::showItem($output_type, $parent_item, $num, $row_num);
                     } else {
-                        echo Search::showItem($output_type, $parent, $num, $row_num);
-                        echo Search::showItem($output_type, $child, $num, $row_num);
+                        echo Search::showItem($output_type, $parent_item, $num, $row_num);
+                        echo Search::showItem($output_type, $child_item, $num, $row_num);
                     }
                 }
 
@@ -1960,11 +1975,11 @@ class Report extends CommonDBTM
    /**
     * Display the total of all days
     *
-    * @param type $tot
-    * @param type $countAllDays
-    * @param type $countopened
-    * @param type $output_type
-    * @param type $row_num
+    * @param  $tot
+    * @param  $countAllDays
+    * @param  $countopened
+    * @param  $output_type
+    * @param  $row_num
     */
     function showTotal($tot, $countAllDays, $countopened, $output_type, $row_num, $time)
     {

@@ -475,30 +475,6 @@ parameters:
 			path: src/Dashboard.php
 
 		-
-			message: '#^$#'
-			identifier: class.notFound
-			count: 4
-			path: src/Holiday.php
-
-		-
-			message: '#^Access to offset GlpiPlugin\\Activity\\type on an unknown class GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Holiday.php
-
-		-
-			message: '#^Access to offset GlpiPlugin\\Activity\\type\|non\-falsy\-string on an unknown class GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Holiday.php
-
-		-
-			message: '#^Access to offset non\-falsy\-string on an unknown class GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
-			count: 3
-			path: src/Holiday.php
-
-		-
 			message: '#^Call to an undefined method GlpiPlugin\\Activity\\Holiday\:\:closeFormJS\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -517,50 +493,14 @@ parameters:
 			path: src/Holiday.php
 
 		-
-			message: '#^Default value of the parameter \#3 \$holidays \(array\) of method GlpiPlugin\\Activity\\Holiday\:\:countWe\(\) is incompatible with type GlpiPlugin\\Activity\\type\.$#'
-			identifier: parameter.defaultValue
-			count: 1
-			path: src/Holiday.php
-
-		-
 			message: '#^If condition is always true\.$#'
 			identifier: if.alwaysTrue
 			count: 6
 			path: src/Holiday.php
 
 		-
-			message: '#^Iterating over an object of an unknown class GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Holiday.php
-
-		-
 			message: '#^Loose comparison using \=\= between 0 and 0 will always evaluate to true\.$#'
 			identifier: equal.alwaysTrue
-			count: 1
-			path: src/Holiday.php
-
-		-
-			message: '#^Method GlpiPlugin\\Activity\\Holiday\:\:countNbHoliday\(\) has invalid return type GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Holiday.php
-
-		-
-			message: '#^Method GlpiPlugin\\Activity\\Holiday\:\:countNbHoliday\(\) should return GlpiPlugin\\Activity\\type but returns array\<array\<string, array\<\(float\|int\)\>\|GlpiPlugin\\Activity\\Le\>\>\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Holiday.php
-
-		-
-			message: '#^Method GlpiPlugin\\Activity\\Holiday\:\:countNbHolidayByPeriod\(\) has invalid return type GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Holiday.php
-
-		-
-			message: '#^Method GlpiPlugin\\Activity\\Holiday\:\:countNbHolidayByPeriod\(\) should return GlpiPlugin\\Activity\\type but returns array\<string, array\<\(float\|int\)\>\|float\|int\>\.$#'
-			identifier: return.type
 			count: 1
 			path: src/Holiday.php
 
@@ -573,18 +513,6 @@ parameters:
 		-
 			message: '#^Method GlpiPlugin\\Activity\\Holiday\:\:displayPlanningItem\(\) should return GlpiPlugin\\Activity\\Nothing but returns string\.$#'
 			identifier: return.type
-			count: 1
-			path: src/Holiday.php
-
-		-
-			message: '#^Method GlpiPlugin\\Activity\\Holiday\:\:excludeWe\(\) has invalid return type GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Holiday.php
-
-		-
-			message: '#^Method GlpiPlugin\\Activity\\Holiday\:\:excludeWe\(\) should return GlpiPlugin\\Activity\\type but return statement is missing\.$#'
-			identifier: return.missing
 			count: 1
 			path: src/Holiday.php
 
@@ -637,80 +565,14 @@ parameters:
 			path: src/Holiday.php
 
 		-
-			message: '#^Parameter \#1 \$datetime of function strtotime expects string, GlpiPlugin\\Activity\\type given\.$#'
-			identifier: argument.type
-			count: 4
+			message: '#^PHPDoc tag @return has invalid value \(\)\: Unexpected token "\\n    ", expected type at offset 155 on line 10$#'
+			identifier: phpDoc.parseError
+			count: 1
 			path: src/Holiday.php
 
 		-
 			message: '#^Parameter \#2 \$replace of function str_ireplace expects array\<string\>\|string, \(float\|int\) given\.$#'
 			identifier: argument.type
-			count: 1
-			path: src/Holiday.php
-
-		-
-			message: '#^Parameter \#4 \$key of method GlpiPlugin\\Activity\\Holiday\:\:excludeWe\(\) expects GlpiPlugin\\Activity\\type, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Holiday.php
-
-		-
-			message: '#^Parameter \$debut of method GlpiPlugin\\Activity\\Holiday\:\:countWe\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Holiday.php
-
-		-
-			message: '#^Parameter \$debut of method GlpiPlugin\\Activity\\Holiday\:\:excludeWe\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Holiday.php
-
-		-
-			message: '#^Parameter \$fin of method GlpiPlugin\\Activity\\Holiday\:\:countWe\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Holiday.php
-
-		-
-			message: '#^Parameter \$fin of method GlpiPlugin\\Activity\\Holiday\:\:excludeWe\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Holiday.php
-
-		-
-			message: '#^Parameter \$holidays of method GlpiPlugin\\Activity\\Holiday\:\:countWe\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Holiday.php
-
-		-
-			message: '#^Parameter \$interv of method GlpiPlugin\\Activity\\Holiday\:\:excludeWe\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Holiday.php
-
-		-
-			message: '#^Parameter \$key of method GlpiPlugin\\Activity\\Holiday\:\:excludeWe\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Holiday.php
-
-		-
-			message: '#^Parameter \$periods of method GlpiPlugin\\Activity\\Holiday\:\:countNbHolidayByPeriod\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Holiday.php
-
-		-
-			message: '#^Parameter \$users_id of method GlpiPlugin\\Activity\\Holiday\:\:countNbHoliday\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Holiday.php
-
-		-
-			message: '#^Parameter \$users_id of method GlpiPlugin\\Activity\\Holiday\:\:countNbHolidayByPeriod\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
 			count: 1
 			path: src/Holiday.php
 
@@ -749,18 +611,6 @@ parameters:
 			identifier: glpi.forbidExit
 			count: 1
 			path: src/Holiday.php
-
-		-
-			message: '#^Method GlpiPlugin\\Activity\\HolidayCount\:\:getCurrentPeriods\(\) has invalid return type GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/HolidayCount.php
-
-		-
-			message: '#^Method GlpiPlugin\\Activity\\HolidayCount\:\:getCurrentPeriods\(\) should return GlpiPlugin\\Activity\\type but returns list\<mixed\>\.$#'
-			identifier: return.type
-			count: 1
-			path: src/HolidayCount.php
 
 		-
 			message: '#^PHPDoc tag @param references unknown parameter\: \$end$#'
@@ -827,18 +677,6 @@ parameters:
 			identifier: glpi.forbidExit
 			count: 1
 			path: src/HolidayValidation.php
-
-		-
-			message: '#^Parameter \#1 \$users_id of method GlpiPlugin\\Activity\\Holiday\:\:countNbHolidayByPeriod\(\) expects GlpiPlugin\\Activity\\type, int\|string\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/LateralMenu.php
-
-		-
-			message: '#^Parameter \#1 \$value of function count expects array\|Countable, GlpiPlugin\\Activity\\type given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/LateralMenu.php
 
 		-
 			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
@@ -1159,12 +997,6 @@ parameters:
 			path: src/Report.php
 
 		-
-			message: '#^Comparison operation "\<" between int\<0, max\> and GlpiPlugin\\Activity\\type results in an error\.$#'
-			identifier: smaller.invalid
-			count: 1
-			path: src/Report.php
-
-		-
 			message: '#^If condition is always true\.$#'
 			identifier: if.alwaysTrue
 			count: 1
@@ -1249,24 +1081,6 @@ parameters:
 			path: src/Report.php
 
 		-
-			message: '#^Parameter \#1 \$debut of method GlpiPlugin\\Activity\\Holiday\:\:countWe\(\) expects GlpiPlugin\\Activity\\type, \(int\|string\) given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Report.php
-
-		-
-			message: '#^Parameter \#1 \$debut of method GlpiPlugin\\Activity\\Holiday\:\:countWe\(\) expects GlpiPlugin\\Activity\\type, DateTime given\.$#'
-			identifier: argument.type
-			count: 2
-			path: src/Report.php
-
-		-
-			message: '#^Parameter \#1 \$debut of method GlpiPlugin\\Activity\\Holiday\:\:countWe\(\) expects GlpiPlugin\\Activity\\type, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Report.php
-
-		-
 			message: '#^Parameter \#1 \$hour of method DateTime\:\:setTime\(\) expects int, string given\.$#'
 			identifier: argument.type
 			count: 4
@@ -1279,39 +1093,9 @@ parameters:
 			path: src/Report.php
 
 		-
-			message: '#^Parameter \#1 \$number of static method Html\:\:formatNumber\(\) expects float, GlpiPlugin\\Activity\\type given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Report.php
-
-		-
 			message: '#^Parameter \#1 \$time of static method GlpiPlugin\\Activity\\Report\:\:setTimes\(\) expects int, float given\.$#'
 			identifier: argument.type
 			count: 3
-			path: src/Report.php
-
-		-
-			message: '#^Parameter \#1 \$tot of method GlpiPlugin\\Activity\\Report\:\:showTotal\(\) expects GlpiPlugin\\Activity\\type, int given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Report.php
-
-		-
-			message: '#^Parameter \#1 \$type of static method Search\:\:showEndLine\(\) expects int, GlpiPlugin\\Activity\\type given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Report.php
-
-		-
-			message: '#^Parameter \#1 \$type of static method Search\:\:showItem\(\) expects int, GlpiPlugin\\Activity\\type given\.$#'
-			identifier: argument.type
-			count: 7
-			path: src/Report.php
-
-		-
-			message: '#^Parameter \#1 \$type of static method Search\:\:showNewLine\(\) expects int, GlpiPlugin\\Activity\\type given\.$#'
-			identifier: argument.type
-			count: 1
 			path: src/Report.php
 
 		-
@@ -1327,18 +1111,6 @@ parameters:
 			path: src/Report.php
 
 		-
-			message: '#^Parameter \#2 \$fin of method GlpiPlugin\\Activity\\Holiday\:\:countWe\(\) expects GlpiPlugin\\Activity\\type, \(int\|string\) given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Report.php
-
-		-
-			message: '#^Parameter \#2 \$fin of method GlpiPlugin\\Activity\\Holiday\:\:countWe\(\) expects GlpiPlugin\\Activity\\type, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Report.php
-
-		-
 			message: '#^Parameter \#2 \$minute of method DateTime\:\:setTime\(\) expects int, string given\.$#'
 			identifier: argument.type
 			count: 4
@@ -1348,12 +1120,6 @@ parameters:
 			message: '#^Parameter \#3 \$begin of method GlpiPlugin\\Activity\\Report\:\:getItemLink\(\) expects GlpiPlugin\\Activity\\date, string given\.$#'
 			identifier: argument.type
 			count: 2
-			path: src/Report.php
-
-		-
-			message: '#^Parameter \#3 \$countopened of method GlpiPlugin\\Activity\\Report\:\:showTotal\(\) expects GlpiPlugin\\Activity\\type, int given\.$#'
-			identifier: argument.type
-			count: 1
 			path: src/Report.php
 
 		-
@@ -1381,12 +1147,6 @@ parameters:
 			path: src/Report.php
 
 		-
-			message: '#^Parameter \#5 \$row_num of method GlpiPlugin\\Activity\\Report\:\:showTotal\(\) expects GlpiPlugin\\Activity\\type, int given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Report.php
-
-		-
 			message: '#^Parameter \#6 \$year of function mktime expects int\|null, string given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1394,36 +1154,6 @@ parameters:
 
 		-
 			message: '#^Parameter \$begin of method GlpiPlugin\\Activity\\Report\:\:getItemLink\(\) has invalid type GlpiPlugin\\Activity\\date\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Report.php
-
-		-
-			message: '#^Parameter \$countAllDays of method GlpiPlugin\\Activity\\Report\:\:showTotal\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Report.php
-
-		-
-			message: '#^Parameter \$countopened of method GlpiPlugin\\Activity\\Report\:\:showTotal\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Report.php
-
-		-
-			message: '#^Parameter \$output_type of method GlpiPlugin\\Activity\\Report\:\:showTotal\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Report.php
-
-		-
-			message: '#^Parameter \$row_num of method GlpiPlugin\\Activity\\Report\:\:showTotal\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Report.php
-
-		-
-			message: '#^Parameter \$tot of method GlpiPlugin\\Activity\\Report\:\:showTotal\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
 			identifier: class.notFound
 			count: 1
 			path: src/Report.php
@@ -1483,36 +1213,6 @@ parameters:
 			path: src/Report.php
 
 		-
-			message: '#^$#'
-			identifier: class.notFound
-			count: 1
-			path: src/TicketTask.php
-
-		-
-			message: '#^Access to an offset on an unknown class GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/TicketTask.php
-
-		-
-			message: '#^Default value of the parameter \#1 \$ticket \(array\) of method GlpiPlugin\\Activity\\TicketTask\:\:setTicketActivity\(\) is incompatible with type GlpiPlugin\\Activity\\type\.$#'
-			identifier: parameter.defaultValue
-			count: 1
-			path: src/TicketTask.php
-
-		-
-			message: '#^Default value of the parameter \#2 \$activities \(array\) of method GlpiPlugin\\Activity\\TicketTask\:\:setTicketActivity\(\) is incompatible with type GlpiPlugin\\Activity\\type\.$#'
-			identifier: parameter.defaultValue
-			count: 1
-			path: src/TicketTask.php
-
-		-
-			message: '#^Default value of the parameter \#3 \$is_private \(false\) of method GlpiPlugin\\Activity\\TicketTask\:\:setTicketActivity\(\) is incompatible with type GlpiPlugin\\Activity\\type\.$#'
-			identifier: parameter.defaultValue
-			count: 1
-			path: src/TicketTask.php
-
-		-
 			message: '#^Expression in empty\(\) is not falsy\.$#'
 			identifier: empty.expr
 			count: 1
@@ -1522,12 +1222,6 @@ parameters:
 			message: '#^If condition is always true\.$#'
 			identifier: if.alwaysTrue
 			count: 2
-			path: src/TicketTask.php
-
-		-
-			message: '#^Iterating over an object of an unknown class GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
-			count: 1
 			path: src/TicketTask.php
 
 		-
@@ -1551,42 +1245,6 @@ parameters:
 		-
 			message: '#^PHPDoc tag @param references unknown parameter\: \$tag$#'
 			identifier: parameter.notFound
-			count: 1
-			path: src/TicketTask.php
-
-		-
-			message: '#^Parameter \#1 \$ticket of method GlpiPlugin\\Activity\\TicketTask\:\:setTicketActivity\(\) expects GlpiPlugin\\Activity\\type, array given\.$#'
-			identifier: argument.type
-			count: 2
-			path: src/TicketTask.php
-
-		-
-			message: '#^Parameter \#2 \$activities of method GlpiPlugin\\Activity\\TicketTask\:\:setTicketActivity\(\) expects GlpiPlugin\\Activity\\type, array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/TicketTask.php
-
-		-
-			message: '#^Parameter \#3 \$is_private of method GlpiPlugin\\Activity\\TicketTask\:\:setTicketActivity\(\) expects GlpiPlugin\\Activity\\type, true given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/TicketTask.php
-
-		-
-			message: '#^Parameter \$activities of method GlpiPlugin\\Activity\\TicketTask\:\:setTicketActivity\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/TicketTask.php
-
-		-
-			message: '#^Parameter \$is_private of method GlpiPlugin\\Activity\\TicketTask\:\:setTicketActivity\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/TicketTask.php
-
-		-
-			message: '#^Parameter \$ticket of method GlpiPlugin\\Activity\\TicketTask\:\:setTicketActivity\(\) has invalid type GlpiPlugin\\Activity\\type\.$#'
-			identifier: class.notFound
 			count: 1
 			path: src/TicketTask.php
 

@@ -46,7 +46,11 @@ if (isset($_GET["file"])) { // for other file
       if ($send && file_exists($send)) {
          $real = realpath($send);
          $base = realpath(GLPI_DOC_DIR);
-         if ($real === false || $base === false || strpos($real, $base) !== 0) {
+         // Compare against the base WITH a trailing separator: a bare prefix match
+         // would let a sibling directory sharing the prefix (e.g. GLPI_DOC_DIR
+         // + "_backup") slip through the containment check.
+         if ($real === false || $base === false
+             || !str_starts_with($real, $base . DIRECTORY_SEPARATOR)) {
              throw new BadRequestHttpException(__('Unauthorized access to this file'), true);
          }
          $doc = new Document();

@@ -366,11 +366,11 @@ class TicketTask extends CommonDBTM
    /**
     * Set ticket activities for script
     *
-    * @param type $tag
-    * @param type $color
-    * @param type $ticket
-    * @param type $activities
-    * @param type $is_private
+    * @param mixed $tag
+    * @param mixed $color
+    * @param mixed $ticket
+    * @param mixed $activities
+    * @param mixed $is_private
     */
     function setTicketActivity($ticket = [], &$activities = [], $is_private = false)
     {
