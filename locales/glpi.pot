@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-19 21:14+0000\n"
+"POT-Creation-Date: 2026-07-21 08:37+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,7 +50,7 @@ msgid "Activities detail"
 msgstr ""
 
 #: src/Report.php:1140 src/Config.php:51 src/Menu.php:39 src/Profile.php:57
-#: src/Profile.php:108 src/Preference.php:70 front/menu.php:52 setup.php:212
+#: src/Profile.php:108 src/Preference.php:70 front/menu.php:52 setup.php:211
 #: ajax/loadscripts.php:50
 msgid "Activity"
 msgid_plural "Activity"
