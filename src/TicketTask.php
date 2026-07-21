@@ -295,12 +295,12 @@ class TicketTask extends CommonDBTM
                 if (!$datat['is_private']) {
                     if ($opt->fields['use_timerepartition']) {
                         $allTickets = $report->timeRepartition(
-                            $datat['actiontime'] / $AllDay,
+                            $datat['actiontime'],
                             $begin,
                             $allTickets,
                             Report::$WORK,
                             $mtitle,
-                            $holiday->getHolidays()
+                            $holiday->getHolidays(), [], $AllDay
                         );
                     } else {
                         $allTickets[0][$mtitle][$begin] = $datat['actiontime'] / $AllDay;
@@ -308,12 +308,12 @@ class TicketTask extends CommonDBTM
                 } else {
                     if ($opt->fields['use_timerepartition']) {
                         $privateTickets = $report->timeRepartition(
-                            $datat['actiontime'] / $AllDay,
+                            $datat['actiontime'],
                             $begin,
                             $privateTickets,
                             Report::$WORK,
                             $mtitle,
-                            $holiday->getHolidays()
+                            $holiday->getHolidays(), [], $AllDay
                         );
                     } else {
                         $privateTickets[0][$mtitle][$begin] = $datat['actiontime'] / $AllDay;
