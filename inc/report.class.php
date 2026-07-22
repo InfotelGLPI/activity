@@ -1624,7 +1624,7 @@ class PluginActivityReport extends CommonDBTM {
                   $values[$type][$activity][$date_add . ' ' . self::getAmBegin()] = $time;
                   $values = self::setTimes($countAll, self::getAmBegin(), date('Y-m-d', strtotime($date_add . ' + 1 DAY')), $values, $type, $activity, $holidays, $options['use_hours'] ? ($countAll / $allDay) : $countAll, $allDay, $options);
                } else {
-                  $values = self::setTimes($time, self::getAmBegin(), date('Y-m-d', strtotime($date_add . ' + 1 DAY')), $values, $type, $activity, $holidays, $options['use_hours'] ? ($countAll / $allDay) : $countAll, $allDay, $options);
+                  $values = self::setTimes($time, self::getAmBegin(), date('Y-m-d', strtotime($date_add . ' + 1 DAY')), $values, $type, $activity, $holidays, $options['use_hours'] ? ($time / $allDay) : $time, $allDay, $options);
                }
 
                // Appending/adding time
