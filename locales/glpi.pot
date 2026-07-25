@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-25 09:14+0000\n"
+"POT-Creation-Date: 2026-07-25 14:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,7 +35,7 @@ msgstr ""
 msgid "Accept holiday"
 msgstr ""
 
-#: templates/option_form.html.twig:84
+#: templates/option_form.html.twig:105
 msgid "Accepted formats: JPG or JPEG. Leave empty to keep the current logo."
 msgstr ""
 
@@ -45,7 +45,7 @@ msgid_plural "Actions"
 msgstr[0] ""
 msgstr[1] ""
 
-#: templates/cra_details.html.twig:11
+#: templates/cra_details.html.twig:32
 msgid "Activities detail"
 msgstr ""
 
@@ -65,7 +65,7 @@ msgstr ""
 msgid "Activity in the month"
 msgstr ""
 
-#: src/Report.php:1494 templates/cra_search.html.twig:10
+#: src/Report.php:1494 templates/cra_search.html.twig:31
 msgid "Activity report"
 msgstr ""
 
@@ -74,7 +74,7 @@ msgid "Activity type is mandatory field"
 msgstr ""
 
 #: templates/preference_add_manager.html.twig:45
-#: templates/config_form.html.twig:31
+#: templates/config_form.html.twig:52
 msgctxt "button"
 msgid "Add"
 msgstr ""
@@ -145,11 +145,11 @@ msgstr ""
 msgid "Archived"
 msgstr ""
 
-#: templates/option_form.html.twig:129
+#: templates/option_form.html.twig:150
 msgid "Authorize activities on week-ends"
 msgstr ""
 
-#: templates/option_form.html.twig:124
+#: templates/option_form.html.twig:145
 msgid "Authorize only the whole schedules"
 msgstr ""
 
@@ -157,15 +157,15 @@ msgstr ""
 msgid "Auto-validated"
 msgstr ""
 
-#: src/PlanningExternalEvent.php:220 templates/option_form.html.twig:15
+#: src/PlanningExternalEvent.php:220 templates/option_form.html.twig:36
 msgid "CRA"
 msgstr ""
 
-#: templates/option_form.html.twig:91
+#: templates/option_form.html.twig:112
 msgid "CRA Footer"
 msgstr ""
 
-#: src/Option.php:318 templates/option_form.html.twig:73
+#: src/Option.php:318 templates/option_form.html.twig:94
 msgid "CRA logo"
 msgstr ""
 
@@ -178,7 +178,7 @@ msgstr ""
 msgid "Cancel the approval request to %s"
 msgstr ""
 
-#: templates/config_form.html.twig:19 templates/config_form.html.twig:57
+#: templates/config_form.html.twig:40 templates/config_form.html.twig:78
 msgid "Child entities"
 msgstr ""
 
@@ -190,7 +190,7 @@ msgstr ""
 msgid "Choose the date"
 msgstr ""
 
-#: templates/option_form.html.twig:50
+#: templates/option_form.html.twig:71
 msgid "Choose your project when entering externals events and display on CRA"
 msgstr ""
 
@@ -213,7 +213,7 @@ msgstr[1] ""
 msgid "Comments"
 msgstr ""
 
-#: templates/config_form.html.twig:79
+#: templates/config_form.html.twig:100
 msgid "Confirm the deletion?"
 msgstr ""
 
@@ -240,12 +240,12 @@ msgid_plural "Cumulative ticket tasks"
 msgstr[0] ""
 msgstr[1] ""
 
-#: templates/option_form.html.twig:77
+#: templates/option_form.html.twig:98
 msgid "Current logo"
 msgstr ""
 
 #: templates/holiday_validation_summary.html.twig:92
-#: templates/cra_snapshots.html.twig:24 templates/cra_search.html.twig:20
+#: templates/cra_snapshots.html.twig:45 templates/cra_search.html.twig:41
 msgid "Date"
 msgstr ""
 
@@ -256,16 +256,16 @@ msgid_plural "Days"
 msgstr[0] ""
 msgstr[1] ""
 
-#: templates/option_form.html.twig:150
+#: templates/option_form.html.twig:171
 msgid "Default validation percent"
 msgstr ""
 
-#: templates/config_form.html.twig:11
+#: templates/config_form.html.twig:32
 msgid "Define internal helpdesk"
 msgstr ""
 
 #: templates/holiday_form.html.twig:172 templates/preference_form.html.twig:62
-#: templates/config_form.html.twig:80
+#: templates/config_form.html.twig:101
 msgctxt "button"
 msgid "Delete permanently"
 msgstr ""
@@ -287,7 +287,7 @@ msgstr ""
 msgid "Do you approve this holiday ?"
 msgstr ""
 
-#: templates/cra_snapshots.html.twig:23
+#: templates/cra_snapshots.html.twig:44
 msgid "Document"
 msgstr ""
 
@@ -299,7 +299,7 @@ msgstr ""
 msgid "End date"
 msgstr ""
 
-#: templates/config_form.html.twig:17 templates/config_form.html.twig:56
+#: templates/config_form.html.twig:38 templates/config_form.html.twig:77
 msgid "Entity"
 msgstr ""
 
@@ -380,7 +380,7 @@ msgid_plural "Holidays validation"
 msgstr[0] ""
 msgstr[1] ""
 
-#: templates/option_form.html.twig:140
+#: templates/option_form.html.twig:161
 msgid "Holidays"
 msgstr ""
 
@@ -453,7 +453,7 @@ msgstr ""
 msgid "My settings"
 msgstr ""
 
-#: templates/cra_snapshots.html.twig:22
+#: templates/cra_snapshots.html.twig:43
 msgid "Name"
 msgstr ""
 
@@ -461,7 +461,7 @@ msgstr ""
 msgid "New personal holiday request"
 msgstr ""
 
-#: templates/cra_search.html.twig:68
+#: templates/cra_search.html.twig:89
 msgid "Next month"
 msgstr ""
 
@@ -523,7 +523,7 @@ msgstr ""
 msgid "Percent"
 msgstr ""
 
-#: templates/option_form.html.twig:104
+#: templates/option_form.html.twig:125
 msgid "Planning"
 msgstr ""
 
@@ -531,7 +531,7 @@ msgstr ""
 msgid "Planning access"
 msgstr ""
 
-#: front/config.form.php:78
+#: front/config.form.php:77
 msgid "Please activate the plugin"
 msgstr ""
 
@@ -559,15 +559,15 @@ msgstr ""
 msgid "Plugin setup"
 msgstr ""
 
-#: templates/cra_search.html.twig:40
+#: templates/cra_search.html.twig:61
 msgid "Post"
 msgstr ""
 
-#: templates/cra_search.html.twig:69
+#: templates/cra_search.html.twig:90
 msgid "Previous month"
 msgstr ""
 
-#: templates/option_form.html.twig:65
+#: templates/option_form.html.twig:86
 msgid "Principal client"
 msgstr ""
 
@@ -608,7 +608,7 @@ msgstr ""
 msgid "Remaining holidays for the period"
 msgstr ""
 
-#: templates/option_form.html.twig:20
+#: templates/option_form.html.twig:41
 msgid "Replace activity name by the activity type"
 msgstr ""
 
@@ -627,7 +627,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: templates/holiday_validation_summary.html.twig:60
-#: templates/option_form.html.twig:166 templates/profile.html.twig:34
+#: templates/option_form.html.twig:187 templates/profile.html.twig:34
 msgctxt "button"
 msgid "Save"
 msgstr ""
@@ -668,11 +668,11 @@ msgstr ""
 msgid "Short name"
 msgstr ""
 
-#: templates/option_form.html.twig:45
+#: templates/option_form.html.twig:66
 msgid "Show event entity on CRA"
 msgstr ""
 
-#: templates/config_form.html.twig:42
+#: templates/config_form.html.twig:63
 msgid "Show internal helpdesk"
 msgstr ""
 
@@ -688,7 +688,7 @@ msgstr ""
 msgid "Snapshot taken in"
 msgstr ""
 
-#: templates/cra_snapshots.html.twig:11
+#: templates/cra_snapshots.html.twig:32
 msgid "Snapshots of the month"
 msgstr ""
 
@@ -715,7 +715,7 @@ msgstr ""
 msgid "Subcategory"
 msgstr ""
 
-#: src/Report.php:196 templates/cra_search.html.twig:60
+#: src/Report.php:196 templates/cra_search.html.twig:81
 msgid "Take a snapshot of the CRA"
 msgstr ""
 
@@ -761,7 +761,7 @@ msgstr ""
 msgid "Total incorrect"
 msgstr ""
 
-#: templates/config_form.html.twig:23 templates/config_form.html.twig:58
+#: templates/config_form.html.twig:44 templates/config_form.html.twig:79
 msgid "Type"
 msgstr ""
 
@@ -773,15 +773,15 @@ msgstr ""
 msgid "Use DD as first day of week"
 msgstr ""
 
-#: templates/option_form.html.twig:40
+#: templates/option_form.html.twig:61
 msgid "Use event subcategories"
 msgstr ""
 
-#: templates/option_form.html.twig:145
+#: templates/option_form.html.twig:166
 msgid "Use group manager as holiday manager"
 msgstr ""
 
-#: templates/option_form.html.twig:30
+#: templates/option_form.html.twig:51
 msgid "Use hour on cra and not half day"
 msgstr ""
 
@@ -791,19 +791,19 @@ msgstr ""
 msgid "Use in CRA"
 msgstr ""
 
-#: templates/option_form.html.twig:119
+#: templates/option_form.html.twig:140
 msgid "Use pairs schedules"
 msgstr ""
 
-#: templates/option_form.html.twig:55
+#: templates/option_form.html.twig:76
 msgid "Use projects"
 msgstr ""
 
-#: templates/option_form.html.twig:35
+#: templates/option_form.html.twig:56
 msgid "Use the planning activity hours to limit hours per day on the CRA"
 msgstr ""
 
-#: templates/option_form.html.twig:114
+#: templates/option_form.html.twig:135
 msgid "Use the view by day men in planning"
 msgstr ""
 
@@ -811,11 +811,11 @@ msgstr ""
 msgid "Use this holiday in the counter"
 msgstr ""
 
-#: templates/option_form.html.twig:109
+#: templates/option_form.html.twig:130
 msgid "Use time repartition"
 msgstr ""
 
-#: templates/option_form.html.twig:155
+#: templates/option_form.html.twig:176
 msgid "Used mail for holidays"
 msgstr ""
 
@@ -883,7 +883,7 @@ msgstr ""
 msgid "for"
 msgstr ""
 
-#: templates/option_form.html.twig:25 templates/option_form.html.twig:60
+#: templates/option_form.html.twig:46 templates/option_form.html.twig:81
 msgid "is on CRA by default"
 msgstr ""
 
