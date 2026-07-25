@@ -469,7 +469,8 @@ class PluginActivityReport extends CommonDBTM {
 
        $options = [
            'use_hours' => $use_hour_on_cra,
-           'use_planning_activity_hours' => $use_planning_activity_hours
+           'use_planning_activity_hours' => $use_planning_activity_hours,
+           'arrondir_heure' => $use_hour_on_cra,
        ];
 
       $holiday = new PluginActivityHoliday();
@@ -708,13 +709,14 @@ class PluginActivityReport extends CommonDBTM {
                               //End All Day planning Case
                               // Repartition of the time
                               $values = $this->timeRepartition(
-                                  $data2['actiontime'] / $AllDay,
+                                  $data2['actiontime'] ,
                                   $data2["begin"],
                                   $values,
                                   $opt_act,
                                   $type,
                                   $holiday->getHolidays(),
-                                  $options
+                                  $options,
+                                  $AllDay
                               );
 
 
@@ -772,13 +774,14 @@ class PluginActivityReport extends CommonDBTM {
                           //End All Day planning Case
                           // Repartition of the time
                           $values = $this->timeRepartition(
-                              $data2['actiontime'] / $AllDay,
+                              $data2['actiontime'] ,
                               $data2["begin"],
                               $values,
                               $opt_act,
                               $type,
                               $holiday->getHolidays(),
-                              $options
+                              $options,
+                              $AllDay
                           );
 
                           $this->item_search[$type]['PlanningExternalEvent'][date(
@@ -855,7 +858,7 @@ class PluginActivityReport extends CommonDBTM {
                   $opt_act = self::$HOLIDAY;
 
                   // Repartition of the time
-                  $values = $this->timeRepartition($datah['actiontime'] / $AllDay, $datah["begin"], $values, $opt_act, $type, $holiday->getHolidays(), $options);
+                  $values = $this->timeRepartition($datah['actiontime'], $datah["begin"], $values, $opt_act, $type, $holiday->getHolidays(), $options, $AllDay);
                   if (!isset($this->holiday_type[$type])) {
                      $this->holiday_type[$type]['is_holiday']   = $datah['is_holiday'];
                      $this->holiday_type[$type]['is_sickness']  = $datah['is_sickness'];
@@ -878,10 +881,10 @@ class PluginActivityReport extends CommonDBTM {
                          }
                      }
                      if (!empty($datat["begin"]) && !empty($datat["end"])) {
-                         $values = $this->timeRepartition($datat['actiontime'] / $AllDay, $datat["begin"], $values, self::$WORK, $mtitle, $holiday->getHolidays(), $options);
+                         $values = $this->timeRepartition($datat['actiontime'], $datat["begin"], $values, self::$WORK, $mtitle, $holiday->getHolidays(), $options, $AllDay);
                          $this->item_search[$mtitle]['Ticket'][date('Y-m-d', strtotime($datat["begin"]))][] = $datat['tickets_id'];
                      } else {
-                         $values = $this->timeRepartition($datat['actiontime'] / $AllDay, $datat["date"], $values, self::$WORK, $mtitle, $holiday->getHolidays(), $options);
+                         $values = $this->timeRepartition($datat['actiontime'], $datat["date"], $values, self::$WORK, $mtitle, $holiday->getHolidays(), $options, $AllDay);
                          $this->item_search[$mtitle]['Ticket'][date('Y-m-d', strtotime($datat["date"]))][] = $datat['tickets_id'];
                      }
                  }
@@ -948,7 +951,7 @@ class PluginActivityReport extends CommonDBTM {
                         $title[$mtitle][] = $dataTask["begin"];
 
                         // Repartition of the time
-                        $values = $this->timeRepartition($dataTask['actiontime'] / $AllDay, $dataTask["begin"], $values, self::$WORK, $mtitle, $holiday->getHolidays(), $options);
+                        $values = $this->timeRepartition($dataTask['actiontime'], $dataTask["begin"], $values, self::$WORK, $mtitle, $holiday->getHolidays(), $options, $AllDay);
 
                         $this->item_search[$mtitle]['Ticket'][date('Y-m-d', strtotime($dataTask["begin"]))][] = $datam['tickets_id'];
                      }
@@ -997,8 +1000,8 @@ class PluginActivityReport extends CommonDBTM {
                                                 strtotime($timestart->format('Y-m-d H:i:s'))) -
                                                (strtotime(self::$PM_BEGIN) - strtotime(self::$AM_END));
 
-                           $values = $this->timeRepartition($planned_duration / $AllDay, $timestart->format('Y-m-d H:i:s'),
-                                                            $values, self::$WORK, $mtitle, $holiday->getHolidays(), $options);
+                           $values = $this->timeRepartition($planned_duration , $timestart->format('Y-m-d H:i:s'),
+                                                            $values, self::$WORK, $mtitle, $holiday->getHolidays(), $options, $AllDay);
                         }
                         $timestart->modify('+1 day');
                         $timeendDay->modify('+1 day');
@@ -1009,11 +1012,11 @@ class PluginActivityReport extends CommonDBTM {
                      }
                      $planned_duration = (strtotime($timeendFinal->format('Y-m-d H:i:s')) - strtotime($timestart->format('Y-m-d H:i:s'))
                                           - ($midi));
-                     $values           = $this->timeRepartition($planned_duration / $AllDay, $timestart->format('Y-m-d H:i:s'),
-                                                                $values, self::$WORK, $mtitle, $holiday->getHolidays(), $options);
+                     $values           = $this->timeRepartition($planned_duration, $timestart->format('Y-m-d H:i:s'),
+                                                                $values, self::$WORK, $mtitle, $holiday->getHolidays(), $options, $AllDay);
                   } else {
-                     $values = $this->timeRepartition($datapt['planned_duration'] / $AllDay, $datapt["plan_start_date"],
-                                                      $values, self::$WORK, $mtitle, $holiday->getHolidays(), $options);
+                     $values = $this->timeRepartition($datapt['planned_duration'], $datapt["plan_start_date"],
+                                                      $values, self::$WORK, $mtitle, $holiday->getHolidays(), $options, $AllDay);
                   }
                   $this->item_search[$mtitle]['ProjectTask'][date('Y-m-d', strtotime($datapt["plan_start_date"]))][] = $datapt['projects_id'];
                }
@@ -1308,11 +1311,11 @@ class PluginActivityReport extends CommonDBTM {
                     $numbert = $DB->numrows($resultt);
                     if ($numbert != "0") {
                         while ($datat = $DB->fetchArray($resultt)) {
-                            $comment .= $datat["text"] . " (" . (self::TotalTpsPassesArrondis($datat["actiontime"] / $AllDay, $options)) . ")<br>";
+                            $comment .= $datat["text"] . " (" . (self::TotalTpsPassesArrondis($use_hour_on_cra ? $datat["actiontime"] : ($datat["actiontime"] / $AllDay), $options)) . ")<br>";
                         }
                     }
                     echo Search::showItem($output_type, nl2br(Glpi\RichText\RichText::getTextFromHtml($comment)), $num, $row_num);
-                    $total_ouvres = self::TotalTpsPassesArrondis($data["total_actiontime"] / $AllDay, $options);
+                    $total_ouvres = self::TotalTpsPassesArrondis($use_hour_on_cra ?$data["total_actiontime"] : ($data["total_actiontime"] / $AllDay), $options);
                     echo Search::showItem($output_type, Html::formatNumber($total_ouvres, false, 3), $num, $row_num);
                     echo Search::showItem($output_type, Html::formatNumber($percent) . "%", $num, $row_num);
                     echo Search::showEndLine($output_type);
@@ -1337,11 +1340,11 @@ class PluginActivityReport extends CommonDBTM {
                     $numbert = count($data['events']);
                     if ($numbert != "0") {
                         foreach ($data['events'] as $datat) {
-                            $comment .= $datat["text"] . " (" . (self::TotalTpsPassesArrondis($datat["actiontime"] / $AllDay, $options)) . ")<br>";
+                            $comment .= $datat["text"] . " (" . (self::TotalTpsPassesArrondis($use_hour_on_cra ? $datat["actiontime"] : ($datat["actiontime"] / $AllDay), $options)) . ")<br>";
                         }
                     }
                     echo Search::showItem($output_type, nl2br(Glpi\RichText\RichText::getTextFromHtml($comment)), $num, $row_num);
-                    $total_ouvres = self::TotalTpsPassesArrondis($data["total_actiontime"] / $AllDay, $options);
+                    $total_ouvres = self::TotalTpsPassesArrondis($use_hour_on_cra ?$data["total_actiontime"] : ($data["total_actiontime"] / $AllDay), $options);
                     echo Search::showItem($output_type, Html::formatNumber($total_ouvres, false, 3), $num, $row_num);
                     echo Search::showItem($output_type, Html::formatNumber($percent) . "%", $num, $row_num);
                     echo Search::showEndLine($output_type);
@@ -1383,7 +1386,7 @@ class PluginActivityReport extends CommonDBTM {
     *
     * @return array
     */
-   function timeRepartition($time, $begin, $values, $type, $activity, $holidays = [], $options = []) {
+   function timeRepartition($time, $begin, $values, $type, $activity, $holidays = [], $options = [], $allDay = 86400 ) {
       $opt = [
           'real_hour' => false,
           'use_planning_activity_hours' => true,
@@ -1392,9 +1395,12 @@ class PluginActivityReport extends CommonDBTM {
       foreach ($options as $key => $value) {
           $opt[$key] = $value;
       }
-       if ($time > 1) {
+
+      $timejour = $time / $allDay;
+
+       if ($timejour > 1) {
          if ($opt['use_hours']) {
-             for ($i = 0; $i < $time; $i++) {
+             for ($i = 0; $i < $timejour; $i++) {
                  $date_add = date('Y-m-d', strtotime($begin . ' + ' . $i . ' DAY'));
 
                  $h = date("H:i:s", strtotime($begin));
@@ -1404,13 +1410,15 @@ class PluginActivityReport extends CommonDBTM {
                      $hour = self::$PM_BEGIN;
                  }
 
-                 if ($time >= ($i + 1)) {
+                 if ($timejour >= ($i + 1)) {
                      // more than one day remaining => add a full day to $date_add
                      $toAdd = 1;
                  } else {
                      // add the remaining percentage to $date_add
-                     $toAdd = $time - $i;
+                     $toAdd = $timejour - $i;
                  }
+
+                 $toAdd = $toAdd * $allDay;
 
                  $values = self::setTimes(
                      $toAdd,
@@ -1419,11 +1427,14 @@ class PluginActivityReport extends CommonDBTM {
                      $values,
                      $type,
                      $activity,
-                     $holidays
+                     $holidays,
+                     $timejour,
+                     $allDay,
+                     $options
                  );
              }
          } else {
-             $tot = $time * 100;
+             $tot = $timejour * 100;
              $add = 0;
              for ($i = 0; $i < $tot; $i = $i + 25) {
                  $mod = $i % 4;
@@ -1441,23 +1452,23 @@ class PluginActivityReport extends CommonDBTM {
                      $hour = self::$PM_BEGIN;
                  }
 
-                 $values = self::setTimes(0.25, $opt['real_hour'] ? $h : $hour, $date_add, $values, $type, $activity, $holidays);
+                 $values = self::setTimes(0.25, $opt['real_hour'] ? $h : $hour, $date_add, $values, $type, $activity, $holidays, $timejour, $allDay, $options);
              }
          }
-      } else if ($time == 1) {
+      } else if ($timejour == 1) {
          $date_add = date('Y-m-d', strtotime($begin));
          $h        = date("H:i:s", strtotime($begin));
          if ($h > self::$AM_END) {
             $hour   = self::$PM_BEGIN;
-            $values = self::setTimes(0.5, $opt['real_hour'] ? $h : $hour, $date_add, $values, $type, $activity, $holidays);
+            $values = self::setTimes($opt['use_hours'] ? $allDay / 2 : 0.5, $opt['real_hour'] ? $h : $hour, $date_add, $values, $type, $activity, $holidays, $timejour, $allDay, $options);
 
             $date_add = date('Y-m-d', strtotime($begin . ' + 1 DAY'));
             $hour     = self::getAmBegin();
-            $values   = self::setTimes(0.5, $opt['real_hour'] ? $h : $hour, $date_add, $values, $type, $activity, $holidays);
+            $values   = self::setTimes($opt['use_hours'] ? $allDay / 2 : 0.5, $opt['real_hour'] ? $h : $hour, $date_add, $values, $type, $activity, $holidays, $timejour, $allDay, $options);
 
          } else {
             $hour   = self::getAmBegin();
-            $values = self::setTimes(1, $opt['real_hour'] ? $h : $hour, $date_add, $values, $type, $activity, $holidays);
+            $values = self::setTimes($opt['use_hours'] ? $allDay : 1, $opt['real_hour'] ? $h : $hour, $date_add, $values, $type, $activity, $holidays, $timejour, $allDay, $options);
          }
 
       } else {
@@ -1469,7 +1480,7 @@ class PluginActivityReport extends CommonDBTM {
             $hour = self::$PM_BEGIN;
          }
 
-         $values = self::setTimes($time, $opt['real_hour'] ? $h : $hour, $date_add, $values, $type, $activity, $holidays);
+         $values = self::setTimes($opt['use_hours'] ? $time : $timejour, $opt['real_hour'] ? $h : $hour, $date_add, $values, $type, $activity, $holidays, $timejour, $allDay, $options);
       }
 
       return $values;
@@ -1546,7 +1557,7 @@ class PluginActivityReport extends CommonDBTM {
     *
     * @return array
     */
-   static function setTimes($time, $hour, $date_add, $values, $type, $activity, $holidays = []) {
+   static function setTimes($time, $hour, $date_add, $values, $type, $activity, $holidays = [], $timejour, $allDay, $options) {
       $holiday = new PluginActivityHoliday();
       $isWe    = $holiday->countWe($date_add, $date_add, $holidays);
 
@@ -1588,23 +1599,32 @@ class PluginActivityReport extends CommonDBTM {
             $exeedingDay = 0;
             $exeedingAM  = 0;
             $exeedingPM  = 0;
-            if ($countAll + $time > 1) {
-               $exeedingDay = 1;
-            }
-            if ($hour <= self::$AM_END && $countAM + $time > 0.5 && $countAM > 0) {
+
+             if (($options['use_hours'] && (($countAll / $allDay) + $timejour) > 1)) {
+                 $exeedingDay = 1;
+             } elseif (! $options['use_hours'] && ($countAll + $timejour) > 1) {
+                 $exeedingDay = 1;
+             }
+
+            if ($hour <= self::$AM_END && $countAM > 0 &&
+                (($options['use_hours'] && (($countAM / $allDay) + $timejour > 0.5)) ||
+                    (!$options['use_hours'] && ($countAM + $timejour > 0.5)))) {
                $exeedingAM = 1;
             }
-            if ($hour >= self::$PM_BEGIN && $countPM + $time > 0.5) {
+
+            if ($hour >= self::$PM_BEGIN &&
+                (($options['use_hours'] && (($countPM/ $allDay) + $timejour > 0.5)) ||
+                    (!$options['use_hours'] && ($countPM + $timejour > 0.5)))){
                $exeedingPM = 1;
             }
 
             // Is AM+PM exceeding ?
             if ($exeedingDay || $exeedingPM) {
-               if ($countAll - $time < 0) {
+               if (($options['use_hours'] && ($countAll / $allDay) - $timejour < 0) || (!$options['use_hours'] && ($countAll - $timejour < 0))) {
                   $values[$type][$activity][$date_add . ' ' . self::getAmBegin()] = $time;
-                  $values = self::setTimes($countAll, self::getAmBegin(), date('Y-m-d', strtotime($date_add . ' + 1 DAY')), $values, $type, $activity, $holidays);
+                  $values = self::setTimes($countAll, self::getAmBegin(), date('Y-m-d', strtotime($date_add . ' + 1 DAY')), $values, $type, $activity, $holidays, $options['use_hours'] ? ($countAll / $allDay) : $countAll, $allDay, $options);
                } else {
-                  $values = self::setTimes($time, self::getAmBegin(), date('Y-m-d', strtotime($date_add . ' + 1 DAY')), $values, $type, $activity, $holidays);
+                  $values = self::setTimes($time, self::getAmBegin(), date('Y-m-d', strtotime($date_add . ' + 1 DAY')), $values, $type, $activity, $holidays, $options['use_hours'] ? ($time / $allDay) : $time, $allDay, $options);
                }
 
                // Appending/adding time
@@ -1627,7 +1647,7 @@ class PluginActivityReport extends CommonDBTM {
 
          // No addition weekend, trying next day
       } else {
-         $values = self::setTimes($time, self::getAmBegin(), date('Y-m-d', strtotime($date_add . ' + 1 DAY')), $values, $type, $activity, $holidays);
+         $values = self::setTimes($time, self::getAmBegin(), date('Y-m-d', strtotime($date_add . ' + 1 DAY')), $values, $type, $activity, $holidays, $options['use_hours'] ? ($time / $allDay) : $time, $allDay, $options);
       }
       return $values;
 
@@ -2018,9 +2038,18 @@ class PluginActivityReport extends CommonDBTM {
               $allday = 3600*24;
           }
 
-          $hour = ((float) $a_arrondir)* (float)$allday;
-          $a_arrondir = $hour / 3600;
-          $tranches_arrondi = [0,0.25,0.5,0.75,1];
+          $optconf = new PluginActivityOption();
+          $optconf->getFromDB(1);
+
+
+          if ($optconf->fields['use_hour_on_cra']) {
+              $a_arrondir = ((float)$a_arrondir) / 3600;
+          } else {
+              $hour = ((float) $a_arrondir)* (float)$allday;
+              $a_arrondir = $hour / 3600;
+          }
+
+       $tranches_arrondi = [0,0.25,0.5,0.75,1];
 
       }
 
@@ -2114,6 +2143,8 @@ class PluginActivityReport extends CommonDBTM {
    private function addEventToValues(array &$values, DateTime $begin, DateTime $end, array $crit, array $event, int $part, string $title, string $itemtype, int $events_id) {
        $dateBegin = $begin->format('Y-m-d');
        $dateEnd = $end->format('Y-m-d');
+       $opt = new PluginActivityOption();
+       $opt->getFromDB(1);
        if ($dateBegin != $dateEnd) {
            $loopDate = $dateBegin;
            while ($loopDate <= $dateEnd) {
@@ -2125,7 +2156,12 @@ class PluginActivityReport extends CommonDBTM {
                        $dateTimeLoop->format('Y-m-d').' 00:00:00',
                        $event
                    );
-                   $dayLength = round($actionTime / (60 * 60 * 24), 4);
+                   if ($opt->fields['use_hour_on_cra']) {
+                       $dayLength = $event['actiontime'];
+                   } else {
+                       $dayLength = round($event['actiontime'] / (60 * 60 * 24), 4);
+                   }
+
                    if (isset($values[$part][$title][$loopDate . ' 00:00:00'])) {
                        $values[$part][$title][$loopDate . ' 00:00:00'] += $dayLength;
                    } else {
@@ -2138,7 +2174,11 @@ class PluginActivityReport extends CommonDBTM {
                $loopDate = $dateTimeLoop->format('Y-m-d');
            }
        } else {
-           $dayLength = round($event['actiontime'] / (60 * 60 * 24), 4);
+           if ($opt->fields['use_hour_on_cra']) {
+               $dayLength = $event['actiontime'];
+           } else {
+               $dayLength = round($event['actiontime'] / (60 * 60 * 24), 4);
+           }
            if (isset($values[$part][$title][$dateBegin . ' 00:00:00'])) {
                $values[$part][$title][$dateBegin . ' 00:00:00'] += $dayLength;
            } else {

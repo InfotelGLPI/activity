@@ -195,7 +195,7 @@ class PluginActivityHoliday extends CommonDBTM {
 
          $values = [];
          $report = new PluginActivityReport();
-         $values = $report->timeRepartition($input['actiontime'] / $AllDay, $input["begin"], $values, PluginActivityReport::$WORK, $input['plugin_activity_holidaytypes_id'], $this->getHolidays());
+         $values = $report->timeRepartition($input['actiontime'], $input["begin"], $values, PluginActivityReport::$WORK, $input['plugin_activity_holidaytypes_id'], $this->getHolidays(), [], $AllDay);
 
          foreach ($values as $k => $v) {
             foreach ($v as $key => $val) {
