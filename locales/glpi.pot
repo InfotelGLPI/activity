@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-25 09:13+0000\n"
+"POT-Creation-Date: 2026-07-25 09:14+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,7 +27,7 @@ msgstr ""
 msgid "A new holiday request has been submitted"
 msgstr ""
 
-#: src/Report.php:1290 src/CraPDF.php:632
+#: src/Report.php:1296 src/CraPDF.php:632
 msgid "Absences"
 msgstr ""
 
@@ -49,7 +49,7 @@ msgstr[1] ""
 msgid "Activities detail"
 msgstr ""
 
-#: front/menu.php:52 src/Config.php:51 src/Report.php:1172 src/Profile.php:57
+#: front/menu.php:52 src/Config.php:51 src/Report.php:1178 src/Profile.php:57
 #: src/Profile.php:108 src/Menu.php:39 src/Preference.php:70
 #: ajax/loadscripts.php:48 setup.php:211
 msgid "Activity"
@@ -65,7 +65,7 @@ msgstr ""
 msgid "Activity in the month"
 msgstr ""
 
-#: src/Report.php:1488 templates/cra_search.html.twig:10
+#: src/Report.php:1494 templates/cra_search.html.twig:10
 msgid "Activity report"
 msgstr ""
 
@@ -384,7 +384,7 @@ msgstr[1] ""
 msgid "Holidays"
 msgstr ""
 
-#: src/Report.php:1931 src/CraPDF.php:596
+#: src/Report.php:1953 src/CraPDF.php:596
 msgid "Holidays or exceptional absences"
 msgstr ""
 
@@ -465,12 +465,12 @@ msgstr ""
 msgid "Next month"
 msgstr ""
 
-#: src/Report.php:1479
+#: src/Report.php:1485
 msgid "No activity found"
 msgstr ""
 
-#: src/Report.php:700 src/Report.php:720 src/Report.php:778 src/Report.php:798
-#: src/Report.php:854 src/Report.php:864 src/Report.php:908
+#: src/Report.php:701 src/Report.php:721 src/Report.php:780 src/Report.php:800
+#: src/Report.php:857 src/Report.php:867 src/Report.php:911
 #: src/Dashboard.php:473 src/Dashboard.php:506
 msgid "No defined type"
 msgstr ""
@@ -515,11 +515,11 @@ msgstr ""
 msgid "Optional when approved"
 msgstr ""
 
-#: src/Report.php:1933 src/CraPDF.php:595 src/HolidayType.php:97
+#: src/Report.php:1955 src/CraPDF.php:595 src/HolidayType.php:97
 msgid "Part time"
 msgstr ""
 
-#: src/Report.php:1467
+#: src/Report.php:1473
 msgid "Percent"
 msgstr ""
 
@@ -577,7 +577,7 @@ msgid_plural "Private holidays"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Report.php:1171
+#: src/Report.php:1177
 #: templates/planningexternalevent_post_item_form.html.twig:71
 msgid "Project"
 msgstr ""
@@ -680,7 +680,7 @@ msgstr ""
 msgid "Sickness"
 msgstr ""
 
-#: src/Report.php:1935 src/CraPDF.php:597
+#: src/Report.php:1957 src/CraPDF.php:597
 msgid "Sickness or maternity"
 msgstr ""
 
@@ -765,7 +765,7 @@ msgstr ""
 msgid "Type"
 msgstr ""
 
-#: src/Report.php:933 src/Report.php:950
+#: src/Report.php:936 src/Report.php:953
 msgid "Unbilled"
 msgstr ""
 
