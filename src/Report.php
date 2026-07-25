@@ -209,10 +209,41 @@ class Report extends CommonDBTM
         $annee_courante = isset($input["year"])  && $input["year"]  > 0 ? (int)$input["year"]  : (int)date('Y');
 
         $doc = new Document();
-        if (isset($input['delete_snapshot'])) {
-            foreach ($input['delete_snapshot'] as $documents_id => $val) {
-                $input['id'] = $documents_id;
-                $doc->delete($input);
+        if (isset($input['delete_snapshot']) && is_array($input['delete_snapshot'])) {
+            // Security (IDOR): the delete_snapshot keys are attacker-controlled
+            // document ids. Never delete an arbitrary id: resolve the set of
+            // documents that are genuine activity snapshots attached to the
+            // targeted user for this period, and only trash those the caller is
+            // actually allowed to purge. Unknown/foreign ids are silently
+            // ignored.
+            $allowed_ids = [];
+            $allowed_iterator = $DB->request([
+                'SELECT' => ['glpi_documents.id AS documents_id'],
+                'FROM'   => 'glpi_documents',
+                'JOIN'   => [
+                    'glpi_documents_items' => [
+                        'ON' => ['glpi_documents_items' => 'documents_id', 'glpi_documents' => 'id']
+                    ],
+                    'glpi_plugin_activity_snapshots' => [
+                        'ON' => ['glpi_plugin_activity_snapshots' => 'documents_id', 'glpi_documents' => 'id']
+                    ],
+                ],
+                'WHERE'  => [
+                    'glpi_documents_items.itemtype'        => 'User',
+                    'glpi_documents_items.items_id'        => $users_id,
+                    'glpi_plugin_activity_snapshots.month' => $mois_courant,
+                    'glpi_plugin_activity_snapshots.year'  => $annee_courante,
+                ],
+            ]);
+            foreach ($allowed_iterator as $row) {
+                $allowed_ids[(int)$row['documents_id']] = true;
+            }
+
+            foreach (array_keys($input['delete_snapshot']) as $documents_id) {
+                $documents_id = (int)$documents_id;
+                if (isset($allowed_ids[$documents_id]) && $doc->can($documents_id, PURGE)) {
+                    $doc->delete(['id' => $documents_id]);
+                }
             }
             unset($input['delete_snapshot']);
         }

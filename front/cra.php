@@ -27,6 +27,8 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\BadRequestHttpException;
+use GlpiPlugin\Activity\Holiday;
 use GlpiPlugin\Activity\Menu;
 use GlpiPlugin\Activity\Report;
 
@@ -36,6 +38,20 @@ Session::checkLoginUser();
 Session::checkRight('plugin_activity', READ);
 
 if (isset($_GET['itemtype'])) {
+   // Security: itemtype drives both a $_SESSION['glpisearch'] key and the
+   // redirect target URL. Only the itemtypes the CRA report actually links to
+   // are legitimate here; reject anything else instead of writing an arbitrary
+   // key into the session search state or redirecting to a crafted target.
+   $allowed_itemtypes = [
+      Ticket::class,
+      ProjectTask::class,
+      PlanningExternalEvent::class,
+      Holiday::class,
+   ];
+   if (!in_array($_GET['itemtype'], $allowed_itemtypes, true)) {
+      throw new BadRequestHttpException();
+   }
+
    unset($_GET['root_doc']);
 
    // Guard against a missing/non-array 'criteria': count(null) is a fatal

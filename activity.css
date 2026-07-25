@@ -244,3 +244,21 @@ body.iframed {
 .question {
     cursor: pointer;
 }
+
+/* Holiday request modal sizing. Keyed on the stable modal id (#holiday) rather than
+   a dialog_class, because the "holiday" modal is built by several
+   Ajax::createIframeModalWindow('holiday', ...) call sites (LateralMenu,
+   PlanningExternalEvent, Report) and the lateral-menu link only targets #holiday.
+   Keying on the id makes the sizing apply whichever call site rendered the modal.
+
+   Width: override the Bootstrap --bs-modal-width variable consumed by .modal-dialog. */
+#holiday .modal-dialog {
+    --bs-modal-width: min(1600px, 95vw);
+}
+
+/* Height: roughly double it. The core JS sets the iframe height inline to the
+   content's scrollHeight; a CSS min-height still applies as a floor (different
+   property) and is not overridden. Capped to the viewport to stay usable. */
+#holiday .modal-body iframe {
+    min-height: min(1100px, 88vh);
+}

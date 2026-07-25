@@ -70,7 +70,8 @@ class LateralMenu extends CommonDBTM
             'reloadonclose' => false,
             'width'         => 1180,
             'height'        => 700,
-            'dialog_class'  => 'modal-xl',
+            // Custom class widens the dialog beyond the default modal-xl (see activity.css).
+            'dialog_class'  => 'modal-xl activity_holiday_modal',
             ]
         );
 
@@ -91,86 +92,4 @@ class LateralMenu extends CommonDBTM
         ]);
     }
 
-    /**
-     * Create a Bootstrap Offcanvas side panel
-     *
-     * @param string $name    name / id of the offcanvas element
-     * @param array  $options Possible options:
-     *          - title     Title to display
-     *          - position  position (either left or right - defaults to right)
-     *          - url       URL to load content from
-     *          - display   display or get string? (default true)
-     *
-     * @return void|string (see $options['display'])
-     */
-    static function createSlidePanel($name, $options = [])
-    {
-        $param = [
-            'title'    => '',
-            'position' => 'right',
-            'url'      => '',
-            'display'  => true,
-            'icon'     => false,
-            'icon_url' => false,
-            'icon_txt' => false,
-        ];
-
-        foreach ($options as $key => $val) {
-            if (isset($param[$key])) {
-                $param[$key] = $val;
-            }
-        }
-
-        $js_name      = json_encode($name);
-        $js_title     = json_encode($param['title']);
-        $js_url       = json_encode($param['url']);
-        $js_close_lbl = json_encode(__s('Close'));
-        $js_pos_class = ($param['position'] === 'left') ? 'offcanvas-start' : 'offcanvas-end';
-
-        $out = "<script type='text/javascript'>
-(function () {
-    var ocId = $js_name;
-    if (document.getElementById(ocId)) { return; }
-    var oc = document.createElement('div');
-    oc.id = ocId;
-    oc.className = 'offcanvas $js_pos_class';
-    oc.tabIndex = -1;
-    oc.setAttribute('data-bs-scroll', 'true');
-    var spinner = '<div class=\"text-center p-4\"><div class=\"spinner-border\" role=\"status\"></div></div>';
-    oc.innerHTML =
-        '<div class=\"offcanvas-header border-bottom\">'
-        + '<h5 class=\"offcanvas-title\">' + $js_title + '</h5>'
-        + '<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"offcanvas\" aria-label=\"' + $js_close_lbl + '\"></button>'
-        + '</div>'
-        + '<div class=\"offcanvas-body\" id=\"' + ocId + '_body\">' + spinner + '</div>';
-    document.body.appendChild(oc);
-    function injectHtml(container, html) {
-        container.innerHTML = '';
-        var frag = document.createRange().createContextualFragment(html);
-        container.appendChild(frag);
-    }
-    oc.addEventListener('show.bs.offcanvas', function () {
-        var bd = document.getElementById(ocId + '_body');
-        bd.innerHTML = spinner;
-        fetch($js_url)
-            .then(function (r) { return r.text(); })
-            .then(function (html) { injectHtml(bd, html); })
-            .catch(function () { bd.innerHTML = '<div class=\"alert alert-danger m-2\">Erreur de chargement</div>'; });
-    });
-    var trigger = document.getElementById(ocId + 'Link');
-    if (trigger) {
-        trigger.addEventListener('click', function (e) {
-            e.preventDefault();
-            bootstrap.Offcanvas.getOrCreateInstance(oc).show();
-        });
-    }
-}());
-</script>";
-
-        if ($param['display']) {
-            echo $out;
-        } else {
-            return $out;
-        }
-    }
 }

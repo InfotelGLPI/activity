@@ -105,6 +105,38 @@ class Holiday extends CommonDBTM
         return Session::haveRight('plugin_activity_can_requestholiday', 1);
     }
 
+    function canUpdateItem(): bool
+    {
+        // Ownership: the global plugin_activity UPDATE right must NOT allow
+        // editing another user's request. Only the owner, or a profile holding
+        // plugin_activity_all_users, may update it (mirrors the display gate in
+        // showForm()). Otherwise check($id, UPDATE) would be a plain IDOR.
+        if (Session::haveRight('plugin_activity_all_users', 1)) {
+            return true;
+        }
+        return isset($this->fields['users_id'])
+            && $this->fields['users_id'] == Session::getLoginUserID();
+    }
+
+    function canPurgeItem(): bool
+    {
+        // Ownership: a holiday may be purged by its owner, by a profile holding
+        // plugin_activity_all_users, or by the manager responsible for
+        // validating that user's requests (mirrors can_purge_as_manager in
+        // showForm()). The global plugin_activity PURGE right alone is not
+        // enough, otherwise check($id, PURGE) would be a plain IDOR.
+        if (Session::haveRight('plugin_activity_all_users', 1)) {
+            return true;
+        }
+        if (isset($this->fields['users_id'])
+            && $this->fields['users_id'] == Session::getLoginUserID()) {
+            return true;
+        }
+        return isset($this->fields['users_id'])
+            && Session::haveRight('plugin_activity_can_requestholiday', 1)
+            && $this->checkUserIsManager($this->fields['users_id']);
+    }
+
     function cleanDBonPurge()
     {
         $holidayValidation = new HolidayValidation();
@@ -168,6 +200,16 @@ class Holiday extends CommonDBTM
     **/
     function prepareInputForAdd($input)
     {
+        // Security (identity spoofing): never trust a posted users_id. A holiday
+        // request must belong to the current user; only a profile holding
+        // plugin_activity_all_users may file one on behalf of someone else
+        // (the owner selector in showForm() is likewise gated on that right).
+        // Without this, any holder of plugin_activity_can_requestholiday could
+        // POST users_id=<colleague> and pollute their balance/planning and
+        // trigger validation notifications to their managers.
+        if (!Session::haveRight('plugin_activity_all_users', 1)) {
+            $input['users_id'] = Session::getLoginUserID();
+        }
 
         $AllDay = Report::getAllDay();
 

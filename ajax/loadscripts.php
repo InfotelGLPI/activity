@@ -27,33 +27,29 @@
  --------------------------------------------------------------------------
  */
 
-use GlpiPlugin\Activity\LateralMenu;
-
 Html::header_nocache();
 Session::checkLoginUser();
 Session::checkRight("plugin_activity", READ);
-header("Content-Type: text/html; charset=UTF-8");
+header("Content-Type: application/json; charset=UTF-8");
 
-if (isset($_POST['action'])) {
-   switch ($_POST['action']) {
-      case "load" :
-         //TODO comment For ?
-         if (Session::getCurrentInterface() == "central"
-               && (strpos($_SERVER['REQUEST_URI'], "cra.php") !== false)) {
-            $lang_month  = array_values(Toolbox::getMonthsOfYearArray());
-            echo "<script type='text/javascript'>changeClickTodayActivity(".json_encode(['lang_month' => $lang_month]).");</script>";
-         }
-
-          LateralMenu::createSlidePanel(
-             'showLateralMenu',
-             [
-                 'title'     => _n('Activity', 'Activities', 1, 'activity'),
-                 'url'       => PLUGIN_ACTIVITY_WEBDIR . '/ajax/lateralmenu.php'
-             ]
-         );
-
-         break;
+// Security: return pure JSON data (never HTML with <script> tags). The client
+// parses this with JSON.parse and calls the behaviours itself, instead of
+// eval()-ing server output — so no reflected value can ever become executable JS.
+$response = [];
+if (isset($_POST['action']) && $_POST['action'] === "load") {
+   //TODO comment For ?
+   if (Session::getCurrentInterface() == "central"
+         && (strpos($_SERVER['REQUEST_URI'], "cra.php") !== false)) {
+      $response['lang_month'] = array_values(Toolbox::getMonthsOfYearArray());
    }
-} else {
-   exit;
+
+   $response['slidepanel'] = [
+      'name'        => 'showLateralMenu',
+      'title'       => _n('Activity', 'Activities', 1, 'activity'),
+      'url'         => PLUGIN_ACTIVITY_WEBDIR . '/ajax/lateralmenu.php',
+      'position'    => 'right',
+      'close_label' => __('Close'),
+   ];
 }
+
+echo json_encode($response);
