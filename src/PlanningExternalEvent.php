@@ -1234,7 +1234,7 @@ class PlanningExternalEvent extends CommonDBTM
         }
         $yearRegex .= ")";
 
-        $table = PlanningExternalEvent::getTable();
+        $table = \PlanningExternalEvent::getTable();
         $entityTable = \Entity::getTable();
         $categoryTable = PlanningEventCategory::getTable();
         $subQueryCrit = [

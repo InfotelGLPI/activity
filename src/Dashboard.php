@@ -537,9 +537,9 @@ class Dashboard extends CommonGLPI
                         }
                     }
                     if (!empty($datat["begin"]) && !empty($datat["end"])) {
-                        $values = $report->timeRepartition($datat['actiontime'] / $AllDay, $datat["begin"], $values, Report::$WORK, $mtitle, $holiday->getHolidays());
+                        $values = $report->timeRepartition($datat['actiontime'], $datat["begin"], $values, Report::$WORK, $mtitle, $holiday->getHolidays(), [], $AllDay);
                     } else {
-                        $values = $report->timeRepartition($datat['actiontime'] / $AllDay, $datat["date"], $values, Report::$WORK, $mtitle, $holiday->getHolidays());
+                        $values = $report->timeRepartition($datat['actiontime'], $datat["date"], $values, Report::$WORK, $mtitle, $holiday->getHolidays(), [], $AllDay);
                     }
                 }
                 $intern = $values[0];
@@ -640,7 +640,7 @@ class Dashboard extends CommonGLPI
         $values  = [];
         if (count($result)) {
             foreach ($result as $data) {
-                $values = $report->timeRepartition($data['actiontime'] / $AllDay, $data["begin"], $values, Report::$WORK, $data['id'], $holiday->getHolidays(), ['real_hour' => true]);
+                $values = $report->timeRepartition($data['actiontime'], $data["begin"], $values, Report::$WORK, $data['id'], $holiday->getHolidays(), ['real_hour' => true], $AllDay);
             }
             $currentime = date("Y-m-d H:i:s");
 
@@ -703,7 +703,7 @@ class Dashboard extends CommonGLPI
                 //   $isallday = true;
                 //}
 
-                $values = $report->timeRepartition($datah['actiontime'] / $AllDay, $datah["begin"], $values, Report::$WORK, $datah["id"], $holiday->getHolidays());
+                $values = $report->timeRepartition($datah['actiontime'], $datah["begin"], $values, Report::$WORK, $datah["id"], $holiday->getHolidays(), [], $AllDay);
 
                 //if (empty($datah["type"])) {
                 //   $holidaytypes[$datah["id"]] = $datah["entity"]." > ".__('No defined type', 'activity');
@@ -768,9 +768,9 @@ class Dashboard extends CommonGLPI
 
                 if ($use_timerepartition > 0) {
                     if (!empty($datat["begin"]) && !empty($datat["end"])) {
-                        $alltickets = $report->timeRepartition($datat['actiontime'] / $AllDay, $datat["begin"], $alltickets, Report::$WORK, $mtitle, $holiday->getHolidays());
+                        $alltickets = $report->timeRepartition($datat['actiontime'], $datat["begin"], $alltickets, Report::$WORK, $mtitle, $holiday->getHolidays(), [], $AllDay);
                     } else {
-                        $alltickets = $report->timeRepartition($datat['actiontime'] / $AllDay, $datat["date"], $alltickets, Report::$WORK, $mtitle, $holiday->getHolidays());
+                        $alltickets = $report->timeRepartition($datat['actiontime'], $datat["date"], $alltickets, Report::$WORK, $mtitle, $holiday->getHolidays(), [], $AllDay);
                     }
                 } else {
                     if (!empty($datat["begin"]) && !empty($datat["end"])) {
