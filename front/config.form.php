@@ -27,6 +27,8 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Application\View\TemplateRenderer;
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Activity\Config;
 use GlpiPlugin\Activity\Menu;
 use GlpiPlugin\Activity\Option;
@@ -67,14 +69,12 @@ if (Plugin::isPluginActive("activity")) {
             Html::footer();
         }
     } else {
-        Html::header(__('Setup'), '', "config", "plugin");
-        echo "<div class='alert alert-warning d-flex'>";
-        echo "<b>" . __("You don't have permission to perform this action.") . "</b></div>";
-        Html::footer();
+        throw new AccessDeniedHttpException();
     }
 } else {
-    Html::header(__('Setup'), '', "config", "plugin");
-    echo "<div class='alert alert-important alert-warning d-flex'>";
-    echo "<b>" . __('Please activate the plugin', 'activity') . "</b></div>";
+    Html::header(__s('Setup'), '', "config", "plugin");
+    TemplateRenderer::getInstance()->display('@activity/plugin_inactive.html.twig', [
+        'message' => __('Please activate the plugin', 'activity'),
+    ]);
     Html::footer();
 }

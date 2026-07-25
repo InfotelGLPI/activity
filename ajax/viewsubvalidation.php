@@ -68,7 +68,7 @@ if (($item = $dbu->getItemForItemtype($_POST['type']))
       $item->showForm($_POST["id"], ['parent' => $parent]);
 
    } else {
-      echo __('Access denied');
+       throw new AccessDeniedHttpException();
    }
 }
 
