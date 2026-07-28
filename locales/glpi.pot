@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-28 08:32+0000\n"
+"POT-Creation-Date: 2026-07-28 15:29+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -91,11 +91,11 @@ msgstr ""
 msgid "All day"
 msgstr ""
 
-#: ajax/preferenceactions.php:56
+#: ajax/preferenceactions.php:65
 msgid "An error happend while adding the manager"
 msgstr ""
 
-#: ajax/preferenceactions.php:63
+#: ajax/preferenceactions.php:72
 msgid "An error happend while deleting the manager"
 msgstr ""
 
@@ -384,7 +384,7 @@ msgstr[1] ""
 msgid "Holidays"
 msgstr ""
 
-#: src/Report.php:1953 src/CraPDF.php:596
+#: src/Report.php:1969 src/CraPDF.php:596
 msgid "Holidays or exceptional absences"
 msgstr ""
 
@@ -433,11 +433,11 @@ msgstr ""
 msgid "Mail sent to %s"
 msgstr ""
 
-#: ajax/preferenceactions.php:54
+#: ajax/preferenceactions.php:63
 msgid "Manager sucessfully added."
 msgstr ""
 
-#: ajax/preferenceactions.php:71
+#: ajax/preferenceactions.php:81
 msgid "Manager sucessfully deleted."
 msgstr ""
 
@@ -515,7 +515,7 @@ msgstr ""
 msgid "Optional when approved"
 msgstr ""
 
-#: src/Report.php:1955 src/CraPDF.php:595 src/HolidayType.php:97
+#: src/Report.php:1971 src/CraPDF.php:595 src/HolidayType.php:97
 msgid "Part time"
 msgstr ""
 
@@ -551,7 +551,7 @@ msgstr ""
 msgid "Please fill an end date"
 msgstr ""
 
-#: ajax/preferenceactions.php:47
+#: ajax/preferenceactions.php:56
 msgid "Please select a manager"
 msgstr ""
 
@@ -680,7 +680,7 @@ msgstr ""
 msgid "Sickness"
 msgstr ""
 
-#: src/Report.php:1957 src/CraPDF.php:597
+#: src/Report.php:1973 src/CraPDF.php:597
 msgid "Sickness or maternity"
 msgstr ""
 
