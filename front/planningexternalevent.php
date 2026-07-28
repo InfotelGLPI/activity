@@ -78,7 +78,7 @@ if ($activity->canView()) {
 
    //} else {
 
-      Search::show("PlanningExternalEvent");
+      Search::show(PlanningExternalEvent::class);
    //}
 } else {
     throw new AccessDeniedHttpException();

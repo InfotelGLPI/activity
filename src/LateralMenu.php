@@ -70,7 +70,7 @@ class LateralMenu extends CommonDBTM
             'reloadonclose' => false,
             'width'         => 1180,
             'height'        => 700,
-            // Custom class widens the dialog beyond the default modal-xl (see activity.css).
+            // Custom class widens the dialog beyond the default modal-xl (see public/activity.css).
             'dialog_class'  => 'modal-xl activity_holiday_modal',
             ]
         );

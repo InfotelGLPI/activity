@@ -152,7 +152,7 @@ class Preference extends CommonDBTM
      *
      * @return void
      */
-    public function showAddManagerView(array $managers, int $use_groupmanager = -1)
+    public function showAddManagerView(array $managers = [], int $use_groupmanager = -1)
     {
         if ($use_groupmanager === -1) {
             // Fallback: called standalone without the pre-computed flag

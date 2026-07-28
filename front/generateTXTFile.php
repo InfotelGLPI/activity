@@ -33,6 +33,8 @@ use GlpiPlugin\Activity\HolidayValidation;
 
 Session::checkLoginUser();
 
+Session::checkRight('plugin_activity_can_validate', READ);
+
 if (!isset($_GET['holidays_id'])) {
     throw new NotFoundHttpException();
 }

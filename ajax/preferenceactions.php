@@ -43,14 +43,23 @@ switch ($_POST ['action']) {
       $preferences->showAddManagerView();
       break;
    case 'add_manager':
-      if ($_POST['manager_id'] == 0) {
+      // Validate the posted manager id: never trust it as-is. It must be a real
+      // user, visible in one of the caller's active entities, and not the caller
+      // themselves. Otherwise an arbitrary/out-of-scope id could be stored as a
+      // "validator", creating an orphan preference row.
+      $manager_id = (int)($_POST['manager_id'] ?? 0);
+      $manager    = new User();
+      if ($manager_id === 0
+          || $manager_id === (int)Session::getLoginUserID()
+          || !$manager->getFromDB($manager_id)
+          || !Session::haveAccessToEntity($manager->fields['entities_id'], true)) {
          $message = __('Please select a manager', 'activity');
       } else {
          $preferences->fields['users_id']          = Session::getLoginUserID();
-         $preferences->fields['users_id_validate'] = $_POST['manager_id'];
+         $preferences->fields['users_id_validate'] = $manager_id;
          $idPreferences                            = $preferences->add($preferences->fields);
          if ($idPreferences) {
-            $preferences->addManagerToView($_POST['manager_id']);
+            $preferences->addManagerToView($manager_id);
             $message = __('Manager sucessfully added.', 'activity');
          } else {
             $message = __('An error happend while adding the manager', 'activity');
@@ -61,8 +70,9 @@ switch ($_POST ['action']) {
       break;
    case 'delete_manager':
       $message = __('An error happend while deleting the manager', 'activity');
-      if ($_POST['manager_id'] != 0) {
-         $preferences->getFromDBByCrit(['users_id_validate' => $_POST['manager_id'],
+      $manager_id = (int)($_POST['manager_id'] ?? 0);
+      if ($manager_id !== 0) {
+         $preferences->getFromDBByCrit(['users_id_validate' => $manager_id,
                                         'users_id'          => Session::getLoginUserID()]);
          if (isset($preferences->fields['id']) && $preferences->fields['id'] > 0) {
             $oldId = $preferences->fields['users_id_validate'];

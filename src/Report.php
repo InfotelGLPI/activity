@@ -1578,7 +1578,14 @@ class Report extends CommonDBTM
                         $hour = self::$PM_BEGIN;
                     }
 
-                    $values = self::setTimes(0.25, $opt['real_hour'] ? $h : $hour, $date_add, $values, $type, $activity, $holidays, $timejour, $allDay, $options);
+                    // Each iteration adds a 0.25-day chunk, so the exceeding
+                    // detection inside setTimes() must receive 0.25 as the
+                    // per-call day fraction (like every recursive call does),
+                    // NOT the full outer $timejour. Passing the total made
+                    // ($countAll + $timejour) > 1 fire on every chunk, cascading
+                    // the value across days (e.g. a 2-day leave spread as
+                    // 0.25/0.5/0.75/... instead of two full days).
+                    $values = self::setTimes(0.25, $opt['real_hour'] ? $h : $hour, $date_add, $values, $type, $activity, $holidays, 0.25, $allDay, $options);
                 }
             }
         } elseif ($timejour == 1) {
@@ -1685,6 +1692,15 @@ class Report extends CommonDBTM
     */
     static function setTimes($time, $hour, $date_add, $values, $type, $activity, $holidays = [], $timejour, $allDay, $options)
     {
+        // Normalize options with the same defaults as timeRepartition(): callers
+        // (and the recursive calls below) may pass an $options array that omits
+        // 'use_hours', which would trigger "Undefined array key" warnings.
+        $options = $options + [
+            'real_hour'                   => false,
+            'use_planning_activity_hours' => true,
+            'use_hours'                   => false,
+        ];
+
         $holiday = new Holiday();
         $isWe    = $holiday->countWe($date_add, $date_add, $holidays);
 
