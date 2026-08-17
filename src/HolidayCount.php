@@ -71,8 +71,35 @@ class HolidayCount extends CommonDBTM
    /**
     * @see CommonDBTM::prepareInputForUpdate()
     **/
+    function prepareInputForUpdate($input)
+    {
+        // Security (identity spoofing): mirror prepareInputForAdd(). The check($id,
+        // UPDATE) guard only proves the caller may edit the record as stored in DB;
+        // it does not vet a users_id present in the payload. Since CommonDBTM::update()
+        // persists any posted real column, a posted users_id would be written verbatim,
+        // letting an owner re-assign the counter to a colleague (falsifying their
+        // holiday balance). Realign the owner on the stored value unless the caller
+        // holds plugin_activity_all_users.
+        if (!Session::haveRight('plugin_activity_all_users', 1)) {
+            $input['users_id'] = $this->fields['users_id'];
+        }
+
+        return $input;
+    }
+
+   /**
+    * @see CommonDBTM::prepareInputForAdd()
+    **/
     function prepareInputForAdd($input)
     {
+        // Security (identity spoofing): never trust a posted users_id. A holiday
+        // counter must belong to the current user; only a profile holding
+        // plugin_activity_all_users may manage one on behalf of someone else.
+        // Without this, any holder of plugin_activity CREATE could POST
+        // users_id=<colleague> and inflate/falsify their holiday balance.
+        if (!Session::haveRight('plugin_activity_all_users', 1)) {
+            $input['users_id'] = Session::getLoginUserID();
+        }
 
         if ($input['plugin_activity_holidayperiods_id'] == 0) {
             Session::addMessageAfterRedirect(__("Holiday period is mandatory field", "activity"), false, ERROR);

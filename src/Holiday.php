@@ -196,6 +196,26 @@ class Holiday extends CommonDBTM
     }
 
    /**
+    * @see CommonDBTM::prepareInputForUpdate()
+    **/
+    function prepareInputForUpdate($input)
+    {
+        // Security (identity spoofing): mirror prepareInputForAdd(). canUpdateItem()
+        // only proves the caller owns the record as it stands in DB BEFORE the
+        // change; it does not vet a users_id present in the payload. Since
+        // CommonDBTM::update() persists any posted real column, a posted users_id
+        // would be written verbatim, letting an owner re-assign the request to a
+        // colleague (polluting their balance/planning and firing validation
+        // notifications to their managers). Realign the owner on the stored value
+        // unless the caller holds plugin_activity_all_users.
+        if (!Session::haveRight('plugin_activity_all_users', 1)) {
+            $input['users_id'] = $this->fields['users_id'];
+        }
+
+        return $input;
+    }
+
+   /**
     * @see CommonDBTM::prepareInputForAdd()
     **/
     function prepareInputForAdd($input)
@@ -1408,42 +1428,6 @@ class Holiday extends CommonDBTM
     }
 
 
-    function showLinks()
-    {
-
-        if (Session::haveRight("plugin_activity_can_validate", 1)
-          && isset($this->fields['id'])
-          && $this->fields['id'] > 0) {
-            if ($this->fields['global_validation'] == CommonValidation::ACCEPTED) {
-                $user = new User();
-                $user->getFromDB($this->fields['users_id']);
-
-                if (isset($user->fields['registration_number'])
-                && $user->fields['registration_number'] != "") {
-                    $this->showLinkTXTFile($this->fields['id']);
-                } else {
-                    $this->showErrorRegistrationNumber();
-                }
-            }
-        }
-
-        $this->initJQDatepicker();
-    }
-
-
-    private function showErrorRegistrationNumber()
-    {
-        $user = new User();
-        $dbu  = new DbUtils();
-        $user->getFromDB($this->fields['users_id']);
-
-        TemplateRenderer::getInstance()->display('@activity/holiday_error_registration.html.twig', [
-            'user_url' => $user->getLinkURL(),
-            'username' => $dbu->getUserName($user->fields['id']),
-        ]);
-    }
-
-
     function getBodyMail($dateComplete, $date, $userName, $approverFullName)
     {
 
@@ -1471,34 +1455,9 @@ class Holiday extends CommonDBTM
     }
 
 
-    public function showLinkTXTFile($holidaysId)
-    {
-
-        $holiday = new Holiday();
-        $holiday->getFromDB($holidaysId);
-        $user = new User();
-        $user->getFromDB($holiday->fields['users_id']);
-
-        $period           = $this->getPeriodForTemplate($holiday->fields['actiontime']);
-        $dateBegin        = date('d/m/Y', strtotime($holiday->fields['begin'])) . " " . $period['begin'];
-        $userName         = (isset($user->fields['firstname']) ? ucfirst($user->fields['firstname']) : '') . " " . (isset($user->fields['realname']) ? strtoupper($user->fields['realname']) : '');
-        $approverFullname = (isset($_SESSION['glpifirstname']) ? ucfirst($_SESSION['glpifirstname']) : '') . " " . (isset($_SESSION['glpirealname']) ? strtoupper($_SESSION['glpirealname']) : '');
-
-        $url = PLUGIN_ACTIVITY_WEBDIR . "/front/generateTXTFile.php?holidays_id=$holidaysId";
-
-        if (HolidayValidation::canValidate($holidaysId)) {
-            TemplateRenderer::getInstance()->display('@activity/holiday_link_txt.html.twig', [
-                'url' => $url,
-            ]);
-        }
-    }
-
-
-
 
     static function getAlreadyPlannedInformation($val)
     {
-        global $CFG_GLPI;
 
         $out = "";
 
@@ -1958,69 +1917,6 @@ class Holiday extends CommonDBTM
         }
     }
 
-   /**
-    * This function allows to create a JQuery datepicker
-    *
-    * @param String $id : id of the input text to be transform as a datepicker
-    */
-    public function initDate($id)
-    {
-        echo "\n<script type='text/javascript'>\n";
-        echo "$(document).ready(function() {
-               $('#" . $id . "').datepicker({
-                       showOn: 'both',
-                       buttonText: '<i class=\"ti ti-calendar\"></i>',
-                       width : 2,
-                       height : 2,
-                       dateFormat: 'dd-mm-yy',
-                       firstDay: 1,
-                       beforeShowDay: $.datepicker.noWeekends,
-                       constrainInput: true,
-                   });
-
-                   $('.ui-datepicker-trigger').mouseover(function() {
-                      $(this).css('cursor', 'pointer');
-                   });
-               });";
-        echo "</script>\n";
-    }
-
-
-    function initJQDatepicker()
-    {
-
-        $langMonth = array_values(Toolbox::getMonthsOfYearArray());
-        $langDays  = array_values(Toolbox::getDaysOfWeekArray());
-        foreach ($langMonth as $month) {
-            $langMonthShort[] = substr($month, 0, 4);
-        }
-        foreach ($langDays as $day) {
-            $langDaysShort[] = substr($day, 0, 3);
-        }
-        foreach ($langDays as $day) {
-            $langDaysMin[] = substr($day, 0, 2);
-        }
-
-        $this->showHeaderJS();
-        echo "    $.datepicker.regional['fr'] = {clearText: '" . __('Clear') . "', clearStatus: '',\n";
-        echo "        closeText: '" . __('Close') . "', closeStatus: '" . __('Close without clearing', 'activity') . "',\n";
-        echo "        prevText: '< " . __('Previous') . "', prevStatus: '" . __('See previous month', 'activity') . "',\n";
-        echo "        nextText: '" . __('Next') . " >', nextStatus: '" . __('See next month', 'activity') . "',\n";
-        echo "        currentText: 'Courant', currentStatus: '" . __('See current month', 'activity') . "',\n";
-        echo "        monthNames: " . json_encode($langMonth) . ",\n";
-        echo "        monthNamesShort: " . json_encode($langMonthShort) . ",\n";
-        echo "        monthStatus: '" . __('See another month', 'activity') . "', yearStatus: '" . __('See another year', 'activity') . "',\n";
-        echo "        weekHeader: 'Sm', weekStatus: '',\n";
-        echo "        dayNames: " . json_encode($langDays) . ",\n";
-        echo "        dayNamesShort: " . json_encode($langDaysShort) . ",\n";
-        echo "        dayNamesMin: " . json_encode($langDaysMin) . ",\n";
-        echo "        dayStatus: '" . __('Use DD as first day of week', 'activity') . "', dateStatus: '" . __('Choose the DD, MM d', 'activity') . "',\n";
-        echo "        dateFormat: 'dd/mm/yy', firstDay: 0,\n";
-        echo "        initStatus: '" . __('Choose the date', 'activity') . "', isRTL: false};\n";
-        echo "    $.datepicker.setDefaults($.datepicker.regional['fr']);\n";
-
-        $this->closeFormJS();
-    }
 
 
    /**
@@ -2181,141 +2077,6 @@ class Holiday extends CommonDBTM
         return $nb_jours;
     }
 
-   /**
-    * Counts number of days of holiday between two dates for a user
-    *
-    * @param mixed $users_id
-    * @param mixed $start
-    * @param mixed $end
-    *
-    * @return mixed
-    * @global mixed $DB
-    *
-    */
-
-    function countNbHoliday($users_id, $periods, $statut)
-    {
-        global $DB;
-
-        $types = [Report::$HOLIDAY, Report::$SICKNESS, Report::$PART_TIME];
-        foreach ($types as $type) {
-            $nb_jours_i[$type]['total'] = 0;
-        }
-
-        foreach ($periods as $period) {
-            $AllDay   = Report::getAllDay();
-            $iterator = $DB->request([
-                'SELECT'    => [
-                    'glpi_plugin_activity_holidays.begin',
-                    'glpi_plugin_activity_holidays.end',
-                    'glpi_plugin_activity_holidays.actiontime',
-                    new QueryExpression('`glpi_plugin_activity_holidaytypes`.`id` AS `types_id`'),
-                    'glpi_plugin_activity_holidaytypes.name',
-                    'glpi_plugin_activity_holidaytypes.is_holiday',
-                    'glpi_plugin_activity_holidaytypes.is_holiday_counter',
-                    'glpi_plugin_activity_holidaytypes.is_sickness',
-                    'glpi_plugin_activity_holidaytypes.is_part_time',
-                ],
-                'FROM'      => 'glpi_plugin_activity_holidays',
-                'LEFT JOIN' => [
-                    'glpi_plugin_activity_holidaytypes' => [
-                        'ON' => [
-                            'glpi_plugin_activity_holidaytypes' => 'id',
-                            'glpi_plugin_activity_holidays'     => 'plugin_activity_holidaytypes_id',
-                        ],
-                    ],
-                    'glpi_plugin_activity_holidayperiods' => [
-                        'ON' => [
-                            'glpi_plugin_activity_holidays'     => 'plugin_activity_holidayperiods_id',
-                            'glpi_plugin_activity_holidayperiods' => 'id',
-                        ],
-                    ],
-                ],
-                'WHERE' => [
-                    'glpi_plugin_activity_holidays.global_validation' => $statut,
-                    'glpi_plugin_activity_holidays.users_id'          => $users_id,
-                    'glpi_plugin_activity_holidayperiods.id'          => $period['id'],
-                ],
-            ]);
-
-            foreach ($iterator as $data) {
-                if ($data['is_holiday'] && $data['is_holiday_counter']) {
-                    $nb_jours_i[Report::$HOLIDAY]['total'] += $data['actiontime'] / $AllDay;
-                    if (!isset($nb_jours_i[Report::$HOLIDAY]['sub_types'][$data['types_id']])) {
-                         $nb_jours_i[Report::$HOLIDAY]['sub_types'][$data['types_id']] = 0;
-                    }
-                    $nb_jours_i[Report::$HOLIDAY]['sub_types'][$data['types_id']] += $data['actiontime'] / $AllDay;
-                } elseif ($data['is_sickness']) {
-                    $nb_jours_i[Report::$SICKNESS]['total'] += $data['actiontime'] / $AllDay;
-                } elseif ($data['is_part_time']) {
-                    $nb_jours_i[Report::$PART_TIME]['total'] += $data['actiontime'] / $AllDay;
-                }
-            }
-        }
-
-       // Round total
-        foreach ($nb_jours_i as $type => &$holiday) {
-            $holiday['total'] = Report::TotalTpsPassesArrondis($holiday['total']);
-        }
-
-        return $nb_jours_i;
-    }
-
-    function getHolidaysInDays($begin, $end, $AllDay)
-    {
-        $holiday = new Holiday();
-
-        $countwe  = $holiday->countWe($begin, $end, Holiday::getCalendarHolidaysArray($_SESSION['glpiactive_entity']));
-        $duration = strtotime(date('Y-m-d', strtotime($end)) . '00:00:00') - strtotime(date('Y-m-d', strtotime($begin)) . '00:00:00');
-
-       //real
-        $duration = ($duration / 86400) * $AllDay;
-
-        $beginHour = date('H:i:s', strtotime($begin));
-        $endHour   = date('H:i:s', strtotime($end));
-
-       // Add hours
-        if (strtotime($endHour) - strtotime($beginHour) > $AllDay) {
-            $duration += $AllDay;
-        } else {
-            $duration += strtotime($endHour) - strtotime($beginHour);
-           // Case of time between AM_END and PM_BEGIN
-            if (strtotime($beginHour) <= strtotime(Report::$AM_END)
-             && strtotime($endHour) >= strtotime(Report::$PM_BEGIN)) {
-                $duration -= (strtotime(Report::$PM_BEGIN) - strtotime(Report::$AM_END));
-            }
-        }
-
-        return Report::TotalTpsPassesArrondis($duration / $AllDay) - $countwe;
-    }
-
-   /*from lateralmenu*/
-    function showHolidayDetailsByType($nbHolidays)
-    {
-        $rows = [];
-        foreach ($nbHolidays as $type => $val) {
-            if ($val['total'] > 0) {
-                $sub_types = [];
-                if (isset($val['sub_types'])) {
-                    foreach ($val['sub_types'] as $subType => $subVal) {
-                        $sub_types[] = [
-                            'name'  => Dropdown::getDropdownName('glpi_plugin_activity_holidaytypes', $subType),
-                            'count' => $subVal,
-                        ];
-                    }
-                }
-                $rows[] = [
-                    'name'      => Report::getHolidayName($type),
-                    'total'     => $val['total'],
-                    'sub_types' => $sub_types,
-                ];
-            }
-        }
-
-        TemplateRenderer::getInstance()->display('@activity/holiday_details_by_type.html.twig', [
-            'rows' => $rows,
-        ]);
-    }
 
     function getDetails($users_id, $holiday_period_id)
     {

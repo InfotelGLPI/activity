@@ -46,10 +46,9 @@ function plugin_activity_install()
     $install = false;
     $update200 = false;
 
-    // version 3.0.0
     if (!$DB->tableExists("glpi_plugin_activity_holidays")) {
         $install = true;
-        $DB->runFile(PLUGIN_ACTIVITY_DIR . "/install/sql/empty-3.2.9.sql");
+        $DB->runFile(PLUGIN_ACTIVITY_DIR . "/install/sql/empty-3.2.8.sql");
     }
 
     //TODO Update ?

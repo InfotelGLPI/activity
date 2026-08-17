@@ -55,7 +55,7 @@ class CommonValidation extends CommonDBTM{
     * @param $global             boolean (true for global status, with "no validation" option)
     *                                    (false by default)
     *
-    * @return an array
+    * @return array array
     **/
    static function getAllStatusArray($withmetaforsearch = false, $global = false) {
 
@@ -80,14 +80,14 @@ class CommonValidation extends CommonDBTM{
    /**
     * Dropdown of validation status
     *
-    * @param $name          select name
+    * @param $name
     * @param $options array of possible options:
     *      - value   : default value (default waiting)
     *      - all     : boolean display all (default false)
     *      - global  : for global validation (default false)
     *      - display : boolean display or get string ? (default true)
     *
-    * @return nothing (display)
+    * @return int|string (display)
     **/
    static function dropdownStatus($name, $options = []) {
 
@@ -113,9 +113,9 @@ class CommonValidation extends CommonDBTM{
    /**
     * Get Ticket validation status Name
     *
-    * @param status ID
+    * @param $value
     *
-    * @return status
+    * @return $value
     */
    static function getStatus($value) {
 
@@ -128,7 +128,7 @@ class CommonValidation extends CommonDBTM{
    /**
     * Get Ticket validation status Color
     *
-    * @param $value status ID
+    * @param $value
     *
     * @return string
     */
@@ -159,7 +159,7 @@ class CommonValidation extends CommonDBTM{
     * @param $values
     * @param $options   array
     *
-    * @return return|status|string
+    * @return string
     */
    static function getSpecificValueToDisplay($field, $values, array $options = []) {
       if (!is_array($values)) {
@@ -182,7 +182,7 @@ class CommonValidation extends CommonDBTM{
     * @param $values            (default '')
     * @param $options   array
     *
-    * @return nothing|return
+    * @return string
     */
    static function getSpecificValueToSelect($field, $name = '', $values = '', array $options = []) {
 
@@ -213,7 +213,7 @@ class CommonValidation extends CommonDBTM{
     *  - users_id_validate       : ID of user validator
     *  - applyto
     *
-    * @return nothing (display)
+    * @return
     **/
    static function dropdownValidator(array $options = []) {
       global $CFG_GLPI;

@@ -182,23 +182,6 @@ class Report extends CommonDBTM
         return $last;
     }
 
-    static function showSnapshotTrigger($input)
-    {
-       //We copy the input
-        echo "<form method='POST' action='cra.php'>\n";
-        echo "<table class='tab_cadre'>";
-        echo "<tr><td>";
-        echo Html::hidden('month', ['value' => $input['month']]);
-        echo Html::hidden('year', ['value' => $input['year']]);
-        echo Html::hidden('users_id', ['value' => $input['users_id']]);
-        echo Html::hidden('display_type', ['value' => Search::PDF_OUTPUT_LANDSCAPE]);
-        echo Html::hidden('snapshot', ['value' => 'snapshot']);
-        echo Html::submit(__("Take a snapshot of the CRA", "activity"), ['name' => 'submit', 'class' => 'btn btn-primary']);
-        echo "</tr></td>";
-        echo "</table>";
-
-        Html::closeForm();
-    }
 
     static function showSnapshots($input)
     {
@@ -361,7 +344,6 @@ class Report extends CommonDBTM
     **/
     static function showOutputFormat()
     {
-        global $CFG_GLPI;
 
         echo "<select class='form-select' name='display_type'>";
         echo "<option value='" . Search::PDF_OUTPUT_LANDSCAPE . "'>" . __('Export CRA', 'activity') .
