@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- activity plugin for GLPI
- Copyright (C) 2019-2026 by the activity Development Team.
-
- https://github.com/InfotelGLPI/activity
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of activity.
-
- activity is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- activity is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with activity. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * activity plugin for GLPI
+ * Copyright (C) 2019-2026 by the activity Development Team.
+ *
+ * https://github.com/InfotelGLPI/activity
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of activity.
+ *
+ * activity is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * activity is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with activity. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 /**
@@ -32,108 +32,109 @@
  *
  * @return bool for success (will die for most error)
  * */
-function update223to224() {
-   global $DB;
+function update223to224()
+{
+    global $DB;
 
-   $migration = new Migration(224);
+    $migration = new Migration(224);
 
-   $query_users = "SELECT DISTINCT `users_id` 
+    $query_users = "SELECT DISTINCT `users_id` 
                   FROM `glpi_plugin_activity_holidays`";
 
-   if ($result_users = $DB->doQuery($query_users)) {
-      if ($DB->numrows($result_users) > 0) {
-         while ($data_user = $DB->fetchAssoc($result_users)) {
-            $user_id = $data_user['users_id'];
+    if ($result_users = $DB->doQuery($query_users)) {
+        if ($DB->numrows($result_users) > 0) {
+            while ($data_user = $DB->fetchAssoc($result_users)) {
+                $user_id = $data_user['users_id'];
 
-            //select cp
-            $query_cp = "SELECT *
+                //select cp
+                $query_cp = "SELECT *
                         FROM `glpi_plugin_activity_holidaycounts`
                         LEFT JOIN `glpi_plugin_activity_holidayperiods`
                         ON (`glpi_plugin_activity_holidaycounts`.`plugin_activity_holidayperiods_id` = `glpi_plugin_activity_holidayperiods`.`id`)
-                        WHERE `users_id`= '".$user_id."' 
+                        WHERE `users_id`= '" . $user_id . "' 
                            AND `glpi_plugin_activity_holidaycounts`.`count` > 0
                            AND `glpi_plugin_activity_holidayperiods`.`short_name` LIKE 'CP';";
 
-            $CP = [];
-            if ($result_cp = $DB->doQuery($query_cp)) {
-               if ($DB->numrows($result_cp) > 0) {
-                  while ($data_cp = $DB->fetchAssoc($result_cp)) {
-                     $CP[$data_cp['plugin_activity_holidayperiods_id']] = ['count'                           => $data_cp['count'],
-                                                                                 'name'                            => $data_cp['name'],
-                                                                                 'begin'                           => $data_cp['begin'],
-                                                                                 'end'                             => $data_cp['end'],
-                                                                                 'plugin_activity_holidaytypes_id' => $data_cp['plugin_activity_holidaytypes_id'],
-                     ];
-                  }
-               }
-            }
-            //select rtt
-            $query_rtt = "SELECT *
+                $CP = [];
+                if ($result_cp = $DB->doQuery($query_cp)) {
+                    if ($DB->numrows($result_cp) > 0) {
+                        while ($data_cp = $DB->fetchAssoc($result_cp)) {
+                            $CP[$data_cp['plugin_activity_holidayperiods_id']] = ['count'                           => $data_cp['count'],
+                                'name'                            => $data_cp['name'],
+                                'begin'                           => $data_cp['begin'],
+                                'end'                             => $data_cp['end'],
+                                'plugin_activity_holidaytypes_id' => $data_cp['plugin_activity_holidaytypes_id'],
+                            ];
+                        }
+                    }
+                }
+                //select rtt
+                $query_rtt = "SELECT *
                            FROM `glpi_plugin_activity_holidaycounts`
                            LEFT JOIN `glpi_plugin_activity_holidayperiods`
                            ON (`glpi_plugin_activity_holidaycounts`.`plugin_activity_holidayperiods_id` = `glpi_plugin_activity_holidayperiods`.`id`)
-                           WHERE `users_id`= '".$user_id."' 
+                           WHERE `users_id`= '" . $user_id . "' 
                               AND `glpi_plugin_activity_holidaycounts`.`count` > 0
                               AND `glpi_plugin_activity_holidayperiods`.`short_name` LIKE 'RT';";
-            $RTT = [];
-            if ($result_rtt = $DB->doQuery($query_rtt)) {
-               if ($DB->numrows($result_rtt) > 0) {
-                  while ($data_rtt = $DB->fetchAssoc($result_rtt)) {
-                     $RTT[$data_rtt['plugin_activity_holidayperiods_id']] = ['count'                           => $data_rtt['count'],
-                                                                                  'name'                            => $data_rtt['name'],
-                                                                                  'begin'                           => $data_rtt['begin'],
-                                                                                  'end'                             => $data_rtt['end'],
-                                                                                  'plugin_activity_holidaytypes_id' => $data_rtt['plugin_activity_holidaytypes_id'],
-                     ];
-                  }
-               }
-            }
+                $RTT = [];
+                if ($result_rtt = $DB->doQuery($query_rtt)) {
+                    if ($DB->numrows($result_rtt) > 0) {
+                        while ($data_rtt = $DB->fetchAssoc($result_rtt)) {
+                            $RTT[$data_rtt['plugin_activity_holidayperiods_id']] = ['count'                           => $data_rtt['count'],
+                                'name'                            => $data_rtt['name'],
+                                'begin'                           => $data_rtt['begin'],
+                                'end'                             => $data_rtt['end'],
+                                'plugin_activity_holidaytypes_id' => $data_rtt['plugin_activity_holidaytypes_id'],
+                            ];
+                        }
+                    }
+                }
 
-            $query = "SELECT *
+                $query = "SELECT *
                      FROM `glpi_plugin_activity_holidays` 
-                     WHERE `users_id` = ".$user_id." ORDER BY id";
+                     WHERE `users_id` = " . $user_id . " ORDER BY id";
 
-            if ($results = $DB->doQuery($query)) {
-               if ($DB->numrows($results) > 0) {
-                  while ($data = $DB->fetchAssoc($results)) {
+                if ($results = $DB->doQuery($query)) {
+                    if ($DB->numrows($results) > 0) {
+                        while ($data = $DB->fetchAssoc($results)) {
 
-                     $start = $data['begin'];
-                     $end   = $data['end'];
+                            $start = $data['begin'];
+                            $end   = $data['end'];
 
-                     $done = false;
-                     //
-                     foreach ($CP as $key_period_id => $data_cp) {
-                        if (!$done && $data_cp['count'] > 0
-                           && strtotime($data['begin']) >= strtotime($data_cp['begin'])
-                              && strtotime($data['begin']) <= strtotime($data_cp['end'])) {
-                           $done = true;
-                           $CP[$key_period_id]['count'] -= 1;
-                           $query_update = "UPDATE `glpi_plugin_activity_holidays` 
-                              SET `plugin_activity_holidayperiods_id` = '$key_period_id' WHERE `glpi_plugin_activity_holidays`.`id` = ".$data['id'].";";
-                           $DB->doQuery($query_update);
-                           break;
+                            $done = false;
+                            //
+                            foreach ($CP as $key_period_id => $data_cp) {
+                                if (!$done && $data_cp['count'] > 0
+                                   && strtotime($data['begin']) >= strtotime($data_cp['begin'])
+                                      && strtotime($data['begin']) <= strtotime($data_cp['end'])) {
+                                    $done = true;
+                                    $CP[$key_period_id]['count'] -= 1;
+                                    $query_update = "UPDATE `glpi_plugin_activity_holidays` 
+                              SET `plugin_activity_holidayperiods_id` = '$key_period_id' WHERE `glpi_plugin_activity_holidays`.`id` = " . $data['id'] . ";";
+                                    $DB->doQuery($query_update);
+                                    break;
+                                }
+                            }
+                            if (!$done) {
+                                foreach ($RTT as $key_period_id => $data_rtt) {
+                                    if (!$done && $data_rtt['count'] > 0
+                                       && strtotime($data['begin']) >= strtotime($data_rtt['begin'])
+                                          && strtotime($data['begin']) <= strtotime($data_rtt['end'])) {
+                                        $done = true;
+                                        $RTT[$key_period_id]['count'] -= 1;
+                                        $query_update = "UPDATE `glpi_plugin_activity_holidays` 
+                              SET `plugin_activity_holidayperiods_id` = '$key_period_id' WHERE `glpi_plugin_activity_holidays`.`id` = " . $data['id'] . ";";
+                                        $DB->doQuery($query_update);
+                                        break;
+                                    }
+                                }
+                            }
                         }
-                     }
-                     if (!$done) {
-                        foreach ($RTT as $key_period_id => $data_rtt) {
-                           if (!$done && $data_rtt['count'] > 0
-                              && strtotime($data['begin']) >= strtotime($data_rtt['begin'])
-                                 && strtotime($data['begin']) <= strtotime($data_rtt['end'])) {
-                              $done = true;
-                              $RTT[$key_period_id]['count'] -= 1;
-                              $query_update = "UPDATE `glpi_plugin_activity_holidays` 
-                              SET `plugin_activity_holidayperiods_id` = '$key_period_id' WHERE `glpi_plugin_activity_holidays`.`id` = ".$data['id'].";";
-                              $DB->doQuery($query_update);
-                              break;
-                           }
-                        }
-                     }
-                  }
-               }
+                    }
+                }
             }
-         }
-      }
-   }
+        }
+    }
 
-   return true;
+    return true;
 }

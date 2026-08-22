@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- activity plugin for GLPI
- Copyright (C) 2019-2026 by the activity Development Team.
-
- https://github.com/InfotelGLPI/activity
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of activity.
-
- activity is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- activity is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with activity. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * activity plugin for GLPI
+ * Copyright (C) 2019-2026 by the activity Development Team.
+ *
+ * https://github.com/InfotelGLPI/activity
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of activity.
+ *
+ * activity is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * activity is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with activity. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Activity;
@@ -44,32 +44,29 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
-
 class TicketTask extends CommonDBTM
 {
+    public $dohistory = false;
 
-    var $dohistory = false;
+    public static $rightname = "plugin_activity";
 
-    static $rightname = "plugin_activity";
-
-   /**
-    * functions mandatory
-    * getTypeName(), canCreate(), canView()
-    * */
-    static function getTypeName($nb = 0)
+    /**
+     * functions mandatory
+     * getTypeName(), canCreate(), canView()
+     * */
+    public static function getTypeName($nb = 0)
     {
         return _n('Cumulative ticket task', 'Cumulative ticket tasks', $nb, 'activity');
     }
 
-    static function cleanForItem(CommonDBTM $item)
+    public static function cleanForItem(CommonDBTM $item)
     {
 
         $temp = new self();
         $temp->deleteByCriteria(
-            ['tickettasks_id' => $item->getField('id')]
+            ['tickettasks_id' => $item->getField('id')],
         );
     }
-
 
     /**
      * post_item_form for TicketTask
@@ -108,8 +105,7 @@ class TicketTask extends CommonDBTM
         ]);
     }
 
-
-    function getFromDBForTask($tickettasks_id)
+    public function getFromDBForTask($tickettasks_id)
     {
         $dbu  = new DbUtils();
         $data = $dbu->getAllDataFromTable($this->getTable(), [$dbu->getForeignKeyFieldForTable('glpi_tickettasks') => $tickettasks_id]);
@@ -117,7 +113,7 @@ class TicketTask extends CommonDBTM
         $this->fields = array_shift($data);
     }
 
-    function isDisplayableOnCra($tickettasks_id)
+    public function isDisplayableOnCra($tickettasks_id)
     {
         $data = $this->getFromDBForTask($tickettasks_id);
         if ($data['is_oncra']) {
@@ -127,9 +123,7 @@ class TicketTask extends CommonDBTM
         return false;
     }
 
-
-
-    static function setTicketTask(\TicketTask $item)
+    public static function setTicketTask(\TicketTask $item)
     {
 
         if (self::canCreate()) {
@@ -140,14 +134,13 @@ class TicketTask extends CommonDBTM
              && isset($item->input['is_oncra'])) {
                 $tickettask->getFromDBForTask($item->input['id']);
 
-
                 if (!empty($tickettask->fields)) {
                     $tickettask->update(['id'             => $tickettask->fields['id'],
-                                    'is_oncra'       => $item->input['is_oncra'],
-                                    'tickettasks_id' => $item->input['id']]);
+                        'is_oncra'       => $item->input['is_oncra'],
+                        'tickettasks_id' => $item->input['id']]);
                 } elseif (!$is_exist) {
                     $tickettask->add(['is_oncra'       => $item->input['is_oncra'],
-                                'tickettasks_id' => $item->getID()]);
+                        'tickettasks_id' => $item->getID()]);
                 }
             } else {
                 $is_cra_default = 0;
@@ -158,13 +151,13 @@ class TicketTask extends CommonDBTM
                 }
                 if (!$is_exist) {
                     $tickettask->add(['is_oncra'       => isset($item->input['is_oncra']) ? $item->input['is_oncra'] : $is_cra_default,
-                                 'tickettasks_id' => $item->getID()]);
+                        'tickettasks_id' => $item->getID()]);
                 }
             }
         }
     }
 
-    static function taskUpdate(\TicketTask $item)
+    public static function taskUpdate(\TicketTask $item)
     {
         if (!is_array($item->input) || !count($item->input)) {
             // Already cancel by another plugin
@@ -173,30 +166,30 @@ class TicketTask extends CommonDBTM
         self::setTicketTask($item);
     }
 
-    static function taskAdd(\TicketTask $item)
+    public static function taskAdd(\TicketTask $item)
     {
 
         if (!is_array($item->input) || !count($item->input)) {
-           // Already cancel by another plugin
+            // Already cancel by another plugin
             return false;
         }
         self::setTicketTask($item);
     }
 
-   /**
-    * Add items in the items fields of the parm array
-    * Items need to have an unique index beginning by the begin date of the item to display
-    * needed to be correcly displayed
-    **/
-    static function populatePlanning($options = [])
+    /**
+     * Add items in the items fields of the parm array
+     * Items need to have an unique index beginning by the begin date of the item to display
+     * needed to be correcly displayed
+     **/
+    public static function populatePlanning($options = [])
     {
         global $DB, $CFG_GLPI;
 
         $default_options = [
-         'color'               => '',
-         'event_type_color'    => '',
-         'check_planned'       => false,
-         'display_done_events' => true,
+            'color'               => '',
+            'event_type_color'    => '',
+            'check_planned'       => false,
+            'display_done_events' => true,
         ];
         $options = array_merge($default_options, $options);
 
@@ -291,11 +284,11 @@ class TicketTask extends CommonDBTM
             $self           = new self();
 
             foreach ($iterator as $datat) {
-                $mtitle   = $datat["entity"]." > ".__('Ticket');
+                $mtitle   = $datat["entity"] . " > " . __('Ticket');
                 $internal = Config::getConfigFromDB($datat['entities_id']);
                 if ($internal) {
                     foreach ($internal as $field) {
-                        $mtitle = $datat["entity"]." > ".$field["name"];
+                        $mtitle = $datat["entity"] . " > " . $field["name"];
                     }
                 }
 
@@ -318,7 +311,9 @@ class TicketTask extends CommonDBTM
                             $allTickets,
                             Report::$WORK,
                             $mtitle,
-                            $holiday->getHolidays(), [], $AllDay
+                            $holiday->getHolidays(),
+                            [],
+                            $AllDay,
                         );
                     } else {
                         $allTickets[0][$mtitle][$begin] = $datat['actiontime'] / $AllDay;
@@ -331,7 +326,9 @@ class TicketTask extends CommonDBTM
                             $privateTickets,
                             Report::$WORK,
                             $mtitle,
-                            $holiday->getHolidays(), [], $AllDay
+                            $holiday->getHolidays(),
+                            [],
+                            $AllDay,
                         );
                     } else {
                         $privateTickets[0][$mtitle][$begin] = $datat['actiontime'] / $AllDay;
@@ -345,7 +342,7 @@ class TicketTask extends CommonDBTM
 
         if (count($activities) > 0) {
             foreach ($activities as $k => $int) {
-                $key = $int["start"]."$$"."GlpiPlugin\Activity\TicketTask".$int["id"];
+                $key = $int["start"] . "$$" . "GlpiPlugin\Activity\TicketTask" . $int["id"];
 
                 $interv[$key]['color']              = $options['color'];
                 $interv[$key]['event_type_color']   = $options['event_type_color'];
@@ -363,16 +360,16 @@ class TicketTask extends CommonDBTM
         return $interv;
     }
 
-   /**
-    * Set ticket activities for script
-    *
-    * @param mixed $tag
-    * @param mixed $color
-    * @param mixed $ticket
-    * @param mixed $activities
-    * @param mixed $is_private
-    */
-    function setTicketActivity($ticket = [], &$activities = [], $is_private = false)
+    /**
+     * Set ticket activities for script
+     *
+     * @param mixed $tag
+     * @param mixed $color
+     * @param mixed $ticket
+     * @param mixed $activities
+     * @param mixed $is_private
+     */
+    public function setTicketActivity($ticket = [], &$activities = [], $is_private = false)
     {
 
         $AllDay = Report::getAllDay();
@@ -396,44 +393,44 @@ class TicketTask extends CommonDBTM
                     $y++;
                     if ($action > 0) {
                         $activities[] = [
-                        'id'          => $y,
-                        'title'       => $title,
-                        'description' => $content . ($is_private ? " [" . __('Private') . "]" : ""),
-                        'start'       => $date,
-                        'end'         => $end];
+                            'id'          => $y,
+                            'title'       => $title,
+                            'description' => $content . ($is_private ? " [" . __('Private') . "]" : ""),
+                            'start'       => $date,
+                            'end'         => $end];
                     }
                 }
             }
         }
     }
 
-   /**
-    * Display a Planning Item
-    *
-    * @param $parm Array of the item to display
-    * @return Nothing (display function)
-    **/
-    static function displayPlanningItem(array $val, $who, $type = "", $complete = 0)
+    /**
+     * Display a Planning Item
+     *
+     * @param $parm Array of the item to display
+     * @return Nothing (display function)
+     **/
+    public static function displayPlanningItem(array $val, $who, $type = "", $complete = 0)
     {
 
         $html = "";
         $rand     = mt_rand();
 
         if ($val["name"]) {
-            $html .= $val["name"]."<br>";
+            $html .= $val["name"] . "<br>";
         }
 
         if ($val["end"]) {
-            $html .= "<strong>".__('End date')."</strong> : ".Html::convdatetime($val["end"])."<br>";
+            $html .= "<strong>" . __('End date') . "</strong> : " . Html::convdatetime($val["end"]) . "<br>";
         }
 
         if ($complete) {
-            $html.= "<div class='event-description'>".$val["content"]."</div>";
+            $html .= "<div class='event-description'>" . $val["content"] . "</div>";
         } else {
-            $html.= Html::showToolTip(
+            $html .= Html::showToolTip(
                 $val["content"],
-                ['applyto' => "cri_".$val["id"].$rand,
-                'display' => false]
+                ['applyto' => "cri_" . $val["id"] . $rand,
+                    'display' => false],
             );
         }
 

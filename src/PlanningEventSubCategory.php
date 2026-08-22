@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- activity plugin for GLPI
- Copyright (C) 2019-2026 by the activity Development Team.
-
- https://github.com/InfotelGLPI/activity
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of activity.
-
- activity is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- activity is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with activity. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * activity plugin for GLPI
+ * Copyright (C) 2019-2026 by the activity Development Team.
+ *
+ * https://github.com/InfotelGLPI/activity
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of activity.
+ *
+ * activity is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * activity is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with activity. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Activity;
@@ -37,18 +37,19 @@ if (!defined('GLPI_ROOT')) {
 }
 
 /// PlanningEventSubCategory class
-class PlanningEventSubCategory extends CommonDropdown {
+class PlanningEventSubCategory extends CommonDropdown
+{
+    public $can_be_translated  = true;
+    public static $rightname = "dropdown";
 
-    var $can_be_translated  = true;
-    static $rightname = "dropdown";
-
-    static function canCreate(): bool
+    public static function canCreate(): bool
     {
         return Session::haveRight('plugin_activity', CREATE)
             && Session::haveRight("plugin_activity_all_users", 1);
     }
 
-    static function getTypeName($nb = 0) {
+    public static function getTypeName($nb = 0)
+    {
         return _n('Event subcategory', 'Event subcategories', $nb, 'activity');
     }
 }

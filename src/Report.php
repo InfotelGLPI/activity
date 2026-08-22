@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- activity plugin for GLPI
- Copyright (C) 2019-2026 by the activity Development Team.
-
- https://github.com/InfotelGLPI/activity
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of activity.
-
- activity is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- activity is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with activity. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * activity plugin for GLPI
+ * Copyright (C) 2019-2026 by the activity Development Team.
+ *
+ * https://github.com/InfotelGLPI/activity
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of activity.
+ *
+ * activity is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * activity is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with activity. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Activity;
@@ -50,6 +50,7 @@ use Search;
 use Session;
 use Toolbox;
 use User;
+
 use function Safe\mkdir;
 
 if (!defined('GLPI_ROOT')) {
@@ -59,63 +60,61 @@ if (!defined('GLPI_ROOT')) {
 #[\AllowDynamicProperties]
 class Report extends CommonDBTM
 {
-
-    static $WORK             = 0;
-    static $HOLIDAY          = 1;
-    static $PART_TIME        = 2;
-    static $SICKNESS         = 3;
-    static $AM_END           = '13:00:00';
-    static $PM_BEGIN         = '14:00:00';
-    static $AM_LABEL         = 'am';
-    static $PM_LABEL         = 'pm';
-    static $ALL_DAY_LABEL    = 'allDay';
-    static $DEFAULT_LABEL    = 'none';
-    static $ONE_DAY_ACTIVITY = '86400';
-
+    public static $WORK             = 0;
+    public static $HOLIDAY          = 1;
+    public static $PART_TIME        = 2;
+    public static $SICKNESS         = 3;
+    public static $AM_END           = '13:00:00';
+    public static $PM_BEGIN         = '14:00:00';
+    public static $AM_LABEL         = 'am';
+    public static $PM_LABEL         = 'pm';
+    public static $ALL_DAY_LABEL    = 'allDay';
+    public static $DEFAULT_LABEL    = 'none';
+    public static $ONE_DAY_ACTIVITY = '86400';
 
     private $item_search = [];
 
-   /*
-    * Get glpi config AM begin
-    */
-    static function getAmBegin()
+    /*
+     * Get glpi config AM begin
+     */
+    public static function getAmBegin()
     {
         global $CFG_GLPI;
 
         return $CFG_GLPI["planning_begin"];
     }
 
-   /*
-    * Get glpi config PM end
-    */
-    static function getPmEnd()
+    /*
+     * Get glpi config PM end
+     */
+    public static function getPmEnd()
     {
         global $CFG_GLPI;
 
         return $CFG_GLPI["planning_end"];
     }
 
-   /*
-    * Get glpi config day duration
-    */
-    static function getAllDay()
+    /*
+     * Get glpi config day duration
+     */
+    public static function getAllDay()
     {
 
         return (strtotime(self::getPmEnd()) - strtotime(self::getAmBegin())) - (strtotime(self::$PM_BEGIN) - strtotime(self::$AM_END));
     }
 
-   /*
-    *
-    * @Create an HTML drop down menu
-    *
-    * @param string $name The element name and ID
-    *
-    * @param int $selected The month to be selected
-    *
-    * @return string
-    *
-    */
-    static function monthDropdown($name = "month", $selected = null)
+    /*
+     *
+     * @Create an HTML drop down menu
+     *
+     * @param string $name The element name and ID
+     *
+     * @param int $selected The month to be selected
+     *
+     * @return string
+     *
+     */
+    public static function monthDropdown($name = "month", $selected = null)
     {
 
         $dd = "<select class='form-select' name='$name'>";
@@ -129,7 +128,7 @@ class Report extends CommonDBTM
             if ($k == $selected) {
                 $dd .= ' selected';
             }
-           /*** get the month ***/
+            /*** get the month ***/
             $dd .= '>' . $label . '</option>';
         }
 
@@ -138,17 +137,17 @@ class Report extends CommonDBTM
         return $dd;
     }
 
-   /*
-    * @Create an HTML drop down menu
-    *
-    * @param string $name The element name and ID
-    *
-    * @param int $selected The month to be selected
-    *
-    * @return string
-    *
-    */
-    static function YearDropdown($name = "year", $selected = null)
+    /*
+     * @Create an HTML drop down menu
+     *
+     * @param string $name The element name and ID
+     *
+     * @param int $selected The month to be selected
+     *
+     * @return string
+     *
+     */
+    public static function YearDropdown($name = "year", $selected = null)
     {
 
         $dd   = "<select class='form-select' name='$name'>";
@@ -158,7 +157,7 @@ class Report extends CommonDBTM
             if ($year == $selected) {
                 $dd .= ' selected';
             }
-           /*** get the year ***/
+            /*** get the year ***/
             $dd .= '>' . $year . '</option>';
             $year++;
         }
@@ -168,7 +167,7 @@ class Report extends CommonDBTM
         return $dd;
     }
 
-    static function getLastYear()
+    public static function getLastYear()
     {
 
         $year = date("Y") - 3;
@@ -182,14 +181,13 @@ class Report extends CommonDBTM
         return $last;
     }
 
-
-    static function showSnapshots($input)
+    public static function showSnapshots($input)
     {
         global $DB, $CFG_GLPI;
 
-        $users_id = !empty($input["users_id"]) ? (int)$input["users_id"] : Session::getLoginUserID();
-        $mois_courant   = isset($input["month"]) && $input["month"] > 0 ? (int)$input["month"] : intval(date('m'));
-        $annee_courante = isset($input["year"])  && $input["year"]  > 0 ? (int)$input["year"]  : (int)date('Y');
+        $users_id = !empty($input["users_id"]) ? (int) $input["users_id"] : Session::getLoginUserID();
+        $mois_courant   = isset($input["month"]) && $input["month"] > 0 ? (int) $input["month"] : intval(date('m'));
+        $annee_courante = isset($input["year"])  && $input["year"]  > 0 ? (int) $input["year"] : (int) date('Y');
 
         $doc = new Document();
         if (isset($input['delete_snapshot']) && is_array($input['delete_snapshot'])) {
@@ -205,10 +203,10 @@ class Report extends CommonDBTM
                 'FROM'   => 'glpi_documents',
                 'JOIN'   => [
                     'glpi_documents_items' => [
-                        'ON' => ['glpi_documents_items' => 'documents_id', 'glpi_documents' => 'id']
+                        'ON' => ['glpi_documents_items' => 'documents_id', 'glpi_documents' => 'id'],
                     ],
                     'glpi_plugin_activity_snapshots' => [
-                        'ON' => ['glpi_plugin_activity_snapshots' => 'documents_id', 'glpi_documents' => 'id']
+                        'ON' => ['glpi_plugin_activity_snapshots' => 'documents_id', 'glpi_documents' => 'id'],
                     ],
                 ],
                 'WHERE'  => [
@@ -219,11 +217,11 @@ class Report extends CommonDBTM
                 ],
             ]);
             foreach ($allowed_iterator as $row) {
-                $allowed_ids[(int)$row['documents_id']] = true;
+                $allowed_ids[(int) $row['documents_id']] = true;
             }
 
             foreach (array_keys($input['delete_snapshot']) as $documents_id) {
-                $documents_id = (int)$documents_id;
+                $documents_id = (int) $documents_id;
                 if (isset($allowed_ids[$documents_id]) && $doc->can($documents_id, PURGE)) {
                     $doc->delete(['id' => $documents_id]);
                 }
@@ -236,10 +234,10 @@ class Report extends CommonDBTM
             'FROM'   => 'glpi_documents',
             'JOIN'   => [
                 'glpi_documents_items' => [
-                    'ON' => ['glpi_documents_items' => 'documents_id', 'glpi_documents' => 'id']
+                    'ON' => ['glpi_documents_items' => 'documents_id', 'glpi_documents' => 'id'],
                 ],
                 'glpi_plugin_activity_snapshots' => [
-                    'ON' => ['glpi_plugin_activity_snapshots' => 'documents_id', 'glpi_documents' => 'id']
+                    'ON' => ['glpi_plugin_activity_snapshots' => 'documents_id', 'glpi_documents' => 'id'],
                 ],
             ],
             'WHERE'  => [
@@ -259,7 +257,7 @@ class Report extends CommonDBTM
             $doc->getFromDB($data['documents_id']);
             $name_link   = "<a href='" . htmlspecialchars($CFG_GLPI['root_doc'] . '/front/document.form.php?id=' . $doc->fields['id'], ENT_QUOTES) . "' target='_blank'>"
                          . htmlspecialchars($doc->fields['name']) . "</a>";
-            $delete_name = "delete_snapshot[" . (int)$doc->fields['id'] . "]";
+            $delete_name = "delete_snapshot[" . (int) $doc->fields['id'] . "]";
             $entries[] = [
                 'name'     => $name_link,
                 'download' => $doc->getDownloadLink(),
@@ -277,8 +275,7 @@ class Report extends CommonDBTM
         ]);
     }
 
-
-    static function takeASnapshot($crit, $input, $PDF)
+    public static function takeASnapshot($crit, $input, $PDF)
     {
 
         $dbu = new DbUtils();
@@ -289,7 +286,7 @@ class Report extends CommonDBTM
         $filename = $name . ".pdf";
         $docpath  = GLPI_TMP_DIR;
 
-       //Sauvegarde du PDF dans le fichier
+        //Sauvegarde du PDF dans le fichier
         if (!is_dir($docpath)) {
             mkdir($docpath, 0777, true);
         }
@@ -303,14 +300,14 @@ class Report extends CommonDBTM
         $monthname = $months[$input['month']];
 
         $tab = [
-         //"documentcategories_id" => 21,//PDF
-         "mime"        => "application/pdf",
-         "entities_id" => $_SESSION['glpiactive_entity'],
-         "name"        => $user->fields['name'] . " - CRA - " . $monthname . " " . $input['year'],
-         "upload_file" => $filename,
-         /*       "filepath"  => $seepath.$filename,*/
-         "comment"     => "**" . $input['year'] . "-" . $input['month'] . "** " . __("Snapshot taken in", "activity") . " " . Html::convDateTime(date("Y-m-d H:i:s")),
-         "_no_message" => "true"
+            //"documentcategories_id" => 21,//PDF
+            "mime"        => "application/pdf",
+            "entities_id" => $_SESSION['glpiactive_entity'],
+            "name"        => $user->fields['name'] . " - CRA - " . $monthname . " " . $input['year'],
+            "upload_file" => $filename,
+            /*       "filepath"  => $seepath.$filename,*/
+            "comment"     => "**" . $input['year'] . "-" . $input['month'] . "** " . __("Snapshot taken in", "activity") . " " . Html::convDateTime(date("Y-m-d H:i:s")),
+            "_no_message" => "true",
         ];
 
         $tab["_filename"][0] = $filename;
@@ -319,30 +316,30 @@ class Report extends CommonDBTM
         if ($document_id) {
             $documentitem = new Document_Item();
             $tab          = [
-            "documents_id" => $document_id,
-            "entities_id"  => $_SESSION['glpiactive_entity'],
-            "items_id"     => $crit["users_id"],
-            "itemtype"     => $dbu->getItemTypeForTable("glpi_users"),
+                "documents_id" => $document_id,
+                "entities_id"  => $_SESSION['glpiactive_entity'],
+                "items_id"     => $crit["users_id"],
+                "itemtype"     => $dbu->getItemTypeForTable("glpi_users"),
             ];
             $documentitem->add($tab);
 
             $snapshot = new Snapshot();
             $tab      = [
-            "documents_id" => $document_id,
-            "date"         => date("Y-m-d H:i:s"),
-            "month"        => $input['month'],
-            "year"         => $input['year']
+                "documents_id" => $document_id,
+                "date"         => date("Y-m-d H:i:s"),
+                "month"        => $input['month'],
+                "year"         => $input['year'],
             ];
             $snapshot->add($tab);
         }
     }
 
-   /**
-    * show dropdown for output format
-    *
-    * @since version 0.83
-    **/
-    static function showOutputFormat()
+    /**
+     * show dropdown for output format
+     *
+     * @since version 0.83
+     **/
+    public static function showOutputFormat()
     {
 
         echo "<select class='form-select' name='display_type'>";
@@ -354,10 +351,10 @@ class Report extends CommonDBTM
            "<i class='ti ti-device-floppy'></i><span class='sr-only'>" . _sx('button', 'Export') . "<span>";
     }
 
-    function showGenericSearch($input)
+    public function showGenericSearch($input)
     {
 
-       // Display type
+        // Display type
         $output_type = Search::HTML_OUTPUT;
         if (isset($input["display_type"])) {
             $output_type = $input["display_type"];
@@ -376,18 +373,18 @@ class Report extends CommonDBTM
         if (!isset($input["users_id"]) || empty($input["users_id"])) {
             $users_id = Session::getLoginUserID();
         } else {
-            $users_id = (int)$_POST["users_id"];
+            $users_id = (int) $_POST["users_id"];
         }
         if ($output_type == Search::HTML_OUTPUT) {
             Html::header(PlanningExternalEvent::getTypeName(2));
 
             $mois_courant = intval(date('m', time()));
             if (isset($input["month"]) && $input["month"] > 0) {
-                $mois_courant = (int)$input["month"];
+                $mois_courant = (int) $input["month"];
             }
             $annee_courante = date('Y', time());
             if (isset($input["year"]) && $input["year"] > 0) {
-                $annee_courante = (int)$input["year"];
+                $annee_courante = (int) $input["year"];
             }
 
             // Build hidden fields for export + snapshot forms
@@ -405,8 +402,8 @@ class Report extends CommonDBTM
                     $export_hidden .= Html::hidden($key, ['value' => $val]);
                 }
             }
-            $snapshot_hidden  = Html::hidden('month',    ['value' => $input['month']  ?? '']);
-            $snapshot_hidden .= Html::hidden('year',     ['value' => $input['year']   ?? '']);
+            $snapshot_hidden  = Html::hidden('month', ['value' => $input['month']  ?? '']);
+            $snapshot_hidden .= Html::hidden('year', ['value' => $input['year']   ?? '']);
             $snapshot_hidden .= Html::hidden('users_id', ['value' => $input['users_id'] ?? Session::getLoginUserID()]);
             $snapshot_hidden .= Html::hidden('display_type', ['value' => Search::PDF_OUTPUT_LANDSCAPE]);
             $snapshot_hidden .= Html::hidden('snapshot', ['value' => 'snapshot']);
@@ -441,7 +438,7 @@ class Report extends CommonDBTM
             self::showSnapshots($input);
         }
 
-       // Title
+        // Title
         if (!empty($input["users_id"])
           && !empty($input["month"])
           && !empty($input["year"])) {
@@ -457,12 +454,11 @@ class Report extends CommonDBTM
         }
     }
 
-
-    function showCRA($input, $output_type, CraPDF $PDF, $pdfMode = false)
+    public function showCRA($input, $output_type, CraPDF $PDF, $pdfMode = false)
     {
         global $CFG_GLPI, $DB;
 
-        $AllDay = 3600*24;
+        $AllDay = 3600 * 24;
         $opt = new Option();
         $opt->getFromDB(1);
         $use_hour_on_cra = $opt->fields['use_hour_on_cra'];
@@ -473,18 +469,18 @@ class Report extends CommonDBTM
         }
 
         $options = [
-           'use_hours' => $use_hour_on_cra,
-           'use_planning_activity_hours' => $use_planning_activity_hours,
-           'arrondir_heure' => $use_hour_on_cra,
+            'use_hours' => $use_hour_on_cra,
+            'use_planning_activity_hours' => $use_planning_activity_hours,
+            'arrondir_heure' => $use_hour_on_cra,
         ];
 
         $holiday = new Holiday();
         $holiday->setHolidays();
 
-       // temp fix for month format
+        // temp fix for month format
         if (!str_starts_with($input['month'], '0')) {
             if ($input['month'] < 10) {
-                $input['month'] = '0'.$input['month'];
+                $input['month'] = '0' . $input['month'];
             }
         }
 
@@ -494,7 +490,7 @@ class Report extends CommonDBTM
         $crit["users_id"]          = $input["users_id"];
         $crit["global_validation"] = CommonValidation::ACCEPTED;
 
-       // 1.1 Plugin Activity
+        // 1.1 Plugin Activity
         if ($use_planning_activity_hours) {
             $result = $DB->request(PlanningExternalEvent::queryAllExternalEvents($crit));
             $number = count($result);
@@ -505,8 +501,8 @@ class Report extends CommonDBTM
                 'LEFT JOIN' => [
                     'glpi_planningexternalevents' => [
                         'ON' => ['glpi_plugin_activity_planningexternalevents' => 'planningexternalevents_id',
-                                 'glpi_planningexternalevents'                 => 'id']
-                    ]
+                            'glpi_planningexternalevents'                 => 'id'],
+                    ],
                 ],
                 'WHERE'  => [
                     ['glpi_planningexternalevents.begin' => ['<=', $crit["end"]]],
@@ -524,7 +520,7 @@ class Report extends CommonDBTM
                 $crit['end'],
                 $crit['users_id'],
                 true,
-                $use_subcategory
+                $use_subcategory,
             );
             $total = 0;
             $ids = []; // avoid repetition for external event with recurrences
@@ -540,16 +536,16 @@ class Report extends CommonDBTM
                 // group events data by category
                 $key = $event['category_name'];
                 if ($use_subcategory) {
-                    $key .= ' '.$event['subcategory_name'];
+                    $key .= ' ' . $event['subcategory_name'];
                 }
                 $clone = $event;
                 $clone['actiontime'] = $actiontime;
                 if (!array_key_exists($key, $actiontimeByCategories)) {
                     $actiontimeByCategories[$key] = [
-                       'total_actiontime' => $actiontime,
-                       'category_name' => $event['category_name'],
-                       'planningeventcategories_id' => $event['planningeventcategories_id'],
-                       'events' => [$clone]
+                        'total_actiontime' => $actiontime,
+                        'category_name' => $event['category_name'],
+                        'planningeventcategories_id' => $event['planningeventcategories_id'],
+                        'events' => [$clone],
                     ];
                     if ($use_subcategory) {
                         $actiontimeByCategories[$key]['subcategories_id'] = $event['subcategories_id'];
@@ -563,11 +559,10 @@ class Report extends CommonDBTM
             $number = count($ids);
         }
 
-
         if ($pdfMode) {
             $generalinformations = [];
             $monthsarray         = Toolbox::getMonthsOfYearArray();
-           // format month to avoid error when getting the month name from $monthsarray
+            // format month to avoid error when getting the month name from $monthsarray
             $input['month'] = $input['month'] < 10 ? str_replace('0', '', $input['month']) : $input['month'];
             $user = new User();
             $user->getFromDB($crit["users_id"]);
@@ -583,7 +578,7 @@ class Report extends CommonDBTM
             $PDF->setGeneralInformations($generalinformations);
         }
 
-       // 1.2 Plugin Manageentities
+        // 1.2 Plugin Manageentities
         $numberm = 0;
         if (Plugin::isPluginActive('manageentities')) {
             $config = new ManageentitiesConfig();
@@ -598,13 +593,13 @@ class Report extends CommonDBTM
                 $manageentitiesTasks = PlanningExternalEvent::getTicketTasksManageentities(
                     $crit['begin'],
                     $crit['end'],
-                    $crit['users_id']
+                    $crit['users_id'],
                 );
                 $numberm = count($manageentitiesTasks);
             }
         }
 
-       // 1.3 Tickets
+        // 1.3 Tickets
         if ($use_planning_activity_hours) {
             $resultt1 = $DB->request(PlanningExternalEvent::queryTickets($crit));
             $numbert  = count($resultt1);
@@ -613,14 +608,13 @@ class Report extends CommonDBTM
                 $crit['begin'],
                 $crit['end'],
                 $crit['users_id'],
-                true
+                true,
             );
             $numbert = count($ticketTasks);
         }
 
-
-      // 1.1 Plugin holiday
-       // TODO implement holidays with !$use_planning_activity_hours
+        // 1.1 Plugin holiday
+        // TODO implement holidays with !$use_planning_activity_hours
         $iteratorh = $DB->request([
             'SELECT' => [new QueryExpression('SUM(actiontime) AS total')],
             'FROM'   => 'glpi_plugin_activity_holidays',
@@ -632,17 +626,17 @@ class Report extends CommonDBTM
         ]);
         $numberh = count($iteratorh);
 
-      // ProjectTask
+        // ProjectTask
         $tickets  = ProjectTask::queryProjectTask($crit);
         $resultpt = $DB->request($tickets);
         $numberpt = count($resultpt);
 
         if ($number != "0" || $numberm != "0" || $numbert != "0" || $numberh != "0" || $numberpt != "0") {
-           // 2.2 Details
+            // 2.2 Details
             $title  = [];
             $values = [];
 
-           // 2.3 Plugin Activity
+            // 2.3 Plugin Activity
             if ($use_planning_activity_hours) {
                 $crit["is_usedbycra"] = true;
                 $result2 = $DB->request(PlanningExternalEvent::queryUserExternalEvents($crit));
@@ -674,10 +668,9 @@ class Report extends CommonDBTM
                                 if ($opt->fields['show_planningevents_entity']) {
                                     $type = self::strtoupper_auto($data2["entity"]) ;
                                     if ($opt->fields['show_planningevents_project'] && !empty($data2["project"])) {
-                                        $type .= " - " .  $data2["project"] . " > ";
+                                        $type .= " - " . $data2["project"] . " > ";
                                     }
                                     $type .= " > ";
-
 
                                     if (empty($data2["type"])) {
                                         $type .= __('No defined type', 'activity');
@@ -697,11 +690,11 @@ class Report extends CommonDBTM
                                     if (empty($data2["type"])) {
                                         $type = self::strtoupper_auto($data2["entity"]) ;
                                         if ($opt->fields['show_planningevents_project'] && !empty($data2["project"])) {
-                                            $type .= " - " .  $data2["project"] . " > ";
+                                            $type .= " - " . $data2["project"] . " > ";
                                         }
                                         $type .= " > " . __(
                                             'No defined type',
-                                            'activity'
+                                            'activity',
                                         );
                                     } else {
                                         $type .= $data2["type"];
@@ -720,7 +713,7 @@ class Report extends CommonDBTM
                                 $end = strtotime($data2["end"]);
                                 $datediff = $end - $begin;
 
-                                $nbday = round($datediff / (60 * 60 * 24), 0,PHP_ROUND_HALF_UP);
+                                $nbday = round($datediff / (60 * 60 * 24), 0, PHP_ROUND_HALF_UP);
 
                                 if ($pos = strpos($data2["begin"], '00:00:00') !== false) {
                                     $action = $data2['actiontime'] / 3600;
@@ -742,20 +735,19 @@ class Report extends CommonDBTM
                                     $type,
                                     $holiday->getHolidays(),
                                     $options,
-                                    $AllDay
+                                    $AllDay,
                                 );
-
 
                                 $this->item_search[$type]['PlanningExternalEvent'][date(
                                     'Y-m-d',
-                                    strtotime($data2["begin"])
+                                    strtotime($data2["begin"]),
                                 )][] = $data2['id'];
                             }
                         } else {
                             if ($opt->fields['show_planningevents_entity']) {
                                 $type = self::strtoupper_auto($data2["entity"]) ;
                                 if ($opt->fields['show_planningevents_project'] && !empty($data2["project"])) {
-                                    $type .= " - " .  $data2["project"] . " > ";
+                                    $type .= " - " . $data2["project"] . " > ";
                                 }
                                 $type .= " > ";
                                 if (empty($data2["type"])) {
@@ -776,12 +768,12 @@ class Report extends CommonDBTM
                                 if (empty($data2["type"])) {
                                     $type = self::strtoupper_auto($data2["entity"]) ;
                                     if ($opt->fields['show_planningevents_project'] && !empty($data2["project"])) {
-                                        $type .= " - " .  $data2["project"] . " > ";
+                                        $type .= " - " . $data2["project"] . " > ";
                                     }
                                     $type .= " > " . __(
-                                            'No defined type',
-                                            'activity'
-                                        );
+                                        'No defined type',
+                                        'activity',
+                                    );
                                 } else {
                                     $type .= $data2["type"];
                                     if ($opt->getUseSubcategory() && $data2['subtype']) {
@@ -799,7 +791,7 @@ class Report extends CommonDBTM
                             $end = strtotime($data2["end"]);
                             $datediff = $end - $begin;
 
-                            $nbday = round($datediff / (60 * 60 * 24), 0,PHP_ROUND_HALF_UP);
+                            $nbday = round($datediff / (60 * 60 * 24), 0, PHP_ROUND_HALF_UP);
 
                             if ($pos = strpos($data2["begin"], '00:00:00') !== false) {
                                 $action = $data2['actiontime'] / 3600;
@@ -821,12 +813,12 @@ class Report extends CommonDBTM
                                 $type,
                                 $holiday->getHolidays(),
                                 $options,
-                                $AllDay
+                                $AllDay,
                             );
 
                             $this->item_search[$type]['PlanningExternalEvent'][date(
                                 'Y-m-d',
-                                strtotime($data2["begin"])
+                                strtotime($data2["begin"]),
                             )][] = $data2['id'];
                         }
                     }
@@ -847,7 +839,7 @@ class Report extends CommonDBTM
                         if (empty($externalEvent["category_name"])) {
                             $type = self::strtoupper_auto($externalEvent["entity_name"]) . " > " . __(
                                 'No defined type',
-                                'activity'
+                                'activity',
                             );
                         } else {
                             $type = $externalEvent["category_name"];
@@ -870,20 +862,19 @@ class Report extends CommonDBTM
                         self::$WORK,
                         $type,
                         'PlanningExternalEvent',
-                        $externalEvent['id']
+                        $externalEvent['id'],
                     );
                 }
             }
 
-
-           // 2.3 Plugin Activity holidays
+            // 2.3 Plugin Activity holidays
             if (Session::haveRight("plugin_activity_can_requestholiday", 1)) {
                 $crit["is_usedbycra"] = true;
                 $queryh               = Holiday::queryUserHolidays(array_merge(
                     $crit,
                     ['begin'             => date('Y-m-d H:i:s', strtotime($crit["begin"] . " - 1 MONTH")),
-                                                                                          'end'               => $crit["end"],
-                    'global_validation' => CommonValidation::ACCEPTED]
+                        'end'               => $crit["end"],
+                        'global_validation' => CommonValidation::ACCEPTED],
                 ));
 
                 $resulth = $DB->request($queryh);
@@ -899,7 +890,7 @@ class Report extends CommonDBTM
 
                         $opt_act = self::$HOLIDAY;
 
-                      // Repartition of the time
+                        // Repartition of the time
                         $values = $this->timeRepartition($datah['actiontime'], $datah["begin"], $values, $opt_act, $type, $holiday->getHolidays(), $options, $AllDay);
                         if (!isset($this->holiday_type[$type])) {
                             $this->holiday_type[$type]['is_holiday']   = $datah['is_holiday'];
@@ -911,7 +902,7 @@ class Report extends CommonDBTM
                 }
             }
 
-           // 1.3 Tickets
+            // 1.3 Tickets
             if ($numbert != "0") {
                 if ($use_planning_activity_hours) {
                     foreach ($resultt1 as $datat) {
@@ -956,38 +947,38 @@ class Report extends CommonDBTM
                             self::$WORK,
                             $mtitle,
                             'Ticket',
-                            $ticketTask['tickets_id']
+                            $ticketTask['tickets_id'],
                         );
                     }
                 }
             }
 
-           // 2.4 Plugin Manageentities
+            // 2.4 Plugin Manageentities
             if (Plugin::isPluginActive('manageentities')) {
                 if ($numberm != "0") {
-                   // TODO implement $use_planning_activity_hours
+                    // TODO implement $use_planning_activity_hours
                     foreach ($resultm as $datam) {
-                         $iteratorTask = $DB->request([
-                             'SELECT' => ['glpi_tickettasks.*'],
-                             'FROM'   => 'glpi_tickettasks',
-                             'LEFT JOIN' => [
-                                 'glpi_plugin_manageentities_cridetails' => [
-                                     'ON' => ['glpi_plugin_manageentities_cridetails' => 'tickets_id',
-                                              'glpi_tickettasks'                       => 'tickets_id']
-                                 ],
-                                 'glpi_plugin_activity_tickettasks' => [
-                                     'ON' => ['glpi_plugin_activity_tickettasks' => 'tickettasks_id',
-                                              'glpi_tickettasks'                  => 'id']
-                                 ],
-                             ],
-                             'WHERE' => [
-                                 'glpi_tickettasks.tickets_id'                        => $datam['tickets_id'],
-                                 ['glpi_tickettasks.begin'                            => ['>=', $crit["begin"]]],
-                                 ['glpi_tickettasks.end'                              => ['<=', $crit["end"]]],
-                                 'glpi_plugin_activity_tickettasks.is_oncra'          => 1,
-                                 'glpi_tickettasks.users_id_tech'                     => $crit["users_id"],
-                             ],
-                         ]);
+                        $iteratorTask = $DB->request([
+                            'SELECT' => ['glpi_tickettasks.*'],
+                            'FROM'   => 'glpi_tickettasks',
+                            'LEFT JOIN' => [
+                                'glpi_plugin_manageentities_cridetails' => [
+                                    'ON' => ['glpi_plugin_manageentities_cridetails' => 'tickets_id',
+                                        'glpi_tickettasks'                       => 'tickets_id'],
+                                ],
+                                'glpi_plugin_activity_tickettasks' => [
+                                    'ON' => ['glpi_plugin_activity_tickettasks' => 'tickettasks_id',
+                                        'glpi_tickettasks'                  => 'id'],
+                                ],
+                            ],
+                            'WHERE' => [
+                                'glpi_tickettasks.tickets_id'                        => $datam['tickets_id'],
+                                ['glpi_tickettasks.begin'                            => ['>=', $crit["begin"]]],
+                                ['glpi_tickettasks.end'                              => ['<=', $crit["end"]]],
+                                'glpi_plugin_activity_tickettasks.is_oncra'          => 1,
+                                'glpi_tickettasks.users_id_tech'                     => $crit["users_id"],
+                            ],
+                        ]);
                         if (count($iteratorTask)) {
                             foreach ($iteratorTask as $dataTask) {
                                 $mtitle = self::strtoupper_auto($datam["entity"]) . " > ";
@@ -998,7 +989,7 @@ class Report extends CommonDBTM
                                 }
                                 $title[$mtitle][] = $dataTask["begin"];
 
-                               // Repartition of the time
+                                // Repartition of the time
                                 $values = $this->timeRepartition($dataTask['actiontime'], $dataTask["begin"], $values, self::$WORK, $mtitle, $holiday->getHolidays(), $options, $AllDay);
 
                                 $this->item_search[$mtitle]['Ticket'][date('Y-m-d', strtotime($dataTask["begin"]))][] = $datam['tickets_id'];
@@ -1008,16 +999,16 @@ class Report extends CommonDBTM
                 }
             }
 
-           //Project task
+            //Project task
             $opt = new Option();
             if ($opt->getFromDB(1) && $opt->getUseProject()) {
                 if ($numberpt != "0") {
                     foreach ($resultpt as $datapt) {
-                         $project = new Project();
-                         $project->getFromDB($datapt["projects_id"]);
-                         $mtitle = self::strtoupper_auto($project->getName()) . " > " . ProjectTask::getTypeName();
+                        $project = new Project();
+                        $project->getFromDB($datapt["projects_id"]);
+                        $mtitle = self::strtoupper_auto($project->getName()) . " > " . ProjectTask::getTypeName();
                         if ($datapt['planned_duration'] == 0) {
-                        //$timestart        = strtotime($datapt["plan_start_date"]);
+                            //$timestart        = strtotime($datapt["plan_start_date"]);
 
                             $count            = PlanningExternalEvent::getNbDays($datapt["plan_start_date"], $datapt["plan_end_date"]);
                             $planned_duration = 0;
@@ -1025,31 +1016,31 @@ class Report extends CommonDBTM
                             $timeendDay       = new DateTime($datapt["plan_start_date"]);
                             $timeendFinal     = new DateTime($datapt["plan_end_date"]);
                             for ($i = 1; $i < $count; $i++) {
-                                   $hol = new Holiday();
+                                $hol = new Holiday();
                                 if (!$hol->isWeekend($timestart->format('Y-m-d H:i:s'))) {
                                     if (date('H:i:s', strtotime($timestart->format('Y-m-d H:i:s'))) <= self::getAmBegin() || $i > 1) {
-                                            $timestart->setTime(
-                                                substr(self::getAmBegin(), 0, 2),
-                                                substr(self::getAmBegin(), 3, 2),
-                                                substr(self::getAmBegin(), 6, 2)
-                                            );
-                                            $timeendDay->setTime(
-                                                substr(self::getPmEnd(), 0, 2),
-                                                substr(self::getPmEnd(), 3, 2),
-                                                substr(self::getPmEnd(), 6, 2)
-                                            );
+                                        $timestart->setTime(
+                                            substr(self::getAmBegin(), 0, 2),
+                                            substr(self::getAmBegin(), 3, 2),
+                                            substr(self::getAmBegin(), 6, 2),
+                                        );
+                                        $timeendDay->setTime(
+                                            substr(self::getPmEnd(), 0, 2),
+                                            substr(self::getPmEnd(), 3, 2),
+                                            substr(self::getPmEnd(), 6, 2),
+                                        );
                                     } else {
                                         $timeendDay->setTime(
                                             substr(self::getPmEnd(), 0, 2),
                                             substr(self::getPmEnd(), 3, 2),
-                                            substr(self::getPmEnd(), 6, 2)
+                                            substr(self::getPmEnd(), 6, 2),
                                         );
                                     }
                                     if (date('H:i:s', strtotime($timeendFinal->format('Y-m-d H:i:s'))) > self::getPmEnd()) {
                                         $timeendFinal->setTime(
                                             substr(self::getPmEnd(), 0, 2),
                                             substr(self::getPmEnd(), 3, 2),
-                                            substr(self::getPmEnd(), 6, 2)
+                                            substr(self::getPmEnd(), 6, 2),
                                         );
                                     }
                                     $planned_duration = (strtotime($timeendDay->format('Y-m-d H:i:s')) -
@@ -1064,7 +1055,7 @@ class Report extends CommonDBTM
                                         $mtitle,
                                         $holiday->getHolidays(),
                                         $options,
-                                        $AllDay
+                                        $AllDay,
                                     );
                                 }
                                 $timestart->modify('+1 day');
@@ -1084,7 +1075,7 @@ class Report extends CommonDBTM
                                 $mtitle,
                                 $holiday->getHolidays(),
                                 $options,
-                                $AllDay
+                                $AllDay,
                             );
                         } else {
                             $values = $this->timeRepartition(
@@ -1095,7 +1086,7 @@ class Report extends CommonDBTM
                                 $mtitle,
                                 $holiday->getHolidays(),
                                 $options,
-                                $AllDay
+                                $AllDay,
                             );
                         }
                         $this->item_search[$mtitle]['ProjectTask'][date('Y-m-d', strtotime($datapt["plan_start_date"]))][] = $datapt['projects_id'];
@@ -1123,9 +1114,9 @@ class Report extends CommonDBTM
             self::showTitle($output_type, $num, '', '', false);
             self::showTitle($output_type, $num, '', '', false);
 
-           /*joursem*/
+            /*joursem*/
             $joursem = ['Di', 'Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa'];
-           //         $We = array('Di', 'Sa');
+            //         $We = array('Di', 'Sa');
             $timeHeaders = [];
             for ($i = 0; $i != $count; $i++) {
                 $d = PlanningExternalEvent::dateAdd($i, $crit["begin"]);
@@ -1137,7 +1128,7 @@ class Report extends CommonDBTM
                 $countopened++;
 
                 $countweekend += $holiday->countWe($d, $d, $holiday->getHolidays());
-               // In week end ?
+                // In week end ?
                 if ($holiday->countWe($d, $d, $holiday->getHolidays()) > 0) {
                     $timeHeaders[$jour]['options']['weekend'] = true;
                 }
@@ -1150,7 +1141,7 @@ class Report extends CommonDBTM
             self::showTitle($output_type, $num, '', '', false);
             echo Search::showEndLine($output_type);
 
-           /*days*/
+            /*days*/
             if ($output_type == Search::HTML_OUTPUT) {
                 echo "<tr class='tab_bg_1' style='background-color:#f3f4f5;font-weight:bold'>";
             } else {
@@ -1171,7 +1162,7 @@ class Report extends CommonDBTM
             foreach ($days as $k => $v) {
                 foreach ($title as $tab => $tabval) {
                     if (in_array($v, $tabval)) {
-                         $titles[] = [$v => $tab];
+                        $titles[] = [$v => $tab];
                     }
                 }
             }
@@ -1182,7 +1173,7 @@ class Report extends CommonDBTM
                     $count = 0;
                     foreach ($days as $k => $v) {
                         foreach ($day as $date => $val1) {
-                        //                     if (array_key_exists($morning, $day)) {
+                            //                     if (array_key_exists($morning, $day)) {
                             if ($v == date('Y-m-d', strtotime($date))) {
                                 if (isset($activities[$type][$name][$count][$v])) {
                                     $activities[$type][$name][$count][$v] += $val1;
@@ -1193,12 +1184,12 @@ class Report extends CommonDBTM
                                 $activities[$type][$name][$count][$v] = 0;
                             }
                         }
-                         $count++;
+                        $count++;
                     }
                 }
             }
 
-           /*List titles*/
+            /*List titles*/
             $row_num                 = 1;
             $time[self::$WORK]       = [];
             $time[self::$HOLIDAY]    = [];
@@ -1208,9 +1199,9 @@ class Report extends CommonDBTM
             $time_total              = [];
             foreach ($activities as $type => $data) {
                 foreach ($data as $key => $valt) {
-                  //1 for holiday, 2 for sickness, 3 for part time by default its 1 for holiday
+                    //1 for holiday, 2 for sickness, 3 for part time by default its 1 for holiday
                     if (isset($this->holiday_type[$key]['is_holiday']) && $this->holiday_type[$key]['is_holiday'] == 1) {
-                         $holiday_type_type = 1;
+                        $holiday_type_type = 1;
                     } elseif (isset($this->holiday_type[$key]['is_sickness']) && $this->holiday_type[$key]['is_sickness'] == 1) {
                         $holiday_type_type = 2;
                     } elseif (isset($this->holiday_type[$key]['is_part_time']) && $this->holiday_type[$key]['is_part_time'] == 1) {
@@ -1223,24 +1214,24 @@ class Report extends CommonDBTM
                         foreach ($val as $date_act => $val_act) {
                             $value = "";
 
-                          // Value
+                            // Value
                             if ($val_act > 0) {
-                                 //TODO Check why ?
-                                 //$value = Html::formatNumber($val_act, false, 3);
-                                 $value = $val_act;
+                                //TODO Check why ?
+                                //$value = Html::formatNumber($val_act, false, 3);
+                                $value = $val_act;
                             }
 
-                          // In week end ?
+                            // In week end ?
                             $countwe = $holiday->countWe($date_act, $date_act, $holiday->getHolidays());
                             if ($countwe > 0) {
                                 if ($type == self::$WORK) {
-                                     $time[$type][$key][$date_act]['options']['weekend'] = true;
+                                    $time[$type][$key][$date_act]['options']['weekend'] = true;
                                 } elseif ($type == self::$HOLIDAY) {
                                     $time[$type][$holiday_type_type][$date_act]['options']['weekend'] = true;
                                 }
                             }
 
-                          // Value correct depass
+                            // Value correct depass
                             if ($val_act > 1) {
                                 if ($type == self::$WORK) {
                                     $time[$type][$key][$date_act]['options']['depass'] = true;
@@ -1257,10 +1248,10 @@ class Report extends CommonDBTM
                                 }
                             } elseif ($type == self::$HOLIDAY) {
                                 if (!isset($time[$type][$holiday_type_type][$date_act]['values'])) {
-                                    $time[$type][$holiday_type_type][$date_act]['values'] = (float)$value;
+                                    $time[$type][$holiday_type_type][$date_act]['values'] = (float) $value;
                                 } else {
                                     if ($value > 0) {
-                                        $time[$type][$holiday_type_type][$date_act]['values'] += (float)$value;
+                                        $time[$type][$holiday_type_type][$date_act]['values'] += (float) $value;
                                     }
                                 }
                             }
@@ -1269,9 +1260,9 @@ class Report extends CommonDBTM
                 }
             }
 
-           // Show work
+            // Show work
             $tot_activity = $this->showActivity($time[self::$WORK], $output_type, $row_num, self::$WORK, $crit);
-           // Show holiday
+            // Show holiday
             $row_num++;
             $num = 1;
             echo Search::showNewLine($output_type);
@@ -1295,7 +1286,7 @@ class Report extends CommonDBTM
             $tot_holiday  = $this->showActivity($time[self::$HOLIDAY][1], $output_type, $row_num, self::$HOLIDAY, $crit);
             $tot_sickness = $this->showActivity($time[self::$HOLIDAY][2], $output_type, $row_num, self::$SICKNESS, $crit);
 
-           // Show total of all
+            // Show total of all
             $this->showTotal($tot_activity + $tot_holiday + $tot_parttime + $tot_sickness, $count, $countopened - $countweekend, $output_type, $row_num, $time);
 
             if ($pdfMode) {
@@ -1303,7 +1294,7 @@ class Report extends CommonDBTM
                 $PDF->SetTime($time[self::$WORK]);
                 $PDF->SetHoliday($time[self::$HOLIDAY][1], $time[self::$HOLIDAY][2], $time[self::$HOLIDAY][3]);
 
-               //On définit le pied de page du PDF
+                //On définit le pied de page du PDF
                 $cra_footer = '';
                 $opt        = new Option();
                 $opt->getFromDB(1);
@@ -1313,10 +1304,10 @@ class Report extends CommonDBTM
 
                 $PDF->setFooterInformations($cra_footer);
 
-               // On dessine le document
+                // On dessine le document
                 $PDF->DrawCra();
 
-               // Si l'utilisateur souhaite réaliser un snapshot
+                // Si l'utilisateur souhaite réaliser un snapshot
                 if (isset($input['snapshot'])) {
                     self::takeASnapshot($crit, $input, $PDF);
                     // Redirect back to the report while preserving the displayed
@@ -1335,9 +1326,9 @@ class Report extends CommonDBTM
                     $filename = $user->fields['name'] . " - CRA - " . $PDF->GetNoCra(getdate()) . ".pdf";
                     $seepath  = GLPI_PLUGIN_DOC_DIR . "/activity/";
 
-                 //Sauvegarde du PDF dans le fichier
+                    //Sauvegarde du PDF dans le fichier
                     if (!is_dir($seepath)) {
-                          mkdir($seepath);
+                        mkdir($seepath);
                     }
                     $PDF->Output($seepath . "/" . $filename, 'F');
 
@@ -1368,14 +1359,14 @@ class Report extends CommonDBTM
                             'glpi_planningexternalevents.users_id'                   => $crit["users_id"],
                         ];
                         $whereInner[] = new QueryExpression(
-                            $dbu->getEntitiesRestrictRequest("", "glpi_planningexternalevents")
+                            $dbu->getEntitiesRestrictRequest("", "glpi_planningexternalevents"),
                         );
                         if ($use_subcategory) {
                             if ($data['subtype']) {
                                 $whereInner['glpi_plugin_activity_planningexternalevents.planningeventsubcategories_id'] = $data["subtype"];
                             } else {
                                 $whereInner[] = new QueryExpression(
-                                    '`glpi_plugin_activity_planningexternalevents`.`planningeventsubcategories_id` IS NULL'
+                                    '`glpi_plugin_activity_planningexternalevents`.`planningeventsubcategories_id` IS NULL',
                                 );
                             }
                         }
@@ -1388,11 +1379,11 @@ class Report extends CommonDBTM
                             'INNER JOIN' => [
                                 'glpi_planningeventcategories' => [
                                     'ON' => ['glpi_planningeventcategories' => 'id',
-                                             'glpi_planningexternalevents'  => 'planningeventcategories_id']
+                                        'glpi_planningexternalevents'  => 'planningeventcategories_id'],
                                 ],
                                 'glpi_plugin_activity_planningexternalevents' => [
                                     'ON' => ['glpi_planningexternalevents'                    => 'id',
-                                             'glpi_plugin_activity_planningexternalevents'    => 'planningexternalevents_id']
+                                        'glpi_plugin_activity_planningexternalevents'    => 'planningexternalevents_id'],
                                 ],
                             ],
                             'WHERE' => $whereInner,
@@ -1404,7 +1395,7 @@ class Report extends CommonDBTM
                             }
                         }
 
-                        $total_ouvres      = self::TotalTpsPassesArrondis($use_hour_on_cra ?$data["total_actiontime"] : ($data["total_actiontime"] / $AllDay), $options);
+                        $total_ouvres      = self::TotalTpsPassesArrondis($use_hour_on_cra ? $data["total_actiontime"] : ($data["total_actiontime"] / $AllDay), $options);
                         $entry             = [
                             'category' => htmlspecialchars($data["name"], ENT_QUOTES),
                             'comment'  => $comment,
@@ -1428,7 +1419,7 @@ class Report extends CommonDBTM
                                 . " (" . self::TotalTpsPassesArrondis($use_hour_on_cra ? $datat["actiontime"] : ($datat["actiontime"] / $AllDay), $options) . ")<br>";
                         }
 
-                        $total_ouvres      = self::TotalTpsPassesArrondis($use_hour_on_cra ?$data["total_actiontime"] : ($data["total_actiontime"] / $AllDay), $options);
+                        $total_ouvres      = self::TotalTpsPassesArrondis($use_hour_on_cra ? $data["total_actiontime"] : ($data["total_actiontime"] / $AllDay), $options);
                         $entry             = [
                             'category' => htmlspecialchars($data["category_name"], ENT_QUOTES),
                             'comment'  => $comment,
@@ -1474,31 +1465,31 @@ class Report extends CommonDBTM
                 'activity_displayPdf',
                 PLUGIN_ACTIVITY_WEBDIR . "/front/cra.send.php?file=_plugins/activity/$filename",
                 ['title'   => __('Activity report', 'activity'),
-                                            'display' => false,
-                                            'autoopen' => true]
+                    'display' => false,
+                    'autoopen' => true],
             );
         }
     }
 
-   /**
-    * Repartition of the time
-    *
-    * @param numeric  $time : time to add (in full day)
-    * @param string   $begin : begin date to add (format Y-m-d h:i:s)
-    * @param array    $values : array of times
-    * @param int      $type : holiday, work, part time, sickness
-    * @param string   $activity : name of the activity
-    * @param array    $holidays : array of holidays
-    * @param array    $options : use real hour or constant hour
-    *
-    * @return array
-    */
-    function timeRepartition($time, $begin, $values, $type, $activity, $holidays = [], $options = [], $allDay = 86400)
+    /**
+     * Repartition of the time
+     *
+     * @param numeric  $time : time to add (in full day)
+     * @param string   $begin : begin date to add (format Y-m-d h:i:s)
+     * @param array    $values : array of times
+     * @param int      $type : holiday, work, part time, sickness
+     * @param string   $activity : name of the activity
+     * @param array    $holidays : array of holidays
+     * @param array    $options : use real hour or constant hour
+     *
+     * @return array
+     */
+    public function timeRepartition($time, $begin, $values, $type, $activity, $holidays = [], $options = [], $allDay = 86400)
     {
         $opt = [
-          'real_hour' => false,
-          'use_planning_activity_hours' => true,
-          'use_hours' => false
+            'real_hour' => false,
+            'use_planning_activity_hours' => true,
+            'use_hours' => false,
         ];
         foreach ($options as $key => $value) {
             $opt[$key] = $value;
@@ -1538,7 +1529,7 @@ class Report extends CommonDBTM
                         $holidays,
                         $timejour,
                         $allDay,
-                        $options
+                        $options,
                     );
                 }
             } else {
@@ -1599,51 +1590,50 @@ class Report extends CommonDBTM
         return $values;
     }
 
-
-   /**
-    * Get the time between two dates
-    *
-    * @param int      $time : time to add
-    * @param datetime $begin : begin date to add
-    * @param array    $values : array of times
-    * @param int      $type : holiday, work, part time, sickness
-    * @param string   $activity : name of the activity
-    *
-    * @return float
-    */
-    function getActionTimeForExternalEvent($begin, $end, $values, $actiontime, $type)
+    /**
+     * Get the time between two dates
+     *
+     * @param int      $time : time to add
+     * @param datetime $begin : begin date to add
+     * @param array    $values : array of times
+     * @param int      $type : holiday, work, part time, sickness
+     * @param string   $activity : name of the activity
+     *
+     * @return float
+     */
+    public function getActionTimeForExternalEvent($begin, $end, $values, $actiontime, $type)
     {
 
         $holidays = Holiday::getCalendarHolidaysArray($_SESSION["glpiactive_entity"]);
-//      $AllDay   = self::getAllDay();
+        //      $AllDay   = self::getAllDay();
 
         $holidaysO = new Holiday();
 
         $duration = strtotime($end) - strtotime($begin);
-       // sometimes duration == 86399 for an event whose length was set at 1 day
+        // sometimes duration == 86399 for an event whose length was set at 1 day
         if ($duration == (self::$ONE_DAY_ACTIVITY - 1)) {
             $duration = self::$ONE_DAY_ACTIVITY;
         }
-//      if ($duration == self::$ONE_DAY_ACTIVITY) {
-//         $duration = $AllDay;
-//      }
+        //      if ($duration == self::$ONE_DAY_ACTIVITY) {
+        //         $duration = $AllDay;
+        //      }
 
         $finalDuration = $duration - $holidaysO->countWe($begin, $end, $holidays);
         return $finalDuration;
     }
 
-   /**
-    * Get the time between two dates
-    *
-    * @param int      $time : time to add
-    * @param datetime $begin : begin date to add
-    * @param array    $values : array of times
-    * @param int      $type : holiday, work, part time, sickness
-    * @param string   $activity : name of the activity
-    *
-    * @return float
-    */
-    function getActionTime($begin, $end, $values, $actiontime, $type)
+    /**
+     * Get the time between two dates
+     *
+     * @param int      $time : time to add
+     * @param datetime $begin : begin date to add
+     * @param array    $values : array of times
+     * @param int      $type : holiday, work, part time, sickness
+     * @param string   $activity : name of the activity
+     *
+     * @return float
+     */
+    public function getActionTime($begin, $end, $values, $actiontime, $type)
     {
 
         $holidays = Holiday::getCalendarHolidaysArray($_SESSION["glpiactive_entity"]);
@@ -1652,27 +1642,26 @@ class Report extends CommonDBTM
 
         $date_diff  = strtotime($end . " 23:59") - strtotime($begin . " 00:01");
         $nbSecondes = 60 * 60 * 24;
-        $duration   = round($date_diff / $nbSecondes, 0,PHP_ROUND_HALF_UP);
+        $duration   = round($date_diff / $nbSecondes, 0, PHP_ROUND_HALF_UP);
 
         $finalDuration = $duration - $holidaysO->countWe($begin, $end, $holidays);
 
         return $finalDuration;
     }
 
-
-   /**
-    * Set times and check if day is not exceeding 1
-    *
-    * @param int      $time : time to add (1 = full day)
-    * @param int      $hour : begin hour
-    * @param string   $date_add : Y-m-d begin date
-    * @param array    $values : array of times
-    * @param int      $type : holiday, work, part time, sickness
-    * @param string   $activity : name of the activity
-    *
-    * @return array
-    */
-    static function setTimes($time, $hour, $date_add, $values, $type, $activity, $holidays = [], $timejour, $allDay, $options)
+    /**
+     * Set times and check if day is not exceeding 1
+     *
+     * @param int      $time : time to add (1 = full day)
+     * @param int      $hour : begin hour
+     * @param string   $date_add : Y-m-d begin date
+     * @param array    $values : array of times
+     * @param int      $type : holiday, work, part time, sickness
+     * @param string   $activity : name of the activity
+     *
+     * @return array
+     */
+    public static function setTimes($time, $hour, $date_add, $values, $type, $activity, $holidays = [], $timejour, $allDay, $options)
     {
         // Normalize options with the same defaults as timeRepartition(): callers
         // (and the recursive calls below) may pass an $options array that omits
@@ -1706,7 +1695,7 @@ class Report extends CommonDBTM
                 if (isset($search_dates[$date_add])) {
                     foreach ($search_dates[$date_add] as $h => $value) {
                         if ($h <= self::$AM_END) {
-                              $countAM += $value;
+                            $countAM += $value;
                         }
                     }
                 }
@@ -1716,7 +1705,7 @@ class Report extends CommonDBTM
                 if (isset($search_dates[$date_add])) {
                     foreach ($search_dates[$date_add] as $h => $value) {
                         if ($h >= self::$PM_BEGIN) {
-                              $countPM += $value;
+                            $countPM += $value;
                         }
                     }
                 }
@@ -1737,8 +1726,8 @@ class Report extends CommonDBTM
                 }
 
                 if ($hour >= self::$PM_BEGIN &&
-                    (($options['use_hours'] && (($countPM/ $allDay) + $timejour > 0.5)) ||
-                        (!$options['use_hours'] && ($countPM + $timejour > 0.5)))){
+                    (($options['use_hours'] && (($countPM / $allDay) + $timejour > 0.5)) ||
+                        (!$options['use_hours'] && ($countPM + $timejour > 0.5)))) {
                     $exeedingPM = 1;
                 }
 
@@ -1751,7 +1740,7 @@ class Report extends CommonDBTM
                         $values = self::setTimes($time, self::getAmBegin(), date('Y-m-d', strtotime($date_add . ' + 1 DAY')), $values, $type, $activity, $holidays, $options['use_hours'] ? ($time / $allDay) : $time, $allDay, $options);
                     }
 
-                 // Appending/adding time
+                    // Appending/adding time
                 } elseif ($exeedingAM && !$exeedingPM) {
                     if (isset($values[$type][$activity][$date_add . ' ' . self::$PM_BEGIN])) {
                         $values[$type][$activity][$date_add . ' ' . self::$PM_BEGIN] += $time;
@@ -1767,24 +1756,24 @@ class Report extends CommonDBTM
                 $values[$type][$activity][$date_add . ' ' . $hour] = $time;
             }
 
-           // No addition weekend, trying next day
+            // No addition weekend, trying next day
         } else {
             $values = self::setTimes($time, self::getAmBegin(), date('Y-m-d', strtotime($date_add . ' + 1 DAY')), $values, $type, $activity, $holidays, $options['use_hours'] ? ($time / $allDay) : $time, $allDay, $options);
         }
         return $values;
     }
 
-   /**
-    * Display the activities
-    *
-    * @param string $activity
-    * @param int    $output_type
-    * @param int    $row_num
-    * @param int    $type
-    *
-    * @return int
-    */
-    function showActivity($activity, $output_type, $row_num, $type, $crit)
+    /**
+     * Display the activities
+     *
+     * @param string $activity
+     * @param int    $output_type
+     * @param int    $row_num
+     * @param int    $type
+     *
+     * @return int
+     */
+    public function showActivity($activity, $output_type, $row_num, $type, $crit)
     {
 
         $tot = 0;
@@ -1852,37 +1841,37 @@ class Report extends CommonDBTM
                 }
 
                 foreach ($times as $begin => $data) {
-                   // Use round values
+                    // Use round values
                     $data['values'] = self::TotalTpsPassesArrondis($data['values'], [
-                    'arrondir_heure' => $use_hour_on_cra,
-                    'use_planning_activity_hours' => $use_planning_activity_hours
+                        'arrondir_heure' => $use_hour_on_cra,
+                        'use_planning_activity_hours' => $use_planning_activity_hours,
                     ]);
 
-                   // Get css
+                    // Get css
                     $class = "class='center'";
                     $style = "";
                     if (isset($data['options']['weekend'])) {
-                          $style = " style='background-color:#CCCCCC' ";
+                        $style = " style='background-color:#CCCCCC' ";
                     }
 
-                   // Get tickets link for value
+                    // Get tickets link for value
                     $link = '';
                     if ($output_type == Search::HTML_OUTPUT) {
                         $link = $this->getItemLink($data['values'], $key, date('Y-m-d', strtotime($begin)), ['depass' => isset($data['options']['depass']) ? $data['options']['depass'] : 0]);
                     }
                     echo Search::showItem($output_type, !empty($link) ? $link : '', $num, $row_num, $class . $style);
 
-                   // Total of all
+                    // Total of all
                     $tot += $data['values'];
 
-                   // Activity total
+                    // Activity total
                     if (isset($tot_act[$key])) {
                         $tot_act[$key] += $data['values'];
                     } else {
                         $tot_act[$key] = $data['values'];
                     }
                 }
-               // Total value depass
+                // Total value depass
                 if (self::isIncorrectValue($tot_act[$key]) > 0 && !$use_hour_on_cra) {
                     $class = " class='center red'";
                 }
@@ -1918,14 +1907,14 @@ class Report extends CommonDBTM
         return $tot;
     }
 
-   /**
-    * Set incorrect value display
-    *
-    * @param string $value
-    *
-    * @return string
-    */
-    static function isIncorrectValue($value)
+    /**
+     * Set incorrect value display
+     *
+     * @param string $value
+     *
+     * @return string
+     */
+    public static function isIncorrectValue($value)
     {
 
         if (((intval($value) * 10) % 5) > 0) {
@@ -1935,15 +1924,14 @@ class Report extends CommonDBTM
         return false;
     }
 
-
-   /**
-    * Get holiday name
-    *
-    * @param int $type
-    *
-    * @return string
-    */
-    static function getHolidayName($type)
+    /**
+     * Get holiday name
+     *
+     * @param int $type
+     *
+     * @return string
+     */
+    public static function getHolidayName($type)
     {
 
         switch ($type) {
@@ -1956,17 +1944,17 @@ class Report extends CommonDBTM
         }
     }
 
-   /**
-    * Display a link with the activity search options
-    *
-    * @param int    $value
-    * @param string $activity
-    * @param date   $begin
-    * @param array  $options
-    *
-    * @return string url
-    */
-    function getItemLink($value, $activity, $begin, $options = [])
+    /**
+     * Display a link with the activity search options
+     *
+     * @param int    $value
+     * @param string $activity
+     * @param date   $begin
+     * @param array  $options
+     *
+     * @return string url
+     */
+    public function getItemLink($value, $activity, $begin, $options = [])
     {
         $output = $value;
         $opt = new Option();
@@ -2004,7 +1992,7 @@ class Report extends CommonDBTM
                         $url   = $target . "?" . Toolbox::append_params($opt, '&amp;');
                         $style = null;
                         if ($opt['depass'] && !$use_hour_on_cra) {
-                             $style = 'color:red';
+                            $style = 'color:red';
                         }
                         $output = "<a style='$style' href=\"$url\" id=\"activity_link$rand\" target=\"_blank\" title=\"" . $value . "\">" . $value . "</a>";
 
@@ -2022,17 +2010,16 @@ class Report extends CommonDBTM
         return $output;
     }
 
-
-   /**
-    * Display the total of all days
-    *
-    * @param  $tot
-    * @param  $countAllDays
-    * @param  $countopened
-    * @param  $output_type
-    * @param  $row_num
-    */
-    function showTotal($tot, $countAllDays, $countopened, $output_type, $row_num, $time)
+    /**
+     * Display the total of all days
+     *
+     * @param  $tot
+     * @param  $countAllDays
+     * @param  $countopened
+     * @param  $output_type
+     * @param  $row_num
+     */
+    public function showTotal($tot, $countAllDays, $countopened, $output_type, $row_num, $time)
     {
 
         $types = [self::$WORK, self::$HOLIDAY/*, self::$PART_TIME,  self::$SICKNESS*/];
@@ -2050,15 +2037,15 @@ class Report extends CommonDBTM
                 foreach ($times as $begin => $data) {
                     // Use round values
                     $data['values'] = self::TotalTpsPassesArrondis($data['values'], [
-                       'arrondir_heure' => $use_hour_on_cra,
-                     'use_planning_activity_hours' => $opt->fields['use_planning_activity_hours']
+                        'arrondir_heure' => $use_hour_on_cra,
+                        'use_planning_activity_hours' => $opt->fields['use_planning_activity_hours'],
                     ]);
 
-                     $time_total[$i]['value'] = $time_total[$i]['value'] + $data['values'];
+                    $time_total[$i]['value'] = $time_total[$i]['value'] + $data['values'];
                     if (isset($data['options']['weekend'])) {
                         $time_total[$i]['style'] = " style='background-color:#CCCCCC' ";
                     }
-                     $i++;
+                    $i++;
                 }
             }
         }
@@ -2077,7 +2064,7 @@ class Report extends CommonDBTM
         echo Search::showItem($output_type, '', $num, $row_num);
         foreach ($time_total as $key => $data) {
             if (!empty($data['style'])) {
-               //week end
+                //week end
                 $class = $data['style'];
                 echo Search::showItem($output_type, '', $num, $row_num, $class);
             } else {
@@ -2106,19 +2093,19 @@ class Report extends CommonDBTM
         echo Search::showEndLine($output_type);
     }
 
-   /**
-    * Display the column title and allow the sort
-    *
-    * @param      $output_type
-    * @param      $num
-    * @param      $title
-    * @param      $columnname
-    * @param bool $sort
-    * @param      $options  string options to add (default '')
-    *
-    * @return mixed
-    */
-    static function showTitle($output_type, &$num, $title, $columnname, $sort = false, $options = '')
+    /**
+     * Display the column title and allow the sort
+     *
+     * @param      $output_type
+     * @param      $num
+     * @param      $title
+     * @param      $columnname
+     * @param bool $sort
+     * @param      $options  string options to add (default '')
+     *
+     * @return mixed
+     */
+    public static function showTitle($output_type, &$num, $title, $columnname, $sort = false, $options = '')
     {
 
         if ($output_type != Search::HTML_OUTPUT || $sort == false) {
@@ -2137,8 +2124,14 @@ class Report extends CommonDBTM
         $first = true;
         foreach ($_REQUEST as $name => $value) {
             if (!in_array($name, ['sort', 'order', 'PHPSESSID'])) {
+                // urlencode() throws a TypeError on PHP 8+ if a request parameter
+                // is array-valued (e.g. users_id[]=1); skip non-scalars so a
+                // forged URL cannot turn the report into a 500. Encode the key too.
+                if (!is_scalar($value)) {
+                    continue;
+                }
                 $link  .= ($first ? '?' : '&amp;');
-                $link  .= $name . '=' . urlencode($value);
+                $link  .= urlencode($name) . '=' . urlencode((string) $value);
                 $first = false;
             }
         }
@@ -2150,24 +2143,24 @@ class Report extends CommonDBTM
             $num,
             $link,
             $issort,
-            ($order == 'ASC' ? 'DESC' : 'ASC')
+            ($order == 'ASC' ? 'DESC' : 'ASC'),
         );
     }
 
-   /**
-    * Permet d'arrondir le total des temps passés avec les tranches définies en constantes.
-    * Peut étre améliorée afin de boucler (while) sur les tranches pour ne pas avoir une suite de if, else if.
-    *
-    * @param $a_arrondir mixed Total à arrondir
-    * @param $options array clés arrondir_heure
-    *
-    * @return Le total arrondi selon la régle de gestion.
-    */
-    static function TotalTpsPassesArrondis($a_arrondir, $options = [])
+    /**
+     * Permet d'arrondir le total des temps passés avec les tranches définies en constantes.
+     * Peut étre améliorée afin de boucler (while) sur les tranches pour ne pas avoir une suite de if, else if.
+     *
+     * @param $a_arrondir mixed Total à arrondir
+     * @param $options array clés arrondir_heure
+     *
+     * @return Le total arrondi selon la régle de gestion.
+     */
+    public static function TotalTpsPassesArrondis($a_arrondir, $options = [])
     {
         $opt = [
-           'arrondir_heure' => 1,
-           'use_planning_activity_hours' => 1
+            'arrondir_heure' => 1,
+            'use_planning_activity_hours' => 1,
         ];
         if (count($options) > 0) {
             foreach ($options as $key => $value) {
@@ -2187,17 +2180,16 @@ class Report extends CommonDBTM
             if ($opt['use_planning_activity_hours']) {
                 $allday = self::getAllDay();
             } else {
-                $allday = 3600*24;
+                $allday = 3600 * 24;
             }
 
             $optconf = new Option();
             $optconf->getFromDB(1);
 
-
             if ($optconf->fields['use_hour_on_cra']) {
-                $a_arrondir = ((float)$a_arrondir) / 3600;
+                $a_arrondir = ((float) $a_arrondir) / 3600;
             } else {
-                $hour = ((float) $a_arrondir)* (float)$allday;
+                $hour = ((float) $a_arrondir) * (float) $allday;
                 $a_arrondir = $hour / 3600;
             }
 
@@ -2210,40 +2202,37 @@ class Report extends CommonDBTM
         }
         $partie_entiere = floor($a_arrondir);
         $reste          = $a_arrondir - $partie_entiere + 10; // Le + 10 permet de pallier é un probléme de comparaison (??) par la suite.
-       /* Initialisation des tranches majorées du seuil supplémentaire. */
+        /* Initialisation des tranches majorées du seuil supplémentaire. */
         $tranches_majorees = [];
         for ($i = 0; $i < count($tranches_arrondi); $i++) {
-           // Le + 10 qui suit permet de pallier é un probléme de comparaison (??) par la suite.
+            // Le + 10 qui suit permet de pallier é un probléme de comparaison (??) par la suite.
             $tranches_majorees[] = $tranches_arrondi[$i] + $tranches_seuil + 10;
         }
         $find = false;
-
-
 
         if ($reste < $tranches_majorees[0]) {
             $result = $partie_entiere;
             $find = true;
         } else {
-            for ($i = 1; $i < (count($tranches_arrondi)-1); $i++) {
+            for ($i = 1; $i < (count($tranches_arrondi) - 1); $i++) {
                 // Le + 10 qui suit permet de pallier é un probléme de comparaison (??) par la suite.
-                if ($reste >= $tranches_majorees[($i-1)] && $reste < $tranches_majorees[$i]) {
+                if ($reste >= $tranches_majorees[($i - 1)] && $reste < $tranches_majorees[$i]) {
                     $result = $partie_entiere + $tranches_arrondi[$i];
                     $find = 1;
                     break;
                 }
- //              $tranches_majorees[] = $tranches_arrondi[$i] + $tranches_seuil + 10;
+                //              $tranches_majorees[] = $tranches_arrondi[$i] + $tranches_seuil + 10;
             }
         }
 
         if (!$find) {
-            $result = $partie_entiere + $tranches_arrondi[(count($tranches_arrondi)-1)];
+            $result = $partie_entiere + $tranches_arrondi[(count($tranches_arrondi) - 1)];
         }
-
 
         return $result;
     }
 
-    function send($doc)
+    public function send($doc)
     {
 
         $file = GLPI_DOC_DIR . "/" . $doc->fields['filepath'];
@@ -2251,7 +2240,7 @@ class Report extends CommonDBTM
         if (!file_exists($file)) {
             die("Error file " . $file . " does not exist");
         }
-       // Now send the file with header() magic
+        // Now send the file with header() magic
         header("Expires: Mon, 26 Nov 1962 00:00:00 GMT");
         header('Pragma: private'); /// IE BUG + SSL
         header('Cache-control: private, must-revalidate'); /// IE BUG + SSL
@@ -2266,7 +2255,7 @@ class Report extends CommonDBTM
      * @param $string
      * @return string
      */
-    static function strtoupper_auto($string)
+    public static function strtoupper_auto($string)
     {
         if (extension_loaded('mbstring')) {
             $encoding = mb_detect_encoding($string, mb_detect_order(), true);
@@ -2305,9 +2294,9 @@ class Report extends CommonDBTM
                 $dateTimeLoop->modify('+1 day');
                 if ($loopDate . ' 00:00:00' < $crit['end']) { // task between 2 months, exclude the part outside of the current month
                     $actionTime = self::getActiontimeOnPeriod(
-                        $loopDate.' 00:00:00',
-                        $dateTimeLoop->format('Y-m-d').' 00:00:00',
-                        $event
+                        $loopDate . ' 00:00:00',
+                        $dateTimeLoop->format('Y-m-d') . ' 00:00:00',
+                        $event,
                     );
                     if ($opt->fields['use_hour_on_cra']) {
                         $dayLength = $event['actiontime'];

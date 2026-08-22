@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- activity plugin for GLPI
- Copyright (C) 2019-2026 by the activity Development Team.
-
- https://github.com/InfotelGLPI/activity
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of activity.
-
- activity is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- activity is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with activity. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * activity plugin for GLPI
+ * Copyright (C) 2019-2026 by the activity Development Team.
+ *
+ * https://github.com/InfotelGLPI/activity
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of activity.
+ *
+ * activity is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * activity is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with activity. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Activity;
@@ -33,23 +33,24 @@ use CommonITILActor;
 use Session;
 use Ticket_User;
 
-class Ticket {
+class Ticket
+{
+    public static function afterAddUser($item)
+    {
+        if (!is_array($item->input) || !count($item->input)) {
+            // Already cancel by another plugin
+            return false;
+        }
 
-   static function afterAddUser($item) {
-      if (!is_array($item->input) || !count($item->input)) {
-         // Already cancel by another plugin
-         return false;
-      }
+        if ($item instanceof Ticket_User
+              && $item->input['type'] == CommonITILActor::ASSIGN) {
+            $ticket = new \Ticket();
+            $ticket->getFromDB($item->input['tickets_id']);
 
-      if ($item instanceof Ticket_User
-            && $item->input['type'] == CommonITILActor::ASSIGN) {
-         $ticket = new \Ticket;
-         $ticket->getFromDB($item->input['tickets_id']);
-
-         $in_holiday = Holiday::isUserInHoliday(date('Y-m-d H:i:s', time()), [$item->input['users_id']]);
-         if ($in_holiday) {
-            Session::addMessageAfterRedirect(__("The following user is unavailable / on holiday : ", 'activity').implode("', '", $in_holiday), true, ERROR, false);
-         }
-      }
-   }
+            $in_holiday = Holiday::isUserInHoliday(date('Y-m-d H:i:s', time()), [$item->input['users_id']]);
+            if ($in_holiday) {
+                Session::addMessageAfterRedirect(__("The following user is unavailable / on holiday : ", 'activity') . implode("', '", $in_holiday), true, ERROR, false);
+            }
+        }
+    }
 }

@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- activity plugin for GLPI
- Copyright (C) 2019-2026 by the activity Development Team.
-
- https://github.com/InfotelGLPI/activity
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of activity.
-
- activity is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- activity is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with activity. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * activity plugin for GLPI
+ * Copyright (C) 2019-2026 by the activity Development Team.
+ *
+ * https://github.com/InfotelGLPI/activity
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of activity.
+ *
+ * activity is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * activity is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with activity. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 use GlpiPlugin\Activity\Holiday;
@@ -183,7 +183,7 @@ function plugin_activity_install()
         $DB->runFile(PLUGIN_ACTIVITY_DIR . "/install/sql/update-3.0.0.sql");
         update251to300();
     }
-//version 3.1.3
+    //version 3.1.3
     if (!$DB->fieldExists("glpi_plugin_activity_options", "use_hour_on_cra")) {
         $DB->runFile(PLUGIN_ACTIVITY_DIR . "/install/sql/update-3.1.3.sql");
     }
@@ -210,7 +210,7 @@ function plugin_activity_install()
     foreach ($classes as $old => $new) {
         $displayusers = $DB->request([
             'SELECT' => [
-                'users_id'
+                'users_id',
             ],
             'DISTINCT' => true,
             'FROM' => 'glpi_displaypreferences',
@@ -224,13 +224,13 @@ function plugin_activity_install()
                 $iterator = $DB->request([
                     'SELECT' => [
                         'num',
-                        'id'
+                        'id',
                     ],
                     'FROM' => 'glpi_displaypreferences',
                     'WHERE' => [
                         'itemtype' => $old,
                         'users_id' => $displayuser['users_id'],
-                        'interface' => 'central'
+                        'interface' => 'central',
                     ],
                 ]);
 
@@ -238,14 +238,14 @@ function plugin_activity_install()
                     foreach ($iterator as $data) {
                         $iterator2 = $DB->request([
                             'SELECT' => [
-                                'id'
+                                'id',
                             ],
                             'FROM' => 'glpi_displaypreferences',
                             'WHERE' => [
                                 'itemtype' => $new,
                                 'users_id' => $displayuser['users_id'],
                                 'num' => $data['num'],
-                                'interface' => 'central'
+                                'interface' => 'central',
                             ],
                         ]);
                         if (count($iterator2) > 0) {
@@ -254,7 +254,7 @@ function plugin_activity_install()
                                     'glpi_displaypreferences',
                                     [
                                         'id' => $dataid['id'],
-                                    ]
+                                    ],
                                 );
                                 $DB->doQuery($query);
                             }
@@ -266,7 +266,7 @@ function plugin_activity_install()
                                 ],
                                 [
                                     'id' => $data['id'],
-                                ]
+                                ],
                             );
                             $DB->doQuery($query);
                         }
@@ -309,12 +309,8 @@ function plugin_activity_uninstall()
         "glpi_plugin_activity_snapshots",
         "glpi_plugin_activity_projecttasks",
         "glpi_plugin_activity_planningexternalevents",
-        'glpi_plugin_activity_planningeventsubcategories'
+        'glpi_plugin_activity_planningeventsubcategories',
     ];
-
-    foreach ($tables as $table) {
-        $DB->dropTable($table, true);
-    }
 
     $itemtypes = ['Alert',
         'DisplayPreference',
@@ -328,7 +324,7 @@ function plugin_activity_uninstall()
         'NotificationTemplate',
         'Notification'];
     foreach ($itemtypes as $itemtype) {
-        $item = new $itemtype;
+        $item = new $itemtype();
         $item->deleteByCriteria(['itemtype' => Holiday::class]);
     }
 
@@ -336,12 +332,12 @@ function plugin_activity_uninstall()
     $notif = new Notification();
     $options = [
         'itemtype' => Holiday::class,
-        'event' => 'newvalidation'
+        'event' => 'newvalidation',
     ];
     foreach (
         $DB->request([
             'FROM' => 'glpi_notifications',
-            'WHERE' => $options
+            'WHERE' => $options,
         ]) as $data
     ) {
         $notif->delete($data);
@@ -349,12 +345,12 @@ function plugin_activity_uninstall()
 
     $options = [
         'itemtype' => Holiday::class,
-        'event' => 'answervalidation'
+        'event' => 'answervalidation',
     ];
     foreach (
         $DB->request([
             'FROM' => 'glpi_notifications',
-            'WHERE' => $options
+            'WHERE' => $options,
         ]) as $data
     ) {
         $notif->delete($data);
@@ -365,22 +361,22 @@ function plugin_activity_uninstall()
     $translation = new NotificationTemplateTranslation();
     $notif_template = new Notification_NotificationTemplate();
     $options = [
-        'itemtype' => Holiday::class
+        'itemtype' => Holiday::class,
     ];
     foreach (
         $DB->request([
             'FROM' => 'glpi_notificationtemplates',
-            'WHERE' => $options
+            'WHERE' => $options,
         ]) as $data
     ) {
         $options_template = [
-            'notificationtemplates_id' => $data['id']
+            'notificationtemplates_id' => $data['id'],
         ];
 
         foreach (
             $DB->request([
                 'FROM' => 'glpi_notificationtemplatetranslations',
-                'WHERE' => $options_template
+                'WHERE' => $options_template,
             ]) as $data_template
         ) {
             $translation->delete($data_template);
@@ -390,7 +386,7 @@ function plugin_activity_uninstall()
         foreach (
             $DB->request([
                 'FROM' => 'glpi_notifications_notificationtemplates',
-                'WHERE' => $options_template
+                'WHERE' => $options_template,
             ]) as $data_template
         ) {
             $notif_template->delete($data_template);
@@ -407,6 +403,10 @@ function plugin_activity_uninstall()
 
     Menu::removeRightsFromSession();
 
+    foreach ($tables as $table) {
+        $DB->dropTable($table, true);
+    }
+
     return true;
 }
 
@@ -418,11 +418,11 @@ function plugin_activity_getDatabaseRelations()
         return [
             "glpi_tickettasks" => ["glpi_plugin_activity_tickettasks" => "tickettasks_id"],
             "glpi_planningexternalevents" => ["glpi_plugin_activity_planningexternalevents" => "planningexternalevents_id"],
-//            "glpi_plugin_activity_holidaytypes" => [
-//                "glpi_plugin_activity_holidays" => "plugin_activity_holidaytypes_id",
-//                "glpi_plugin_activity_holidaycounts" => "plugin_activity_holidaytypes_id"
-//            ],
-//            "glpi_plugin_activity_holidayperiods" => ["glpi_plugin_activity_holidaycounts" => "plugin_activity_holidayperiods_id"]
+            //            "glpi_plugin_activity_holidaytypes" => [
+            //                "glpi_plugin_activity_holidays" => "plugin_activity_holidaytypes_id",
+            //                "glpi_plugin_activity_holidaycounts" => "plugin_activity_holidaytypes_id"
+            //            ],
+            //            "glpi_plugin_activity_holidayperiods" => ["glpi_plugin_activity_holidaycounts" => "plugin_activity_holidayperiods_id"]
         ];
     }
     return [];
@@ -435,13 +435,12 @@ function plugin_activity_getDropdown()
         return [
             HolidayType::class => HolidayType::getTypeName(2),
             HolidayPeriod::class => HolidayPeriod::getTypeName(2),
-            PlanningEventSubCategory::class => PlanningEventSubCategory::getTypeName(2)
+            PlanningEventSubCategory::class => PlanningEventSubCategory::getTypeName(2),
         ];
     } else {
         return [];
     }
 }
-
 
 function plugin_activity_postinit()
 {
@@ -454,13 +453,13 @@ function plugin_activity_postinit()
 function plugin_activity_addDefaultWhere($type)
 {
     switch ($type) {
-        case Holiday::class :
+        case Holiday::class:
             $who = (int) Session::getLoginUserID();
             if (!Session::haveRight("plugin_activity_all_users", 1)) {
                 return " `glpi_plugin_activity_holidays`.`users_id` = '$who' ";
             }
             break;
-        case HolidayCount::class :
+        case HolidayCount::class:
             $who = (int) Session::getLoginUserID();
             return " `glpi_plugin_activity_holidaycounts`.`users_id` = '$who' ";
             break;
@@ -468,13 +467,12 @@ function plugin_activity_addDefaultWhere($type)
     return "";
 }
 
-
 function plugin_activity_addWhere($link, $nott, $itemtype, $ID, $val, $searchtype)
 {
     global $DB;
 
     switch ($itemtype) {
-        case Holiday::class :
+        case Holiday::class:
             $searchoptions = Search::getOptions($itemtype);
             if ($searchoptions[$ID]['table'] == 'glpi_plugin_activity_holidayvalidations') {
                 if ($nott) {
@@ -490,7 +488,6 @@ function plugin_activity_addWhere($link, $nott, $itemtype, $ID, $val, $searchtyp
     }
     return "";
 }
-
 
 function plugin_activity_post_item_form($params)
 {

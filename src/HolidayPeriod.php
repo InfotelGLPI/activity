@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- activity plugin for GLPI
- Copyright (C) 2019-2026 by the activity Development Team.
-
- https://github.com/InfotelGLPI/activity
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of activity.
-
- activity is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- activity is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with activity. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * activity plugin for GLPI
+ * Copyright (C) 2019-2026 by the activity Development Team.
+ *
+ * https://github.com/InfotelGLPI/activity
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of activity.
+ *
+ * activity is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * activity is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with activity. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Activity;
@@ -33,56 +33,59 @@ use CommonDropdown;
 use Session;
 
 if (!defined('GLPI_ROOT')) {
-   die("Sorry. You can't access directly to this file");
+    die("Sorry. You can't access directly to this file");
 }
 
-class HolidayPeriod extends CommonDropdown {
+class HolidayPeriod extends CommonDropdown
+{
+    public $can_be_translated  = true;
 
-   var $can_be_translated  = true;
+    public static function getTypeName($nb = 0)
+    {
+        return _n('Holiday period', 'Holiday periods', $nb, 'activity');
+    }
 
-   static function getTypeName($nb = 0) {
-      return _n('Holiday period', 'Holiday periods', $nb, 'activity');
-   }
 
+    public function getAdditionalFields()
+    {
 
-   function getAdditionalFields() {
+        return [
+            [
+                'name'  => 'short_name',
+                'label' => __('Short name', 'activity'),
+                'type'  => 'text',
+                'list'  => true],
+            [
+                'name'  => 'begin',
+                'label' => __('Begin date'),
+                'type'  => 'date',
+                'list'  => true],
+            [
+                'name'  => 'end',
+                'label' => __('End date'),
+                'type'  => 'date',
+                'list'  => true],
+            [
+                'name'  => 'archived',
+                'label' => __('Archived', 'activity'),
+                'type'  => 'bool',
+                'list'  => true],
+        ];
+    }
 
-      return [
-         [
-            'name'  => 'short_name',
-            'label' => __('Short name', 'activity'),
-            'type'  => 'text',
-            'list'  => true],
-         [
-            'name'  => 'begin',
-            'label' => __('Begin date'),
-            'type'  => 'date',
-            'list'  => true],
-         [
-            'name'  => 'end',
-            'label' => __('End date'),
-            'type'  => 'date',
-            'list'  => true],
-         [
-            'name'  => 'archived',
-            'label' => __('Archived', 'activity'),
-            'type'  => 'bool',
-            'list'  => true],
-      ];
-   }
+    public function prepareInputForAdd($input)
+    {
 
-   function prepareInputForAdd($input) {
+        if (!isset($input['begin']) || $input['begin'] == "") {
+            Session::addMessageAfterRedirect(__('Please fill a begin date', 'activity'), false, ERROR);
+            return false;
+        }
+        if (!isset($input['end']) || $input['end'] == "") {
+            Session::addMessageAfterRedirect(__('Please fill an end date', 'activity'), false, ERROR);
+            return false;
+        }
 
-      if (!isset($input['begin']) || $input['begin'] == "") {
-         Session::addMessageAfterRedirect(__('Please fill a begin date', 'activity'), false, ERROR);
-         return false;
-      }
-      if (!isset($input['end']) || $input['end'] == "") {
-         Session::addMessageAfterRedirect(__('Please fill an end date', 'activity'), false, ERROR);
-         return false;
-      }
-
-      return $input;
-   }
+        return $input;
+    }
 
 }

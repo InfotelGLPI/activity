@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- activity plugin for GLPI
- Copyright (C) 2019-2026 by the activity Development Team.
-
- https://github.com/InfotelGLPI/activity
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of activity.
-
- activity is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- activity is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with activity. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * activity plugin for GLPI
+ * Copyright (C) 2019-2026 by the activity Development Team.
+ *
+ * https://github.com/InfotelGLPI/activity
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of activity.
+ *
+ * activity is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * activity is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with activity. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Activity;
@@ -41,220 +41,228 @@ use Dropdown;
  * compatibility purpose.
  */
 
-class CommonValidation extends CommonDBTM{
-   // STATUS
-   const NONE      = 1; // none
-   const WAITING   = 2; // waiting
-   const ACCEPTED  = 3; // accepted
-   const REFUSED   = 4; // rejected
+class CommonValidation extends CommonDBTM
+{
+    // STATUS
+    public const NONE      = 1; // none
+    public const WAITING   = 2; // waiting
+    public const ACCEPTED  = 3; // accepted
+    public const REFUSED   = 4; // rejected
 
-   /**
-    * get the Ticket validation status list
-    *
-    * @param $withmetaforsearch  boolean (false by default)
-    * @param $global             boolean (true for global status, with "no validation" option)
-    *                                    (false by default)
-    *
-    * @return array array
-    **/
-   static function getAllStatusArray($withmetaforsearch = false, $global = false) {
+    /**
+     * get the Ticket validation status list
+     *
+     * @param $withmetaforsearch  boolean (false by default)
+     * @param $global             boolean (true for global status, with "no validation" option)
+     *                                    (false by default)
+     *
+     * @return array array
+     **/
+    public static function getAllStatusArray($withmetaforsearch = false, $global = false)
+    {
 
-      $tab = [self::WAITING  => __('Waiting for approval'),
-         self::REFUSED  => __('Refused'),
-         self::ACCEPTED => __('Granted')];
-      if ($global) {
-         $tab[self::NONE] = __('Not subject to approval');
+        $tab = [self::WAITING  => __('Waiting for approval'),
+            self::REFUSED  => __('Refused'),
+            self::ACCEPTED => __('Granted')];
+        if ($global) {
+            $tab[self::NONE] = __('Not subject to approval');
 
-         if ($withmetaforsearch) {
-            $tab['can'] = __('Granted + Not subject to approval');
-         }
-      }
+            if ($withmetaforsearch) {
+                $tab['can'] = __('Granted + Not subject to approval');
+            }
+        }
 
-      if ($withmetaforsearch) {
-         $tab['all'] = __('All');
-      }
-      return $tab;
-   }
+        if ($withmetaforsearch) {
+            $tab['all'] = __('All');
+        }
+        return $tab;
+    }
 
+    /**
+     * Dropdown of validation status
+     *
+     * @param $name
+     * @param $options array of possible options:
+     *      - value   : default value (default waiting)
+     *      - all     : boolean display all (default false)
+     *      - global  : for global validation (default false)
+     *      - display : boolean display or get string ? (default true)
+     *
+     * @return int|string (display)
+     **/
+    public static function dropdownStatus($name, $options = [])
+    {
 
-   /**
-    * Dropdown of validation status
-    *
-    * @param $name
-    * @param $options array of possible options:
-    *      - value   : default value (default waiting)
-    *      - all     : boolean display all (default false)
-    *      - global  : for global validation (default false)
-    *      - display : boolean display or get string ? (default true)
-    *
-    * @return int|string (display)
-    **/
-   static function dropdownStatus($name, $options = []) {
+        $p['value']   = self::WAITING;
+        $p['global']  = false;
+        $p['all']     = false;
+        $p['display'] = true;
 
-      $p['value']   = self::WAITING;
-      $p['global']  = false;
-      $p['all']     = false;
-      $p['display'] = true;
+        if (is_array($options) && count($options)) {
+            foreach ($options as $key => $val) {
+                $p[$key] = $val;
+            }
+        }
 
-      if (is_array($options) && count($options)) {
-         foreach ($options as $key => $val) {
-            $p[$key] = $val;
-         }
-      }
+        $tab = self::getAllStatusArray($p['all'], $p['global']);
+        unset($p['all']);
+        unset($p['global']);
 
-      $tab = self::getAllStatusArray($p['all'], $p['global']);
-      unset($p['all']);
-      unset($p['global']);
+        return Dropdown::showFromArray($name, $tab, $p);
+    }
 
-      return Dropdown::showFromArray($name, $tab, $p);
-   }
+    /**
+     * Get Ticket validation status Name
+     *
+     * @param $value
+     *
+     * @return $value
+     */
+    public static function getStatus($value)
+    {
 
+        $tab = self::getAllStatusArray(true, true);
+        // Return $value if not define
+        return (isset($tab[$value]) ? $tab[$value] : $value);
+    }
 
-   /**
-    * Get Ticket validation status Name
-    *
-    * @param $value
-    *
-    * @return $value
-    */
-   static function getStatus($value) {
+    /**
+     * Get Ticket validation status Color
+     *
+     * @param $value
+     *
+     * @return string
+     */
+    public static function getStatusColor($value)
+    {
 
-      $tab = self::getAllStatusArray(true, true);
-      // Return $value if not define
-      return (isset($tab[$value]) ? $tab[$value] : $value);
-   }
+        switch ($value) {
+            case self::WAITING:
+                $style = "#FFC65D";
+                break;
 
+            case self::REFUSED:
+                $style = "#cf9b9b";
+                break;
 
-   /**
-    * Get Ticket validation status Color
-    *
-    * @param $value
-    *
-    * @return string
-    */
-   static function getStatusColor($value) {
+            case self::ACCEPTED:
+                $style = "#9BA563";
+                break;
 
-      switch ($value) {
-         case self::WAITING :
-            $style = "#FFC65D";
-            break;
+            default:
+                $style = "#cf9b9b";
+        }
+        return $style;
+    }
 
-         case self::REFUSED :
-            $style = "#cf9b9b";
-            break;
+    /**
+     * @param $field
+     * @param $values
+     * @param $options   array
+     *
+     * @return string
+     */
+    public static function getSpecificValueToDisplay($field, $values, array $options = [])
+    {
+        if (!is_array($values)) {
+            $values = [$field => $values];
+        }
+        switch ($field) {
+            case 'global_validation':
+                return self::getStatus($values[$field]);
+            case 'actiontime':
+                $AllDay = Report::getAllDay();
+                return Report::TotalTpsPassesArrondis($values[$field] / $AllDay) . " " . _n('Day', 'Days', 2);
+        }
+        return parent::getSpecificValueToDisplay($field, $values, $options);
+    }
 
-         case self::ACCEPTED :
-            $style = "#9BA563";
-            break;
+    /**
+     * @param $field
+     * @param $name              (default '')
+     * @param $values            (default '')
+     * @param $options   array
+     *
+     * @return string
+     */
+    public static function getSpecificValueToSelect($field, $name = '', $values = '', array $options = [])
+    {
 
-         default :
-            $style = "#cf9b9b";
-      }
-      return $style;
-   }
+        if (!is_array($values)) {
+            $values = [$field => $values];
+        }
+        $options['display'] = false;
 
+        switch ($field) {
+            case 'status':
+                $options['value'] = $values[$field];
+                return self::dropdownStatus($name, $options);
+        }
+        return parent::getSpecificValueToSelect($field, $name, $values, $options);
+    }
 
-   /**
-    * @param $field
-    * @param $values
-    * @param $options   array
-    *
-    * @return string
-    */
-   static function getSpecificValueToDisplay($field, $values, array $options = []) {
-      if (!is_array($values)) {
-         $values = [$field => $values];
-      }
-      switch ($field) {
-         case 'global_validation':
-            return self::getStatus($values[$field]);
-         case 'actiontime':
-            $AllDay = Report::getAllDay();
-            return Report::TotalTpsPassesArrondis($values[$field]/$AllDay)." "._n('Day', 'Days', 2);
-      }
-      return parent::getSpecificValueToDisplay($field, $values, $options);
-   }
+    /**
+     * Dropdown of validator
+     *
+     * @param $options   array of options
+     *  - name                    : select name
+     *  - id                      : ID of object > 0 Update, < 0 New
+     *  - entity                  : ID of entity
+     *  - right                   : validation rights
+     *  - groups_id               : ID of group validator
+     *  - users_id_validate       : ID of user validator
+     *  - applyto
+     *
+     * @return
+     **/
+    public static function dropdownValidator(array $options = [])
+    {
+        global $CFG_GLPI;
 
+        $params['name']               = '';
+        $params['id']                 = 0;
+        $params['entity']             = $_SESSION['glpiactive_entity'];
+        $params['right']              = ['validate_request', 'validate_incident'];
+        $params['groups_id']          = 0;
+        $params['users_id_validate']  = [];
+        $params['applyto']            = 'show_validator_field';
 
-   /**
-    * @param $field
-    * @param $name              (default '')
-    * @param $values            (default '')
-    * @param $options   array
-    *
-    * @return string
-    */
-   static function getSpecificValueToSelect($field, $name = '', $values = '', array $options = []) {
+        foreach ($options as $key => $val) {
+            $params[$key] = $val;
+        }
 
-      if (!is_array($values)) {
-         $values = [$field => $values];
-      }
-      $options['display'] = false;
+        $types = [0       => Dropdown::EMPTY_VALUE,
+            'user'  => __('User'),
+            'group' => __('Group')];
 
-      switch ($field) {
-         case 'status' :
-            $options['value'] = $values[$field];
-            return self::dropdownStatus($name, $options);
-      }
-      return parent::getSpecificValueToSelect($field, $name, $values, $options);
-   }
+        $type  = '__VALUE__';
+        if (!empty($params['users_id_validate'])) {
+            $type = 'list_users';
+        }
 
+        if ($params['id'] > 0) {
+            unset($types['group']);
+        }
+        $rand = Dropdown::showFromArray("validatortype", $types, ['value' => $type]);
 
+        if ($params['id'] > 0) {
+            $params['validatortype'] = $type;
+            Ajax::updateItem(
+                $params['applyto'],
+                $CFG_GLPI["root_doc"] . "/ajax/dropdownValidator.php",
+                $params,
+            );
+        }
+        $params['validatortype'] = '__VALUE__';
+        Ajax::updateItemOnSelectEvent(
+            "dropdown_validatortype$rand",
+            $params['applyto'],
+            $CFG_GLPI["root_doc"] . "/ajax/dropdownValidator.php",
+            $params,
+        );
 
-   /**
-    * Dropdown of validator
-    *
-    * @param $options   array of options
-    *  - name                    : select name
-    *  - id                      : ID of object > 0 Update, < 0 New
-    *  - entity                  : ID of entity
-    *  - right                   : validation rights
-    *  - groups_id               : ID of group validator
-    *  - users_id_validate       : ID of user validator
-    *  - applyto
-    *
-    * @return
-    **/
-   static function dropdownValidator(array $options = []) {
-      global $CFG_GLPI;
-
-      $params['name']               = '';
-      $params['id']                 = 0;
-      $params['entity']             = $_SESSION['glpiactive_entity'];
-      $params['right']              = ['validate_request', 'validate_incident'];
-      $params['groups_id']          = 0;
-      $params['users_id_validate']  = [];
-      $params['applyto']            = 'show_validator_field';
-
-      foreach ($options as $key => $val) {
-         $params[$key] = $val;
-      }
-
-      $types = [0       => Dropdown::EMPTY_VALUE,
-         'user'  => __('User'),
-         'group' => __('Group')];
-
-      $type  = '__VALUE__';
-      if (!empty($params['users_id_validate'])) {
-         $type = 'list_users';
-      }
-
-      if ($params['id'] > 0) {
-         unset($types['group']);
-      }
-      $rand = Dropdown::showFromArray("validatortype", $types, ['value' => $type]);
-
-      if ($params['id'] > 0) {
-         $params['validatortype'] = $type;
-         Ajax::updateItem($params['applyto'], $CFG_GLPI["root_doc"]."/ajax/dropdownValidator.php",
-            $params);
-      }
-      $params['validatortype'] = '__VALUE__';
-      Ajax::updateItemOnSelectEvent("dropdown_validatortype$rand", $params['applyto'],
-         $CFG_GLPI["root_doc"]."/ajax/dropdownValidator.php", $params);
-
-      if (!isset($options['applyto'])) {
-         echo "<br><span id='".$params['applyto']."'>&nbsp;</span>\n";
-      }
-   }
+        if (!isset($options['applyto'])) {
+            echo "<br><span id='" . $params['applyto'] . "'>&nbsp;</span>\n";
+        }
+    }
 }

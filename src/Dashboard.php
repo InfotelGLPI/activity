@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- activity plugin for GLPI
- Copyright (C) 2019-2026 by the activity Development Team.
-
- https://github.com/InfotelGLPI/activity
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of activity.
-
- activity is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- activity is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with activity. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * activity plugin for GLPI
+ * Copyright (C) 2019-2026 by the activity Development Team.
+ *
+ * https://github.com/InfotelGLPI/activity
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of activity.
+ *
+ * activity is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * activity is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with activity. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Activity;
@@ -65,45 +65,44 @@ class Dashboard extends CommonGLPI
     {
         global $CFG_GLPI;
 
-      //      $mois_courant   = intval(strftime("%m"));
-      //      $annee_courante = strftime("%Y");
-      //
-      //      if (isset($this->options['users_id']) && Session::haveRight("plugin_activity_all_users", 1)) {
-      //         $users_id = $this->options['users_id'];
-      //      } else {
-      //         $users_id = $_SESSION['glpiID'];
-      //      }
-      //
-      //      if (isset($this->options["month"])
-      //          && $this->options["month"] > 0) {
-      //         $mois_courant = $this->options["month"];
-      //      }
-      //
-      //      $this->datas = array(
-      //         "year"     => $annee_courante,
-      //         "month"    => $mois_courant,
-      //         "users_id" => $users_id
-      //      );
-      //
-      //
-      //      $this->form = "<label>";
-      //      $this->form .= Report::monthDropdown("month", $mois_courant);
-      //      $this->form .= "</label>";
-      //
-      //
-      //      //This form will show a choice of User
-      //      $this->form .= "<label>" . __("User") . " :";
-      //      $this->form .= User::dropdown(array('name'     => "users_id",
-      //                                          'value'    => $users_id,
-      //                                          'right'    => "interface",
-      //                                          'comments' => 1,
-      //                                          'entity'   => $_SESSION["glpiactiveentities"],
-      //                                          'width'    => '50%',
-      //                                          'display'  => false));
-      //      $this->form .= "</label>";
-      //      $this->form .= "</form>";
+        //      $mois_courant   = intval(strftime("%m"));
+        //      $annee_courante = strftime("%Y");
+        //
+        //      if (isset($this->options['users_id']) && Session::haveRight("plugin_activity_all_users", 1)) {
+        //         $users_id = $this->options['users_id'];
+        //      } else {
+        //         $users_id = $_SESSION['glpiID'];
+        //      }
+        //
+        //      if (isset($this->options["month"])
+        //          && $this->options["month"] > 0) {
+        //         $mois_courant = $this->options["month"];
+        //      }
+        //
+        //      $this->datas = array(
+        //         "year"     => $annee_courante,
+        //         "month"    => $mois_courant,
+        //         "users_id" => $users_id
+        //      );
+        //
+        //
+        //      $this->form = "<label>";
+        //      $this->form .= Report::monthDropdown("month", $mois_courant);
+        //      $this->form .= "</label>";
+        //
+        //
+        //      //This form will show a choice of User
+        //      $this->form .= "<label>" . __("User") . " :";
+        //      $this->form .= User::dropdown(array('name'     => "users_id",
+        //                                          'value'    => $users_id,
+        //                                          'right'    => "interface",
+        //                                          'comments' => 1,
+        //                                          'entity'   => $_SESSION["glpiactiveentities"],
+        //                                          'width'    => '50%',
+        //                                          'display'  => false));
+        //      $this->form .= "</label>";
+        //      $this->form .= "</form>";
     }
-
 
     /**
      * @return array
@@ -114,20 +113,19 @@ class Dashboard extends CommonGLPI
         $widgets = [
             Menu::$TOOLS => [
                 $this->getType() . "1" => ["title"   => __('Activity in the month', 'activity'),
-                                           "type"    => Widget::$PIE,
-                                           "comment" => __("Display of activity by month for a user (tickets, activity, holidays, others)", "activity")],
+                    "type"    => Widget::$PIE,
+                    "comment" => __("Display of activity by month for a user (tickets, activity, holidays, others)", "activity")],
                 $this->getType() . "3" => ["title"   =>  __("Activity Menu", 'activity'),
-                                           "type"    => Widget::$TABLE,
-                                           "comment" => ""],
+                    "type"    => Widget::$TABLE,
+                    "comment" => ""],
                 $this->getType() . "4" => ["title"   => __("Interventions not in CRA", "activity"),
-                                           "type"    => Widget::$TABLE,
-                                           "comment" => ""],
+                    "type"    => Widget::$TABLE,
+                    "comment" => ""],
             ],
         ];
 
         return $widgets;
     }
-
 
     public function getWidgetContentForItem($widgetId, $opt = [])
     {
@@ -139,14 +137,14 @@ class Dashboard extends CommonGLPI
         }
         switch ($widgetId) {
             case $this->getType() . "1":
-            //            $widget = new PieChart();
-            //            $widget->setWidgetId($widgetId);
-            //            $widget->setWidgetTitle(__('Activity in the month', 'activity')." (".__(strftime("%B")).")");
-            //            $widget->setOption("mouse", array("trackDecimals" => 2));
-            //            $widget->setOption("mouse", array("trackFormatter" => Chart::getTrackFormatter()));
-            //            $widget->setOption("legend", array("show" => false));
+                //            $widget = new PieChart();
+                //            $widget->setWidgetId($widgetId);
+                //            $widget->setWidgetTitle(__('Activity in the month', 'activity')." (".__(strftime("%B")).")");
+                //            $widget->setOption("mouse", array("trackDecimals" => 2));
+                //            $widget->setOption("mouse", array("trackFormatter" => Chart::getTrackFormatter()));
+                //            $widget->setOption("legend", array("show" => false));
 
-            //            $widget->setTabDatas($this->showActivityGraph($this->datas));
+                //            $widget->setTabDatas($this->showActivityGraph($this->datas));
 
                 $mois_courant   = intval(date('m', time()));
                 $annee_courante = date('Y', time());
@@ -172,9 +170,9 @@ class Dashboard extends CommonGLPI
                 $params["year"] = $annee_courante;
 
                 $this->datas = [
-                   "year"     => $annee_courante,
-                   "month"    => $mois_courant,
-                   "users_id" => $users_id
+                    "year"     => $annee_courante,
+                    "month"    => $mois_courant,
+                    "users_id" => $users_id,
                 ];
 
                 $activities = $this->showActivityGraph($this->datas);
@@ -189,45 +187,43 @@ class Dashboard extends CommonGLPI
                 $i     = 0;
                 foreach ($activities as $actname => $times) {
                     $i++;
-//               $datas[] = $times;
+                    //               $datas[] = $times;
                     $datas[] = ['value' => $times,
-                                 'name' =>  $actname];
+                        'name' =>  $actname];
                     $nameact[]  = $actname;
                 }
                 $dataPieset         = json_encode($datas);
                 $labelsPie          = json_encode($nameact);
 
-
                 $graph_datas = ['title'   => $title,
-                                'comment' => $comment,
-                                'name'            => $name,
-                                'ids'             => json_encode([]),
-                                'data'            => $dataPieset,
-                                'labels'          => $labelsPie,
-                                'label'           => $title];
+                    'comment' => $comment,
+                    'name'            => $name,
+                    'ids'             => json_encode([]),
+                    'data'            => $dataPieset,
+                    'labels'          => $labelsPie,
+                    'label'           => $title];
 
-             //            if ($onclick == 1) {
+                //            if ($onclick == 1) {
                 $graph_criterias = ['widget' => $widgetId];
-             //            }
+                //            }
 
                 $graph = PieChart::launchPieGraph($graph_datas, $graph_criterias);
 
                 $criterias = ['users_id', 'month', 'year'];
                 $params    = ["widgetId"  => $widgetId,
-                              "name"      => $name,
-                              "onsubmit"  => false,
-                              "opt"       => $params,
-                              "criterias" => $criterias,
-                              "export"    => true,
-                              "canvas"    => true,
-                              "nb"        => $i];
+                    "name"      => $name,
+                    "onsubmit"  => false,
+                    "opt"       => $params,
+                    "criterias" => $criterias,
+                    "export"    => true,
+                    "canvas"    => true,
+                    "nb"        => $i];
                 $graph     .= Helper::getGraphHeader($params);
                 $widget->setWidgetHtmlContent(
-                    $graph
+                    $graph,
                 );
 
                 return $widget;
-
 
             case $this->getType() . "2":
                 $widget = new MydashboardHtml();
@@ -289,7 +285,7 @@ class Dashboard extends CommonGLPI
                 $html       .= "</script>
                                <div id='calendarwidget" . $rand . "' ></div>";
                 $widget->setWidgetHtmlContent($html);
-            //                    Form to choose user, and then see user's planning, toggleRefresh to enable the automatic refresh
+                //                    Form to choose user, and then see user's planning, toggleRefresh to enable the automatic refresh
                 if (Session::haveRight("plugin_activity_all_users", 1)) {
                     $widget->appendWidgetHtmlContent(Helper::getFormHeader($this->getType() . "2") . $this->form);
                     $widget->toggleWidgetRefresh();
@@ -304,7 +300,6 @@ class Dashboard extends CommonGLPI
                 return $widgetHTML;
                 break;
             case $this->getType() . "4":
-
 
                 $widget = new MydashboardHtml();
 
@@ -389,7 +384,7 @@ class Dashboard extends CommonGLPI
 
         $holiday = new Holiday();
         $holiday->setHolidays();
-      //      $input["month"] = "02";
+        //      $input["month"] = "02";
         $crit["begin"]             = $input["year"] . "-" . $input["month"] . "-01 00:00:00";
         $lastday                   = cal_days_in_month(CAL_GREGORIAN, $input["month"], $input["year"]);
         $crit["end"]               = $input["year"] . "-" . $input["month"] . "-" . $lastday . " 23:59:59";
@@ -418,7 +413,6 @@ class Dashboard extends CommonGLPI
         if ($row1 = $iter1->current()) {
             $total = $row1['total'];
         }
-
 
         # 1.2 Plugin Manageentities
         $numberm = 0;
@@ -464,22 +458,22 @@ class Dashboard extends CommonGLPI
                         $percent = 0;
                     }
 
-//               $parents = $dbu->getAncestorsOf("glpi_plugin_activity_activitytypes", $data["type"]);
-//               $last    = end($parents);
-//                                     $parents = $dbu->getAncestorsOf("glpi_planningeventcategories", $data["type"]);
-//                                     $last = end($parents);
+                    //               $parents = $dbu->getAncestorsOf("glpi_plugin_activity_activitytypes", $data["type"]);
+                    //               $last    = end($parents);
+                    //                                     $parents = $dbu->getAncestorsOf("glpi_planningeventcategories", $data["type"]);
+                    //                                     $last = end($parents);
 
                     if (empty($data["type"])) {
                         $type = $data["entity"] . " > " . __('No defined type', 'activity');
                     } else {
                         $dropdown = new PlanningEventCategory();
-//                  if (count($parents) > 1) {
-//                     $dropdown->getFromDB($last);
-//                     $type = $dropdown->fields['name'];
-//                  } else {
+                        //                  if (count($parents) > 1) {
+                        //                     $dropdown->getFromDB($last);
+                        //                     $type = $dropdown->fields['name'];
+                        //                  } else {
                         $dropdown->getFromDB($data["type"]);
                         $type = $dropdown->fields['name'];
-//                  }
+                        //                  }
                     }
 
                     $values[$type][] = $data["total_actiontime"] / $AllDay;
@@ -496,7 +490,6 @@ class Dashboard extends CommonGLPI
                 $opt                 = array_merge($crit, $opt);
 
                 $queryh = Holiday::queryUserHolidays($opt);
-
 
                 $resulth = $DB->request($queryh);
                 if (count($resulth)) {
@@ -522,7 +515,7 @@ class Dashboard extends CommonGLPI
                 }
             }
 
-         //         # 1.3 Tickets
+            //         # 1.3 Tickets
             if ($numbert != "0") {
                 $values = [];
                 $sums   = [];
@@ -559,8 +552,7 @@ class Dashboard extends CommonGLPI
                 $pie[$mtitle] = $sum;
             }
 
-
-         //         # 2.4 Plugin Manageentities
+            //         # 2.4 Plugin Manageentities
             if (Plugin::isPluginActive('manageentities')) {
                 if ($numberm != "0") {
                     foreach ($resultm as $datam) {
@@ -675,14 +667,14 @@ class Dashboard extends CommonGLPI
                         }
 
                         $activities[] = ['id'              => $id,
-                                              'title'           => $activity['name'],
-                                              'description'     => $content,
-                                              'start'           => $begin,
-                                              'end'             => $end,
-                                              'editable'        => false,
-                                              'allDay'          => $isallday,
-                                              'color'           => PlanningExternalEvent::$ACTIVITY_COLOR,
-                                              'backgroundColor' => ($iscurrent) ? 'rgb(136, 218, 99)' : ''
+                            'title'           => $activity['name'],
+                            'description'     => $content,
+                            'start'           => $begin,
+                            'end'             => $end,
+                            'editable'        => false,
+                            'allDay'          => $isallday,
+                            'color'           => PlanningExternalEvent::$ACTIVITY_COLOR,
+                            'backgroundColor' => ($iscurrent) ? 'rgb(136, 218, 99)' : '',
                         ];
                     }
                 }
@@ -725,13 +717,13 @@ class Dashboard extends CommonGLPI
 
                         if ($action > 0) {
                             $activities[] = ['id'          => $id,
-                                                  'title'       => $holidaytypes[$id],
-                                                  'description' => '',
-                                                  'start'       => $date,
-                                                  'end'         => $end,
-                                                  'editable'    => false,
-                                                  'allDay'      => $isallday,
-                                                  'color'       => PlanningExternalEvent::$HOLIDAY_COLOR
+                                'title'       => $holidaytypes[$id],
+                                'description' => '',
+                                'start'       => $date,
+                                'end'         => $end,
+                                'editable'    => false,
+                                'allDay'      => $isallday,
+                                'color'       => PlanningExternalEvent::$HOLIDAY_COLOR,
                             ];
                         }
                     }
@@ -803,13 +795,13 @@ class Dashboard extends CommonGLPI
                         $y++;
                         if ($action > 0) {
                             $activities[] = ['id'          => $y,
-                                                  'title'       => $title,
-                                                  'description' => $content,
-                                                  'start'       => $date,
-                                                  'end'         => $end,
-                                                  'editable'    => false,
-                                                  'allDay'      => false,
-                                                  'color'       => PlanningExternalEvent::$TICKET_COLOR];
+                                'title'       => $title,
+                                'description' => $content,
+                                'start'       => $date,
+                                'end'         => $end,
+                                'editable'    => false,
+                                'allDay'      => false,
+                                'color'       => PlanningExternalEvent::$TICKET_COLOR];
                         }
                     }
                 }

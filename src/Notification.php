@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- activity plugin for GLPI
- Copyright (C) 2019-2026 by the activity Development Team.
-
- https://github.com/InfotelGLPI/activity
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of activity.
-
- activity is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- activity is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with activity. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * activity plugin for GLPI
+ * Copyright (C) 2019-2026 by the activity Development Team.
+ *
+ * https://github.com/InfotelGLPI/activity
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of activity.
+ *
+ * activity is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * activity is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with activity. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Activity;
@@ -37,12 +37,12 @@ use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mime\Address;
 use User;
 
-class Notification extends CommonDBTM {
-
-   /**
-    * @var boolean activate the history for the plugin
-    */
-   public $dohistory = true;
+class Notification extends CommonDBTM
+{
+    /**
+     * @var boolean activate the history for the plugin
+     */
+    public $dohistory = true;
 
 
     /**
@@ -81,117 +81,118 @@ class Notification extends CommonDBTM {
             Session::addMessageAfterRedirect(
                 __('Failed to send email to ' . $options['to']),
                 false,
-                ERROR
+                ERROR,
             );
             return false;
         } else {
-//            if ((count($mail->to)) > 0) {
-//                foreach ($mail->to as $to) {
-//                    //TRANS to be written in logs %1$s is the to email / %2$s is the subject of the mail
-//                    Toolbox::logInFile("mail", sprintf(
-//                        __('%1$s: %2$s'),
-//                        sprintf(__('An email was sent to %s'), $to[0]),
-//                        $options['subject'] . "\n"
-//                    ));
-//                }
-//            }
-//            if ((count($mail->cc)) > 0) {
-//                foreach ($mail->cc as $to) {
-//                    //TRANS to be written in logs %1$s is the to email / %2$s is the subject of the mail
-//                    Toolbox::logInFile("mail", sprintf(
-//                        __('%1$s: %2$s'),
-//                        sprintf(__('An email was sent to %s'), $to[0]),
-//                        $options['subject'] . "\n"
-//                    ));
-//                }
-//            }
-//            if ((count($mail->bcc)) > 0) {
-//                foreach ($mail->bcc as $to) {
-//                    //TRANS to be written in logs %1$s is the to email / %2$s is the subject of the mail
-//                    Toolbox::logInFile("mail", sprintf(
-//                        __('%1$s: %2$s'),
-//                        sprintf(__('An email was sent to %s'), $to[0]),
-//                        $options['subject'] . "\n"
-//                    ));
-//                }
-//            }
+            //            if ((count($mail->to)) > 0) {
+            //                foreach ($mail->to as $to) {
+            //                    //TRANS to be written in logs %1$s is the to email / %2$s is the subject of the mail
+            //                    Toolbox::logInFile("mail", sprintf(
+            //                        __('%1$s: %2$s'),
+            //                        sprintf(__('An email was sent to %s'), $to[0]),
+            //                        $options['subject'] . "\n"
+            //                    ));
+            //                }
+            //            }
+            //            if ((count($mail->cc)) > 0) {
+            //                foreach ($mail->cc as $to) {
+            //                    //TRANS to be written in logs %1$s is the to email / %2$s is the subject of the mail
+            //                    Toolbox::logInFile("mail", sprintf(
+            //                        __('%1$s: %2$s'),
+            //                        sprintf(__('An email was sent to %s'), $to[0]),
+            //                        $options['subject'] . "\n"
+            //                    ));
+            //                }
+            //            }
+            //            if ((count($mail->bcc)) > 0) {
+            //                foreach ($mail->bcc as $to) {
+            //                    //TRANS to be written in logs %1$s is the to email / %2$s is the subject of the mail
+            //                    Toolbox::logInFile("mail", sprintf(
+            //                        __('%1$s: %2$s'),
+            //                        sprintf(__('An email was sent to %s'), $to[0]),
+            //                        $options['subject'] . "\n"
+            //                    ));
+            //                }
+            //            }
             return true;
         }
     }
-   /**
-    * @param $mailing_options
-    **/
-   static function send($mailing_options, $additional_options) {
+    /**
+     * @param $mailing_options
+     **/
+    public static function send($mailing_options, $additional_options)
+    {
 
-      $mail = new self();
-      $mail->sendNotification(array_merge($mailing_options, $additional_options));
-   }
+        $mail = new self();
+        $mail->sendNotification(array_merge($mailing_options, $additional_options));
+    }
 
-   static function sendComm($input) {
-      global $_FILES, $CFG_GLPI;
-      $send = false;
+    public static function sendComm($input)
+    {
+        global $_FILES, $CFG_GLPI;
+        $send = false;
 
-      // Subject
-      $subject = $input['mail_subject'];
-      // Body
-      $body = $input['mail_body'];
-
-
-      if ($subject == "") {
-         Session::addMessageAfterRedirect(__('Please fill a subject', 'activity'), ERROR);
-
-      } else if ($body == "") {
-         Session::addMessageAfterRedirect(__('Please fill a mail body', 'activity'), ERROR);
-
-      } else {
-         // Envoi du mail
-         $notificationMail = new self();
-         $mail     = "";
-         $user = new User();
-         if ($user->getFromDB($input['validate_id'])) {
-            $validate_email = $user->getDefaultEmail();
-            $validate_name = getUserName($input['validate_id']);
-         }
+        // Subject
+        $subject = $input['mail_subject'];
+        // Body
+        $body = $input['mail_body'];
 
 
-         $option = new Option();
-         $option->getFromDB(1);
-         $mail .= $option->getField('used_mail_for_holidays');
+        if ($subject == "") {
+            Session::addMessageAfterRedirect(__('Please fill a subject', 'activity'), ERROR);
 
-         $options = [
-            'to'           => $option->getField('used_mail_for_holidays'),
-            'toname'       => $option->getField('used_mail_for_holidays'),
-            'from'         => $CFG_GLPI["from_email"],
-            'fromname'     => $CFG_GLPI["from_email_name"],
-            'replyto'      => $validate_email,
-            'replytoname'  => $validate_name,
-            'subject'      => stripslashes($subject),
-            'content_html' => htmlspecialchars_decode(stripcslashes($body)),
-            'content_text' => $body
-         ];
+        } elseif ($body == "") {
+            Session::addMessageAfterRedirect(__('Please fill a mail body', 'activity'), ERROR);
 
-         $options['attachment'][] = ['name'     => $input['filename'],
-                                          'filepath' => $input['filepath']];
+        } else {
+            // Envoi du mail
+            $notificationMail = new self();
+            $mail     = "";
+            $user = new User();
+            if ($user->getFromDB($input['validate_id'])) {
+                $validate_email = $user->getDefaultEmail();
+                $validate_name = getUserName($input['validate_id']);
+            }
 
-         $send = $notificationMail->sendNotification($options);
 
-         $mail = rtrim($mail, ",");
-         // Historisation
-         $opt[0] = 0;
-         $opt[1] = __('Mail sent', 'activity');
-         $opt[2] = sprintf(__('A mail has been sent to %s', 'activity'), $mail);
+            $option = new Option();
+            $option->getFromDB(1);
+            $mail .= $option->getField('used_mail_for_holidays');
 
-         if ($send) {
-            Session::addMessageAfterRedirect(sprintf(__('A mail has been sent to %s', 'activity'), $mail));
-            Log::history($input["id"], Holiday::getType(), $opt, '', Log::HISTORY_LOG_SIMPLE_MESSAGE);
-         } else {
+            $options = [
+                'to'           => $option->getField('used_mail_for_holidays'),
+                'toname'       => $option->getField('used_mail_for_holidays'),
+                'from'         => $CFG_GLPI["from_email"],
+                'fromname'     => $CFG_GLPI["from_email_name"],
+                'replyto'      => $validate_email,
+                'replytoname'  => $validate_name,
+                'subject'      => stripslashes($subject),
+                'content_html' => htmlspecialchars_decode(stripcslashes($body)),
+                'content_text' => $body,
+            ];
+
+            $options['attachment'][] = ['name'     => $input['filename'],
+                'filepath' => $input['filepath']];
+
+            $send = $notificationMail->sendNotification($options);
+
+            $mail = rtrim($mail, ",");
+            // Historisation
             $opt[0] = 0;
-            $opt[1] = __('Failed Mail send', 'activity');
-            $opt[2] = sprintf(__('Fail to send a mail to %s', 'activity'), $mail);
-            Log::history($input["id"], Holiday::getType(), $opt, '', Log::HISTORY_LOG_SIMPLE_MESSAGE);
-         }
-      }
-      return $send;
-   }
-}
+            $opt[1] = __('Mail sent', 'activity');
+            $opt[2] = sprintf(__('A mail has been sent to %s', 'activity'), $mail);
 
+            if ($send) {
+                Session::addMessageAfterRedirect(sprintf(__('A mail has been sent to %s', 'activity'), $mail));
+                Log::history($input["id"], Holiday::getType(), $opt, '', Log::HISTORY_LOG_SIMPLE_MESSAGE);
+            } else {
+                $opt[0] = 0;
+                $opt[1] = __('Failed Mail send', 'activity');
+                $opt[2] = sprintf(__('Fail to send a mail to %s', 'activity'), $mail);
+                Log::history($input["id"], Holiday::getType(), $opt, '', Log::HISTORY_LOG_SIMPLE_MESSAGE);
+            }
+        }
+        return $send;
+    }
+}

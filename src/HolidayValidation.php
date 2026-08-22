@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- activity plugin for GLPI
- Copyright (C) 2019-2026 by the activity Development Team.
-
- https://github.com/InfotelGLPI/activity
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of activity.
-
- activity is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- activity is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with activity. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * activity plugin for GLPI
+ * Copyright (C) 2019-2026 by the activity Development Team.
+ *
+ * https://github.com/InfotelGLPI/activity
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of activity.
+ *
+ * activity is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * activity is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with activity. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Activity;
@@ -50,42 +50,65 @@ if (!defined('GLPI_ROOT')) {
  */
 class HolidayValidation extends CommonDBChild
 {
-
     public static $items_id  = 'plugin_activity_holidays_id';
     public static $itemtype  = Holiday::class;
-    static $rightname = "plugin_activity";
+    public static $rightname = "plugin_activity";
 
-   /**
-    * functions mandatory
-    * getTypeName(), canCreate(), canView()
-    * */
-    static function getTypeName($nb = 0)
+    /**
+     * functions mandatory
+     * getTypeName(), canCreate(), canView()
+     * */
+    public static function getTypeName($nb = 0)
     {
         return _n('Holiday validation', 'Holidays validation', $nb, 'activity');
     }
 
-   /**
-    * @param $tickets_id
-    *
-    * @return bool
-    */
-    static function canValidate($hId)
+    /**
+     * @param $tickets_id
+     *
+     * @return bool
+     */
+    public static function canValidate($hId)
     {
         return countElementsInTable(
-                'glpi_plugin_activity_holidayvalidations',
-                [
-                    'plugin_activity_holidays_id' => $hId,
-                    'users_id_validate'           => Session::getLoginUserID(),
-                ]
-            ) > 0;
+            'glpi_plugin_activity_holidayvalidations',
+            [
+                'plugin_activity_holidays_id' => $hId,
+                'users_id_validate'           => Session::getLoginUserID(),
+            ],
+        ) > 0;
     }
 
-    static function getIcon()
+    public function canViewItem(): bool
+    {
+        // Per-record read gate. Without this override canViewItem() delegates to
+        // the parent Holiday (HAVE_SAME_RIGHT_ON_ITEM), so can($id, READ) — used
+        // by ajax/viewsubvalidation.php — reduces to a global right and lets any
+        // holder read any validation record (horizontal IDOR / HR data leak). A
+        // validation may be viewed only by a designated validator of the target
+        // holiday, by the holiday requester, or by a profile holding
+        // plugin_activity_all_users. Mirrors front/holidayvalidation.form.php.
+        if (Session::haveRight('plugin_activity_all_users', 1)) {
+            return true;
+        }
+        $holidays_id = (int) ($this->fields['plugin_activity_holidays_id'] ?? 0);
+        if ($holidays_id <= 0) {
+            return false;
+        }
+        if (self::canValidate($holidays_id)) {
+            return true;
+        }
+        $holiday = new Holiday();
+        return $holiday->getFromDB($holidays_id)
+            && (int) $holiday->fields['users_id'] === Session::getLoginUserID();
+    }
+
+    public static function getIcon()
     {
         return "ti ti-calendar-event";
     }
 
-    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
 
         if ($item->getType() == Holiday::class) {
@@ -93,7 +116,7 @@ class HolidayValidation extends CommonDBChild
         }
     }
 
-    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
 
         if ($item->getType() == Holiday::class) {
@@ -103,20 +126,20 @@ class HolidayValidation extends CommonDBChild
         return true;
     }
 
-    function prepareInputForAdd($input)
+    public function prepareInputForAdd($input)
     {
-       //      $input['comment_validation'] = '';
+        //      $input['comment_validation'] = '';
         $input['submission_date'] = date('Y-m-d H:i');
 
         return parent::prepareInputForAdd($input);
     }
 
-    function post_addItem()
+    public function post_addItem()
     {
 
         $holiday = new Holiday();
         if ($holiday->getFromDB($this->fields['plugin_activity_holidays_id'])) {
-           // Set global validation to waiting
+            // Set global validation to waiting
             if ($holiday->fields['global_validation'] == CommonValidation::NONE) {
                 $input['id']                = $this->fields['plugin_activity_holidays_id'];
                 $input['global_validation'] = CommonValidation::WAITING;
@@ -125,7 +148,7 @@ class HolidayValidation extends CommonDBChild
         }
     }
 
-    function prepareInputForUpdate($input)
+    public function prepareInputForUpdate($input)
     {
         $input['validation_date'] = date('Y-m-d H:i:s');
 
@@ -146,7 +169,7 @@ class HolidayValidation extends CommonDBChild
     }
 
 
-    function post_updateItem($history = 1)
+    public function post_updateItem($history = 1)
     {
         global $CFG_GLPI;
 
@@ -157,8 +180,8 @@ class HolidayValidation extends CommonDBChild
         $dbu       = new DbUtils();
         $datas     = $dbu->getAllDataFromTable($this->getTable(), $condition);
 
-       // Check if all holidaysValidation are validated or not
-       //Set global validation to accepted to define one
+        // Check if all holidaysValidation are validated or not
+        //Set global validation to accepted to define one
         if (($holiday->fields['global_validation'] == CommonValidation::WAITING)
           && in_array("status", $this->updates)) {
             $input['id']                = $this->fields['plugin_activity_holidays_id'];
@@ -166,42 +189,42 @@ class HolidayValidation extends CommonDBChild
             $holiday->update($input);
         }
 
-       /*$isValidated = array(
-         'allValidated' => 0,
-         'allRefused'   => 0,
-         'allWaiting'   => 0
+        /*$isValidated = array(
+          'allValidated' => 0,
+          'allRefused'   => 0,
+          'allWaiting'   => 0
       );
       $finalValidated = 0;
       if (sizeof($datas) > 0){
-         foreach ($datas as $data) {
-            if ($data['status'] == CommonValidation::ACCEPTED) {
-               $isValidated['allValidated'] ++;
-            } else if ($data['status'] == CommonValidation::REFUSED) {
-               $isValidated['allRefused'] ++;
-            } else {
-               $isValidated['allWaiting'] ++;
-            }
+          foreach ($datas as $data) {
+             if ($data['status'] == CommonValidation::ACCEPTED) {
+                $isValidated['allValidated'] ++;
+             } else if ($data['status'] == CommonValidation::REFUSED) {
+                $isValidated['allRefused'] ++;
+             } else {
+                $isValidated['allWaiting'] ++;
+             }
 
-         }
+          }
       }
 
       if ($isValidated['allWaiting'] > 0 ){
-         $finalValidated = CommonValidation::WAITING;
+          $finalValidated = CommonValidation::WAITING;
       }else if ( $isValidated['allValidated'] > 0 && $isValidated['allRefused'] == 0){
-         $finalValidated = CommonValidation::ACCEPTED;
+          $finalValidated = CommonValidation::ACCEPTED;
       }else if ( $isValidated['allValidated'] == 0 && $isValidated['allRefused'] > 0){
-         $finalValidated = CommonValidation::REFUSED;
+          $finalValidated = CommonValidation::REFUSED;
       }else{
-         $finalValidated = CommonValidation::WAITING;
+          $finalValidated = CommonValidation::WAITING;
       }
 
 
 
 
       if ($holiday->fields['status'] != $finalValidated ){
-         $holiday->fields['status'] = $finalValidated;
-         $holiday->update($holiday->fields);
-       }*/
+          $holiday->fields['status'] = $finalValidated;
+          $holiday->update($holiday->fields);
+        }*/
 
         $donotif  = $CFG_GLPI["notifications_mailing"];
         $mailsend = false;
@@ -209,7 +232,7 @@ class HolidayValidation extends CommonDBChild
             $donotif = false;
         }
 
-       // If holiday validated, send mail to the applicant
+        // If holiday validated, send mail to the applicant
         if ($holiday->fields['global_validation'] == CommonValidation::ACCEPTED
           || $holiday->fields['global_validation'] == CommonValidation::REFUSED) {
             if (count($this->updates) && in_array('status', $this->updates) && $donotif) {
@@ -225,16 +248,16 @@ class HolidayValidation extends CommonDBChild
                 $user->getFromDB($holiday->fields["users_id"]);
                 $email = $user->getDefaultEmail();
                 if (!empty($email)) {
-                   //TRANS: %s is the user name
+                    //TRANS: %s is the user name
                     Session::addMessageAfterRedirect(sprintf(__('Mail sent to %s', 'activity'), $user->getDefaultEmail()));
                 } else {
                     Session::addMessageAfterRedirect(
                         sprintf(
                             __('The selected user (%s) has no valid email address. The request has been created, without email confirmation.'),
-                            $user->getName()
+                            $user->getName(),
                         ),
                         false,
-                        ERROR
+                        ERROR,
                     );
                 }
             }
@@ -242,7 +265,7 @@ class HolidayValidation extends CommonDBChild
     }
 
 
-    static function computeValidationStatus($item)
+    public static function computeValidationStatus($item)
     {
 
         $validation_status = CommonValidation::WAITING;
@@ -250,12 +273,12 @@ class HolidayValidation extends CommonDBChild
         $accepted = 0;
         $rejected = 0;
 
-       // Percent of validation
+        // Percent of validation
         $validation_percent = $item->fields['validation_percent'];
 
         $statuses    = [CommonValidation::ACCEPTED => 0,
-          CommonValidation::WAITING  => 0,
-          CommonValidation::REFUSED  => 0];
+            CommonValidation::WAITING  => 0,
+            CommonValidation::REFUSED  => 0];
         $restrict    = ["plugin_activity_holidays_id" => $item->getID()];
         $dbu         = new DbUtils();
         $validations = $dbu->getAllDataFromTable(static::getTable(), $restrict);
@@ -283,14 +306,14 @@ class HolidayValidation extends CommonDBChild
         return $validation_status;
     }
 
-   /**
-    * Get the validation statistics
-    *
-    * @param $tID holiday id
-    *
-    * @return  array statistics
-    **/
-    static function getValidationStats($tID)
+    /**
+     * Get the validation statistics
+     *
+     * @param $tID holiday id
+     *
+     * @return  array statistics
+     **/
+    public static function getValidationStats($tID)
     {
 
         $tab = CommonValidation::getAllStatusArray();
@@ -319,7 +342,7 @@ class HolidayValidation extends CommonDBChild
         return $list;
     }
 
-    function showSummary($item)
+    public function showSummary($item)
     {
         $canedit = true;
         $dbu     = new DbUtils();
@@ -343,12 +366,12 @@ class HolidayValidation extends CommonDBChild
         if (isset($holiday->fields['id'])) {
             $datas = $dbu->getAllDataFromTable(
                 static::getTable(),
-                ['plugin_activity_holidays_id' => $holiday->fields['id']]
+                ['plugin_activity_holidays_id' => $holiday->fields['id']],
             );
 
             Session::initNavigateListItems(
                 HolidayValidation::class,
-                sprintf(__('%1$s = %2$s'), $holiday->getTypeName(1), $holiday->fields['name'])
+                sprintf(__('%1$s = %2$s'), $holiday->getTypeName(1), $holiday->fields['name']),
             );
 
             foreach ($datas as $data) {
@@ -390,16 +413,16 @@ class HolidayValidation extends CommonDBChild
     }
 
 
-   /**
-    * Print the validation form
-    *
-    * @param $ID        integer  ID of the item
-    * @param $options   array    options used
-    *
-    *
-    * @return bool
-    */
-    function showForm($ID, $options = [])
+    /**
+     * Print the validation form
+     *
+     * @param $ID        integer  ID of the item
+     * @param $options   array    options used
+     *
+     *
+     * @return bool
+     */
+    public function showForm($ID, $options = [])
     {
         $dbu = new DbUtils();
 
@@ -446,12 +469,12 @@ class HolidayValidation extends CommonDBChild
     }
 
 
-   /**
-    * @since version 0.84
-    *
-    * @see CommonDBConnexity::getHistoryChangeWhenUpdateField
-    **/
-    function getHistoryChangeWhenUpdateField($field)
+    /**
+     * @since version 0.84
+     *
+     * @see CommonDBConnexity::getHistoryChangeWhenUpdateField
+     **/
+    public function getHistoryChangeWhenUpdateField($field)
     {
 
         $dbu = new DbUtils();
@@ -462,7 +485,7 @@ class HolidayValidation extends CommonDBChild
                 //TRANS: %s is the username
                 $result[2] = sprintf(__('Approval granted by %s'), $username);
             } else {
-               //TRANS: %s is the username
+                //TRANS: %s is the username
                 $result[2] = sprintf(__('Update the approval request to %s'), $username);
             }
             return $result;
@@ -471,12 +494,12 @@ class HolidayValidation extends CommonDBChild
     }
 
 
-   /**
-    * @since version 0.84
-    *
-    * @see CommonDBChild::getHistoryNameForItem
-    **/
-    function getHistoryNameForItem(CommonDBTM $item, $case)
+    /**
+     * @since version 0.84
+     *
+     * @see CommonDBChild::getHistoryNameForItem
+     **/
+    public function getHistoryNameForItem(CommonDBTM $item, $case)
     {
 
         $dbu      = new DbUtils();
@@ -491,7 +514,7 @@ class HolidayValidation extends CommonDBChild
         return '';
     }
 
-    static function getSpecificValueToDisplay($field, $values, array $options = [])
+    public static function getSpecificValueToDisplay($field, $values, array $options = [])
     {
         if (!is_array($values)) {
             $values = [$field => $values];
@@ -506,7 +529,7 @@ class HolidayValidation extends CommonDBChild
         return parent::getSpecificValueToDisplay($field, $values, $options);
     }
 
-    static function getSpecificValueToSelect($field, $name = '', $values = '', array $options = [])
+    public static function getSpecificValueToSelect($field, $name = '', $values = '', array $options = [])
     {
         $dbu = new DbUtils();
         if (!is_array($values)) {

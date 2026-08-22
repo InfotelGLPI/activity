@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- activity plugin for GLPI
- Copyright (C) 2019-2026 by the activity Development Team.
-
- https://github.com/InfotelGLPI/activity
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of activity.
-
- activity is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- activity is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with activity. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * activity plugin for GLPI
+ * Copyright (C) 2019-2026 by the activity Development Team.
+ *
+ * https://github.com/InfotelGLPI/activity
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of activity.
+ *
+ * activity is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * activity is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with activity. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Activity;
@@ -42,36 +42,35 @@ if (!defined('GLPI_ROOT')) {
 
 class HolidayCount extends CommonDBTM
 {
+    public $dohistory = false;
+    public $holidays  = [];
+    public static $rightname = "plugin_activity";
 
-    var    $dohistory = false;
-    var    $holidays  = [];
-    static $rightname = "plugin_activity";
-
-    static function getTypeName($nb = 1)
+    public static function getTypeName($nb = 1)
     {
         return _n('Holiday counter', 'Holiday counters', $nb, 'activity');
     }
 
-   /*
-   function cleanDBonPurge() {
-      $holidayValidation = new HolidayValidation();
-      $holidayValidation->cleanDBonItemDelete($this->getType(),$this->fields['id']);
+    /*
+    function cleanDBonPurge() {
+       $holidayValidation = new HolidayValidation();
+       $holidayValidation->cleanDBonItemDelete($this->getType(),$this->fields['id']);
 
-      parent::cleanDBonPurge();
-   }*/
+       parent::cleanDBonPurge();
+    }*/
 
 
-    function defineTabs($options = [])
+    public function defineTabs($options = [])
     {
         $ong = [];
         $this->addDefaultFormTab($ong);
         return $ong;
     }
 
-   /**
-    * @see CommonDBTM::prepareInputForUpdate()
-    **/
-    function prepareInputForUpdate($input)
+    /**
+     * @see CommonDBTM::prepareInputForUpdate()
+     **/
+    public function prepareInputForUpdate($input)
     {
         // Security (identity spoofing): mirror prepareInputForAdd(). The check($id,
         // UPDATE) guard only proves the caller may edit the record as stored in DB;
@@ -87,10 +86,10 @@ class HolidayCount extends CommonDBTM
         return $input;
     }
 
-   /**
-    * @see CommonDBTM::prepareInputForAdd()
-    **/
-    function prepareInputForAdd($input)
+    /**
+     * @see CommonDBTM::prepareInputForAdd()
+     **/
+    public function prepareInputForAdd($input)
     {
         // Security (identity spoofing): never trust a posted users_id. A holiday
         // counter must belong to the current user; only a profile holding
@@ -127,95 +126,95 @@ class HolidayCount extends CommonDBTM
     }
 
 
-    function rawSearchOptions()
+    public function rawSearchOptions()
     {
 
         $holidaytype   = new HolidayType();
         $holidayperiod = new HolidayPeriod();
 
         $tab[] = [
-         'id'   => 'common',
-         'name' => self::getTypeName(1)
+            'id'   => 'common',
+            'name' => self::getTypeName(1),
         ];
 
         $tab[] = [
-         'id'            => '1',
-         'table'         => $this->getTable(),
-         'field'         => 'name',
-         'name'          => __('Name'),
-         'datatype'      => 'itemlink',
-         'itemlink_type' => $this->getType()
+            'id'            => '1',
+            'table'         => $this->getTable(),
+            'field'         => 'name',
+            'name'          => __('Name'),
+            'datatype'      => 'itemlink',
+            'itemlink_type' => $this->getType(),
         ];
 
         $tab[] = [
-         'id'            => '3',
-         'table'         => $holidaytype->getTable(),
-         'field'         => 'name',
-         'name'          => HolidayType::getTypeName(1),
-         'datatype'      => 'dropdown',
-         'massiveaction' => false,
+            'id'            => '3',
+            'table'         => $holidaytype->getTable(),
+            'field'         => 'name',
+            'name'          => HolidayType::getTypeName(1),
+            'datatype'      => 'dropdown',
+            'massiveaction' => false,
         ];
 
         $tab[] = [
-         'id'            => '4',
-         'table'         => $holidayperiod->getTable(),
-         'field'         => 'name',
-         'name'          => HolidayPeriod::getTypeName(1),
-         'datatype'      => 'dropdown',
-         'massiveaction' => false,
+            'id'            => '4',
+            'table'         => $holidayperiod->getTable(),
+            'field'         => 'name',
+            'name'          => HolidayPeriod::getTypeName(1),
+            'datatype'      => 'dropdown',
+            'massiveaction' => false,
         ];
 
         $tab[] = [
-         'id'            => '9',
-         'table'         => 'glpi_users',
-         'field'         => 'name',
-         'name'          => _n('User', 'Users', 1),
-         'massiveaction' => false,
-         'nosearch'      => true,
-         'datatype'      => 'dropdown',
-         'right'         => 'interface',
+            'id'            => '9',
+            'table'         => 'glpi_users',
+            'field'         => 'name',
+            'name'          => _n('User', 'Users', 1),
+            'massiveaction' => false,
+            'nosearch'      => true,
+            'datatype'      => 'dropdown',
+            'right'         => 'interface',
         ];
 
         $tab[] = [
-         'id'       => '10',
-         'table'    => $this->getTable(),
-         'field'    => 'count',
-         'name'     => __('Counter', 'activity'),
-         'datatype' => 'decimal'
+            'id'       => '10',
+            'table'    => $this->getTable(),
+            'field'    => 'count',
+            'name'     => __('Counter', 'activity'),
+            'datatype' => 'decimal',
         ];
 
         $tab[] = [
-         'id'            => '12',
-         'table'         => $this->getTable(),
-         'field'         => 'date_mod',
-         'massiveaction' => false,
-         'name'          => __('Last update'),
-         'datatype'      => 'datetime'
+            'id'            => '12',
+            'table'         => $this->getTable(),
+            'field'         => 'date_mod',
+            'massiveaction' => false,
+            'name'          => __('Last update'),
+            'datatype'      => 'datetime',
         ];
 
         $tab[] = [
-         'id'       => '30',
-         'table'    => $this->getTable(),
-         'field'    => 'id',
-         'name'     => __('ID'),
-         'datatype' => 'number'
+            'id'       => '30',
+            'table'    => $this->getTable(),
+            'field'    => 'id',
+            'name'     => __('ID'),
+            'datatype' => 'number',
         ];
 
         return $tab;
     }
 
 
-   /**
-    * Display the count holiday form
-    *
-    * @param $ID integer ID of the item
-    * @param $options array
-    *     - target filename : where to go when done.
-    *     - withtemplate boolean : template or basic item
-    *
-    * @return boolean item found
-    * */
-    function showForm($ID, $options = [])
+    /**
+     * Display the count holiday form
+     *
+     * @param $ID integer ID of the item
+     * @param $options array
+     *     - target filename : where to go when done.
+     *     - withtemplate boolean : template or basic item
+     *
+     * @return boolean item found
+     * */
+    public function showForm($ID, $options = [])
     {
         $dbu = new DbUtils();
 
@@ -253,17 +252,17 @@ class HolidayCount extends CommonDBTM
         return true;
     }
 
-    function showCountForHolidayType($plugin_activity_holidaytypes_id)
+    public function showCountForHolidayType($plugin_activity_holidaytypes_id)
     {
         global $DB;
 
         $user_id = Session::getLoginUserID();
 
         $count = 0;
-       // Current year
+        // Current year
         $old_annee  = intval(date('Y', time()) - 1);
         $next_annee = date('Y');
-       // Next year
+        // Next year
         if (time() > strtotime(date('Y') . "-05-31")) {
             $old_annee  = intval(date('Y', time()));
             $next_annee = intval(date('Y', time()) + 1);
@@ -294,17 +293,17 @@ class HolidayCount extends CommonDBTM
         return $count;
     }
 
-   /**
-    * Get the current periods with the date
-    *
-    * @global mixed $DB
-    *
-    * @param mixed $start
-    * @param mixed $end
-    *
-    * @return mixed
-    */
-    function getCurrentPeriods()
+    /**
+     * Get the current periods with the date
+     *
+     * @global mixed $DB
+     *
+     * @param mixed $start
+     * @param mixed $end
+     *
+     * @return mixed
+     */
+    public function getCurrentPeriods()
     {
         global $DB;
 
@@ -323,7 +322,7 @@ class HolidayCount extends CommonDBTM
         return $hcounts;
     }
 
-    function showCountForHolidayTypeAndPeriod($period, $periods)
+    public function showCountForHolidayTypeAndPeriod($period, $periods)
     {
         global $DB;
 
@@ -339,7 +338,7 @@ class HolidayCount extends CommonDBTM
 
         $where = [
             'glpi_plugin_activity_holidaycounts.users_id'       => $user_id,
-            'glpi_plugin_activity_holidayperiods.short_name'   => ['LIKE', $period]
+            'glpi_plugin_activity_holidayperiods.short_name'   => ['LIKE', $period],
         ];
         if (count($period_id) > 0) {
             $where['glpi_plugin_activity_holidaycounts.plugin_activity_holidayperiods_id'] = $period_id;
@@ -365,8 +364,8 @@ class HolidayCount extends CommonDBTM
         return $hcounts;
     }
 
-   /*from lateralmenu*/
-    function buildHolidayDetailsByPeriod($nbHolidays): array
+    /*from lateralmenu*/
+    public function buildHolidayDetailsByPeriod($nbHolidays): array
     {
         if ($nbHolidays['total'] == 0) {
             return ['has_data' => false, 'rows' => []];

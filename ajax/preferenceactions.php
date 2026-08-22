@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- activity plugin for GLPI
- Copyright (C) 2019-2026 by the activity Development Team.
-
- https://github.com/InfotelGLPI/activity
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of activity.
-
- activity is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- activity is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with activity. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * activity plugin for GLPI
+ * Copyright (C) 2019-2026 by the activity Development Team.
+ *
+ * https://github.com/InfotelGLPI/activity
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of activity.
+ *
+ * activity is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * activity is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with activity. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 use GlpiPlugin\Activity\Preference;
@@ -33,59 +33,58 @@ Html::header_nocache();
 
 $preferences = new Preference();
 
-Session::checkLoginUser();
 // This endpoint writes to the DB (add/delete manager mapping); state the
 // authorization explicitly instead of relying on implicit self-scoping.
 Session::checkRight("plugin_activity", READ);
 
 switch ($_POST ['action']) {
-   case 'add_manager_view':
-      $preferences->showAddManagerView();
-      break;
-   case 'add_manager':
-      // Validate the posted manager id: never trust it as-is. It must be a real
-      // user, visible in one of the caller's active entities, and not the caller
-      // themselves. Otherwise an arbitrary/out-of-scope id could be stored as a
-      // "validator", creating an orphan preference row.
-      $manager_id = (int)($_POST['manager_id'] ?? 0);
-      $manager    = new User();
-      if ($manager_id === 0
-          || $manager_id === (int)Session::getLoginUserID()
-          || !$manager->getFromDB($manager_id)
-          || !Session::haveAccessToEntity($manager->fields['entities_id'], true)) {
-         $message = __('Please select a manager', 'activity');
-      } else {
-         $preferences->fields['users_id']          = Session::getLoginUserID();
-         $preferences->fields['users_id_validate'] = $manager_id;
-         $idPreferences                            = $preferences->add($preferences->fields);
-         if ($idPreferences) {
-            $preferences->addManagerToView($manager_id);
-            $message = __('Manager sucessfully added.', 'activity');
-         } else {
-            $message = __('An error happend while adding the manager', 'activity');
-         }
-      }
-      $preferences->showMessage($message);
-
-      break;
-   case 'delete_manager':
-      $message = __('An error happend while deleting the manager', 'activity');
-      $manager_id = (int)($_POST['manager_id'] ?? 0);
-      if ($manager_id !== 0) {
-         $preferences->getFromDBByCrit(['users_id_validate' => $manager_id,
-                                        'users_id'          => Session::getLoginUserID()]);
-         if (isset($preferences->fields['id']) && $preferences->fields['id'] > 0) {
-            $oldId = $preferences->fields['users_id_validate'];
-            if ($preferences->delete($preferences->fields)) {
-               $preferences->removeManagerFroMView($oldId);
-               $message = __('Manager sucessfully deleted.', 'activity');
+    case 'add_manager_view':
+        $preferences->showAddManagerView();
+        break;
+    case 'add_manager':
+        // Validate the posted manager id: never trust it as-is. It must be a real
+        // user, visible in one of the caller's active entities, and not the caller
+        // themselves. Otherwise an arbitrary/out-of-scope id could be stored as a
+        // "validator", creating an orphan preference row.
+        $manager_id = (int) ($_POST['manager_id'] ?? 0);
+        $manager    = new User();
+        if ($manager_id === 0
+            || $manager_id === (int) Session::getLoginUserID()
+            || !$manager->getFromDB($manager_id)
+            || !Session::haveAccessToEntity($manager->fields['entities_id'], true)) {
+            $message = __('Please select a manager', 'activity');
+        } else {
+            $preferences->fields['users_id']          = Session::getLoginUserID();
+            $preferences->fields['users_id_validate'] = $manager_id;
+            $idPreferences                            = $preferences->add($preferences->fields);
+            if ($idPreferences) {
+                $preferences->addManagerToView($manager_id);
+                $message = __('Manager sucessfully added.', 'activity');
+            } else {
+                $message = __('An error happend while adding the manager', 'activity');
             }
-         }
-      }
-      $preferences->showMessage($message);
+        }
+        $preferences->showMessage($message);
 
-      break;
+        break;
+    case 'delete_manager':
+        $message = __('An error happend while deleting the manager', 'activity');
+        $manager_id = (int) ($_POST['manager_id'] ?? 0);
+        if ($manager_id !== 0) {
+            $preferences->getFromDBByCrit(['users_id_validate' => $manager_id,
+                'users_id'          => Session::getLoginUserID()]);
+            if (isset($preferences->fields['id']) && $preferences->fields['id'] > 0) {
+                $oldId = $preferences->fields['users_id_validate'];
+                if ($preferences->delete($preferences->fields)) {
+                    $preferences->removeManagerFroMView($oldId);
+                    $message = __('Manager sucessfully deleted.', 'activity');
+                }
+            }
+        }
+        $preferences->showMessage($message);
 
-   default :
-      break;
+        break;
+
+    default:
+        break;
 }

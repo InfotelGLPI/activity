@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- activity plugin for GLPI
- Copyright (C) 2019-2026 by the activity Development Team.
-
- https://github.com/InfotelGLPI/activity
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of activity.
-
- activity is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- activity is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with activity. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * activity plugin for GLPI
+ * Copyright (C) 2019-2026 by the activity Development Team.
+ *
+ * https://github.com/InfotelGLPI/activity
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of activity.
+ *
+ * activity is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * activity is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with activity. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Activity;
@@ -55,15 +55,14 @@ if (!defined('GLPI_ROOT')) {
 
 class Holiday extends CommonDBTM
 {
+    public $dohistory = true;
+    public $holidays  = [];
+    public static $rightname = "plugin_activity";
 
-    var    $dohistory = true;
-    var    $holidays  = [];
-    static $rightname = "plugin_activity";
-
-   // From CommonDBTM
+    // From CommonDBTM
     public $auto_message_on_action = false;
 
-   // From CommonDBChild
+    // From CommonDBChild
     public static $itemtype = Holiday::class;
     public static $items_id = 'plugin_activity_holidays_id';
 
@@ -71,41 +70,56 @@ class Holiday extends CommonDBTM
     public static $log_history_update = Log::HISTORY_LOG_SIMPLE_MESSAGE;
     public static $log_history_delete = Log::HISTORY_LOG_SIMPLE_MESSAGE;
 
-   /**
-    * functions mandatory
-    * getTypeName(), canCreate(), canView()
-    * */
-    static function getTypeName($nb = 1)
+    /**
+     * functions mandatory
+     * getTypeName(), canCreate(), canView()
+     * */
+    public static function getTypeName($nb = 1)
     {
         return _n('Private holiday', 'Private holidays', $nb, 'activity');
     }
 
-    static function getIcon()
+    public static function getIcon()
     {
         return "ti ti-calendar-event";
     }
 
-    static function canView(): bool
+    public static function canView(): bool
     {
         return Session::haveRight('plugin_activity_can_requestholiday', 1);
     }
 
-    function canViewItem(): bool
+    public function canViewItem(): bool
+    {
+        // Ownership: the global plugin_activity_can_requestholiday right must
+        // NOT allow reading another user's request. Only the owner, a profile
+        // holding plugin_activity_all_users, or the manager responsible for
+        // validating that user's requests may view it (mirrors canPurgeItem()
+        // and the display gate in showForm()). Otherwise can($id, READ) — used
+        // by the AJAX/popup render paths — would be a plain horizontal IDOR.
+        if (Session::haveRight('plugin_activity_all_users', 1)) {
+            return true;
+        }
+        if (isset($this->fields['users_id'])
+            && $this->fields['users_id'] == Session::getLoginUserID()) {
+            return true;
+        }
+        return isset($this->fields['users_id'])
+            && Session::haveRight('plugin_activity_can_requestholiday', 1)
+            && $this->checkUserIsManager($this->fields['users_id']);
+    }
+
+    public static function canCreate(): bool
     {
         return Session::haveRight('plugin_activity_can_requestholiday', 1);
     }
 
-    static function canCreate(): bool
+    public function canCreateItem(): bool
     {
         return Session::haveRight('plugin_activity_can_requestholiday', 1);
     }
 
-    function canCreateItem(): bool
-    {
-        return Session::haveRight('plugin_activity_can_requestholiday', 1);
-    }
-
-    function canUpdateItem(): bool
+    public function canUpdateItem(): bool
     {
         // Ownership: the global plugin_activity UPDATE right must NOT allow
         // editing another user's request. Only the owner, or a profile holding
@@ -118,7 +132,7 @@ class Holiday extends CommonDBTM
             && $this->fields['users_id'] == Session::getLoginUserID();
     }
 
-    function canPurgeItem(): bool
+    public function canPurgeItem(): bool
     {
         // Ownership: a holiday may be purged by its owner, by a profile holding
         // plugin_activity_all_users, or by the manager responsible for
@@ -137,7 +151,7 @@ class Holiday extends CommonDBTM
             && $this->checkUserIsManager($this->fields['users_id']);
     }
 
-    function cleanDBonPurge()
+    public function cleanDBonPurge()
     {
         $holidayValidation = new HolidayValidation();
         $holidayValidation->cleanDBonItemDelete($this->getType(), $this->fields['id']);
@@ -145,13 +159,13 @@ class Holiday extends CommonDBTM
         parent::cleanDBonPurge();
     }
 
-    function post_getEmpty()
+    public function post_getEmpty()
     {
 
         $this->fields['is_planned'] = 1;
     }
 
-    function defineTabs($options = [])
+    public function defineTabs($options = [])
     {
         $ong = [];
         $this->addDefaultFormTab($ong);
@@ -161,14 +175,13 @@ class Holiday extends CommonDBTM
         return $ong;
     }
 
+    //    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+    //    {
+    //
+    //        return self::createTabEntry(__('Link'));
+    //    }
 
-//    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
-//    {
-//
-//        return self::createTabEntry(__('Link'));
-//    }
-
-    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
 
         if ($item->getType() == HolidayValidation::class) {
@@ -177,7 +190,6 @@ class Holiday extends CommonDBTM
         }
         return true;
     }
-
 
     private function getSavedValues()
     {
@@ -195,10 +207,10 @@ class Holiday extends CommonDBTM
         $_SESSION['saved_values'] = $input;
     }
 
-   /**
-    * @see CommonDBTM::prepareInputForUpdate()
-    **/
-    function prepareInputForUpdate($input)
+    /**
+     * @see CommonDBTM::prepareInputForUpdate()
+     **/
+    public function prepareInputForUpdate($input)
     {
         // Security (identity spoofing): mirror prepareInputForAdd(). canUpdateItem()
         // only proves the caller owns the record as it stands in DB BEFORE the
@@ -215,10 +227,10 @@ class Holiday extends CommonDBTM
         return $input;
     }
 
-   /**
-    * @see CommonDBTM::prepareInputForAdd()
-    **/
-    function prepareInputForAdd($input)
+    /**
+     * @see CommonDBTM::prepareInputForAdd()
+     **/
+    public function prepareInputForAdd($input)
     {
         // Security (identity spoofing): never trust a posted users_id. A holiday
         // request must belong to the current user; only a profile holding
@@ -271,7 +283,7 @@ class Holiday extends CommonDBTM
 
         $input["name"] = Dropdown::getDropdownName(
             'glpi_plugin_activity_holidaytypes',
-            $input['plugin_activity_holidaytypes_id']
+            $input['plugin_activity_holidaytypes_id'],
         );
 
         $opt = new Option();
@@ -337,13 +349,12 @@ class Holiday extends CommonDBTM
         return parent::prepareInputForAdd($input);
     }
 
-
     private function reinitSavedValues()
     {
         unset($_SESSION['saved_values']);
     }
 
-    function post_addItem()
+    public function post_addItem()
     {
         global $CFG_GLPI;
 
@@ -366,8 +377,8 @@ class Holiday extends CommonDBTM
             }
 
             $restrict = ["groups_id"  => $groups,
-                      "is_manager" => 1,
-                      "NOT"        => ["users_id" => $user_id]];
+                "is_manager" => 1,
+                "NOT"        => ["users_id" => $user_id]];
             $managers = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
 
             foreach ($managers as $manager) {
@@ -390,12 +401,12 @@ class Holiday extends CommonDBTM
                 $holidayValidation_id                           = $holidayValidation->add($holidayValidation->fields);
 
                 $mailsend = false;
-               // Send mail for each validator
+                // Send mail for each validator
                 if ($CFG_GLPI["notifications_mailing"]
                 && $this->fields["global_validation"] != CommonValidation::ACCEPTED) {
                     $options  = ['plugin_activity_holidayvaldiations_id' => $holidayValidation_id,
-                            'validation_id'                         => $this->fields["id"],
-                            'validation_status'                     => $this->fields["global_validation"]];
+                        'validation_id'                         => $this->fields["id"],
+                        'validation_status'                     => $this->fields["global_validation"]];
                     $mailsend = NotificationEvent::raiseEvent('newvalidation', $this, $options);
                 }
 
@@ -404,16 +415,16 @@ class Holiday extends CommonDBTM
                     $user->getFromDB($holidayValidation->fields["users_id_validate"]);
                     $email = $user->getDefaultEmail();
                     if (!empty($email)) {
-                       //TRANS: %s is the user name
+                        //TRANS: %s is the user name
                         Session::addMessageAfterRedirect(sprintf(__('Approval request send to %s', 'activity'), $user->getName()));
                     } else {
                         Session::addMessageAfterRedirect(
                             sprintf(
                                 __('The selected user (%s) has no valid email address. The request has been created, without email confirmation.'),
-                                $user->getName()
+                                $user->getName(),
                             ),
                             false,
-                            ERROR
+                            ERROR,
                         );
                     }
                 } elseif ($this->fields["global_validation"] == CommonValidation::ACCEPTED) {
@@ -428,12 +439,12 @@ class Holiday extends CommonDBTM
         return parent::post_addItem();
     }
 
-    function setHolidays()
+    public function setHolidays()
     {
         $this->holidays = self::getCalendarHolidaysArray($_SESSION["glpiactive_entity"]);
     }
 
-    function getHolidays()
+    public function getHolidays()
     {
         return $this->holidays;
     }
@@ -451,7 +462,7 @@ class Holiday extends CommonDBTM
             $hlfDayEnd = $input['radio_cb_enddate'];
         }
 
-       // Same date
+        // Same date
         if ($input["begin"] == $input["begin"]) {
             if ($hlfDayBegin == Report::$PM_LABEL) {
                 $input['begin'] = $hb . ' ' . Report::getAmBegin();
@@ -483,8 +494,7 @@ class Holiday extends CommonDBTM
         return $input;
     }
 
-
-    static function getActionsOn()
+    public static function getActionsOn()
     {
         global $CFG_GLPI;
 
@@ -508,13 +518,13 @@ class Holiday extends CommonDBTM
             }
 
             $restrict          = ["groups_id"  => $groups,
-                               "is_manager" => 1,
-                               "users_id"   => $user_id];
+                "is_manager" => 1,
+                "users_id"   => $user_id];
             $users_id_validate = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
 
             $restrict     = ["groups_id"  => $groups,
-                          "is_manager" => 1,
-                          "NOT"        => ["users_id" => $user_id]];
+                "is_manager" => 1,
+                "NOT"        => ["users_id" => $user_id]];
             $have_manager = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
         }
 
@@ -531,51 +541,51 @@ class Holiday extends CommonDBTM
         $target = PLUGIN_ACTIVITY_WEBDIR . "/front/cra.php";
         $url    = $target . "?" . Toolbox::append_params($opt, '&amp;');
 
-       // Array of action user can do :
-       //    link     -> url of link
-       //    img      -> ulr of the img to show
-       //    label    -> label to show
-       //    onclick  -> if set, set the onclick value of the href
-       //    rights   -> if true, action shown
+        // Array of action user can do :
+        //    link     -> url of link
+        //    img      -> ulr of the img to show
+        //    label    -> label to show
+        //    onclick  -> if set, set the onclick value of the href
+        //    rights   -> if true, action shown
 
         $listActions = [
-         Action::HOLIDAY_REQUEST => [
-            'link'    => "#",
-            'onclick' => "data-bs-toggle='modal' data-bs-target='#holiday'",
-            'img'     => "ti ti-calendar-off",
-            'label'   => __('Create a holiday request', 'activity'),
-            'rights'  => Session::haveRight("plugin_activity_can_requestholiday", READ) && sizeof($have_manager) > 0,
-         ],
+            Action::HOLIDAY_REQUEST => [
+                'link'    => "#",
+                'onclick' => "data-bs-toggle='modal' data-bs-target='#holiday'",
+                'img'     => "ti ti-calendar-off",
+                'label'   => __('Create a holiday request', 'activity'),
+                'rights'  => Session::haveRight("plugin_activity_can_requestholiday", READ) && sizeof($have_manager) > 0,
+            ],
 
-          Action::LIST_HOLIDAYS    => [
-            'link'   => PLUGIN_ACTIVITY_WEBDIR . "/front/holiday.php",
-            'img'    => "ti ti-search",
-            'label'  => __('List of holidays', 'activity'),
-            'rights' => Session::haveRight("plugin_activity_can_requestholiday", READ),
-         ],
-          Action::APPROVE_HOLIDAYS => [
-            'link'   => $url,
-            'img'    => "ti ti-calendar-time",
-            'label'  => _n('Approve holiday', 'Approve holidays', 2, 'activity'),
-            'rights' => Session::haveRight("plugin_activity_can_validate", READ) && sizeof($users_id_validate) > 0,
-         ],
-          Action::HOLIDAY_COUNT    => [
-            'link'   => PLUGIN_ACTIVITY_WEBDIR . "/front/holidaycount.php",
-            'img'    => "ti ti-clock",
-            'label'  => _n('Holiday counter', 'Holiday counters', 2, 'activity'),
-            'rights' => Session::haveRight("plugin_activity_can_requestholiday", READ),
-         ]
+            Action::LIST_HOLIDAYS    => [
+                'link'   => PLUGIN_ACTIVITY_WEBDIR . "/front/holiday.php",
+                'img'    => "ti ti-search",
+                'label'  => __('List of holidays', 'activity'),
+                'rights' => Session::haveRight("plugin_activity_can_requestholiday", READ),
+            ],
+            Action::APPROVE_HOLIDAYS => [
+                'link'   => $url,
+                'img'    => "ti ti-calendar-time",
+                'label'  => _n('Approve holiday', 'Approve holidays', 2, 'activity'),
+                'rights' => Session::haveRight("plugin_activity_can_validate", READ) && sizeof($users_id_validate) > 0,
+            ],
+            Action::HOLIDAY_COUNT    => [
+                'link'   => PLUGIN_ACTIVITY_WEBDIR . "/front/holidaycount.php",
+                'img'    => "ti ti-clock",
+                'label'  => _n('Holiday counter', 'Holiday counters', 2, 'activity'),
+                'rights' => Session::haveRight("plugin_activity_can_requestholiday", READ),
+            ],
         ];
 
         $add = [];
         if (sizeof($have_manager) < 1) {
             $add = [
-             Action::MANAGER => [
-               'link'   => $CFG_GLPI["root_doc"] . "/front/preference.php?glpi_tab=GlpiPlugin\Activity\Preference$1",
-               'img'    => "ti ti-user-plus",
-               'label'  => __('Add a manager', 'activity'),
-               'rights' => Session::haveRight("plugin_activity_can_requestholiday", READ),
-             ]
+                Action::MANAGER => [
+                    'link'   => $CFG_GLPI["root_doc"] . "/front/preference.php?glpi_tab=GlpiPlugin\Activity\Preference$1",
+                    'img'    => "ti ti-user-plus",
+                    'label'  => __('Add a manager', 'activity'),
+                    'rights' => Session::haveRight("plugin_activity_can_requestholiday", READ),
+                ],
             ];
         }
 
@@ -585,180 +595,178 @@ class Holiday extends CommonDBTM
         return $listActions;
     }
 
-   /**
-    * Get default values to search engine to override
-    **/
-    static function getDefaultSearchRequest()
+    /**
+     * Get default values to search engine to override
+     **/
+    public static function getDefaultSearchRequest()
     {
 
         $search = ['sort'  => 4,
-                 'order' => 'DESC'];
+            'order' => 'DESC'];
 
         return $search;
     }
 
-    function rawSearchOptions()
+    public function rawSearchOptions()
     {
 
         $holidaytype = new HolidayType();
 
         $tab[] = [
-         'id'   => 'common',
-         'name' => self::getTypeName(1)
+            'id'   => 'common',
+            'name' => self::getTypeName(1),
         ];
 
         $tab[] = [
-         'id'            => '1',
-         'table'         => $this->getTable(),
-         'field'         => 'name',
-         'name'          => __('Name'),
-         'datatype'      => 'itemlink',
-         'itemlink_type' => $this->getType()
+            'id'            => '1',
+            'table'         => $this->getTable(),
+            'field'         => 'name',
+            'name'          => __('Name'),
+            'datatype'      => 'itemlink',
+            'itemlink_type' => $this->getType(),
         ];
 
         $tab[] = [
-         'id'            => '3',
-         'table'         => $holidaytype->getTable(),
-         'field'         => 'name',
-         'name'          => HolidayType::getTypeName(1),
-         'datatype'      => 'dropdown',
-         'massiveaction' => false,
+            'id'            => '3',
+            'table'         => $holidaytype->getTable(),
+            'field'         => 'name',
+            'name'          => HolidayType::getTypeName(1),
+            'datatype'      => 'dropdown',
+            'massiveaction' => false,
         ];
 
         $tab[] = [
-         'id'            => '4',
-         'table'         => $this->getTable(),
-         'field'         => 'begin',
-         'massiveaction' => false,
-         'name'          => __('Begin date'),
-         'datatype'      => 'datetime'
+            'id'            => '4',
+            'table'         => $this->getTable(),
+            'field'         => 'begin',
+            'massiveaction' => false,
+            'name'          => __('Begin date'),
+            'datatype'      => 'datetime',
         ];
 
         $tab[] = [
-         'id'            => '5',
-         'table'         => $this->getTable(),
-         'field'         => 'end',
-         'massiveaction' => false,
-         'name'          => __('End date'),
-         'datatype'      => 'datetime'
+            'id'            => '5',
+            'table'         => $this->getTable(),
+            'field'         => 'end',
+            'massiveaction' => false,
+            'name'          => __('End date'),
+            'datatype'      => 'datetime',
         ];
 
         $tab[] = [
-         'id'            => '6',
-         'table'         => $this->getTable(),
-         'field'         => 'is_planned',
-         'massiveaction' => false,
-         'name'          => __('Add to schedule'),
-         'datatype'      => 'bool'
+            'id'            => '6',
+            'table'         => $this->getTable(),
+            'field'         => 'is_planned',
+            'massiveaction' => false,
+            'name'          => __('Add to schedule'),
+            'datatype'      => 'bool',
         ];
 
         $tab[] = [
-         'id'         => '7',
-         'table'      => $this->getTable(),
-         'field'      => 'global_validation',
-         'searchtype' => ['equals', 'notequals'],
-         'name'       => __('Approval'),
-         'datatype'   => 'specific'
+            'id'         => '7',
+            'table'      => $this->getTable(),
+            'field'      => 'global_validation',
+            'searchtype' => ['equals', 'notequals'],
+            'name'       => __('Approval'),
+            'datatype'   => 'specific',
         ];
 
         $tab[] = [
-         'id'       => '8',
-         'table'    => $this->getTable(),
-         'field'    => 'comment',
-         'name'     => __('Comments'),
-         'datatype' => 'text'
+            'id'       => '8',
+            'table'    => $this->getTable(),
+            'field'    => 'comment',
+            'name'     => __('Comments'),
+            'datatype' => 'text',
         ];
 
         $tab[] = [
-         'id'            => '9',
-         'table'         => 'glpi_users',
-         'field'         => 'name',
-         'name'          => _n('User', 'Users', 1),
-         'massiveaction' => false,
-         'datatype'      => 'dropdown',
-         'right'         => 'interface',
+            'id'            => '9',
+            'table'         => 'glpi_users',
+            'field'         => 'name',
+            'name'          => _n('User', 'Users', 1),
+            'massiveaction' => false,
+            'datatype'      => 'dropdown',
+            'right'         => 'interface',
         ];
 
         $tab[] = [
-         'id'            => '10',
-         'table'         => $this->getTable(),
-         'field'         => 'actiontime',
-         'name'          => __('Total duration'),
-         'nosearch'      => true,
-         'massiveaction' => false,
-         'datatype'      => 'specific'
+            'id'            => '10',
+            'table'         => $this->getTable(),
+            'field'         => 'actiontime',
+            'name'          => __('Total duration'),
+            'nosearch'      => true,
+            'massiveaction' => false,
+            'datatype'      => 'specific',
         ];
 
         $tab[] = [
-         'id'            => '11',
-         'table'         => 'glpi_plugin_activity_holidayvalidations',
-         'field'         => 'users_id_validate',
-         'name'          => __('Approver'),
-         'massiveaction' => false,
-         'datatype'      => 'specific',
-         'searchtype'    => ['equals', 'notequals'],
-         'right'         => 'interface',
-         'forcegroupby'  => true,
-         'joinparams'    => [
-            'jointype' => 'child'
-         ]
+            'id'            => '11',
+            'table'         => 'glpi_plugin_activity_holidayvalidations',
+            'field'         => 'users_id_validate',
+            'name'          => __('Approver'),
+            'massiveaction' => false,
+            'datatype'      => 'specific',
+            'searchtype'    => ['equals', 'notequals'],
+            'right'         => 'interface',
+            'forcegroupby'  => true,
+            'joinparams'    => [
+                'jointype' => 'child',
+            ],
         ];
 
         $tab[] = [
-         'id'            => '12',
-         'table'         => $this->getTable(),
-         'field'         => 'date_mod',
-         'massiveaction' => false,
-         'name'          => __('Last update'),
-         'datatype'      => 'datetime'
+            'id'            => '12',
+            'table'         => $this->getTable(),
+            'field'         => 'date_mod',
+            'massiveaction' => false,
+            'name'          => __('Last update'),
+            'datatype'      => 'datetime',
         ];
 
         $tab[] = [
-         'id'            => '13',
-         'table'         => 'glpi_plugin_activity_holidayperiods',
-         'field'         => 'name',
-         'name'          => HolidayPeriod::getTypeName(),
-         'datatype'      => 'dropdown',
-         'massiveaction' => false,
+            'id'            => '13',
+            'table'         => 'glpi_plugin_activity_holidayperiods',
+            'field'         => 'name',
+            'name'          => HolidayPeriod::getTypeName(),
+            'datatype'      => 'dropdown',
+            'massiveaction' => false,
         ];
 
         $tab[] = [
-         'id'       => '30',
-         'table'    => $this->getTable(),
-         'field'    => 'id',
-         'name'     => __('ID'),
-         'datatype' => 'number'
+            'id'       => '30',
+            'table'    => $this->getTable(),
+            'field'    => 'id',
+            'name'     => __('ID'),
+            'datatype' => 'number',
         ];
 
         $tab[] = [
-         'id'   => 'validation',
-         'name' => __('Approval')
+            'id'   => 'validation',
+            'name' => __('Approval'),
         ];
 
         $tab[] = [
-         'id'            => '51',
-         'table'         => $this->getTable(),
-         'field'         => 'validation_percent',
-         'massiveaction' => false,
-         'name'          => __('Minimum validation required'),
-         'datatype'      => 'number',
-         'unit'          => '%',
-         'min'           => 0,
-         'max'           => 100,
-         'step'          => 50
+            'id'            => '51',
+            'table'         => $this->getTable(),
+            'field'         => 'validation_percent',
+            'massiveaction' => false,
+            'name'          => __('Minimum validation required'),
+            'datatype'      => 'number',
+            'unit'          => '%',
+            'min'           => 0,
+            'max'           => 100,
+            'step'          => 50,
         ];
-
 
         return $tab;
     }
 
-    static function getSpecificValueToDisplay($field, $values, array $options = [])
+    public static function getSpecificValueToDisplay($field, $values, array $options = [])
     {
         return CommonValidation::getSpecificValueToDisplay($field, $values, $options);
     }
 
-
-    static function getSpecificValueToSelect($field, $name = '', $values = '', array $options = [])
+    public static function getSpecificValueToSelect($field, $name = '', $values = '', array $options = [])
     {
 
         $dbu = new DbUtils();
@@ -789,11 +797,11 @@ class Holiday extends CommonDBTM
         return parent::getSpecificValueToSelect($field, $name, $values, $options);
     }
 
-   /**
-    * @param $idHoliday
-    *
-    * @return string
-    */
+    /**
+     * @param $idHoliday
+     *
+     * @return string
+     */
     public function createTxtFile($idHoliday)
     {
 
@@ -809,7 +817,7 @@ class Holiday extends CommonDBTM
         $location = new Location();
         $location->getFromDB($user->fields['locations_id']);
 
-       // Validator list
+        // Validator list
         $use_groupmanager = 0;
         $opt              = new Option();
         $opt->getFromDB(1);
@@ -830,8 +838,8 @@ class Holiday extends CommonDBTM
             }
 
             $restrict = ["groups_id"  => $groups,
-                      "is_manager" => 1,
-                      "NOT"        => ["users_id" => $user_id]];
+                "is_manager" => 1,
+                "NOT"        => ["users_id" => $user_id]];
             $managers = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
             foreach ($managers as $manager) {
                 $datas['users_id_validate'] = $manager['users_id'];
@@ -845,7 +853,7 @@ class Holiday extends CommonDBTM
             foreach ($datas as $data) {
                 $tmpUserMail = new UserEmail();
                 $tmpUserMail->getFromDBByCrit(['users_id'   => $data['users_id_validate'],
-                                           'is_default' => 1]);
+                    'is_default' => 1]);
                 if (!in_array($tmpUserMail->fields['email'], $validatorListArray)) {
                     if (strlen($validatorList) == 0) {
                         $validatorList .= $tmpUserMail->fields['email'];
@@ -883,7 +891,7 @@ class Holiday extends CommonDBTM
                 $dateEnd = '';
             }
 
-           //get row data
+            //get row data
             if (strpos($data, "{{user_firstname}}")) {
                 $finalRows .= str_ireplace("{{user_firstname}}", strtoupper($user->fields['firstname']), $data);
             } elseif (strpos($data, "{{user_validate}}")) {
@@ -932,7 +940,7 @@ class Holiday extends CommonDBTM
             }
 
             $restrict = ["groups_id"  => $groups,
-                      "is_manager" => 1];
+                "is_manager" => 1];
             $managers = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
 
             foreach ($managers as $manager) {
@@ -988,7 +996,7 @@ class Holiday extends CommonDBTM
 
         $actionTime = $at / Report::getAllDay();
 
-       // default values
+        // default values
         $arrayRet = ['begin' => '', 'end' => '', 'txt' => '', 'lang' => ''];
 
         if ($actionTime > 0) {
@@ -1006,37 +1014,37 @@ class Holiday extends CommonDBTM
                 $arrayRet['txt']   = '';
                 $arrayRet['lang']  = '';
             } elseif (strtotime($momentDeb) == strtotime(Report::getAmBegin()) && strtotime($momentEnd) == strtotime(Report::getPmEnd()) && $isSameDate && $actionTime == 1) {
-               // begin allday +  sameday
+                // begin allday +  sameday
                 $arrayRet['begin'] = '';
                 $arrayRet['end']   = '';
                 $arrayRet['txt']   = '';
                 $arrayRet['lang']  = '';
             } elseif ($momentDeb == Report::$PM_BEGIN && strtotime($momentEnd) == strtotime(Report::getPmEnd()) && $isSameDate) {
-               // begin afternoon  +  sameday
+                // begin afternoon  +  sameday
                 $arrayRet['begin'] = 'a';
                 $arrayRet['end']   = '';
                 $arrayRet['txt']   = ' a';
                 $arrayRet['lang']  = __('Only on afternoon', 'activity');
             } elseif ($momentDeb == Report::$PM_BEGIN && $momentEnd == Report::$AM_END) {
-               // begin afternoon / end afternoon
+                // begin afternoon / end afternoon
                 $arrayRet['begin'] = 'a';
                 $arrayRet['end']   = 'm';
                 $arrayRet['txt']   = ' a';
                 $arrayRet['lang']  = __('Only on morning', 'activity');
             } elseif (strtotime($momentDeb) == strtotime(Report::getAmBegin()) && $momentEnd == Report::$AM_END && $isSameDate) {
-               // begin morning +  end morning
+                // begin morning +  end morning
                 $arrayRet['begin'] = 'm';
                 $arrayRet['end']   = '';
                 $arrayRet['txt']   = ' m';
                 $arrayRet['lang']  = __('Only on morning', 'activity');
             } elseif (strtotime($momentDeb) == strtotime(Report::getAmBegin()) && $momentEnd == Report::$AM_END) {
-               // begin morning +  end morning
+                // begin morning +  end morning
                 $arrayRet['begin'] = '';
                 $arrayRet['end']   = 'm';
                 $arrayRet['txt']   = '';
                 $arrayRet['lang']  = '';
             } elseif ($momentDeb == Report::$PM_BEGIN && strtotime($momentEnd) == strtotime(Report::getPmEnd())) {
-               // begin afternoon +  end afternoon
+                // begin afternoon +  end afternoon
                 $arrayRet['begin'] = 'a';
                 $arrayRet['end']   = '';
                 $arrayRet['txt']   = ' a';
@@ -1052,7 +1060,7 @@ class Holiday extends CommonDBTM
         $arrayRet   = [];
         $actionTime = $at / Report::getAllDay();
 
-       // default values
+        // default values
         $cbBeginChecked = Report::$ALL_DAY_LABEL;
         $cbEndChecked   = Report::$DEFAULT_LABEL;
 
@@ -1078,28 +1086,28 @@ class Holiday extends CommonDBTM
                 $cbBeginChecked                                                        = Report::$ALL_DAY_LABEL;
                 $cbEndChecked                                                          = Report::$ALL_DAY_LABEL;
             } elseif ($momentDeb == Report::getAmBegin() && $momentEnd == Report::getPmEnd() && $isSameDate && $actionTime != 1) {
-               // begin morning +  sameday
+                // begin morning +  sameday
                 $arrayRet['cbBegin'][Report::$PM_LABEL]['disabled']      = false;
                 $arrayRet['cbBegin'][Report::$AM_LABEL]['disabled']      = false;
                 $arrayRet['cbBegin'][Report::$ALL_DAY_LABEL]['disabled'] = false;
                 $cbBeginChecked                                                        = Report::$AM_LABEL;
                 $cbEndChecked                                                          = Report::$DEFAULT_LABEL;
             } elseif ($momentDeb == Report::getAmBegin() && $momentEnd == Report::getPmEnd() && $isSameDate && $actionTime == 1) {
-               // begin allday +  sameday
+                // begin allday +  sameday
                 $arrayRet['cbBegin'][Report::$PM_LABEL]['disabled']      = false;
                 $arrayRet['cbBegin'][Report::$AM_LABEL]['disabled']      = false;
                 $arrayRet['cbBegin'][Report::$ALL_DAY_LABEL]['disabled'] = false;
                 $cbBeginChecked                                                        = Report::$ALL_DAY_LABEL;
                 $cbEndChecked                                                          = Report::$DEFAULT_LABEL;
             } elseif ($momentDeb == Report::$PM_BEGIN && $momentEnd == Report::getPmEnd() && $isSameDate) {
-               // begin afternoon  +  sameday
+                // begin afternoon  +  sameday
                 $arrayRet['cbBegin'][Report::$PM_LABEL]['disabled']      = false;
                 $arrayRet['cbBegin'][Report::$AM_LABEL]['disabled']      = false;
                 $arrayRet['cbBegin'][Report::$ALL_DAY_LABEL]['disabled'] = false;
                 $cbBeginChecked                                                        = Report::$PM_LABEL;
                 $cbEndChecked                                                          = Report::$DEFAULT_LABEL;
             } elseif ($momentDeb == Report::$PM_BEGIN && $momentEnd == Report::$AM_END) {
-               // begin afternoon / end afternoon
+                // begin afternoon / end afternoon
                 $arrayRet['cbBegin'][Report::$AM_LABEL]['disabled']      = true;
                 $arrayRet['cbBegin'][Report::$PM_LABEL]['disabled']      = false;
                 $arrayRet['cbBegin'][Report::$ALL_DAY_LABEL]['disabled'] = false;
@@ -1108,7 +1116,7 @@ class Holiday extends CommonDBTM
                 $cbBeginChecked                                                        = Report::$PM_LABEL;
                 $cbEndChecked                                                          = Report::$AM_LABEL;
             } elseif ($momentDeb == Report::getAmBegin() && $momentEnd == Report::$AM_END) {
-               // begin morning +  end morning
+                // begin morning +  end morning
                 $arrayRet['cbBegin'][Report::$AM_LABEL]['disabled']      = true;
                 $arrayRet['cbBegin'][Report::$PM_LABEL]['disabled']      = false;
                 $arrayRet['cbBegin'][Report::$ALL_DAY_LABEL]['disabled'] = false;
@@ -1117,7 +1125,7 @@ class Holiday extends CommonDBTM
                 $cbBeginChecked                                                        = Report::$AM_LABEL;
                 $cbEndChecked                                                          = Report::$AM_LABEL;
             } elseif ($momentDeb == Report::$PM_BEGIN && $momentEnd == Report::getPmEnd()) {
-               // begin afternoon +  end afternoon
+                // begin afternoon +  end afternoon
                 $arrayRet['cbBegin'][Report::$PM_LABEL]['disabled']      = false;
                 $arrayRet['cbBegin'][Report::$ALL_DAY_LABEL]['disabled'] = false;
                 $arrayRet['cbEnd'][Report::$AM_LABEL]['disabled']        = false;
@@ -1142,18 +1150,17 @@ class Holiday extends CommonDBTM
         return $arrayRet;
     }
 
-
-   /**
-    * Display the activity form
-    *
-    * @param $ID integer ID of the item
-    * @param $options array
-    *     - target filename : where to go when done.
-    *     - withtemplate boolean : template or basic item
-    *
-    * @return boolean item found
-    * */
-    function showForm($ID, $options = [])
+    /**
+     * Display the activity form
+     *
+     * @param $ID integer ID of the item
+     * @param $options array
+     *     - target filename : where to go when done.
+     *     - withtemplate boolean : template or basic item
+     *
+     * @return boolean item found
+     * */
+    public function showForm($ID, $options = [])
     {
         global $CFG_GLPI;
 
@@ -1427,8 +1434,7 @@ class Holiday extends CommonDBTM
         return true;
     }
 
-
-    function getBodyMail($dateComplete, $date, $userName, $approverFullName)
+    public function getBodyMail($dateComplete, $date, $userName, $approverFullName)
     {
 
         $rows = file(PLUGIN_ACTIVITY_DIR . '/files/templates/mail_template.txt');
@@ -1436,7 +1442,7 @@ class Holiday extends CommonDBTM
         $finalRows = '';
 
         foreach ($rows as $row => $data) {
-           //get row data
+            //get row data
             if (strpos($data, "{{holiday_date_complete}}") !== false) {
                 $finalRows .= str_ireplace("{{holiday_date_complete}}", $dateComplete, $data);
             } elseif (strpos($data, "{{approver_full_name}}") !== false) {
@@ -1448,15 +1454,13 @@ class Holiday extends CommonDBTM
             } else {
                 $finalRows .= $data;
             }
- //         $finalRows .= "%0D%0A";
+            //         $finalRows .= "%0D%0A";
         }
 
         return $finalRows;
     }
 
-
-
-    static function getAlreadyPlannedInformation($val)
+    public static function getAlreadyPlannedInformation($val)
     {
 
         $out = "";
@@ -1470,25 +1474,25 @@ class Holiday extends CommonDBTM
         return $out;
     }
 
-   /**
-    * Add items in the items fields of the parm array
-    * Items need to have an unique index beginning by the begin date of the item to display
-    * needed to be correcly displayed
-    **/
-    static function populatePlanning($options = [])
+    /**
+     * Add items in the items fields of the parm array
+     * Items need to have an unique index beginning by the begin date of the item to display
+     * needed to be correcly displayed
+     **/
+    public static function populatePlanning($options = [])
     {
         global $DB, $CFG_GLPI;
 
         $default_options = [
-         'color'               => '',
-         'event_type_color'    => '',
-         'check_planned'       => false,
-         'display_done_events' => true,
+            'color'               => '',
+            'event_type_color'    => '',
+            'check_planned'       => false,
+            'display_done_events' => true,
         ];
         $options         = array_merge($default_options, $options);
 
         $interv  = [];
-        $holiday = new self;
+        $holiday = new self();
 
         if (!isset($options['begin']) || ($options['begin'] == 'NULL')
           || !isset($options['end']) || ($options['end'] == 'NULL')) {
@@ -1504,7 +1508,7 @@ class Holiday extends CommonDBTM
         $begin     = $options['begin'];
         $end       = $options['end'];
 
-       // Get items to print
+        // Get items to print
         $where = [
             'glpi_plugin_activity_holidays.is_planned'        => 1,
             'glpi_plugin_activity_holidays.global_validation'  => CommonValidation::ACCEPTED,
@@ -1549,55 +1553,54 @@ class Holiday extends CommonDBTM
         ]);
 
         foreach ($iterator as $data) {
-                $key                              = $data["begin"] . "$$" . "GlpiPlugin\Activity\Holiday" . $data["id"];
-                $interv[$key]['color']            = $options['color'];
-                $interv[$key]['event_type_color'] = $options['event_type_color'];
-                $interv[$key]["itemtype"]         = Holiday::class;
-                $interv[$key]["id"]               = $data["id"];
-                $interv[$key]["users_id"]         = $data["users_id"];
-                $interv[$key]["actiontime"]       = $data["actiontime"];
-                if (strcmp($begin, $data["begin"]) > 0) {
-                    $interv[$key]["begin"] = $begin;
-                } else {
-                    $interv[$key]["begin"] = $data["begin"];
-                }
-                if (strcmp($end, $data["end"]) < 0) {
-                    $interv[$key]["end"] = $end;
-                } else {
-                    $interv[$key]["end"] = $data["end"];
-                }
-                $interv[$key]["name"]     = Html::resume_text($data["name"], $CFG_GLPI["cut"]); // name is re-encoded on JS side
-                $interv[$key]["content"]  = RichText::getSafeHtml(Html::resume_text($data["comment"], $CFG_GLPI["cut"]));
-                $interv[$key]["type"]    = $data["type"];
-                $interv[$key]["status"]  = $data["global_validation"];
-                $interv[$key]["url"]     = PLUGIN_ACTIVITY_WEBDIR . "/front/holiday.form.php?id=" .
-                                       $data['id'];
-                $interv[$key]["ajaxurl"] = $CFG_GLPI["root_doc"] . "/ajax/planning.php" .
-                                       "?action=edit_event_form" .
-                                       "&itemtype=GlpiPlugin\Activity\Holiday" .
-                                       "&id=" . $data['id'] .
-                                       "&url=" . $interv[$key]["url"];
+            $key                              = $data["begin"] . "$$" . "GlpiPlugin\Activity\Holiday" . $data["id"];
+            $interv[$key]['color']            = $options['color'];
+            $interv[$key]['event_type_color'] = $options['event_type_color'];
+            $interv[$key]["itemtype"]         = Holiday::class;
+            $interv[$key]["id"]               = $data["id"];
+            $interv[$key]["users_id"]         = $data["users_id"];
+            $interv[$key]["actiontime"]       = $data["actiontime"];
+            if (strcmp($begin, $data["begin"]) > 0) {
+                $interv[$key]["begin"] = $begin;
+            } else {
+                $interv[$key]["begin"] = $data["begin"];
+            }
+            if (strcmp($end, $data["end"]) < 0) {
+                $interv[$key]["end"] = $end;
+            } else {
+                $interv[$key]["end"] = $data["end"];
+            }
+            $interv[$key]["name"]     = Html::resume_text($data["name"], $CFG_GLPI["cut"]); // name is re-encoded on JS side
+            $interv[$key]["content"]  = RichText::getSafeHtml(Html::resume_text($data["comment"], $CFG_GLPI["cut"]));
+            $interv[$key]["type"]    = $data["type"];
+            $interv[$key]["status"]  = $data["global_validation"];
+            $interv[$key]["url"]     = PLUGIN_ACTIVITY_WEBDIR . "/front/holiday.form.php?id=" .
+                                   $data['id'];
+            $interv[$key]["ajaxurl"] = $CFG_GLPI["root_doc"] . "/ajax/planning.php" .
+                                   "?action=edit_event_form" .
+                                   "&itemtype=GlpiPlugin\Activity\Holiday" .
+                                   "&id=" . $data['id'] .
+                                   "&url=" . $interv[$key]["url"];
 
-                $holiday->getFromDB($data["id"]);
-                $interv[$key]["editable"] = $holiday->canUpdateItem();
+            $holiday->getFromDB($data["id"]);
+            $interv[$key]["editable"] = $holiday->canUpdateItem();
 
-               //delete of weekend days
-                if ($holiday->countWe($interv[$key]["begin"], $interv[$key]["end"]) != 0) {
-                    $holiday->excludeWe($interv[$key]["begin"], $interv[$key]["end"], $interv, $key, $data['id']);
-                }
+            //delete of weekend days
+            if ($holiday->countWe($interv[$key]["begin"], $interv[$key]["end"]) != 0) {
+                $holiday->excludeWe($interv[$key]["begin"], $interv[$key]["end"], $interv, $key, $data['id']);
+            }
         }
         return $interv;
     }
 
-
-   /**
-    * Display a Planning Item
-    *
-    * @param $parm Array of the item to display
-    *
-    * @return Nothing (display function)
-    **/
-    static function displayPlanningItem(array $val, $who, $type = "", $complete = 0)
+    /**
+     * Display a Planning Item
+     *
+     * @param $parm Array of the item to display
+     *
+     * @return Nothing (display function)
+     **/
+    public static function displayPlanningItem(array $val, $who, $type = "", $complete = 0)
     {
 
         $rand = mt_rand();
@@ -1627,15 +1630,14 @@ class Holiday extends CommonDBTM
             $html .= Html::showToolTip(
                 $val["content"],
                 ['applyto' => "activity_" . $val["id"] . $rand,
-                'display' => false]
+                    'display' => false],
             );
         }
 
         return $html;
     }
 
-
-    static function queryUserHolidays($criteria)
+    public static function queryUserHolidays($criteria)
     {
         $where = [
             'glpi_plugin_activity_holidays.users_id'    => $criteria['users_id'],
@@ -1681,8 +1683,7 @@ class Holiday extends CommonDBTM
         ];
     }
 
-
-    static function isUserInHoliday($date, $users = [])
+    public static function isUserInHoliday($date, $users = [])
     {
         global $DB;
 
@@ -1720,8 +1721,7 @@ class Holiday extends CommonDBTM
         return !empty($in_holiday) ? $in_holiday : false;
     }
 
-
-    function isWeekend($date, $begin = true)
+    public function isWeekend($date, $begin = true)
     {
         if (date('H:i:s', strtotime($date)) == "00:00:00") {
             if ($begin) {
@@ -1734,18 +1734,17 @@ class Holiday extends CommonDBTM
         return (date('N', strtotime($date)) >= 6);
     }
 
-
-    static function userHasPlannedHolidays($dateBegin, $dateEnd, $userId)
+    public static function userHasPlannedHolidays($dateBegin, $dateEnd, $userId)
     {
         $holiday = new Holiday();
 
         $condition = [
-         "OR"         => [["AND" => ["`glpi_plugin_activity_holidays`.`begin`" => ["<=", $dateBegin],
-                                     "`glpi_plugin_activity_holidays`.`end`"   => [">=", $dateBegin]]],
-                          ["AND" => ["`glpi_plugin_activity_holidays`.`begin`" => ["<=", $dateEnd],
-                                     "`glpi_plugin_activity_holidays`.`end`"   => [">=", $dateEnd]]]
-         ],
-         "`users_id`" => $userId
+            "OR"         => [["AND" => ["`glpi_plugin_activity_holidays`.`begin`" => ["<=", $dateBegin],
+                "`glpi_plugin_activity_holidays`.`end`"   => [">=", $dateBegin]]],
+                ["AND" => ["`glpi_plugin_activity_holidays`.`begin`" => ["<=", $dateEnd],
+                    "`glpi_plugin_activity_holidays`.`end`"   => [">=", $dateEnd]]],
+            ],
+            "`users_id`" => $userId,
         ];
         $dbu       = new DbUtils();
         $datas     = $dbu->getAllDataFromTable($holiday->getTable(), $condition);
@@ -1791,7 +1790,7 @@ class Holiday extends CommonDBTM
         }
     }
 
-    static function checkInHolidays($input, $holidays = [])
+    public static function checkInHolidays($input, $holidays = [])
     {
         $holiday = new self();
         if (isset($input['begin']) && !isset($input['current_date'])) {
@@ -1803,7 +1802,7 @@ class Holiday extends CommonDBTM
         }
     }
 
-    static function getCalendarHolidaysArray($entities_id)
+    public static function getCalendarHolidaysArray($entities_id)
     {
         global $DB;
 
@@ -1838,17 +1837,16 @@ class Holiday extends CommonDBTM
         return $holidays;
     }
 
-
-   /**
-    * Get the number of days that are in week end
-    *
-    * @param  $debut
-    * @param  $fin
-    * @param  $holidays
-    *
-    * @return int
-    */
-    function countWe($debut, $fin, $holidays = [])
+    /**
+     * Get the number of days that are in week end
+     *
+     * @param  $debut
+     * @param  $fin
+     * @param  $holidays
+     *
+     * @return int
+     */
+    public function countWe($debut, $fin, $holidays = [])
     {
         $start = strtotime($debut);
         $end   = strtotime($fin);
@@ -1871,18 +1869,18 @@ class Holiday extends CommonDBTM
         return $countwe;
     }
 
-   /**
-    * Delete week end days
-    *
-    * @param  $debut
-    * @param  $fin
-    * @param  $interv
-    * @param  $key
-    * @param  $id
-    *
-    * @return
-    */
-    function excludeWe($debut, $fin, &$interv, $key, $id)
+    /**
+     * Delete week end days
+     *
+     * @param  $debut
+     * @param  $fin
+     * @param  $interv
+     * @param  $key
+     * @param  $id
+     *
+     * @return
+     */
+    public function excludeWe($debut, $fin, &$interv, $key, $id)
     {
         $start = strtotime($debut);
         $end   = strtotime($fin);
@@ -1917,18 +1915,16 @@ class Holiday extends CommonDBTM
         }
     }
 
-
-
-   /**
-    * Get the specific massive actions
-    *
-    * @param $checkitem link item to check right   (default NULL)
-    *
-    * @return an array of massive actions
-    **@since version 0.84
-    *
-    */
-    function getSpecificMassiveActions($checkitem = null)
+    /**
+     * Get the specific massive actions
+     *
+     * @param $checkitem link item to check right   (default NULL)
+     *
+     * @return an array of massive actions
+     **@since version 0.84
+     *
+     */
+    public function getSpecificMassiveActions($checkitem = null)
     {
         $isadmin = $this->canCreate();
         $actions = parent::getSpecificMassiveActions($checkitem);
@@ -1940,7 +1936,7 @@ class Holiday extends CommonDBTM
         return $actions;
     }
 
-    static function showMassiveActionsSubForm(MassiveAction $ma)
+    public static function showMassiveActionsSubForm(MassiveAction $ma)
     {
         if ($ma->getAction() === 'updateAllValidations') {
             ob_start();
@@ -1972,12 +1968,12 @@ class Holiday extends CommonDBTM
         return parent::showMassiveActionsSubForm($ma);
     }
 
-   /**
-    * @since version 0.85
-    *
-    * @see CommonDBTM::processMassiveActionsForOneItemtype()
-    * */
-    static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item, array $ids)
+    /**
+     * @since version 0.85
+     *
+     * @see CommonDBTM::processMassiveActionsForOneItemtype()
+     * */
+    public static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item, array $ids)
     {
 
         $input = $ma->getInput();
@@ -1995,7 +1991,7 @@ class Holiday extends CommonDBTM
                             $input['id']     = $data['id'];
                             $input['status'] = $input['global_validation'];
                             if ($holidayValidation->update($input)) {
-                                 $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_OK);
+                                $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_OK);
                             } else {
                                 $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_KO);
                             }
@@ -2010,7 +2006,7 @@ class Holiday extends CommonDBTM
         }
     }
 
-    function getForbiddenStandardMassiveAction()
+    public function getForbiddenStandardMassiveAction()
     {
 
         $forbidden = parent::getForbiddenStandardMassiveAction();
@@ -2020,16 +2016,16 @@ class Holiday extends CommonDBTM
         return $forbidden;
     }
 
-   /**
-    *
-    * @param mixed $users_id
-    * @param mixed $periods
-    *
-    * @return mixed
-    * @global mixed $DB
-    *
-    */
-    function countNbHolidayByPeriod($users_id, $periods)
+    /**
+     *
+     * @param mixed $users_id
+     * @param mixed $periods
+     *
+     * @return mixed
+     * @global mixed $DB
+     *
+     */
+    public function countNbHolidayByPeriod($users_id, $periods)
     {
         global $DB;
 
@@ -2077,15 +2073,14 @@ class Holiday extends CommonDBTM
         return $nb_jours;
     }
 
-
-    function getDetails($users_id, $holiday_period_id)
+    public function getDetails($users_id, $holiday_period_id)
     {
         $holidaycount = new HolidayCount();
         if ($holidaycount->getFromDBByCrit(['plugin_activity_holidayperiods_id' => $holiday_period_id,
-                                          'users_id'                          => $users_id])) {
+            'users_id'                          => $users_id])) {
             $holiday = new Holiday();
             $nbdays  = $holiday->getNbDayByHolidayPeriod($users_id, $holiday_period_id, [CommonValidation::ACCEPTED,
-             CommonValidation::WAITING]);
+                CommonValidation::WAITING]);
 
             $total_remaining_validated = $holidaycount->fields['count'] - $nbdays;
 
@@ -2098,7 +2093,7 @@ class Holiday extends CommonDBTM
         }
     }
 
-    function getNbDayByHolidayPeriod($users_id, $holiday_period_id, $states)
+    public function getNbDayByHolidayPeriod($users_id, $holiday_period_id, $states)
     {
         global $DB;
 

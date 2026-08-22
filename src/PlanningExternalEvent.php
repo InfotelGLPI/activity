@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- activity plugin for GLPI
- Copyright (C) 2019-2026 by the activity Development Team.
-
- https://github.com/InfotelGLPI/activity
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of activity.
-
- activity is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- activity is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with activity. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * activity plugin for GLPI
+ * Copyright (C) 2019-2026 by the activity Development Team.
+ *
+ * https://github.com/InfotelGLPI/activity
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of activity.
+ *
+ * activity is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * activity is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with activity. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Activity;
@@ -56,50 +56,48 @@ if (!defined('GLPI_ROOT')) {
 
 class PlanningExternalEvent extends CommonDBTM
 {
-
     // Event color
-    static $HOLIDAY_COLOR = "#7DAEDF";
-    static $ACTIVITY_COLOR = "#84BE6A";
-    static $MANAGEENTITIES_COLOR = "#08A5AC";
-    static $TICKET_COLOR = "#E85F0C";
+    public static $HOLIDAY_COLOR = "#7DAEDF";
+    public static $ACTIVITY_COLOR = "#84BE6A";
+    public static $MANAGEENTITIES_COLOR = "#08A5AC";
+    public static $TICKET_COLOR = "#E85F0C";
 
     // Calendar views
-    static $DAY = 'agendaDay';
-    static $WEEK = 'agendaWeek';
-    static $MONTH = 'month';
+    public static $DAY = 'agendaDay';
+    public static $WEEK = 'agendaWeek';
+    public static $MONTH = 'month';
 
     // Event tags
-    static $TICKET_TAG = 'ticket';
-    static $MANAGEENTITIES_TAG = 'manageentities';
-    static $ACTIVITY_TAG = 'activity';
-    static $HOLIDAY_TAG = 'holiday';
+    public static $TICKET_TAG = 'ticket';
+    public static $MANAGEENTITIES_TAG = 'manageentities';
+    public static $ACTIVITY_TAG = 'activity';
+    public static $HOLIDAY_TAG = 'holiday';
 
-    var $dohistory = false;
+    public $dohistory = false;
 
-    static $rightname = "plugin_activity";
-
+    public static $rightname = "plugin_activity";
 
     /**
      * functions mandatory
      * getTypeName(), canCreate(), canView()
      * */
-    static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0)
     {
         return \PlanningExternalEvent::getTypeName($nb);
     }
 
-    static function cleanForItem(CommonDBTM $item)
+    public static function cleanForItem(CommonDBTM $item)
     {
         $temp = new self();
         $temp->deleteByCriteria(
-            ['planningexternalevents_id' => $item->getField('id')]
+            ['planningexternalevents_id' => $item->getField('id')],
         );
     }
 
     /**
      * Display menu
      */
-    static function menu($class, $listActions, $widget = false)
+    public static function menu($class, $listActions, $widget = false)
     {
         global $CFG_GLPI;
 
@@ -125,7 +123,7 @@ class PlanningExternalEvent extends CommonDBTM
                     'height' => '600',
                     'dialog_class' => 'modal-xl',
                     'display' => false,
-                ]
+                ],
             );
 
             $return .= "<div class='center'>";
@@ -190,7 +188,7 @@ class PlanningExternalEvent extends CommonDBTM
         return $return;
     }
 
-    static function getActionsOn()
+    public static function getActionsOn()
     {
         global $CFG_GLPI;
 
@@ -219,19 +217,18 @@ class PlanningExternalEvent extends CommonDBTM
                 'img' => "ti ti-calendar-stats",
                 'label' => __('CRA', 'activity'),
                 'rights' => Session::haveRight("plugin_activity_statistics", 1),
-            ]
+            ],
         ];
 
         return $listActions;
     }
-
 
     /**
      * post_item_form for PlanningExternalEvent
      * @param $params
      * @return void
      */
-    static public function postItemForm($params)
+    public static function postItemForm($params)
     {
         $item = $params['item'];
         $self = new self();
@@ -296,7 +293,7 @@ class PlanningExternalEvent extends CommonDBTM
         ]);
     }
 
-    static function setActivity(\PlanningExternalEvent $item)
+    public static function setActivity(\PlanningExternalEvent $item)
     {
         if (self::canCreate()) {
             // don't do anything if coming from cleanDBRelations
@@ -318,7 +315,7 @@ class PlanningExternalEvent extends CommonDBTM
                             $item->input['end'],
                             '',
                             '',
-                            ''
+                            '',
                         );
                     } elseif (isset($item->input['plan']['begin']) && isset($item->input['plan']['end'])) {
                         $actiontime = $report->getActionTimeForExternalEvent(
@@ -326,7 +323,7 @@ class PlanningExternalEvent extends CommonDBTM
                             $item->input['plan']['end'],
                             '',
                             '',
-                            ''
+                            '',
                         );
                     }
                 }
@@ -342,7 +339,7 @@ class PlanningExternalEvent extends CommonDBTM
                                 $extevent->getField('is_oncra'),
                             'planningexternalevents_id' => $item->input['id'],
                             'actiontime' => $actiontime,
-                            'projects_id' => $item->input['projects_id'] ?? 0
+                            'projects_id' => $item->input['projects_id'] ?? 0,
                         ];
                         if ($options['use_planningeventsubcategories']) {
                             if (isset($item->input['planningeventsubcategories_id'])) {
@@ -355,7 +352,7 @@ class PlanningExternalEvent extends CommonDBTM
                             'is_oncra' => isset($item->input['is_oncra']) ? $item->input['is_oncra'] : '',
                             'planningexternalevents_id' => $item->getID(),
                             'actiontime' => $actiontime,
-                            'projects_id' => $item->input['projects_id'] ?? 0
+                            'projects_id' => $item->input['projects_id'] ?? 0,
                         ];
                         if ($options['use_planningeventsubcategories']) {
                             if (isset($item->input['planningeventsubcategories_id'])) {
@@ -378,11 +375,11 @@ class PlanningExternalEvent extends CommonDBTM
                                 'glpi_planningexternalevents' => [
                                     'FKEY' => [
                                         'glpi_planningexternalevents' => 'id',
-                                        'glpi_plugin_activity_planningexternalevents' => 'planningexternalevents_id'
-                                    ]
-                                ]
+                                        'glpi_plugin_activity_planningexternalevents' => 'planningexternalevents_id',
+                                    ],
+                                ],
                             ],
-                            'WHERE' => ['planningexternalevents_id' => $_POST['event']['old_items_id']]
+                            'WHERE' => ['planningexternalevents_id' => $_POST['event']['old_items_id']],
                         ]);
                         if (count($iterator)) {
                             foreach ($iterator as $data) {
@@ -391,7 +388,7 @@ class PlanningExternalEvent extends CommonDBTM
                                     'planningexternalevents_id' => $item->getID(),
                                     'actiontime' => $data['actiontime'],
                                     'planningeventsubcategories_id' => $data['planningeventsubcategories_id'],
-                                    'projects_id' => $data['projects_id']
+                                    'projects_id' => $data['projects_id'],
                                 ]);
                             }
                         }
@@ -400,7 +397,7 @@ class PlanningExternalEvent extends CommonDBTM
                             'is_oncra' => isset($item->input['is_oncra']) ? $item->input['is_oncra'] : $is_cra_default,
                             'planningexternalevents_id' => $item->getID(),
                             'actiontime' => $actiontime,
-                            'projects_id' => $item->input['projects_id'] ?? 0
+                            'projects_id' => $item->input['projects_id'] ?? 0,
                         ];
                         if ($options['use_planningeventsubcategories']) {
                             if (isset($item->input['planningeventsubcategories_id'])) {
@@ -414,7 +411,7 @@ class PlanningExternalEvent extends CommonDBTM
         }
     }
 
-    static function prepareInputToUpdateWithPluginOptions($item)
+    public static function prepareInputToUpdateWithPluginOptions($item)
     {
         $holiday = new Holiday();
         $planning_ext_event = new \PlanningExternalEvent();
@@ -429,14 +426,14 @@ class PlanningExternalEvent extends CommonDBTM
 
         if ($opt && $opt->fields['use_type_as_name'] == 1 && isset($item->input['planningeventcategories_id'])) {
             if ($item->fields['name'] == Dropdown::getDropdownName(
-                    'glpi_planningeventcategories',
-                    $item->fields['planningeventcategories_id']
-                )) {
+                'glpi_planningeventcategories',
+                $item->fields['planningeventcategories_id'],
+            )) {
                 $item->input['name'] = addslashes(
                     Dropdown::getDropdownName(
                         'glpi_planningeventcategories',
-                        $item->input['planningeventcategories_id']
-                    )
+                        $item->input['planningeventcategories_id'],
+                    ),
                 );
             }
         }
@@ -453,7 +450,7 @@ class PlanningExternalEvent extends CommonDBTM
 
                 if ($use_integerschedules && ($begin_hour != '00' || $end_hour != '00')) {
                     Session::addMessageAfterRedirect(
-                        __('Only whole hours are allowed (no split times)', 'activity')
+                        __('Only whole hours are allowed (no split times)', 'activity'),
                     );
                     unset($item->input);
                     return false;
@@ -463,7 +460,7 @@ class PlanningExternalEvent extends CommonDBTM
                     Session::addMessageAfterRedirect(
                         __('Only pairs schedules are allowed', 'activity'),
                         false,
-                        ERROR
+                        ERROR,
                     );
                     unset($item->input);
                     return false;
@@ -487,11 +484,11 @@ class PlanningExternalEvent extends CommonDBTM
                 $array_inputs_occurence = PlanningExternalEvent::prepareInputsForReccurOccurence(
                     $item->fields,
                     $crit,
-                    $rrule
+                    $rrule,
                 );
                 $occurences = $array_inputs_occurence['rset']->getOccurrencesBetween(
                     $array_inputs_occurence['begin_datetime'],
-                    $array_inputs_occurence['end_datetime']
+                    $array_inputs_occurence['end_datetime'],
                 );
                 // add the found occurences to the final tab after replacing their dates
 
@@ -503,10 +500,10 @@ class PlanningExternalEvent extends CommonDBTM
                             Session::addMessageAfterRedirect(
                                 __(
                                     'One of the dates is on weekend, please add the date in the exceptionsof the reccurent rule',
-                                    'activity'
+                                    'activity',
                                 ),
                                 false,
-                                ERROR
+                                ERROR,
                             );
                             unset($item->input);
                             return false;
@@ -542,7 +539,7 @@ class PlanningExternalEvent extends CommonDBTM
                     Session::addMessageAfterRedirect(
                         __('The chosen date is a public holiday', 'activity'),
                         false,
-                        ERROR
+                        ERROR,
                     );
                     unset($item->input);
                     return false;
@@ -556,7 +553,7 @@ class PlanningExternalEvent extends CommonDBTM
                         Session::addMessageAfterRedirect(
                             __('The chosen begin date is on weekend', 'activity'),
                             false,
-                            ERROR
+                            ERROR,
                         );
                         unset($item->input);
                         return false;
@@ -567,7 +564,7 @@ class PlanningExternalEvent extends CommonDBTM
                         Session::addMessageAfterRedirect(
                             __('The chosen end date is on weekend', 'activity'),
                             false,
-                            ERROR
+                            ERROR,
                         );
                         unset($item->input);
                         return false;
@@ -577,7 +574,7 @@ class PlanningExternalEvent extends CommonDBTM
         }
     }
 
-    static function prepareInputsForReccurOccurence($item, $crit, $rrule = '')
+    public static function prepareInputsForReccurOccurence($item, $crit, $rrule = '')
     {
         $array_inputs_occurence = [];
         $array_inputs_occurence['duration'] = strtotime($item['end']) - strtotime($item['begin']);
@@ -588,19 +585,18 @@ class PlanningExternalEvent extends CommonDBTM
         }
         $array_inputs_occurence['rset'] = \PlanningExternalEvent::getRsetFromRRuleField(
             $array_inputs_occurence['rrule'],
-            $item['begin']
+            $item['begin'],
         );
         $begin_datetime = new DateTime($crit["begin"], new DateTimeZone('UTC'));
         $array_inputs_occurence['begin_datetime'] = $begin_datetime->sub(
-            new DateInterval("PT" . ($array_inputs_occurence['duration'] - 1) . "S")
+            new DateInterval("PT" . ($array_inputs_occurence['duration'] - 1) . "S"),
         );
         $array_inputs_occurence['end_datetime'] = new DateTime($crit['end'], new DateTimeZone('UTC'));
 
         return $array_inputs_occurence;
     }
 
-
-    static function prepareInputToAddWithPluginOptions(\PlanningExternalEvent $item)
+    public static function prepareInputToAddWithPluginOptions(\PlanningExternalEvent $item)
     {
         $holiday = new Holiday();
         $planning_ext_event = new \PlanningExternalEvent();
@@ -613,13 +609,12 @@ class PlanningExternalEvent extends CommonDBTM
         $use_integerschedules = $opt->fields['use_integerschedules'];
         $use_we = $opt->fields['use_weekend'];
 
-
         if ($opt && $opt->fields['use_type_as_name'] == 1) {
             $item->input["name"] = addslashes(
                 Dropdown::getDropdownName(
                     'glpi_planningeventcategories',
-                    $item->input['planningeventcategories_id']
-                )
+                    $item->input['planningeventcategories_id'],
+                ),
             );
         }
 
@@ -647,18 +642,17 @@ class PlanningExternalEvent extends CommonDBTM
                 $lastday = cal_days_in_month(CAL_GREGORIAN, "12", $input_date_begin[0]);
                 $crit["end"] = $input_date_begin[0] . "-" . "12" . "-" . $lastday . " 23:59:59";
 
-
                 if (isset($_POST['action']) && $_POST['action'] == 'clone_event') {
                     $item->input['rrule'] = $item->getField('rrule');
                 }
                 $array_inputs_occurence = PlanningExternalEvent::prepareInputsForReccurOccurence(
                     $item->input,
-                    $crit
+                    $crit,
                 );
 
                 $occurences = $array_inputs_occurence['rset']->getOccurrencesBetween(
                     $array_inputs_occurence['begin_datetime'],
-                    $array_inputs_occurence['end_datetime']
+                    $array_inputs_occurence['end_datetime'],
                 );
                 // add the found occurences to the final tab after replacing their dates
 
@@ -670,10 +664,10 @@ class PlanningExternalEvent extends CommonDBTM
                             Session::addMessageAfterRedirect(
                                 __(
                                     'One of the dates is on weekend, please add the date in the exceptionsof the reccurent rule',
-                                    'activity'
+                                    'activity',
                                 ),
                                 false,
-                                ERROR
+                                ERROR,
                             );
                             unset($item->input);
                             return false;
@@ -710,12 +704,11 @@ class PlanningExternalEvent extends CommonDBTM
                 Session::addMessageAfterRedirect(
                     __('The chosen date is a public holiday', 'activity'),
                     false,
-                    ERROR
+                    ERROR,
                 );
                 unset($item->input);
                 return false;
             }
-
 
             if ($use_we == 0) {
                 $hol = new Holiday();
@@ -723,7 +716,7 @@ class PlanningExternalEvent extends CommonDBTM
                     Session::addMessageAfterRedirect(
                         __('The chosen begin date is on weekend', 'activity'),
                         false,
-                        ERROR
+                        ERROR,
                     );
                     unset($item->input);
                     return false;
@@ -732,7 +725,7 @@ class PlanningExternalEvent extends CommonDBTM
                     Session::addMessageAfterRedirect(
                         __('The chosen end date is on weekend', 'activity'),
                         false,
-                        ERROR
+                        ERROR,
                     );
                     unset($item->input);
                     return false;
@@ -741,8 +734,7 @@ class PlanningExternalEvent extends CommonDBTM
         }
     }
 
-
-    static function activityUpdate(\PlanningExternalEvent $item)
+    public static function activityUpdate(\PlanningExternalEvent $item)
     {
         if (!is_array($item->input) || !count($item->input)) {
             // Already cancel by another plugin
@@ -764,7 +756,7 @@ class PlanningExternalEvent extends CommonDBTM
         }
     }
 
-    static function activityAdd(\PlanningExternalEvent $item)
+    public static function activityAdd(\PlanningExternalEvent $item)
     {
         if (!is_array($item->input) || !count($item->input)) {
             // Already cancel by another plugin
@@ -774,7 +766,7 @@ class PlanningExternalEvent extends CommonDBTM
         self::setActivity($item);
     }
 
-    static function queryAllExternalEvents($criteria)
+    public static function queryAllExternalEvents($criteria)
     {
         $options = Option::getConfigFromDB()[1];
 
@@ -804,7 +796,7 @@ class PlanningExternalEvent extends CommonDBTM
                 ['glpi_planningexternalevents.begin'   => ['>=', $criteria['begin']]],
                 ['glpi_planningexternalevents.begin'   => ['<=', $criteria['end']]],
             ],
-            getEntitiesRestrictCriteria('glpi_planningexternalevents')
+            getEntitiesRestrictCriteria('glpi_planningexternalevents'),
         );
 
         return [
@@ -831,7 +823,7 @@ class PlanningExternalEvent extends CommonDBTM
         ];
     }
 
-    static function queryManageentities($criteria)
+    public static function queryManageentities($criteria)
     {
         return [
             'SELECT'    => [
@@ -891,14 +883,14 @@ class PlanningExternalEvent extends CommonDBTM
                         ],
                     ],
                 ],
-                getEntitiesRestrictCriteria('glpi_tickets', '', $_SESSION['glpiactiveentities'], false)
+                getEntitiesRestrictCriteria('glpi_tickets', '', $_SESSION['glpiactiveentities'], false),
             ),
             'GROUPBY' => 'glpi_plugin_manageentities_cridetails.tickets_id',
             'ORDER'   => 'glpi_plugin_manageentities_cridetails.date ASC',
         ];
     }
 
-    static function queryTickets($criteria)
+    public static function queryTickets($criteria)
     {
         $entityRestrict = getEntitiesRestrictCriteria('glpi_tickets', '', $_SESSION['glpiactiveentities'], false);
 
@@ -924,7 +916,7 @@ class PlanningExternalEvent extends CommonDBTM
                     ],
                 ],
             ],
-            []
+            [],
         );
 
         if (Plugin::isPluginActive('manageentities')) {
@@ -970,7 +962,7 @@ class PlanningExternalEvent extends CommonDBTM
         ];
     }
 
-    static function queryUserExternalEvents($criteria)
+    public static function queryUserExternalEvents($criteria)
     {
         $opt = new Option();
         $opt->getFromDB(1);
@@ -980,15 +972,15 @@ class PlanningExternalEvent extends CommonDBTM
         $month = date('m', strtotime($criteria['end']));
 
         $monthParts = [];
-        for ($m = (int)$month; $m < 13; $m++) {
-            $monthParts[] = $m < 10 ? '0' . $m : (string)$m;
+        for ($m = (int) $month; $m < 13; $m++) {
+            $monthParts[] = $m < 10 ? '0' . $m : (string) $m;
         }
         $monthRegex = '"until":"' . $year . '-(' . implode('|', $monthParts) . ')';
 
         $yearParts = [];
         for ($i = 0; $i < 5; $i++) {
             $year++;
-            $yearParts[] = (string)$year;
+            $yearParts[] = (string) $year;
         }
         $yearRegex = '"until":"(' . implode('|', $yearParts) . ')';
 
@@ -1010,7 +1002,7 @@ class PlanningExternalEvent extends CommonDBTM
                     ],
                 ],
             ],
-            getEntitiesRestrictCriteria('glpi_planningexternalevents')
+            getEntitiesRestrictCriteria('glpi_planningexternalevents'),
         );
 
         if (!empty($criteria['is_usedbycra'])) {
@@ -1088,26 +1080,25 @@ class PlanningExternalEvent extends CommonDBTM
         ];
     }
 
-    static function dateAdd($v, $d = null, $f = "Y-m-d")
+    public static function dateAdd($v, $d = null, $f = "Y-m-d")
     {
         $d = ($d ? $d : date("Y-m-d"));
         return date($f, strtotime($v . " days", strtotime($d)));
     }
 
-    static function getNbDays($debut, $fin)
+    public static function getNbDays($debut, $fin)
     {
         $diff = strtotime(date('Y-m-d', strtotime($fin))) - strtotime(date('Y-m-d', strtotime($debut)));
 
-        return (round($diff / (3600 * 24), 0,PHP_ROUND_HALF_UP) + 1);
+        return (round($diff / (3600 * 24), 0, PHP_ROUND_HALF_UP) + 1);
     }
 
-
-    function getFromDBForTask($projecttasks_id)
+    public function getFromDBForTask($projecttasks_id)
     {
         $dbu = new DbUtils();
         $data = $dbu->getAllDataFromTable(
             $this->getTable(),
-            [$dbu->getForeignKeyFieldForTable('glpi_planningexternalevents') => $projecttasks_id]
+            [$dbu->getForeignKeyFieldForTable('glpi_planningexternalevents') => $projecttasks_id],
         );
 
         $this->fields = array_shift($data);
@@ -1132,67 +1123,67 @@ class PlanningExternalEvent extends CommonDBTM
 
         $request = [
             'SELECT' => [
-                $ticketUserTable.'.users_id',
-                $entityTable.'.name AS entity',
-                $criDetailTable.'.date',
-                $criDetailTable.'.technicians',
-                $criDetailTable.'.plugin_manageentities_critypes_id',
-                $criDetailTable.'.withcontract',
-                $criDetailTable.'.contracts_id',
-                $ticketTable.'.id AS tickets_id'
+                $ticketUserTable . '.users_id',
+                $entityTable . '.name AS entity',
+                $criDetailTable . '.date',
+                $criDetailTable . '.technicians',
+                $criDetailTable . '.plugin_manageentities_critypes_id',
+                $criDetailTable . '.withcontract',
+                $criDetailTable . '.contracts_id',
+                $ticketTable . '.id AS tickets_id',
             ],
             'FROM' => $criDetailTable,
             'LEFT JOIN' => [
                 $ticketTable => [
                     'FKEY' => [
                         $ticketTable => 'id',
-                        $criDetailTable => 'tickets_id'
-                    ]
+                        $criDetailTable => 'tickets_id',
+                    ],
                 ],
                 $entityTable => [
                     'FKEY' => [
                         $ticketTable => 'entities_id',
-                        $entityTable => 'id'
-                    ]
+                        $entityTable => 'id',
+                    ],
                 ],
                 $ticketUserTable => [
                     'FKEY' => [
                         $ticketTable => 'id',
-                        $ticketUserTable => 'tickets_id'
-                    ]
+                        $ticketUserTable => 'tickets_id',
+                    ],
                 ],
                 $ticketTaskTable => [
                     'FKEY' => [
                         $ticketTable => 'id',
-                        $ticketTaskTable => 'tickets_id'
-                    ]
+                        $ticketTaskTable => 'tickets_id',
+                    ],
                 ],
                 $criTechnicianTable => [
                     'FKEY' => [
                         $criTechnicianTable => 'tickets_id',
-                        $criDetailTable => 'tickets_id'
-                    ]
-                ]
+                        $criDetailTable => 'tickets_id',
+                    ],
+                ],
             ],
             'WHERE' => [
-                $ticketUserTable.'.type' => \Ticket::ASSIGNED,
-                $ticketTable.'.is_deleted' => 0,
+                $ticketUserTable . '.type' => \Ticket::ASSIGNED,
+                $ticketTable . '.is_deleted' => 0,
                 self::getTicketTaskDateCriterias($begin, $end),
                 [
                     'OR' => [
-                        $ticketUserTable.'.users_id' => $users_id,
-                        $criTechnicianTable.'.users_id' => $users_id
-                    ]
+                        $ticketUserTable . '.users_id' => $users_id,
+                        $criTechnicianTable . '.users_id' => $users_id,
+                    ],
                 ],
-                getEntitiesRestrictCriteria($ticketTable, '', $_SESSION["glpiactiveentities"], false)
+                getEntitiesRestrictCriteria($ticketTable, '', $_SESSION["glpiactiveentities"], false),
             ],
-            'ORDERBY' => $criDetailTable.'.date ASC',
-            'GROUPBY' => $criDetailTable.'.tickets_id'
+            'ORDERBY' => $criDetailTable . '.date ASC',
+            'GROUPBY' => $criDetailTable . '.tickets_id',
         ];
 
         $results = $DB->request($request);
         $tasks = [];
-        foreach($results as $result) {
+        foreach ($results as $result) {
             $tasks[] = $result;
         }
         return $tasks;
@@ -1216,7 +1207,7 @@ class PlanningExternalEvent extends CommonDBTM
         // regex to get rrule which last until $end's month or after
         $monthRegex = "\"until\":\"$year-(";
         $months = [];
-        for ($m = (int)$month; $m < 13; $m++) {
+        for ($m = (int) $month; $m < 13; $m++) {
             $value = $m < 10 ? '0' . $m : $m;
             $months[] = $value;
         }
@@ -1238,65 +1229,65 @@ class PlanningExternalEvent extends CommonDBTM
         $entityTable = \Entity::getTable();
         $categoryTable = PlanningEventCategory::getTable();
         $subQueryCrit = [
-            'SELECT' =>[$table.'.id'],
+            'SELECT' => [$table . '.id'],
             'FROM' => $table,
             'WHERE' => [
-                $table.'.users_id' => $users_id,
+                $table . '.users_id' => $users_id,
                 'OR' => [
                     [ // events within the period
-                        [$table.'.end' => ['>', $begin]],
-                        [$table.'.begin' => ['<', $end]]
+                        [$table . '.end' => ['>', $begin]],
+                        [$table . '.begin' => ['<', $end]],
                     ],
                     [ // events which may have a repetition within the period
-                        $table.'.begin' => ['<', $end],
+                        $table . '.begin' => ['<', $end],
                         'OR' => [
-                            [$table.'.rrule' => ['REGEXP', $monthRegex]],
-                            [$table.'.rrule' => ['REGEXP', $yearRegex]],
-                        ]
-                    ]
-                ]
-            ]
+                            [$table . '.rrule' => ['REGEXP', $monthRegex]],
+                            [$table . '.rrule' => ['REGEXP', $yearRegex]],
+                        ],
+                    ],
+                ],
+            ],
         ];
 
         $pluginTable = PlanningExternalEvent::getTable();
         if ($cra) {
             $subQueryCrit['JOIN'] = [
-                 $pluginTable => [
+                $pluginTable => [
                     'FKEY' => [
                         $table => 'id',
-                        $pluginTable => 'planningexternalevents_id'
-                    ]
-                ]
+                        $pluginTable => 'planningexternalevents_id',
+                    ],
+                ],
             ];
             $subQueryCrit['WHERE'][] = [
-                $pluginTable.'.is_oncra' => 1
+                $pluginTable . '.is_oncra' => 1,
             ];
         }
 
         $request = [
             'SELECT' => [
-                $table.'.*',
-                $entityTable.'.name as entity_name',
-                $categoryTable.'.name as category_name'
+                $table . '.*',
+                $entityTable . '.name as entity_name',
+                $categoryTable . '.name as category_name',
             ],
             'FROM' => $table,
             'JOIN' => [
                 $entityTable => [
                     'FKEY' => [
                         $table => 'entities_id',
-                        $entityTable => 'id'
-                    ]
+                        $entityTable => 'id',
+                    ],
                 ],
                 $categoryTable => [
                     'FKEY' => [
                         $table => 'planningeventcategories_id',
-                        $categoryTable => 'id'
-                    ]
-                ]
+                        $categoryTable => 'id',
+                    ],
+                ],
             ],
             'WHERE' => [
-                $table.'.id' => new QuerySubQuery($subQueryCrit)
-            ]
+                $table . '.id' => new QuerySubQuery($subQueryCrit),
+            ],
         ];
 
         if ($subCat) {
@@ -1305,18 +1296,18 @@ class PlanningExternalEvent extends CommonDBTM
                 $pluginTable => [
                     'FKEY' => [
                         $table => 'id',
-                        $pluginTable => 'planningexternalevents_id'
-                    ]
+                        $pluginTable => 'planningexternalevents_id',
+                    ],
                 ],
                 $subCatTable => [
                     'FKEY' => [
                         $subCatTable => 'id',
-                        $pluginTable => 'planningeventsubcategories_id'
-                    ]
-                ]
+                        $pluginTable => 'planningeventsubcategories_id',
+                    ],
+                ],
             ];
-            $request['SELECT'][] = $pluginTable.'.planningeventsubcategories_id as subcategories_id';
-            $request['SELECT'][] = $subCatTable.'.name as subcategory_name';
+            $request['SELECT'][] = $pluginTable . '.planningeventsubcategories_id as subcategories_id';
+            $request['SELECT'][] = $subCatTable . '.name as subcategory_name';
         }
 
         $events = $DB->request($request);
@@ -1335,7 +1326,7 @@ class PlanningExternalEvent extends CommonDBTM
         $calendar->getFromDB($calendars_id);
 
         $results = [];
-        foreach($events as $event) {
+        foreach ($events as $event) {
             $eventBegin = new DateTime($event['begin']);
             $eventEnd = new DateTime($event['end']);
             $event['actiontime'] = $eventEnd->getTimestamp() - $eventBegin->getTimestamp();
@@ -1345,7 +1336,7 @@ class PlanningExternalEvent extends CommonDBTM
                 $ocurrences = $rset->getOccurrencesBetween($begin, $end);
                 foreach ($ocurrences as $occurrenceStart) {
                     $occurrenceEnd = clone $occurrenceStart;
-                    $occurrenceEnd->modify('+'.$event['actiontime'].' seconds');
+                    $occurrenceEnd->modify('+' . $event['actiontime'] . ' seconds');
                     if ($occurrenceStart < $endDateTime && $occurrenceEnd > $beginDateTime) {
                         $weekday = $occurrenceStart->format('w');
                         // exclude occurrence happening on a non-working day
@@ -1364,7 +1355,7 @@ class PlanningExternalEvent extends CommonDBTM
                                 if (!$holiday->find([
                                     'users_id' => $users_id,
                                     'begin' => ['<', $occurrenceStart->format('Y-m-d H:i:s')],
-                                    'end' => ['>', $occurrenceEnd->format('Y-m-d H:i:s')]
+                                    'end' => ['>', $occurrenceEnd->format('Y-m-d H:i:s')],
                                 ])) {
                                     $copy = $event;
                                     $copy['date'] = $occurrenceStart->format('Y-m-d H:i:s');
@@ -1391,7 +1382,8 @@ class PlanningExternalEvent extends CommonDBTM
      * @param boolean $cra if true, only tasks visible on CRA
      * @return array ticket tasks with activity during the selected period
      */
-    public static function getTicketTaskWithActivityOnPeriod(string $begin, string $end, int $users_id, bool $cra = true) {
+    public static function getTicketTaskWithActivityOnPeriod(string $begin, string $end, int $users_id, bool $cra = true)
+    {
         global $DB;
 
         $taskTable = \TicketTask::getTable();
@@ -1400,47 +1392,47 @@ class PlanningExternalEvent extends CommonDBTM
         $pluginTable = TicketTask::getTable();
         $request = [
             'SELECT' => [
-                $taskTable.'.*',
-                $entityTable.'.id as entities_id',
-                $entityTable.'.name as entity_name'
+                $taskTable . '.*',
+                $entityTable . '.id as entities_id',
+                $entityTable . '.name as entity_name',
             ],
             'FROM' => $taskTable,
             'JOIN' => [
                 $ticketTable => [
                     'FKEY' => [
                         $taskTable => 'tickets_id',
-                        $ticketTable => 'id'
-                    ]
+                        $ticketTable => 'id',
+                    ],
                 ],
                 $entityTable => [
                     'FKEY' => [
                         $ticketTable => 'entities_id',
-                        $entityTable => 'id'
-                    ]
+                        $entityTable => 'id',
+                    ],
                 ],
             ],
             'WHERE' => [
-                $taskTable.'.users_id' => $users_id,
-                $ticketTable.'.is_deleted' => 0,
+                $taskTable . '.users_id' => $users_id,
+                $ticketTable . '.is_deleted' => 0,
                 self::getTicketTaskDateCriterias($begin, $end),
-                getEntitiesRestrictCriteria($ticketTable, '', $_SESSION["glpiactiveentities"], false)
-            ]
+                getEntitiesRestrictCriteria($ticketTable, '', $_SESSION["glpiactiveentities"], false),
+            ],
         ];
 
         if ($cra) {
             $request['JOIN'][$pluginTable] = [
                 'FKEY' => [
                     $taskTable => 'id',
-                    $pluginTable => 'tickettasks_id'
-                ]
+                    $pluginTable => 'tickettasks_id',
+                ],
             ];
-            $request['SELECT'][] = $pluginTable.'.is_oncra as is_oncra';
-            $request['WHERE'][$pluginTable.'.is_oncra'] = 1;
+            $request['SELECT'][] = $pluginTable . '.is_oncra as is_oncra';
+            $request['WHERE'][$pluginTable . '.is_oncra'] = 1;
         }
 
         $results = $DB->request($request);
         $tasks =  [];
-        foreach($results as $task) {
+        foreach ($results as $task) {
             $tasks[] = $task;
         }
         return $tasks;
@@ -1452,41 +1444,42 @@ class PlanningExternalEvent extends CommonDBTM
      * @param string $end
      * @return array
      */
-    public static function getTicketTaskDateCriterias(string $begin, string $end) {
+    public static function getTicketTaskDateCriterias(string $begin, string $end)
+    {
         $ticketTaskTable = \TicketTask::getTable();
         return [
             'AND' => [
                 [
                     'OR' => [
-                        [$ticketTaskTable.'.end' => ['>', $begin]],
+                        [$ticketTaskTable . '.end' => ['>', $begin]],
                         [
-                            [$ticketTaskTable.'.date' => ['>', $begin]], // if begin = null, date = end
-                            [$ticketTaskTable.'.begin' => null]
-                        ]
+                            [$ticketTaskTable . '.date' => ['>', $begin]], // if begin = null, date = end
+                            [$ticketTaskTable . '.begin' => null],
+                        ],
 
-                    ]
+                    ],
                 ],
                 [
                     'OR' => [
-                        [$ticketTaskTable.'.begin' => ['<', $end]],
+                        [$ticketTaskTable . '.begin' => ['<', $end]],
                         [
                             'OR' => [
                                 [
-                                    [$ticketTaskTable.'.date' => ['<', $end]],
-                                    [$ticketTaskTable.'.begin' => null]
+                                    [$ticketTaskTable . '.date' => ['<', $end]],
+                                    [$ticketTaskTable . '.begin' => null],
                                 ],
                                 [ // not planned task with a date after the end, but an actiontime which indicate a start before the end
                                     "(TIMESTAMPADD(SECOND, -$ticketTaskTable.actiontime, $ticketTaskTable.date) < '$end')",
-                                    [$ticketTaskTable.'.begin' => null]
-                                ]
-                            ]
+                                    [$ticketTaskTable . '.begin' => null],
+                                ],
+                            ],
 
-                        ]
+                        ],
 
-                    ]
-                ]
+                    ],
+                ],
             ],
-            $ticketTaskTable.'.actiontime' => ['!=', 0] // skip tasks with no time (like the ones created by escalade)
+            $ticketTaskTable . '.actiontime' => ['!=', 0], // skip tasks with no time (like the ones created by escalade)
         ];
     }
 }

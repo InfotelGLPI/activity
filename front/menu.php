@@ -1,44 +1,41 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- activity plugin for GLPI
- Copyright (C) 2019-2026 by the activity Development Team.
-
- https://github.com/InfotelGLPI/activity
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of activity.
-
- activity is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- activity is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with activity. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * activity plugin for GLPI
+ * Copyright (C) 2019-2026 by the activity Development Team.
+ *
+ * https://github.com/InfotelGLPI/activity
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of activity.
+ *
+ * activity is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * activity is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with activity. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 use GlpiPlugin\Activity\Menu;
 use GlpiPlugin\Activity\PlanningExternalEvent;
 use GlpiPlugin\Activity\Holiday;
-
-Session::checkLoginUser();
-
 use Glpi\Exception\Http\AccessDeniedHttpException;
 
 if (Session::getCurrentInterface() == 'central') {
-   Html::header(PlanningExternalEvent::getTypeName(2), '', "tools", Menu::class);
+    Html::header(PlanningExternalEvent::getTypeName(2), '', "tools", Menu::class);
 } else {
-   Html::helpHeader(PlanningExternalEvent::getTypeName(2));
+    Html::helpHeader(PlanningExternalEvent::getTypeName(2));
 }
 
 $activity = new \PlanningExternalEvent();
@@ -55,17 +52,17 @@ echo "</div></h3>";
 echo "<table class='center' cellspacing='5'  style=\"margin-left: auto;margin-right:auto;\"><tr>";
 
 if ($can) {
-   echo "<td>";
-   $listActions = PlanningExternalEvent::getActionsOn();
-   echo PlanningExternalEvent::menu(PlanningExternalEvent::class, $listActions);
-   echo "</td>";
+    echo "<td>";
+    $listActions = PlanningExternalEvent::getActionsOn();
+    echo PlanningExternalEvent::menu(PlanningExternalEvent::class, $listActions);
+    echo "</td>";
 }
 if ($canholiday
          || $canvalidateholiday) {
-   echo "<td>";
-   $listActions = Holiday::getActionsOn();
-   echo PlanningExternalEvent::menu(Holiday::class, $listActions);
-   echo "</td>";
+    echo "<td>";
+    $listActions = Holiday::getActionsOn();
+    echo PlanningExternalEvent::menu(Holiday::class, $listActions);
+    echo "</td>";
 }
 echo "</tr></table>";
 if (!$can && !$canholiday  && !$canvalidateholiday) {
@@ -73,7 +70,7 @@ if (!$can && !$canholiday  && !$canvalidateholiday) {
 }
 
 if (Session::getCurrentInterface() == 'central') {
-   Html::footer();
+    Html::footer();
 } else {
-   Html::helpFooter();
+    Html::helpFooter();
 }

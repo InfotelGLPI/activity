@@ -1,51 +1,48 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- activity plugin for GLPI
- Copyright (C) 2019-2026 by the activity Development Team.
-
- https://github.com/InfotelGLPI/activity
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of activity.
-
- activity is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- activity is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with activity. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * activity plugin for GLPI
+ * Copyright (C) 2019-2026 by the activity Development Team.
+ *
+ * https://github.com/InfotelGLPI/activity
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of activity.
+ *
+ * activity is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * activity is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with activity. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 use Glpi\Exception\Http\AccessDeniedHttpException;
-
 use GlpiPlugin\Activity\Menu;
 use GlpiPlugin\Activity\PlanningExternalEvent;
 
-Session::checkLoginUser();
-
 if (isset($_POST["action"])) {
-   $_GET["action"] = $_POST["action"];
+    $_GET["action"] = $_POST["action"];
 }
 
 if (isset($_GET["users_id"])) {
-   $users_id = $_GET["users_id"];
+    $users_id = $_GET["users_id"];
 
-} else if (isset($_POST["users_id"])) {
-   $users_id = $_POST["users_id"];
+} elseif (isset($_POST["users_id"])) {
+    $users_id = $_POST["users_id"];
 
 } else {
-   $users_id = Session::getLoginUserID();
+    $users_id = Session::getLoginUserID();
 }
 
 //TODO used by modal
@@ -58,38 +55,38 @@ if (isset($_GET["users_id"])) {
 //   Html::popHeader(PlanningExternalEvent::getTypeName(2));
 //} else {
 if (Session::getCurrentInterface() == 'central') {
-   Html::header(PlanningExternalEvent::getTypeName(2), '', "tools", Menu::class);
+    Html::header(PlanningExternalEvent::getTypeName(2), '', "tools", Menu::class);
 } else {
-   Html::helpHeader(PlanningExternalEvent::getTypeName(2));
+    Html::helpHeader(PlanningExternalEvent::getTypeName(2));
 }
 //}
 
 $activity = new PlanningExternalEvent();
 
 if ($activity->canView()) {
-   //TODO used by modal
-   //if (((isset($_GET["action"]) && $_GET["action"] == "load")
-   //      || (isset($_POST["action"]) && $_POST["action"] == "load"))
-   //        && isset($users_id) && ($users_id > 0)) {
+    //TODO used by modal
+    //if (((isset($_GET["action"]) && $_GET["action"] == "load")
+    //      || (isset($_POST["action"]) && $_POST["action"] == "load"))
+    //        && isset($users_id) && ($users_id > 0)) {
 
-   //   $_GET['target']   = Toolbox::getItemTypeSearchURL(PlanningExternalEvent::class);
-   //   $_GET["users_id"] = $users_id;
-   //   PlanningExternalEvent::showGenericSearch(array_merge($_POST, $_GET));
+    //   $_GET['target']   = Toolbox::getItemTypeSearchURL(PlanningExternalEvent::class);
+    //   $_GET["users_id"] = $users_id;
+    //   PlanningExternalEvent::showGenericSearch(array_merge($_POST, $_GET));
 
-   //} else {
+    //} else {
 
-      Search::show(PlanningExternalEvent::class);
-   //}
+    Search::show(PlanningExternalEvent::class);
+    //}
 } else {
     throw new AccessDeniedHttpException();
 }
 
 if (isset($_GET["action"])) {
-   Html::popFooter();
+    Html::popFooter();
 } else {
-   if (Session::getCurrentInterface() == 'central') {
-      Html::footer();
-   } else {
-      Html::helpFooter();
-   }
+    if (Session::getCurrentInterface() == 'central') {
+        Html::footer();
+    } else {
+        Html::helpFooter();
+    }
 }

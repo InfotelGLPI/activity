@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- activity plugin for GLPI
- Copyright (C) 2019-2026 by the activity Development Team.
-
- https://github.com/InfotelGLPI/activity
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of activity.
-
- activity is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- activity is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with activity. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * activity plugin for GLPI
+ * Copyright (C) 2019-2026 by the activity Development Team.
+ *
+ * https://github.com/InfotelGLPI/activity
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of activity.
+ *
+ * activity is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * activity is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with activity. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Activity;
@@ -104,37 +104,37 @@ class Profile extends \Profile
     public static function getAllRights($all = false)
     {
         $rights = [
-           ['itemtype' => PlanningExternalEvent::class,
-                 'label'    => _n('Activity', 'Activities', 1, 'activity'),
-                 'field'    => 'plugin_activity'
-           ]
+            ['itemtype' => PlanningExternalEvent::class,
+                'label'    => _n('Activity', 'Activities', 1, 'activity'),
+                'field'    => 'plugin_activity',
+            ],
         ];
 
         if ($all) {
             $rights[] = ['itemtype' => Holiday::class,
-                              'label'    => __('Create a holiday request', 'activity'),
-                              'field'    => 'plugin_activity_can_requestholiday',
+                'label'    => __('Create a holiday request', 'activity'),
+                'field'    => 'plugin_activity_can_requestholiday',
                 'rights' => [
                     READ  => __s('Read'),
                 ],];
 
             $rights[] = ['itemtype' => Holiday::class,
-                              'label'    => _n('Validate holiday', 'Validate holidays', 2, 'activity'),
-                              'field'    => 'plugin_activity_can_validate',
+                'label'    => _n('Validate holiday', 'Validate holidays', 2, 'activity'),
+                'field'    => 'plugin_activity_can_validate',
                 'rights' => [
                     READ  => __s('Read'),
                 ],];
 
             $rights[] = ['itemtype' => PlanningExternalEvent::class,
-                              'label'    => __('Statistics and reports', 'activity'),
-                              'field'    => 'plugin_activity_statistics',
+                'label'    => __('Statistics and reports', 'activity'),
+                'field'    => 'plugin_activity_statistics',
                 'rights' => [
                     READ  => __s('Read'),
                 ],];
 
             $rights[] = ['itemtype' => PlanningExternalEvent::class,
-                              'label'    => __('Display activities of all', 'activity'),
-                              'field'    => 'plugin_activity_all_users',
+                'label'    => __('Display activities of all', 'activity'),
+                'field'    => 'plugin_activity_all_users',
                 'rights' => [
                     READ  => __s('Read'),
                 ],];
@@ -183,10 +183,10 @@ class Profile extends \Profile
 
         foreach ($datas as $profile_data) {
             $matching       = ['activity'           => 'plugin_activity',
-                                    'all_users'          => 'plugin_activity_all_users',
-                                    'statistics'         => 'plugin_activity_statistics',
-                                    'can_requestholiday' => 'plugin_activity_can_requestholiday',
-                                    'can_validate'       => 'plugin_activity_can_validate'];
+                'all_users'          => 'plugin_activity_all_users',
+                'statistics'         => 'plugin_activity_statistics',
+                'can_requestholiday' => 'plugin_activity_can_requestholiday',
+                'can_validate'       => 'plugin_activity_can_validate'];
             // Search existing rights
             $used = [];
             $existingRights = $dbu->getAllDataFromTable('glpi_profilerights', ["profiles_id" => $profile_data['profiles_id']]);
@@ -199,12 +199,12 @@ class Profile extends \Profile
                 if (isset($used[$profile_data['profiles_id']][$new])) {
                     $DB->update('glpi_profilerights', ['rights' => self::translateARight($profile_data[$old])], [
                         'name'        => $new,
-                        'profiles_id' => $profile_data['profiles_id']
+                        'profiles_id' => $profile_data['profiles_id'],
                     ]);
                 } else {
                     $DB->add('glpi_profilerights', ['rights' => self::translateARight($profile_data[$old])], [
                         'name'        => $new,
-                        'profiles_id' => $profile_data['profiles_id']
+                        'profiles_id' => $profile_data['profiles_id'],
                     ]);
                 }
             }
@@ -234,8 +234,8 @@ class Profile extends \Profile
             'FROM' => 'glpi_profilerights',
             'WHERE' => [
                 'profiles_id' => $_SESSION['glpiactiveprofile']['id'],
-                'name' => ['LIKE', '%plugin_activity%']
-            ]
+                'name' => ['LIKE', '%plugin_activity%'],
+            ],
         ]);
         foreach ($it as $prof) {
             if (isset($_SESSION['glpiactiveprofile'])) {
@@ -247,10 +247,10 @@ class Profile extends \Profile
     public static function createFirstAccess($profiles_id)
     {
         self::addDefaultProfileInfos($profiles_id, ['plugin_activity'                    => ALLSTANDARDRIGHT,
-                                                         'plugin_activity_statistics'         => 1,
-                                                         'plugin_activity_all_users'          => 1,
-                                                         'plugin_activity_can_requestholiday' => 1,
-                                                         'plugin_activity_can_validate'       => 1], true);
+            'plugin_activity_statistics'         => 1,
+            'plugin_activity_all_users'          => 1,
+            'plugin_activity_can_requestholiday' => 1,
+            'plugin_activity_can_validate'       => 1], true);
     }
 
     public static function removeRightsFromSession()

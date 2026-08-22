@@ -1,88 +1,86 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- activity plugin for GLPI
- Copyright (C) 2019-2026 by the activity Development Team.
-
- https://github.com/InfotelGLPI/activity
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of activity.
-
- activity is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- activity is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with activity. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * activity plugin for GLPI
+ * Copyright (C) 2019-2026 by the activity Development Team.
+ *
+ * https://github.com/InfotelGLPI/activity
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of activity.
+ *
+ * activity is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * activity is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with activity. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 use GlpiPlugin\Activity\Menu;
 use GlpiPlugin\Activity\Holiday;
 
-Session::checkLoginUser();
-
 if (!isset($_GET["id"])) {
-   $_GET["id"] = "";
+    $_GET["id"] = "";
 }
 if (!isset($_GET["users_id"])) {
-   $users_id = Session::getLoginUserID();
+    $users_id = Session::getLoginUserID();
 } else {
-   $users_id = $_GET["users_id"];
+    $users_id = $_GET["users_id"];
 }
 
 $holiday = new Holiday();
 
 if (isset($_POST["add"])) {
 
-   $holiday->check(-1, CREATE, $_POST);
-   $holiday->add($_POST);
-   Html::back();
+    $holiday->check(-1, CREATE, $_POST);
+    $holiday->add($_POST);
+    Html::back();
 
-} else if (isset($_POST["update"])) {
-   $holiday->check($_POST['id'], UPDATE);
-   $holiday->update($_POST);
-   Html::back();
+} elseif (isset($_POST["update"])) {
+    $holiday->check($_POST['id'], UPDATE);
+    $holiday->update($_POST);
+    Html::back();
 
-} else if (isset($_POST["purge"])) {
-   $holiday->check($_POST['id'], PURGE);
-   $holiday->delete($_POST, 1);
-   if (!isset($_POST["from_planning_edit_ajax"])) {
-      $holiday->redirectToList();
-   } else {
-      Html::back();
-   }
+} elseif (isset($_POST["purge"])) {
+    $holiday->check($_POST['id'], PURGE);
+    $holiday->delete($_POST, 1);
+    if (!isset($_POST["from_planning_edit_ajax"])) {
+        $holiday->redirectToList();
+    } else {
+        Html::back();
+    }
 
 } else {
-   $holiday->checkGlobal(READ);
-   if (!isset($_GET['_in_modal'])) {
-      if (Session::getCurrentInterface() == 'central') {
-         Html::header(Holiday::getTypeName(2), '', "tools", Menu::class);
-      } else {
-         Html::helpHeader(Holiday::getTypeName(2));
-      }
-   } else {
-      Html::popHeader(Holiday::getTypeName(2));
-   }
+    $holiday->checkGlobal(READ);
+    if (!isset($_GET['_in_modal'])) {
+        if (Session::getCurrentInterface() == 'central') {
+            Html::header(Holiday::getTypeName(2), '', "tools", Menu::class);
+        } else {
+            Html::helpHeader(Holiday::getTypeName(2));
+        }
+    } else {
+        Html::popHeader(Holiday::getTypeName(2));
+    }
 
-   $holiday->display($_GET);
-   if (!isset($_GET['_in_modal'])) {
-      if (Session::getCurrentInterface() == 'central') {
-         Html::footer();
-      } else {
-         Html::helpFooter();
-      }
-   } else {
-      Html::popFooter();
-   }
+    $holiday->display($_GET);
+    if (!isset($_GET['_in_modal'])) {
+        if (Session::getCurrentInterface() == 'central') {
+            Html::footer();
+        } else {
+            Html::helpFooter();
+        }
+    } else {
+        Html::popFooter();
+    }
 }
