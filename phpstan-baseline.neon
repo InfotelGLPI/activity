@@ -1051,12 +1051,6 @@ parameters:
 			path: src/Report.php
 
 		-
-			message: '#^Variable \$total might not be defined\.$#'
-			identifier: variable.undefined
-			count: 2
-			path: src/Report.php
-
-		-
 			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
 			identifier: glpi.forbidExit
 			count: 3

@@ -40,6 +40,7 @@ use Dropdown;
 use Entity;
 use Glpi\Application\View\TemplateRenderer;
 use Glpi\DBAL\QueryExpression;
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use Glpi\DBAL\QuerySubQuery;
 use GlpiPlugin\Manageentities\CriDetail;
 use GlpiPlugin\Manageentities\CriTechnician;
@@ -369,6 +370,17 @@ class PlanningExternalEvent extends CommonDBTM
                         $is_cra_default = $opt->fields['is_cra_default'];
                     }
                     if (isset($_POST['action']) && $_POST['action'] == 'clone_event') {
+                        // Access control: old_items_id designates the SOURCE core event
+                        // to clone from and is fully client-controlled. Replay READ on it
+                        // (cascades to entity/actor visibility) before copying its time
+                        // metadata; otherwise a user could clone another technician's
+                        // event and read back its actiontime, sub-category and project
+                        // (horizontal disclosure of time-tracking metadata).
+                        $source_id    = (int) ($_POST['event']['old_items_id'] ?? 0);
+                        $source_event = new \PlanningExternalEvent();
+                        if ($source_id <= 0 || !$source_event->can($source_id, READ)) {
+                            throw new AccessDeniedHttpException();
+                        }
                         $iterator = $DB->request([
                             'FROM' => 'glpi_plugin_activity_planningexternalevents',
                             'LEFT JOIN' => [
@@ -379,7 +391,7 @@ class PlanningExternalEvent extends CommonDBTM
                                     ],
                                 ],
                             ],
-                            'WHERE' => ['planningexternalevents_id' => $_POST['event']['old_items_id']],
+                            'WHERE' => ['planningexternalevents_id' => $source_id],
                         ]);
                         if (count($iterator)) {
                             foreach ($iterator as $data) {

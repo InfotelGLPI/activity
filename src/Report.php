@@ -468,6 +468,14 @@ class Report extends CommonDBTM
             $AllDay = self::getAllDay();
         }
 
+        // Grand total of action time, used as the percentage denominator in the
+        // HTML detail rendering below. It is only recomputed inside the
+        // $use_planning_activity_hours branch, yet read from both branches;
+        // initialise it here so it is always defined (avoids an undefined-variable
+        // access in the else path and a PHP-version-dependent PHPStan flag whose
+        // occurrence count drifts between the local and CI runners).
+        $total = 0;
+
         $options = [
             'use_hours' => $use_hour_on_cra,
             'use_planning_activity_hours' => $use_planning_activity_hours,
