@@ -475,6 +475,12 @@ parameters:
 			path: src/Holiday.php
 
 		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/HolidayCount.php
+
+		-
 			message: '#^PHPDoc tag @param references unknown parameter\: \$end$#'
 			identifier: parameter.notFound
 			count: 1
@@ -837,24 +843,6 @@ parameters:
 		-
 			message: '#^Call to method GetFromDB\(\) on an unknown class GlpiPlugin\\Manageentities\\Config\.$#'
 			identifier: class.notFound
-			count: 1
-			path: src/Report.php
-
-		-
-			message: '#^Deprecated in PHP 8\.0\: Required parameter \$allDay follows optional parameter \$holidays\.$#'
-			identifier: parameter.requiredAfterOptional
-			count: 1
-			path: src/Report.php
-
-		-
-			message: '#^Deprecated in PHP 8\.0\: Required parameter \$options follows optional parameter \$holidays\.$#'
-			identifier: parameter.requiredAfterOptional
-			count: 1
-			path: src/Report.php
-
-		-
-			message: '#^Deprecated in PHP 8\.0\: Required parameter \$timejour follows optional parameter \$holidays\.$#'
-			identifier: parameter.requiredAfterOptional
 			count: 1
 			path: src/Report.php
 

@@ -59,6 +59,47 @@ class TicketTask extends CommonDBTM
         return _n('Cumulative ticket task', 'Cumulative ticket tasks', $nb, 'activity');
     }
 
+    public function canViewItem(): bool
+    {
+        // This record is only an is_oncra flag attached to a core ticket task
+        // (tickettasks_id); it carries neither users_id nor entities_id, so the
+        // default can($id, READ) collapses to the global plugin_activity right
+        // and never checks who may see the underlying task — a horizontal IDOR
+        // exposing other technicians' logged times. Replay READ on the parent
+        // core TicketTask, which cascades to the parent ticket's entity/actor
+        // visibility (private-task and actor rules included).
+        return $this->canOnParentCoreTask(READ);
+    }
+
+    public function canUpdateItem(): bool
+    {
+        // Same rationale as canViewItem(): gate write paths on the parent core
+        // task's UPDATE right instead of the global plugin_activity right alone.
+        return $this->canOnParentCoreTask(UPDATE);
+    }
+
+    public function canPurgeItem(): bool
+    {
+        // Same rationale as canViewItem(): gate purge on the parent core task's
+        // PURGE right instead of the global plugin_activity right alone.
+        return $this->canOnParentCoreTask(PURGE);
+    }
+
+    /**
+     * Replay a right on the parent core TicketTask (glpi_tickettasks) this
+     * plugin record decorates. Core \TicketTask::can() cascades to the parent
+     * ticket's entity/actor visibility, closing the horizontal IDOR that the
+     * global plugin_activity right would otherwise leave open.
+     */
+    private function canOnParentCoreTask(int $right): bool
+    {
+        if (!isset($this->fields['tickettasks_id']) || (int) $this->fields['tickettasks_id'] <= 0) {
+            return false;
+        }
+        $core_task = new \TicketTask();
+        return $core_task->can((int) $this->fields['tickettasks_id'], $right);
+    }
+
     public static function cleanForItem(CommonDBTM $item)
     {
 

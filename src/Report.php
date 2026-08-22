@@ -1658,10 +1658,14 @@ class Report extends CommonDBTM
      * @param array    $values : array of times
      * @param int      $type : holiday, work, part time, sickness
      * @param string   $activity : name of the activity
+     * @param array    $holidays : list of public holidays to skip
+     * @param float    $timejour : already-counted time for the day
+     * @param int      $allDay : number of hours in a full working day
+     * @param array    $options : rendering options (real_hour, use_hours, …)
      *
      * @return array
      */
-    public static function setTimes($time, $hour, $date_add, $values, $type, $activity, $holidays = [], $timejour, $allDay, $options)
+    public static function setTimes($time, $hour, $date_add, $values, $type, $activity, $holidays, $timejour, $allDay, $options)
     {
         // Normalize options with the same defaults as timeRepartition(): callers
         // (and the recursive calls below) may pass an $options array that omits

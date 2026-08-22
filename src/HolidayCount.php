@@ -33,6 +33,7 @@ use CommonDBTM;
 use DbUtils;
 use Dropdown;
 use Glpi\Application\View\TemplateRenderer;
+use Group_User;
 use Html;
 use Session;
 
@@ -49,6 +50,98 @@ class HolidayCount extends CommonDBTM
     public static function getTypeName($nb = 1)
     {
         return _n('Holiday counter', 'Holiday counters', $nb, 'activity');
+    }
+
+    public function canViewItem(): bool
+    {
+        // Ownership: a holiday counter is user-scoped (users_id) but NOT
+        // entity-assigned, so the default can($id, READ) collapses to the global
+        // plugin_activity right and never checks ownership — a plain horizontal
+        // IDOR on RH balances. Mirror Holiday::canViewItem(): only the owner, a
+        // profile holding plugin_activity_all_users, or the manager responsible
+        // for validating that user's holiday requests may read it. Every
+        // can()/check()/display() path inherits this gate.
+        if (Session::haveRight('plugin_activity_all_users', 1)) {
+            return true;
+        }
+        if (isset($this->fields['users_id'])
+            && $this->fields['users_id'] == Session::getLoginUserID()) {
+            return true;
+        }
+        return isset($this->fields['users_id'])
+            && $this->checkUserIsManager($this->fields['users_id']);
+    }
+
+    public function canUpdateItem(): bool
+    {
+        // Ownership: the global plugin_activity UPDATE right must NOT allow
+        // editing another user's counter. Only the owner, or a profile holding
+        // plugin_activity_all_users, may update it (mirrors Holiday::canUpdateItem()).
+        // Otherwise check($id, UPDATE) would let a colleague falsify someone
+        // else's holiday balance.
+        if (Session::haveRight('plugin_activity_all_users', 1)) {
+            return true;
+        }
+        return isset($this->fields['users_id'])
+            && $this->fields['users_id'] == Session::getLoginUserID();
+    }
+
+    public function canPurgeItem(): bool
+    {
+        // Ownership: a counter may be purged by its owner, by a profile holding
+        // plugin_activity_all_users, or by the manager responsible for validating
+        // that user's holiday requests (mirrors Holiday::canPurgeItem()). The
+        // global plugin_activity PURGE right alone is not enough, otherwise
+        // check($id, PURGE) would be a plain IDOR deleting a colleague's balance.
+        if (Session::haveRight('plugin_activity_all_users', 1)) {
+            return true;
+        }
+        if (isset($this->fields['users_id'])
+            && $this->fields['users_id'] == Session::getLoginUserID()) {
+            return true;
+        }
+        return isset($this->fields['users_id'])
+            && $this->checkUserIsManager($this->fields['users_id']);
+    }
+
+    /**
+     * Whether the current user is a validating manager of $users_id (mirrors
+     * Holiday::checkUserIsManager()): either declared as users_id_validate in the
+     * target's activity preferences, or a group manager of one of their groups.
+     */
+    private function checkUserIsManager($users_id = 0): bool
+    {
+        $use_groupmanager = 0;
+        $opt              = new Option();
+        $opt->getFromDB(1);
+        if ($opt) {
+            $use_groupmanager = $opt->fields['use_groupmanager'];
+        }
+        $dbu = new DbUtils();
+        if ($use_groupmanager == 0) {
+            $datas = $dbu->getAllDataFromTable(
+                "glpi_plugin_activity_preferences",
+                ["users_id" => $users_id, "users_id_validate" => Session::getLoginUserID()],
+            );
+        } else {
+            $datas      = [];
+            $groupusers = Group_User::getUserGroups($users_id);
+            $groups     = [];
+            foreach ($groupusers as $groupuser) {
+                $groups[] = $groupuser["id"];
+            }
+
+            $restrict = ["groups_id" => $groups, "is_manager" => 1];
+            $managers = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
+
+            foreach ($managers as $manager) {
+                if ($manager['users_id'] == Session::getLoginUserID()) {
+                    $datas['users_id_validate'] = $manager['users_id'];
+                }
+            }
+        }
+
+        return count($datas) > 0;
     }
 
     /*
