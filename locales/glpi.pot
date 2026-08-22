@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-22 12:32+0000\n"
+"POT-Creation-Date: 2026-08-22 12:42+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -208,7 +208,7 @@ msgstr ""
 msgid "Confirm the final deletion?"
 msgstr ""
 
-#: src/HolidayCount.php:182 templates/holiday_count_form.html.twig:41
+#: src/HolidayCount.php:275 templates/holiday_count_form.html.twig:41
 msgid "Counter"
 msgstr ""
 
@@ -327,7 +327,7 @@ msgstr ""
 msgid "Holiday"
 msgstr ""
 
-#: src/Holiday.php:575 src/Menu.php:61 src/HolidayCount.php:51
+#: src/Holiday.php:575 src/Menu.php:61 src/HolidayCount.php:52
 msgid "Holiday counter"
 msgid_plural "Holiday counters"
 msgstr[0] ""
@@ -339,7 +339,7 @@ msgid_plural "Holiday periods"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/HolidayCount.php:104
+#: src/HolidayCount.php:197
 msgid "Holiday period is mandatory field"
 msgstr ""
 
@@ -353,7 +353,7 @@ msgid_plural "Holiday types"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Holiday.php:269 src/HolidayCount.php:108
+#: src/Holiday.php:269 src/HolidayCount.php:201
 msgid "Holiday type is mandatory field"
 msgstr ""
 
@@ -367,7 +367,7 @@ msgstr[1] ""
 msgid "Holidays"
 msgstr ""
 
-#: src/Report.php:1939 src/CraPDF.php:596
+#: src/Report.php:1943 src/CraPDF.php:596
 msgid "Holidays or exceptional absences"
 msgstr ""
 
@@ -475,7 +475,7 @@ msgstr ""
 msgid "Only on morning"
 msgstr ""
 
-#: src/HolidayCount.php:117
+#: src/HolidayCount.php:210
 msgid "Only one counter by period is allowed"
 msgstr ""
 
@@ -491,7 +491,7 @@ msgstr ""
 msgid "Optional when approved"
 msgstr ""
 
-#: src/HolidayType.php:99 src/Report.php:1941 src/CraPDF.php:595
+#: src/HolidayType.php:99 src/Report.php:1945 src/CraPDF.php:595
 msgid "Part time"
 msgstr ""
 
@@ -632,7 +632,7 @@ msgstr ""
 msgid "Sickness"
 msgstr ""
 
-#: src/Report.php:1943 src/CraPDF.php:597
+#: src/Report.php:1947 src/CraPDF.php:597
 msgid "Sickness or maternity"
 msgstr ""
 
