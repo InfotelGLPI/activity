@@ -27,7 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
-define('PLUGIN_ACTIVITY_VERSION', '3.2.12');
+define('PLUGIN_ACTIVITY_VERSION', '3.2.13');
 
 global $CFG_GLPI;
 
