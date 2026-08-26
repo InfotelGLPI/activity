@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-22 13:03+0000\n"
+"POT-Creation-Date: 2026-08-26 08:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -57,11 +57,11 @@ msgid_plural "Activities"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Dashboard.php:118 src/Dashboard.php:297
+#: src/Dashboard.php:119 src/Dashboard.php:298
 msgid "Activity Menu"
 msgstr ""
 
-#: src/Dashboard.php:115 src/Dashboard.php:181
+#: src/Dashboard.php:116 src/Dashboard.php:182
 msgid "Activity in the month"
 msgstr ""
 
@@ -87,7 +87,7 @@ msgstr ""
 msgid "Add an activity"
 msgstr ""
 
-#: src/Dashboard.php:259 src/Holiday.php:1300 src/Holiday.php:1327
+#: src/Dashboard.php:260 src/Holiday.php:1300 src/Holiday.php:1327
 msgid "All day"
 msgstr ""
 
@@ -265,7 +265,7 @@ msgstr ""
 msgid "Display activities of all"
 msgstr ""
 
-#: src/Dashboard.php:117 src/Dashboard.php:182
+#: src/Dashboard.php:118 src/Dashboard.php:183
 msgid ""
 "Display of activity by month for a user (tickets, activity, holidays, others)"
 msgstr ""
@@ -381,7 +381,7 @@ msgstr ""
 msgid "Internal helpdesk"
 msgstr ""
 
-#: src/Dashboard.php:121 src/Dashboard.php:371
+#: src/Dashboard.php:122 src/Dashboard.php:377
 msgid "Interventions not in CRA"
 msgstr ""
 
@@ -453,7 +453,7 @@ msgid "No activity found"
 msgstr ""
 
 #: src/Report.php:684 src/Report.php:762 src/Report.php:839 src/Report.php:892
-#: src/Dashboard.php:467 src/Dashboard.php:499
+#: src/Dashboard.php:473 src/Dashboard.php:505
 msgid "No defined type"
 msgstr ""
 
@@ -503,7 +503,7 @@ msgstr ""
 msgid "Planning"
 msgstr ""
 
-#: src/Dashboard.php:239
+#: src/Dashboard.php:240
 msgid "Planning access"
 msgstr ""
 
