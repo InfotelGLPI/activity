@@ -34,6 +34,7 @@ use CommonGLPI;
 use Contract;
 use DbUtils;
 use Dropdown;
+use Glpi\RichText\RichText;
 use GlpiPlugin\Manageentities\Config;
 use GlpiPlugin\Activity\Config as ActivityConfig;
 use GlpiPlugin\Mydashboard\Charts\PieChart;
@@ -354,13 +355,18 @@ class Dashboard extends CommonGLPI
 
                 $datas = [];
                 foreach ($iterator as $data) {
-                    $name_ticket = "<a href='" . $link_ticket . "?id=" . $data['tickets_id'] . "' target='_blank'>"
-                        . $data['tickets_name'] . "</a>";
+                    // The table widget renders each cell as raw HTML, so the requester-controlled
+                    // ticket title must be escaped before being embedded in the <a> link.
+                    $name_ticket = "<a href='" . $link_ticket . "?id=" . (int) $data['tickets_id'] . "' target='_blank'>"
+                        . htmlescape($data['tickets_name']) . "</a>";
                     $datas[] = [
                         'date'         => Html::convDateTime($data['date']),
                         'entity'       => Dropdown::getDropdownName('glpi_entities', $data['entities_id']),
                         'tickets_name' => $name_ticket,
-                        'content'      => htmlspecialchars_decode(stripslashes($data['content'])),
+                        // Sanitize the task content instead of decoding its escaping: the cell
+                        // is raw HTML, so getSafeHtml() keeps legitimate rich text but drops
+                        // any <script>/<img onerror> a technician may have stored in the task.
+                        'content'      => RichText::getSafeHtml($data['content']),
                         'actiontime'   => Html::timestampToString($data['actiontime'], 0),
                     ];
                 }
@@ -652,7 +658,11 @@ class Dashboard extends CommonGLPI
                         }
 
                         $iscurrent = ($currentime >= $begin && $currentime <= $end);
-                        $content   = $activity['comment'];
+                        // Sanitize the user-authored event comment before it is JSON-encoded
+                        // and re-inserted client-side as raw HTML (eventMouseover .append()).
+                        // Mirrors Holiday::populatePlanning(); keeps legitimate rich-text
+                        // formatting while stripping <script>/<img onerror> payloads.
+                        $content   = RichText::getSafeHtml($activity['comment']);
                         $nb        = count($data);
                         if ($nb > 1) {
                             $content .= "</br>";
