@@ -37,7 +37,7 @@ $can = Session::haveRight("plugin_activity", READ);
 $canholiday = Session::haveRight("plugin_activity_can_requestholiday", 1);
 $canvalidateholiday = Session::haveRight("plugin_activity_can_validate", 1);
 
-if (!$can 
+if (!$can
     && !$canholiday
     && !$canvalidateholiday) {
     throw new AccessDeniedHttpException();
