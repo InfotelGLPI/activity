@@ -32,6 +32,17 @@ use GlpiPlugin\Activity\PlanningExternalEvent;
 use GlpiPlugin\Activity\Holiday;
 use Glpi\Exception\Http\AccessDeniedHttpException;
 
+
+$can = Session::haveRight("plugin_activity", READ);
+$canholiday = Session::haveRight("plugin_activity_can_requestholiday", 1);
+$canvalidateholiday = Session::haveRight("plugin_activity_can_validate", 1);
+
+if (!$can 
+    && !$canholiday
+    && !$canvalidateholiday) {
+    throw new AccessDeniedHttpException();
+}
+
 if (Session::getCurrentInterface() == 'central') {
     Html::header(PlanningExternalEvent::getTypeName(2), '', "tools", Menu::class);
 } else {
@@ -39,10 +50,6 @@ if (Session::getCurrentInterface() == 'central') {
 }
 
 $activity = new \PlanningExternalEvent();
-
-$can = Session::haveRight("plugin_activity", READ);
-$canholiday = Session::haveRight("plugin_activity_can_requestholiday", 1);
-$canvalidateholiday = Session::haveRight("plugin_activity_can_validate", 1);
 
 echo "<h3><div class='alert alert-secondary' role='alert'>";
 echo "<i class='ti ti-calendar'></i>&nbsp;";
