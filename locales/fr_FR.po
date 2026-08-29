@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-22 12:26+0000\n"
+"POT-Creation-Date: 2026-08-29 10:30+0000\n"
 "PO-Revision-Date: 2020-11-02 13:59+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/114456/fr_FR/)\n"
@@ -30,7 +30,7 @@ msgstr "Un email a été envoyé à %s"
 msgid "A new holiday request has been submitted"
 msgstr "Une nouvelle demande de congé a été soumise"
 
-#: src/Report.php:1269 src/CraPDF.php:632
+#: src/Report.php:1277 src/CraPDF.php:632
 msgid "Absences"
 msgstr "Absences"
 
@@ -54,8 +54,8 @@ msgstr[2] "Actions"
 msgid "Activities detail"
 msgstr "Détail des activités"
 
-#: front/menu.php:49 src/Profile.php:57 src/Profile.php:108 src/Config.php:51
-#: src/Report.php:1151 src/Preference.php:70 src/Menu.php:41 setup.php:211
+#: front/menu.php:55 src/Profile.php:57 src/Profile.php:108 src/Config.php:51
+#: src/Report.php:1159 src/Preference.php:70 src/Menu.php:41 setup.php:211
 #: ajax/loadscripts.php:48
 msgid "Activity"
 msgid_plural "Activities"
@@ -63,19 +63,19 @@ msgstr[0] "Activité quotidienne"
 msgstr[1] "Activités quotidiennes"
 msgstr[2] "Activités quotidiennes"
 
-#: src/Dashboard.php:118 src/Dashboard.php:297
+#: src/Dashboard.php:119 src/Dashboard.php:298
 msgid "Activity Menu"
 msgstr "Menu Activité"
 
-#: src/Dashboard.php:115 src/Dashboard.php:181
+#: src/Dashboard.php:116 src/Dashboard.php:182
 msgid "Activity in the month"
 msgstr "Activité du mois"
 
-#: src/Report.php:1467 templates/cra_search.html.twig:31
+#: src/Report.php:1475 templates/cra_search.html.twig:31
 msgid "Activity report"
 msgstr "Rapport d'activité"
 
-#: src/PlanningExternalEvent.php:523 src/PlanningExternalEvent.php:622
+#: src/PlanningExternalEvent.php:535 src/PlanningExternalEvent.php:634
 msgid "Activity type is mandatory field"
 msgstr "Le type d'activité est un champ obligatoire"
 
@@ -89,11 +89,11 @@ msgstr "Ajouter"
 msgid "Add a manager"
 msgstr "Ajouter un responsable"
 
-#: src/PlanningExternalEvent.php:206
+#: src/PlanningExternalEvent.php:207
 msgid "Add an activity"
 msgstr "Ajouter une activité"
 
-#: src/Dashboard.php:259 src/Holiday.php:1300 src/Holiday.php:1327
+#: src/Dashboard.php:260 src/Holiday.php:1300 src/Holiday.php:1327
 msgid "All day"
 msgstr "Jour entier"
 
@@ -164,7 +164,7 @@ msgstr "Autoriser uniquement les horaires entiers"
 msgid "Auto-validated"
 msgstr "Validé automatiquement"
 
-#: src/PlanningExternalEvent.php:218 templates/option_form.html.twig:36
+#: src/PlanningExternalEvent.php:219 templates/option_form.html.twig:36
 msgid "CRA"
 msgstr "CRA"
 
@@ -219,11 +219,11 @@ msgstr "Confirmer la suppression définitive ?"
 msgid "Confirm the final deletion?"
 msgstr "Confirmer la suppression définitive ?"
 
-#: src/HolidayCount.php:182 templates/holiday_count_form.html.twig:41
+#: src/HolidayCount.php:275 templates/holiday_count_form.html.twig:41
 msgid "Counter"
 msgstr "Compteur"
 
-#: src/Profile.php:115 src/PlanningExternalEvent.php:120 src/Holiday.php:556
+#: src/Profile.php:115 src/PlanningExternalEvent.php:121 src/Holiday.php:556
 #: src/LateralMenu.php:68
 msgid "Create a holiday request"
 msgstr "Demande de congé"
@@ -278,7 +278,7 @@ msgstr "Description"
 msgid "Display activities of all"
 msgstr "Voir les activités / congés de tous"
 
-#: src/Dashboard.php:117 src/Dashboard.php:182
+#: src/Dashboard.php:118 src/Dashboard.php:183
 msgid ""
 "Display of activity by month for a user (tickets, activity, holidays, "
 "others)"
@@ -346,7 +346,7 @@ msgstr "Statut global de validation"
 msgid "Holiday"
 msgstr "Congé"
 
-#: src/Holiday.php:575 src/Menu.php:61 src/HolidayCount.php:51
+#: src/Holiday.php:575 src/Menu.php:61 src/HolidayCount.php:52
 msgid "Holiday counter"
 msgid_plural "Holiday counters"
 msgstr[0] "Compteur de congé"
@@ -360,7 +360,7 @@ msgstr[0] "Période de congé"
 msgstr[1] "Période de congés"
 msgstr[2] "Période de congés"
 
-#: src/HolidayCount.php:104
+#: src/HolidayCount.php:197
 msgid "Holiday period is mandatory field"
 msgstr "La période des congés est obligatoire"
 
@@ -375,7 +375,7 @@ msgstr[0] "Type de congé"
 msgstr[1] "Type de congés"
 msgstr[2] "Type de congés"
 
-#: src/Holiday.php:269 src/HolidayCount.php:108
+#: src/Holiday.php:269 src/HolidayCount.php:201
 msgid "Holiday type is mandatory field"
 msgstr "Le type de congé est un champ obligatoire"
 
@@ -390,7 +390,7 @@ msgstr[2] "Validations des congés"
 msgid "Holidays"
 msgstr "Congés"
 
-#: src/Report.php:1939 src/CraPDF.php:596
+#: src/Report.php:1951 src/CraPDF.php:596
 msgid "Holidays or exceptional absences"
 msgstr "Congés ou absences exceptionnelles"
 
@@ -406,7 +406,7 @@ msgstr ""
 msgid "Internal helpdesk"
 msgstr "Helpdesk interne"
 
-#: src/Dashboard.php:121 src/Dashboard.php:371
+#: src/Dashboard.php:122 src/Dashboard.php:377
 msgid "Interventions not in CRA"
 msgstr "Interventions non présentes sur le CRA"
 
@@ -418,7 +418,7 @@ msgstr "Congés en attente de validation"
 msgid "Linked to a period"
 msgstr "Lié à une période de congés"
 
-#: src/PlanningExternalEvent.php:212
+#: src/PlanningExternalEvent.php:213
 msgid "List of activities"
 msgstr "Liste des activités"
 
@@ -473,12 +473,13 @@ msgstr "Nouvelle demande de congé personnel"
 msgid "Next month"
 msgstr "Mois suivant"
 
-#: src/Report.php:1458
+#: src/Report.php:1466
 msgid "No activity found"
 msgstr "Aucune activité trouvée"
 
-#: src/Report.php:676 src/Report.php:754 src/Report.php:831 src/Report.php:884
-#: src/Dashboard.php:467 src/Dashboard.php:499
+#: src/Report.php:684 src/Report.php:704 src/Report.php:762 src/Report.php:782
+#: src/Report.php:839 src/Report.php:849 src/Report.php:892
+#: src/Dashboard.php:473 src/Dashboard.php:505
 msgid "No defined type"
 msgstr "Pas de type défini"
 
@@ -490,6 +491,14 @@ msgstr "Pas de demande de validation de congé trouvée"
 msgid "Number of days"
 msgstr "Nombre de jours"
 
+#: src/PlanningExternalEvent.php:514 src/PlanningExternalEvent.php:678
+msgid ""
+"One of the dates is on weekend, please add the date in the exceptionsof the "
+"reccurent rule"
+msgstr ""
+"L'une des dates est le week-end, veuillez ajouter la date dans les "
+"exceptions de la règle récurrente"
+
 #: src/Holiday.php:1027 src/Holiday.php:1051 src/Holiday.php:1292
 #: src/Holiday.php:1319
 msgid "Only on afternoon"
@@ -500,15 +509,15 @@ msgstr "Que l'après-midi"
 msgid "Only on morning"
 msgstr "Que le matin"
 
-#: src/HolidayCount.php:117
+#: src/HolidayCount.php:210
 msgid "Only one counter by period is allowed"
 msgstr "Uniquement un compteur par période est autorisé"
 
-#: src/PlanningExternalEvent.php:461 src/PlanningExternalEvent.php:698
+#: src/PlanningExternalEvent.php:473 src/PlanningExternalEvent.php:710
 msgid "Only pairs schedules are allowed"
 msgstr "Seuls les horaires pairs sont autorisés"
 
-#: src/PlanningExternalEvent.php:453 src/PlanningExternalEvent.php:692
+#: src/PlanningExternalEvent.php:465 src/PlanningExternalEvent.php:704
 msgid "Only whole hours are allowed (no split times)"
 msgstr ""
 "Seuls les horaires entiers sont autorisés (pas d'horaires fractionnées)"
@@ -517,11 +526,11 @@ msgstr ""
 msgid "Optional when approved"
 msgstr "Optionnel si approuvé"
 
-#: src/HolidayType.php:99 src/Report.php:1941 src/CraPDF.php:595
+#: src/HolidayType.php:99 src/Report.php:1953 src/CraPDF.php:595
 msgid "Part time"
 msgstr "Temps partiel"
 
-#: src/Report.php:1446
+#: src/Report.php:1454
 msgid "Percent"
 msgstr "Pourcentage"
 
@@ -529,7 +538,7 @@ msgstr "Pourcentage"
 msgid "Planning"
 msgstr "Planning"
 
-#: src/Dashboard.php:239
+#: src/Dashboard.php:240
 msgid "Planning access"
 msgstr "Accès au planning"
 
@@ -580,7 +589,7 @@ msgstr[0] "Congé personnel"
 msgstr[1] "Congés personnels"
 msgstr[2] "Congés personnels"
 
-#: src/Report.php:1150
+#: src/Report.php:1158
 #: templates/planningexternalevent_post_item_form.html.twig:71
 msgid "Project"
 msgstr "Projet"
@@ -661,7 +670,7 @@ msgstr "Dénomination pour l'assistance interne"
 msgid "Sickness"
 msgstr "Maladie"
 
-#: src/Report.php:1943 src/CraPDF.php:597
+#: src/Report.php:1955 src/CraPDF.php:597
 msgid "Sickness or maternity"
 msgstr "Maladie ou maternité"
 
@@ -692,7 +701,7 @@ msgstr "Statistiques et rapports"
 msgid "Status of the approval request"
 msgstr "Statut de ma demande de validation"
 
-#: src/PlanningExternalEvent.php:290
+#: src/PlanningExternalEvent.php:291
 msgid "Subcategory"
 msgstr "Sous-catégorie"
 
@@ -700,17 +709,17 @@ msgstr "Sous-catégorie"
 msgid "Take a snapshot of the CRA"
 msgstr "Prendre un instantané du CRA"
 
-#: src/PlanningExternalEvent.php:554 src/PlanningExternalEvent.php:717
+#: src/PlanningExternalEvent.php:566 src/PlanningExternalEvent.php:729
 #: src/Holiday.php:327
 msgid "The chosen begin date is on weekend"
 msgstr "La date de début choisie est en weekend"
 
-#: src/PlanningExternalEvent.php:540 src/PlanningExternalEvent.php:705
+#: src/PlanningExternalEvent.php:552 src/PlanningExternalEvent.php:717
 #: src/Holiday.php:334
 msgid "The chosen date is a public holiday"
 msgstr "Le jour choisi est un jour férié"
 
-#: src/PlanningExternalEvent.php:565 src/PlanningExternalEvent.php:726
+#: src/PlanningExternalEvent.php:577 src/PlanningExternalEvent.php:738
 msgid "The chosen end date is on weekend"
 msgstr "La date de fin choisie est en week-end"
 
@@ -747,7 +756,7 @@ msgstr "Total incorrect"
 msgid "Type"
 msgstr "Type"
 
-#: src/Report.php:909 src/Report.php:926
+#: src/Report.php:917 src/Report.php:934
 msgid "Unbilled"
 msgstr "Non facturé"
 
@@ -809,7 +818,7 @@ msgstr[0] "Utilisateur"
 msgstr[1] "Utilisateurs"
 msgstr[2] "Utilisateurs"
 
-#: src/PlanningExternalEvent.php:531 src/PlanningExternalEvent.php:628
+#: src/PlanningExternalEvent.php:543 src/PlanningExternalEvent.php:640
 #: src/Holiday.php:300
 msgid "User is mandatory field"
 msgstr "L'utilisateur est un champ obligatoire"
