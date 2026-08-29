@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-28 11:53+0000\n"
+"POT-Creation-Date: 2026-08-29 10:30+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -452,7 +452,8 @@ msgstr ""
 msgid "No activity found"
 msgstr ""
 
-#: src/Report.php:684 src/Report.php:762 src/Report.php:839 src/Report.php:892
+#: src/Report.php:684 src/Report.php:704 src/Report.php:762 src/Report.php:782
+#: src/Report.php:839 src/Report.php:849 src/Report.php:892
 #: src/Dashboard.php:473 src/Dashboard.php:505
 msgid "No defined type"
 msgstr ""
@@ -463,6 +464,12 @@ msgstr ""
 
 #: src/NotificationTargetHoliday.php:180 src/NotificationTargetHoliday.php:246
 msgid "Number of days"
+msgstr ""
+
+#: src/PlanningExternalEvent.php:514 src/PlanningExternalEvent.php:678
+msgid ""
+"One of the dates is on weekend, please add the date in the exceptionsof the "
+"reccurent rule"
 msgstr ""
 
 #: src/Holiday.php:1027 src/Holiday.php:1051 src/Holiday.php:1292
