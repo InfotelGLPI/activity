@@ -49,15 +49,27 @@
         plugin_activity.categorySelect = document.getElementsByName('planningeventcategories_id');
         if (plugin_activity.categorySelect.length) {
             plugin_activity.categorySelect = plugin_activity.categorySelect[0];
-            plugin_activity.newRow = document.createElement('tr');
-            plugin_activity.labelTd = document.createElement('td');
-            plugin_activity.labelTd.innerText = {{ subcategory_label|json_encode }};
+            plugin_activity.newRow = document.createElement('div');
+            plugin_activity.newRow.classList.add('form-field');
+            plugin_activity.newRow.classList.add('row');
+            plugin_activity.newRow.classList.add('align-items-center');
+            plugin_activity.newRow.classList.add('col-12');
+            plugin_activity.newRow.classList.add('mb-2');
+            plugin_activity.labelTd = document.createElement('label');
+            plugin_activity.labelTd.classList.add('col-form-label');
+            plugin_activity.labelTd.classList.add('col-2');
+            plugin_activity.labelTd.classList.add('text-xxl-end');
+            plugin_activity.labelTd.innerText = '{{ subcategory_label }}';
             plugin_activity.newRow.append(plugin_activity.labelTd);
-            plugin_activity.dropdownTd = document.createElement('td');
-            plugin_activity.dropdownTd.colSpan = 3;
-            plugin_activity.dropdownTd.append(plugin_activity.subCategoryDropdownField);
+            plugin_activity.dropdownTd = document.createElement('div');
+            plugin_activity.dropdownTd.classList.add('col-10');
+            plugin_activity.dropdownTd.classList.add('field-container');
+            plugin_activity.spanactivity = document.createElement('span');
+            plugin_activity.spanactivity.classList.add('form-control-plaintext');
+            plugin_activity.spanactivity.append(plugin_activity.subCategoryDropdownField);
+            plugin_activity.dropdownTd.append(plugin_activity.spanactivity);
             plugin_activity.newRow.append(plugin_activity.dropdownTd);
-            plugin_activity.categoryRow = plugin_activity.categorySelect.parentElement.parentElement.parentElement;
+            plugin_activity.categoryRow = plugin_activity.categorySelect.parentElement.parentElement.parentElement.parentElement.parentElement;
             plugin_activity.categoryRow.parentElement.insertBefore(plugin_activity.newRow, plugin_activity.categoryRow.nextElementSibling);
         }
         plugin_activity = {};
