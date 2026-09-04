@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-31 14:48+0000\n"
+"POT-Creation-Date: 2026-09-04 13:41+0000\n"
 "PO-Revision-Date: 2020-11-02 13:59+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2020\n"
 "Language-Team: Spanish (Spain) (https://www.transifex.com/infotelGLPI/"
@@ -31,7 +31,7 @@ msgstr ""
 msgid "A new holiday request has been submitted"
 msgstr "A new holiday request has been submitted"
 
-#: src/Report.php:1277 src/CraPDF.php:632
+#: src/CraPDF.php:632 src/Report.php:1277
 msgid "Absences"
 msgstr "Absences"
 
@@ -53,9 +53,9 @@ msgstr[1] ""
 msgid "Activities detail"
 msgstr "Activities detail"
 
-#: front/menu.php:55 src/Profile.php:57 src/Profile.php:108 src/Config.php:51
-#: src/Report.php:1159 src/Preference.php:70 src/Menu.php:41 setup.php:211
-#: ajax/loadscripts.php:48
+#: setup.php:211 front/menu.php:55 ajax/loadscripts.php:48 src/Menu.php:41
+#: src/Preference.php:70 src/Profile.php:57 src/Profile.php:108
+#: src/Config.php:51 src/Report.php:1159
 msgid "Activity"
 msgid_plural "Activities"
 msgstr[0] "Actividad"
@@ -77,8 +77,8 @@ msgstr "Informe de actividad"
 msgid "Activity type is mandatory field"
 msgstr "Activity type is mandatory field"
 
-#: templates/preference_add_manager.html.twig:45
 #: templates/config_form.html.twig:52
+#: templates/preference_add_manager.html.twig:45
 msgctxt "button"
 msgid "Add"
 msgstr ""
@@ -91,7 +91,7 @@ msgstr "Add a manager"
 msgid "Add an activity"
 msgstr "Add an activity"
 
-#: src/Dashboard.php:260 src/Holiday.php:1300 src/Holiday.php:1327
+#: src/Holiday.php:1300 src/Holiday.php:1327 src/Dashboard.php:260
 msgid "All day"
 msgstr "All day"
 
@@ -107,8 +107,8 @@ msgstr "An error happend while deleting the manager"
 msgid "Answer to a personal holiday request"
 msgstr "Answer to a personal holiday request"
 
-#: templates/holiday_validation_summary.html.twig:95
 #: templates/holiday_massive_action_subform.html.twig:30
+#: templates/holiday_validation_summary.html.twig:95
 msgid "Approval"
 msgstr ""
 
@@ -157,7 +157,7 @@ msgstr "Authorize activities on week-ends"
 msgid "Authorize only the whole schedules"
 msgstr "Authorize only the whole schedules"
 
-#: src/HolidayType.php:79 src/Holiday.php:397
+#: src/Holiday.php:397 src/HolidayType.php:79
 msgid "Auto-validated"
 msgstr "Auto-validated"
 
@@ -217,7 +217,7 @@ msgstr ""
 msgid "Counter"
 msgstr "Counter"
 
-#: src/Profile.php:115 src/PlanningExternalEvent.php:121 src/Holiday.php:556
+#: src/Holiday.php:556 src/PlanningExternalEvent.php:121 src/Profile.php:115
 #: src/LateralMenu.php:68
 msgid "Create a holiday request"
 msgstr "Create a holiday request"
@@ -236,8 +236,9 @@ msgstr[1] "Cumulative ticket tasks"
 msgid "Current logo"
 msgstr ""
 
-#: templates/cra_search.html.twig:41 templates/cra_snapshots.html.twig:45
+#: templates/cra_snapshots.html.twig:45
 #: templates/holiday_validation_summary.html.twig:92
+#: templates/cra_search.html.twig:41
 msgid "Date"
 msgstr ""
 
@@ -256,8 +257,8 @@ msgstr "Default validation percent"
 msgid "Define internal helpdesk"
 msgstr "Define internal helpdesk"
 
-#: templates/holiday_form.html.twig:172 templates/config_form.html.twig:101
-#: templates/preference_form.html.twig:62
+#: templates/preference_form.html.twig:62 templates/config_form.html.twig:101
+#: templates/holiday_form.html.twig:172
 msgctxt "button"
 msgid "Delete permanently"
 msgstr ""
@@ -335,7 +336,7 @@ msgstr ""
 msgid "Holiday"
 msgstr "Holiday"
 
-#: src/Holiday.php:575 src/Menu.php:61 src/HolidayCount.php:52
+#: src/Menu.php:61 src/Holiday.php:575 src/HolidayCount.php:52
 msgid "Holiday counter"
 msgid_plural "Holiday counters"
 msgstr[0] "Holiday counter"
@@ -375,7 +376,7 @@ msgstr[1] "Holidays validation"
 msgid "Holidays"
 msgstr ""
 
-#: src/Report.php:1951 src/CraPDF.php:596
+#: src/CraPDF.php:596 src/Report.php:1951
 msgid "Holidays or exceptional absences"
 msgstr "Holidays or exceptional absences"
 
@@ -508,7 +509,7 @@ msgstr "Only whole hours are allowed (no split times)"
 msgid "Optional when approved"
 msgstr ""
 
-#: src/HolidayType.php:99 src/Report.php:1953 src/CraPDF.php:595
+#: src/CraPDF.php:595 src/Report.php:1953 src/HolidayType.php:99
 msgid "Part time"
 msgstr "Part time"
 
@@ -528,7 +529,7 @@ msgstr "Planning access"
 msgid "Please activate the plugin"
 msgstr "Please activate the plugin"
 
-#: src/HolidayPeriod.php:80 src/Holiday.php:259
+#: src/Holiday.php:259 src/HolidayPeriod.php:80
 msgid "Please fill a begin date"
 msgstr "Please fill a begin date"
 
@@ -540,7 +541,7 @@ msgstr ""
 msgid "Please fill a subject"
 msgstr ""
 
-#: src/HolidayPeriod.php:84 src/Holiday.php:263
+#: src/Holiday.php:263 src/HolidayPeriod.php:84
 msgid "Please fill an end date"
 msgstr "Please fill an end date"
 
@@ -571,7 +572,7 @@ msgstr[0] "Private holiday"
 msgstr[1] "Private holidays"
 
 #: src/Report.php:1158
-#: templates/planningexternalevent_post_item_form.html.twig:71
+#: templates/planningexternalevent_post_item_form.html.twig:83
 msgid "Project"
 msgstr "Project"
 
@@ -619,8 +620,8 @@ msgid_plural "Rights management"
 msgstr[0] "Right management"
 msgstr[1] "Rights management"
 
-#: templates/option_form.html.twig:187 templates/profile.html.twig:34
 #: templates/holiday_validation_summary.html.twig:60
+#: templates/profile.html.twig:34 templates/option_form.html.twig:187
 msgctxt "button"
 msgid "Save"
 msgstr ""
@@ -649,7 +650,7 @@ msgstr "Show internal helpdesk"
 msgid "Sickness"
 msgstr "Enfermada"
 
-#: src/Report.php:1955 src/CraPDF.php:597
+#: src/CraPDF.php:597 src/Report.php:1955
 msgid "Sickness or maternity"
 msgstr "Sickness or maternity"
 
@@ -688,13 +689,13 @@ msgstr ""
 msgid "Take a snapshot of the CRA"
 msgstr "Tomar una instantánea del CRA"
 
-#: src/PlanningExternalEvent.php:566 src/PlanningExternalEvent.php:729
-#: src/Holiday.php:327
+#: src/Holiday.php:327 src/PlanningExternalEvent.php:566
+#: src/PlanningExternalEvent.php:729
 msgid "The chosen begin date is on weekend"
 msgstr "The chosen begin date is on weekend"
 
-#: src/PlanningExternalEvent.php:552 src/PlanningExternalEvent.php:717
-#: src/Holiday.php:334
+#: src/Holiday.php:334 src/PlanningExternalEvent.php:552
+#: src/PlanningExternalEvent.php:717
 msgid "The chosen date is a public holiday"
 msgstr "The chosen date is a public holiday"
 
@@ -750,9 +751,9 @@ msgstr "Use group manager as holiday manager"
 msgid "Use hour on cra and not half day"
 msgstr ""
 
-#: templates/planningexternalevent_post_item_form.html.twig:31
-#: templates/projecttask_post_form.html.twig:29
 #: templates/tickettask_post_form.html.twig:33
+#: templates/projecttask_post_form.html.twig:29
+#: templates/planningexternalevent_post_item_form.html.twig:31
 msgid "Use in CRA"
 msgstr "Use in CRA"
 
@@ -784,17 +785,17 @@ msgstr "Use time repartition"
 msgid "Used mail for holidays"
 msgstr "Used mail for holidays"
 
-#: templates/holiday_form.html.twig:139
-#: templates/holiday_count_form.html.twig:29
 #: templates/preference_form.html.twig:45
 #: templates/preference_form.html.twig:77
+#: templates/holiday_count_form.html.twig:29
+#: templates/holiday_form.html.twig:139
 msgid "User"
 msgid_plural "Users"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/PlanningExternalEvent.php:543 src/PlanningExternalEvent.php:640
-#: src/Holiday.php:300
+#: src/Holiday.php:300 src/PlanningExternalEvent.php:543
+#: src/PlanningExternalEvent.php:640
 msgid "User is mandatory field"
 msgstr "User is mandatory field"
 
