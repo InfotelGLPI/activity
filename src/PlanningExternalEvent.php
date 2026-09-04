@@ -625,13 +625,13 @@ class PlanningExternalEvent extends CommonDBTM
 
         if (!isset($item->input["planningeventcategories_id"]) || $item->input["planningeventcategories_id"] == 0) {
             Session::addMessageAfterRedirect(__('Activity type is mandatory field', 'activity'), false, ERROR);
-            unset($item->input);
+            $item->input = false;
             return false;
         }
 
         if (!isset($item->input["users_id"]) || $item->input["users_id"] == 0) {
             Session::addMessageAfterRedirect(__('User is mandatory field', 'activity'), false, ERROR);
-            unset($item->input);
+            $item->input = false;
             return false;
         }
 
@@ -675,7 +675,7 @@ class PlanningExternalEvent extends CommonDBTM
                                 false,
                                 ERROR
                             );
-                            unset($item->input);
+                            $item->input = false;
                             return false;
                         }
                     }
@@ -696,13 +696,13 @@ class PlanningExternalEvent extends CommonDBTM
 
             if ($use_integerschedules && ($begin_hour != '00' || $end_hour != '00')) {
                 Session::addMessageAfterRedirect(__('Only whole hours are allowed (no split times)', 'activity'));
-                unset($item->input);
+                $item->input = false;
                 return false;
             }
 
             if ($use_pairs == 1 && ($delay % 2 > 0)) {
                 Session::addMessageAfterRedirect(__('Only pairs schedules are allowed', 'activity'), false, ERROR);
-                unset($item->input);
+                $item->input = false;
                 return false;
             }
 
@@ -712,7 +712,7 @@ class PlanningExternalEvent extends CommonDBTM
                     false,
                     ERROR
                 );
-                unset($item->input);
+                $item->input = false;
                 return false;
             }
 
@@ -725,7 +725,7 @@ class PlanningExternalEvent extends CommonDBTM
                         false,
                         ERROR
                     );
-                    unset($item->input);
+                    $item->input = false;
                     return false;
                 }
                 if ($hol->isWeekend($item->input["end"], false)) {
@@ -734,7 +734,7 @@ class PlanningExternalEvent extends CommonDBTM
                         false,
                         ERROR
                     );
-                    unset($item->input);
+                    $item->input = false;
                     return false;
                 }
             }

@@ -347,7 +347,7 @@ class CraPDF extends \TCPDF
         $this->SetY($this->margin_top);
 
         /* Logo. */
-        $image = Option::getCraLogoPath() ?? (GLPI_ROOT . '/public/pics/logo.jpg');
+        $image = Option::getCraLogoPath() ?? (PLUGIN_ACTIVITY_DIR . '/public/pics/logo.jpg');
         $target = 30;
         [$width, $height, $type, $attr] = getimagesize($image);
         [$width, $height] = $this->imageResize($width, $height, $target);
