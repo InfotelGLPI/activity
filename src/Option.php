@@ -284,6 +284,36 @@ class Option extends CommonDBTM
 
     public function prepareInputForUpdate($input)
     {
+        // Security (mass assignment): front/option.form.php forwards the whole request
+        // body to update(), and CommonDBTM persists every key matching a real column --
+        // including id, which would move the write onto another options row. Keep only
+        // what option_form.html.twig actually exposes, plus GLPI's own underscore-
+        // prefixed infrastructure keys (upload handling, CSRF token). The caller is a
+        // super-admin, so this is defence in depth and consistency with the rest of the
+        // plugin, not a privilege boundary.
+        $allowed = [
+            'id',
+            'principal_client',
+            'cra_footer',
+            'used_mail_for_holidays',
+            'use_type_as_name',
+            'use_hour_on_cra',
+            'use_timerepartition',
+            'use_mandaydisplay',
+            'use_pairs',
+            'use_integerschedules',
+            'use_groupmanager',
+            'use_planningeventsubcategories',
+            'use_project',
+            'use_weekend',
+            'use_planning_activity_hours',
+        ];
+        $input = array_filter(
+            $input,
+            static fn($key) => in_array($key, $allowed, true) || str_starts_with((string) $key, '_'),
+            ARRAY_FILTER_USE_KEY,
+        );
+
         if (isset($input['_filename']) && count($input['_filename']) > 0) {
             // Security: the name comes straight from the POST and is later concatenated
             // onto GLPI_TMP_DIR, so any path separator is rejected outright rather than

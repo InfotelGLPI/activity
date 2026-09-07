@@ -1628,11 +1628,10 @@ class Report extends CommonDBTM
     /**
      * Get the time between two dates
      *
-     * @param int      $time : time to add
-     * @param datetime $begin : begin date to add
-     * @param array    $values : array of times
-     * @param int      $type : holiday, work, part time, sickness
-     * @param string   $activity : name of the activity
+     * @param string $begin : begin date, passed to strtotime()
+     * @param string $end : end date, passed to strtotime()
+     * @param array  $values : array of times
+     * @param int    $type : holiday, work, part time, sickness
      *
      * @return float
      */
@@ -1660,11 +1659,10 @@ class Report extends CommonDBTM
     /**
      * Get the time between two dates
      *
-     * @param int      $time : time to add
-     * @param datetime $begin : begin date to add
-     * @param array    $values : array of times
-     * @param int      $type : holiday, work, part time, sickness
-     * @param string   $activity : name of the activity
+     * @param string $begin : begin date, passed to strtotime()
+     * @param string $end : end date, passed to strtotime()
+     * @param array  $values : array of times
+     * @param int    $type : holiday, work, part time, sickness
      *
      * @return float
      */

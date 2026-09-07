@@ -78,28 +78,30 @@ if (isset($holiday->fields['id']) && HolidayValidation::canValidate($hId)) {
     // whatever happens.
     $filepath = GLPI_TMP_DIR . "/" . bin2hex(random_bytes(16)) . ".txt";
 
+    // A failed write must not fall through to the mailer: there would be no
+    // attachment to send. Skip the send instead of terminating the request here --
+    // exit would also skip GLPI's post-request routines.
     if (file_put_contents($filepath, $strTxtFile) === false) {
         trigger_error(sprintf('Activity: unable to write holiday request file %s', $filepath), E_USER_WARNING);
         Session::addMessageAfterRedirect(__('Failed Mail send', 'activity'), false, ERROR);
-        exit;
-    }
-
-    try {
-        $input                 = [];
-        $input['id']           = $hId;
-        $dateBegin             = date('d/m/Y', strtotime($holiday->fields['begin'])) . " " . $periods['txt'];
-        $input['mail_subject'] = __("Holiday request from", "activity") . " " . $userName . " " . __("of", "activity") . " " . $dateBegin;
-        $input['mail_body']    = $holiday->getBodyMail($dateBegin, date("d/m/Y", strtotime($holiday->fields['begin'])), $userName, $approverFullname);
-        $input['validate_id']  = Session::getLoginUserID();
-        $input['users_id']     = $holiday->fields['users_id'];
-        $input['filename']     = $filename;
-        $input['filepath']     = $filepath;
-        $notification          = new Notification();
-        $notification->sendComm($input);
-    } finally {
-        // The attachment has been read by the mailer by now; it must not survive the
-        // request, whether the send succeeded or threw.
-        @unlink($filepath);
+    } else {
+        try {
+            $input                 = [];
+            $input['id']           = $hId;
+            $dateBegin             = date('d/m/Y', strtotime($holiday->fields['begin'])) . " " . $periods['txt'];
+            $input['mail_subject'] = __("Holiday request from", "activity") . " " . $userName . " " . __("of", "activity") . " " . $dateBegin;
+            $input['mail_body']    = $holiday->getBodyMail($dateBegin, date("d/m/Y", strtotime($holiday->fields['begin'])), $userName, $approverFullname);
+            $input['validate_id']  = Session::getLoginUserID();
+            $input['users_id']     = $holiday->fields['users_id'];
+            $input['filename']     = $filename;
+            $input['filepath']     = $filepath;
+            $notification          = new Notification();
+            $notification->sendComm($input);
+        } finally {
+            // The attachment has been read by the mailer by now; it must not survive
+            // the request, whether the send succeeded or threw.
+            @unlink($filepath);
+        }
     }
 
 } else {

@@ -531,7 +531,6 @@ function plugin_activity_addDefaultWhere($type)
                 $sub .= " AND `glpi_planningexternalevents`.`users_id` = '$who' ";
             }
             return " `glpi_plugin_activity_planningexternalevents`.`planningexternalevents_id` IN ($sub) ";
-            break;
     }
     return "";
 }

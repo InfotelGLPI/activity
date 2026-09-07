@@ -1612,9 +1612,27 @@ class Holiday extends CommonDBTM
             } else {
                 $interv[$key]["end"] = $data["end"];
             }
-            $interv[$key]["name"]     = Html::resume_text($data["name"], $CFG_GLPI["cut"]); // name is re-encoded on JS side
-            $interv[$key]["content"]  = RichText::getSafeHtml(Html::resume_text($data["comment"], $CFG_GLPI["cut"]));
-            $interv[$key]["type"]    = $data["type"];
+            // Security (HR confidentiality): core Planning only enforces its own
+            // `planning` right when building the who/whogroup filters, so a profile
+            // holding planning READALL -- common, it is what shows team workload --
+            // could read absences of users the plugin itself refuses them
+            // (front/popup.php, ajax/activityholidays.php). What leaks is the sensitive
+            // part: the holiday type (sickness included) and the free-text comment,
+            // which frequently carries the reason. Rather than hiding the event, which
+            // would break the legitimate workload view, the slot stays visible and only
+            // its content is neutralised for callers without plugin_activity_all_users.
+            if (
+                (int) $data["users_id"] === (int) Session::getLoginUserID()
+                || Session::haveRight('plugin_activity_all_users', 1)
+            ) {
+                $interv[$key]["name"]    = Html::resume_text($data["name"], $CFG_GLPI["cut"]); // name is re-encoded on JS side
+                $interv[$key]["content"] = RichText::getSafeHtml(Html::resume_text($data["comment"], $CFG_GLPI["cut"]));
+                $interv[$key]["type"]    = $data["type"];
+            } else {
+                $interv[$key]["name"]    = __('Absent', 'activity');
+                $interv[$key]["content"] = '';
+                $interv[$key]["type"]    = '';
+            }
             $interv[$key]["status"]  = $data["global_validation"];
             $interv[$key]["url"]     = PLUGIN_ACTIVITY_WEBDIR . "/front/holiday.form.php?id=" .
                                    $data['id'];

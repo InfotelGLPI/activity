@@ -51,6 +51,28 @@ class HolidayType extends CommonDropdown
                  && Session::haveRight("plugin_activity_all_users", 1);
     }
 
+    /**
+     * Security: canCreate() was overridden but canUpdate()/canPurge() were not, so
+     * they fell back to CommonDBTM and therefore to the core `dropdown` right --
+     * routinely granted to Technician and Supervisor profiles and unrelated to the
+     * HR entitlement the plugin models. A holiday type drives business logic:
+     * auto_validated makes every request on that type ACCEPTED without ever going
+     * through HolidayValidation, and is_holiday_counter=0 keeps the absence out of
+     * the user's balance. Editing the reference data that governs auto-validation
+     * must not be easier than editing the requests themselves.
+     */
+    public static function canUpdate(): bool
+    {
+        return Session::haveRight('plugin_activity', UPDATE)
+                 && Session::haveRight("plugin_activity_all_users", 1);
+    }
+
+    public static function canPurge(): bool
+    {
+        return Session::haveRight('plugin_activity', PURGE)
+                 && Session::haveRight("plugin_activity_all_users", 1);
+    }
+
     //static function canView() {
     //   return Session::haveRight('plugin_activity', CREATE);
     //}
