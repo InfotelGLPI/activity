@@ -150,6 +150,11 @@ class Notification extends CommonDBTM
             $notificationMail = new self();
             $mail     = "";
             $user = new User();
+            // Both are read unconditionally below, but were only assigned inside the
+            // branch: a validator whose account has since been removed produced an
+            // undefined Reply-To rather than none at all.
+            $validate_email = '';
+            $validate_name  = '';
             if ($user->getFromDB($input['validate_id'])) {
                 $validate_email = $user->getDefaultEmail();
                 $validate_name = getUserName($input['validate_id']);
@@ -168,8 +173,12 @@ class Notification extends CommonDBTM
                 'replyto'      => $validate_email,
                 'replytoname'  => $validate_name,
                 'subject'      => stripslashes($subject),
-                'content_html' => htmlspecialchars_decode(stripcslashes($body)),
-                'content_text' => $body,
+                // Security: the body is built by Holiday::getBodyMail(), which escapes
+                // the values it injects into the HTML template. Decoding the entities
+                // back here undid exactly that protection and handed the mail client
+                // whatever markup a display name carried.
+                'content_html' => $body,
+                'content_text' => strip_tags(str_ireplace(['<br>', '<br/>', '<br />'], "\n", $body)),
             ];
 
             $options['attachment'][] = ['name'     => $input['filename'],

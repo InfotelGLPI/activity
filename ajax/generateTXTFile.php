@@ -72,7 +72,14 @@ if (isset($holiday->fields['id']) && HolidayValidation::canValidate($hId)) {
     header('Cache-Control: private', false); // required for certain browsers
     header("Content-Type: application/octet-stream");
 
-    header('Content-Disposition: attachment; filename="' . basename($filename) . '";');
+    // Security (header/filename injection): the name is built from the requester's
+    // realname/firstname, i.e. from directory data. A quote or a semicolon in there
+    // broke out of the quoted filename and let the rest of the name be read as
+    // further Content-Disposition parameters. The ASCII form is reduced to safe
+    // characters; the RFC 5987 form carries the real name, percent-encoded.
+    $safe_name = preg_replace('/[^\w \-\.]/u', '_', basename($filename));
+    header('Content-Disposition: attachment; filename="' . $safe_name . '"; '
+           . "filename*=UTF-8''" . rawurlencode(basename($filename)));
     header('Content-Transfer-Encoding: binary');
 
     $f = fopen("php://output", 'w');

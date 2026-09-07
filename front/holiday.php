@@ -31,21 +31,24 @@ use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Activity\Menu;
 use GlpiPlugin\Activity\Holiday;
 
+$holiday = new Holiday();
+
+// The right must be settled before anything is written to the response: once
+// Html::header() has run, output has started and the AccessDenied exception can
+// no longer produce a clean 403 -- the caller got a full GLPI chrome (menu bar,
+// breadcrumb, entity navigation) with an error spliced into the middle of it.
+// Same ordering as front/planning.php and front/menu.php.
+if (!$holiday->canView()) {
+    throw new AccessDeniedHttpException();
+}
+
 if (Session::getCurrentInterface() == 'central') {
     Html::header(Holiday::getTypeName(2), '', "tools", Menu::class);
 } else {
     Html::helpHeader(Holiday::getTypeName(2));
 }
 
-$holiday = new Holiday();
-
-if ($holiday->canView()) {
-
-    Search::show(Holiday::class);
-
-} else {
-    throw new AccessDeniedHttpException();
-}
+Search::show(Holiday::class);
 
 if (Session::getCurrentInterface() == 'central') {
     Html::footer();

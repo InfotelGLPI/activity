@@ -54,6 +54,14 @@ if (isset($_GET["users_id"])) {
 //if (isset($_GET["action"])) {
 //   Html::popHeader(PlanningExternalEvent::getTypeName(2));
 //} else {
+$activity = new PlanningExternalEvent();
+
+// Same ordering as front/holiday.php: settle the right before the response body
+// starts, otherwise the 403 is emitted after a full page of GLPI chrome.
+if (!$activity->canView()) {
+    throw new AccessDeniedHttpException();
+}
+
 if (Session::getCurrentInterface() == 'central') {
     Html::header(PlanningExternalEvent::getTypeName(2), '', "tools", Menu::class);
 } else {
@@ -61,25 +69,19 @@ if (Session::getCurrentInterface() == 'central') {
 }
 //}
 
-$activity = new PlanningExternalEvent();
+//TODO used by modal
+//if (((isset($_GET["action"]) && $_GET["action"] == "load")
+//      || (isset($_POST["action"]) && $_POST["action"] == "load"))
+//        && isset($users_id) && ($users_id > 0)) {
 
-if ($activity->canView()) {
-    //TODO used by modal
-    //if (((isset($_GET["action"]) && $_GET["action"] == "load")
-    //      || (isset($_POST["action"]) && $_POST["action"] == "load"))
-    //        && isset($users_id) && ($users_id > 0)) {
+//   $_GET['target']   = Toolbox::getItemTypeSearchURL(PlanningExternalEvent::class);
+//   $_GET["users_id"] = $users_id;
+//   PlanningExternalEvent::showGenericSearch(array_merge($_POST, $_GET));
 
-    //   $_GET['target']   = Toolbox::getItemTypeSearchURL(PlanningExternalEvent::class);
-    //   $_GET["users_id"] = $users_id;
-    //   PlanningExternalEvent::showGenericSearch(array_merge($_POST, $_GET));
+//} else {
 
-    //} else {
-
-    Search::show(PlanningExternalEvent::class);
-    //}
-} else {
-    throw new AccessDeniedHttpException();
-}
+Search::show(PlanningExternalEvent::class);
+//}
 
 if (isset($_GET["action"])) {
     Html::popFooter();

@@ -31,21 +31,21 @@ use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Activity\HolidayCount;
 use GlpiPlugin\Activity\Menu;
 
+$count = new HolidayCount();
+
+// Same ordering as front/holiday.php: settle the right before the response body
+// starts, otherwise the 403 is emitted after a full page of GLPI chrome.
+if (!$count->canView()) {
+    throw new AccessDeniedHttpException();
+}
+
 if (Session::getCurrentInterface() == 'central') {
     Html::header(HolidayCount::getTypeName(2), '', "tools", Menu::class, "holidaycount");
 } else {
     Html::helpHeader(HolidayCount::getTypeName(2));
 }
 
-$count = new HolidayCount();
-
-if ($count->canView()) {
-
-    Search::show(HolidayCount::class);
-
-} else {
-    throw new AccessDeniedHttpException();
-}
+Search::show(HolidayCount::class);
 
 if (Session::getCurrentInterface() == 'central') {
     Html::footer();

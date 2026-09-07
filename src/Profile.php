@@ -201,11 +201,6 @@ class Profile extends \Profile
                         'name'        => $new,
                         'profiles_id' => $profile_data['profiles_id'],
                     ]);
-                } else {
-                    $DB->add('glpi_profilerights', ['rights' => self::translateARight($profile_data[$old])], [
-                        'name'        => $new,
-                        'profiles_id' => $profile_data['profiles_id'],
-                    ]);
                 }
             }
         }

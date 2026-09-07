@@ -132,6 +132,11 @@ class Dashboard extends CommonGLPI
     {
         global $CFG_GLPI, $DB;
 
+        // Security: mydashboard reposts the widget id on every refresh, so gating the
+        // hook registration in setup.php only filters what is offered, never what can be
+        // asked for. The right is replayed here, where the widget actually reads data.
+        Session::checkRight('plugin_activity', READ);
+
         $dbu = new DbUtils();
         if (empty($this->form)) {
             $this->init();
@@ -239,8 +244,24 @@ class Dashboard extends CommonGLPI
                 }
                 $widget->setWidgetTitle("<a href='" . PLUGIN_ACTIVITY_WEBDIR . "/front/activity.form.php'>" . __('Planning access', 'activity') . "</a>");
 
-                $activities = "{}";
-                $activities = json_encode($this->getActivities($this->datas['users_id']));
+                // Dashboard::init() is commented out in full, so $this->datas is never
+                // populated on this path and this read landed on null. Resolve the target
+                // the way the other widgets do.
+                if (isset($opt['users_id']) && Session::haveRight("plugin_activity_all_users", 1)) {
+                    $planning_users_id = (int) $opt['users_id'];
+                } else {
+                    $planning_users_id = (int) Session::getLoginUserID();
+                }
+
+                // Security (stored XSS): the result is interpolated into an inline
+                // <script> block below. Plain json_encode() leaves "</script>" intact, so
+                // an activity title carrying it closed the block early and turned the rest
+                // of the title into markup. The HEX flags escape < > & as \u00xx, which
+                // JSON.parse resolves back to the original characters.
+                $activities = json_encode(
+                    $this->getActivities($planning_users_id),
+                    JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
+                );
                 $rand       = mt_rand();
                 $html       = '<script type="text/javascript">$("#calendarwidget' . $rand . '").fullCalendar({header: {
                                                                                                    left:"",
@@ -315,6 +336,17 @@ class Dashboard extends CommonGLPI
                 $entity      = $_SESSION['glpiactive_entity'];
                 $link_ticket = Toolbox::getItemTypeFormURL(\Ticket::class);
 
+                // Security: this widget lists ticket tasks flagged is_private, i.e. exactly
+                // the notes their author chose to keep out of everyone else's sight. Without
+                // a filter on the technician the query returned those of every intervener of
+                // the entity tree. Same rule as widget 1: the caller's own interventions,
+                // unless they hold the right that materialises the transverse view.
+                if (isset($opt['users_id']) && Session::haveRight("plugin_activity_all_users", 1)) {
+                    $tech_users_id = (int) $opt['users_id'];
+                } else {
+                    $tech_users_id = (int) Session::getLoginUserID();
+                }
+
                 $iterator = $DB->request([
                     'SELECT' => [
                         'glpi_tickettasks.date',
@@ -339,6 +371,7 @@ class Dashboard extends CommonGLPI
                         ['NOT' => ['glpi_tickets.status' => [5, 6]]],
                         ['glpi_tickettasks.date' => ['>=', "$annee-$mois-01 00:00:01"]],
                         'glpi_tickets.entities_id' => $dbu->getSonsOf('glpi_entities', $entity),
+                        'glpi_tickettasks.users_id_tech'            => $tech_users_id,
                     ],
                     'ORDER'      => 'glpi_tickettasks.date',
                 ]);

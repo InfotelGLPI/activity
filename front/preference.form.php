@@ -35,10 +35,20 @@ if (isset($_POST["add"])) {
     // Force the owner to the session user: $_POST['users_id'] is attacker-controlled,
     // so a Preference row can only ever be created for oneself (mirrors the
     // self-scoping already done in ajax/preferenceactions.php).
-    if ($pref->canCreate()) {
-        $input             = $_POST;
-        $input['users_id'] = Session::getLoginUserID();
-        $pref->add($input);
+    //
+    // Security (mass assignment + unvetted validator): the whole $_POST used to be
+    // handed to add(), which persists every key matching a real column -- and
+    // users_id_validate was never checked, unlike on the AJAX path. Build the row
+    // explicitly from the two fields this form owns, and run the posted manager id
+    // through the same validation as ajax/preferenceactions.php.
+    $manager_id = (int) ($_POST['users_id_validate'] ?? 0);
+    if ($pref->canCreate() && Preference::isValidManager($manager_id)) {
+        $pref->add([
+            'users_id'          => Session::getLoginUserID(),
+            'users_id_validate' => $manager_id,
+        ]);
+    } else {
+        Session::addMessageAfterRedirect(__('Please select a manager', 'activity'), false, ERROR);
     }
     Html::back();
 

@@ -45,6 +45,43 @@ class ProjectTask extends CommonDBTM
 
     public static $rightname = "plugin_activity";
 
+    public function canViewItem(): bool
+    {
+        // Without this override can($id, READ) reduces to the global
+        // plugin_activity right, held by every user of the plugin, and nothing
+        // ties the record to its parent project task. Mirrors TicketTask.
+        return $this->canOnParentCoreTask(READ);
+    }
+
+    public function canUpdateItem(): bool
+    {
+        // Same rationale as canViewItem(), applied to write paths.
+        return $this->canOnParentCoreTask(UPDATE);
+    }
+
+    public function canPurgeItem(): bool
+    {
+        // Same rationale as canViewItem(), applied to purge.
+        return $this->canOnParentCoreTask(PURGE);
+    }
+
+    /**
+     * Replay a right on the parent core ProjectTask (glpi_projecttasks) this
+     * plugin record decorates. Core \ProjectTask::can() cascades to the parent
+     * project's entity and visibility rules, closing the horizontal IDOR that
+     * the global plugin_activity right would otherwise leave open. Not currently
+     * reachable -- there is no front/ controller and massive actions are off --
+     * but the guard belongs with the class, not with the callers it may acquire.
+     */
+    private function canOnParentCoreTask(int $right): bool
+    {
+        if (!isset($this->fields['projecttasks_id']) || (int) $this->fields['projecttasks_id'] <= 0) {
+            return false;
+        }
+        $core_task = new \ProjectTask();
+        return $core_task->can((int) $this->fields['projecttasks_id'], $right);
+    }
+
     /**
      * functions mandatory
      * getTypeName(), canCreate(), canView()

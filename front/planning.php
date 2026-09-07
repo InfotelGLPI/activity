@@ -110,9 +110,12 @@ if (isset($_GET['checkavailability'])) {
         }
     }
 } else {
-    Html::header(__('Planning'), $_SERVER['PHP_SELF'], "plugins", "activity");
-
+    // The right must be settled before anything is written to the response: checked
+    // after Html::header(), the access-denied exception was raised with the page
+    // already half-sent, which replaced the core error screen with a truncated DOM.
     Session::checkRight('plugin_activity', CREATE);
+
+    Html::header(__('Planning'), $_SERVER['REQUEST_URI'], "plugins", "activity");
 
     if (!isset($_GET["date"]) || empty($_GET["date"])) {
         $_GET["date"] = date('Y-m-d', time());

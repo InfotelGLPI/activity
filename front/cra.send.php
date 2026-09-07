@@ -27,6 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use Glpi\Exception\Http\BadRequestHttpException;
 use GlpiPlugin\Activity\Report;
 
@@ -39,6 +40,19 @@ if (isset($_GET["file"])) { // for other file
             ($splitter[1] == "activity")
             && Session::haveRight("plugin_activity_statistics", READ)
         ) {
+            // Security: plugin_activity_statistics is the nominal right of anyone
+            // allowed to produce their own CRA, not an administration right, and the
+            // PDF directory is shared by the whole instance. Authorising on the right
+            // alone let any user read every colleague's report, so the ownership
+            // encoded in the file name is checked here as well.
+            $owner = Report::craPdfOwner($splitter[2]);
+            if (
+                $owner === null
+                || ($owner !== (int) Session::getLoginUserID()
+                    && !Session::haveRight("plugin_activity_all_users", 1))
+            ) {
+                throw new AccessDeniedHttpException();
+            }
             $send = GLPI_DOC_DIR . "/" . $_GET["file"];
         }
         if ($send && file_exists($send)) {

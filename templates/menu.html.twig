@@ -25,27 +25,17 @@
  # --------------------------------------------------------------------------
  #}
 
-<tr class="tab_bg_1">
-    <td>{{ _n('User', 'Users', 1) }}</td>
-    <td>
-        {% if user_dropdown_html is not empty %}
-            {# Server-side markup built by User::dropdown(). #}
-            {{ user_dropdown_html|raw }}
-        {% else %}
-            {{ username }}
-            <input type="hidden" name="users_id" value="{{ users_id }}">
-        {% endif %}
-    </td>
-    <td>{{ holiday_type_label }}</td>
-    <td>{{ holiday_type_dropdown_html|raw }}</td>
-</tr>
+<h3>
+    <div class="alert alert-secondary" role="alert">
+        <i class="ti ti-calendar"></i>&nbsp;{{ title }}
+    </div>
+</h3>
 
-<tr class="tab_bg_1">
-    <td>{{ holiday_period_label }}</td>
-    <td>{{ holiday_period_dropdown_html|raw }}</td>
-    <td>{{ __('Counter', 'activity') }}</td>
-    <td>
-        <input type="text" name="count" class="form-control" size="14"
-               value="{{ count }}">
-    </td>
-</tr>
+<table class="center" cellspacing="5" style="margin-left: auto; margin-right: auto;">
+    <tr>
+        {% for block in blocks %}
+            {# Server-side markup built by PlanningExternalEvent::menu(). #}
+            <td>{{ block|raw }}</td>
+        {% endfor %}
+    </tr>
+</table>

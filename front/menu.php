@@ -30,6 +30,7 @@
 use GlpiPlugin\Activity\Menu;
 use GlpiPlugin\Activity\PlanningExternalEvent;
 use GlpiPlugin\Activity\Holiday;
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\Exception\Http\AccessDeniedHttpException;
 
 $can = Session::haveRight("plugin_activity", READ);
@@ -48,29 +49,27 @@ if (Session::getCurrentInterface() == 'central') {
     Html::helpHeader(PlanningExternalEvent::getTypeName(2));
 }
 
-$activity = new \PlanningExternalEvent();
-
-echo "<h3><div class='alert alert-secondary' role='alert'>";
-echo "<i class='ti ti-calendar'></i>&nbsp;";
-echo _n('Activity', 'Activities', 2, 'activity');
-echo "</div></h3>";
-
-echo "<table class='center' cellspacing='5'  style=\"margin-left: auto;margin-right:auto;\"><tr>";
+$blocks = [];
 
 if ($can) {
-    echo "<td>";
-    $listActions = PlanningExternalEvent::getActionsOn();
-    echo PlanningExternalEvent::menu(PlanningExternalEvent::class, $listActions);
-    echo "</td>";
+    $blocks[] = PlanningExternalEvent::menu(
+        PlanningExternalEvent::class,
+        PlanningExternalEvent::getActionsOn(),
+    );
 }
 if ($canholiday
          || $canvalidateholiday) {
-    echo "<td>";
-    $listActions = Holiday::getActionsOn();
-    echo PlanningExternalEvent::menu(Holiday::class, $listActions);
-    echo "</td>";
+    $blocks[] = PlanningExternalEvent::menu(
+        Holiday::class,
+        Holiday::getActionsOn(),
+    );
 }
-echo "</tr></table>";
+
+TemplateRenderer::getInstance()->display('@activity/menu.html.twig', [
+    'title'  => _n('Activity', 'Activities', 2, 'activity'),
+    'blocks' => $blocks,
+]);
+
 if (!$can && !$canholiday  && !$canvalidateholiday) {
     throw new AccessDeniedHttpException();
 }

@@ -46,6 +46,12 @@ if (Plugin::isPluginActive("activity")) {
             Session::checkRight("config", UPDATE);
             $config = new Config();
             if (isset($_POST['entities_id'])) {
+                // Defence in depth: the config right above is the real gate, but the
+                // posted entity was never checked against the session, so a forged id
+                // created a configuration in an entity the caller does not administer.
+                if (!Session::haveAccessToEntity((int) $_POST['entities_id'])) {
+                    throw new AccessDeniedHttpException();
+                }
                 $config->add($_POST);
             }
             Html::back();
@@ -53,9 +59,19 @@ if (Plugin::isPluginActive("activity")) {
         } elseif (isset($_POST["delete_item"])) {
             Session::checkRight("config", UPDATE);
             $config = new Config();
-            foreach ($_POST["item"] as $key => $val) {
+            foreach ((array) ($_POST["item"] ?? []) as $key => $val) {
                 if ($val != 0) {
-                    $config->delete(['id' => $key]);
+                    // Same reasoning: delete() takes the posted id as-is and applies no
+                    // boundary of its own. Read the row back and drop it only if its
+                    // entity is one the caller can reach. The entity check is used here
+                    // rather than can($key, PURGE) because a profile may legitimately
+                    // hold the config right without holding the plugin's PURGE right.
+                    if (
+                        $config->getFromDB((int) $key)
+                        && Session::haveAccessToEntity($config->fields['entities_id'])
+                    ) {
+                        $config->delete(['id' => (int) $key]);
+                    }
                 }
             }
             Html::back();

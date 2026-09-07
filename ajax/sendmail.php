@@ -66,25 +66,41 @@ if (isset($holiday->fields['id']) && HolidayValidation::canValidate($hId)) {
     $strTxtFile = $holiday->createTxtFile($hId);
 
     $filename = "DC " . $userName . " " . date('Y') . " " . $dateBegin . ".txt";
-    // $userName comes from the target user's display name: strip any path
-    // component so a "../" in the name cannot escape GLPI_TMP_DIR on write.
+    // $userName comes from the target user's display name: strip any path component so
+    // that it cannot shape the attachment header with a directory of its own. This is
+    // now only the readable name shown to the recipient, not a path.
     $filename = basename($filename);
 
-    $f = fopen(GLPI_TMP_DIR . "/" . $filename, 'w');
-    fwrite($f, $strTxtFile);
-    fclose($f);
+    // Security: GLPI_TMP_DIR is shared and this file holds a nominative holiday
+    // request. Naming it after the employee made it guessable by anyone able to reach
+    // the directory, and nothing ever removed it. The name on disk is random and
+    // unrelated to the name attached to the mail, and the file is deleted below
+    // whatever happens.
+    $filepath = GLPI_TMP_DIR . "/" . bin2hex(random_bytes(16)) . ".txt";
 
-    $input                 = [];
-    $input['id']           = $hId;
-    $dateBegin             = date('d/m/Y', strtotime($holiday->fields['begin'])) . " " . $periods['txt'];
-    $input['mail_subject'] = __("Holiday request from", "activity") . " " . $userName . " " . __("of", "activity") . " " . $dateBegin;
-    $input['mail_body']    = $holiday->getBodyMail($dateBegin, date("d/m/Y", strtotime($holiday->fields['begin'])), $userName, $approverFullname);
-    $input['validate_id']  = Session::getLoginUserID();
-    $input['users_id']     = $holiday->fields['users_id'];
-    $input['filename']     = $filename;
-    $input['filepath']     = GLPI_TMP_DIR . "/" . $filename;
-    $notification          = new Notification();
-    $notification->sendComm($input);
+    if (file_put_contents($filepath, $strTxtFile) === false) {
+        trigger_error(sprintf('Activity: unable to write holiday request file %s', $filepath), E_USER_WARNING);
+        Session::addMessageAfterRedirect(__('Failed Mail send', 'activity'), false, ERROR);
+        exit;
+    }
+
+    try {
+        $input                 = [];
+        $input['id']           = $hId;
+        $dateBegin             = date('d/m/Y', strtotime($holiday->fields['begin'])) . " " . $periods['txt'];
+        $input['mail_subject'] = __("Holiday request from", "activity") . " " . $userName . " " . __("of", "activity") . " " . $dateBegin;
+        $input['mail_body']    = $holiday->getBodyMail($dateBegin, date("d/m/Y", strtotime($holiday->fields['begin'])), $userName, $approverFullname);
+        $input['validate_id']  = Session::getLoginUserID();
+        $input['users_id']     = $holiday->fields['users_id'];
+        $input['filename']     = $filename;
+        $input['filepath']     = $filepath;
+        $notification          = new Notification();
+        $notification->sendComm($input);
+    } finally {
+        // The attachment has been read by the mailer by now; it must not survive the
+        // request, whether the send succeeded or threw.
+        @unlink($filepath);
+    }
 
 } else {
     throw new NotFoundHttpException();

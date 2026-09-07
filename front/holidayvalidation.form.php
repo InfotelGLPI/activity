@@ -51,7 +51,15 @@ if (isset($_POST["update"])) {
     if ((int) $holidayValidation->fields['users_id_validate'] !== Session::getLoginUserID()) {
         throw new AccessDeniedHttpException();
     }
-    $holidayValidation->update($_POST);
+    // Defence in depth on top of the locks in HolidayValidation::prepareInput*():
+    // build the payload from the only fields this form owns instead of handing
+    // over the whole request body, which update() would persist column by column.
+    $holidayValidation->update([
+        'id'                 => $ID,
+        'accept_holiday'     => (int) ($_POST['accept_holiday'] ?? 0),
+        'refuse_holiday'     => (int) ($_POST['refuse_holiday'] ?? 0),
+        'comment_validation' => $_POST['comment_validation'] ?? '',
+    ]);
     Html::back();
 
 } elseif (isset($_POST["delete"])) {
@@ -59,7 +67,7 @@ if (isset($_POST["update"])) {
     if ((int) $holidayValidation->fields['users_id_validate'] !== Session::getLoginUserID()) {
         throw new AccessDeniedHttpException();
     }
-    $holidayValidation->delete($_POST);
+    $holidayValidation->delete(['id' => $ID]);
     Html::back();
 
 } elseif (isset($_POST["add"])) {
@@ -73,7 +81,12 @@ if (isset($_POST["update"])) {
     if (!HolidayValidation::canValidate($holidays_id)) {
         throw new AccessDeniedHttpException();
     }
-    $holidayValidation->add($_POST);
+    // Same reasoning as the update branch. users_id_validate and status are not
+    // listed on purpose: prepareInputForAdd() derives them, this form cannot.
+    $holidayValidation->add([
+        'plugin_activity_holidays_id' => $holidays_id,
+        'comment_validation'          => $_POST['comment_validation'] ?? '',
+    ]);
     Html::back();
 
 } else {

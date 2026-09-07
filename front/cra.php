@@ -32,7 +32,11 @@ use GlpiPlugin\Activity\Holiday;
 use GlpiPlugin\Activity\Menu;
 use GlpiPlugin\Activity\Report;
 
-Session::checkRight('plugin_activity', READ);
+// The CRA is gated by its own right: the menu entry (Menu::class) and the PDF
+// download endpoint (front/cra.send.php) both check plugin_activity_statistics.
+// Checking only the generic plugin_activity right here made the screen reachable
+// by direct URL for a profile the policy meant to exclude.
+Session::checkRight('plugin_activity_statistics', READ);
 
 if (isset($_GET['itemtype'])) {
     // Security: itemtype drives both a $_SESSION['glpisearch'] key and the

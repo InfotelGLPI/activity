@@ -37,7 +37,8 @@ $preferences = new Preference();
 // authorization explicitly instead of relying on implicit self-scoping.
 Session::checkRight("plugin_activity", READ);
 
-switch ($_POST ['action']) {
+// The caller owns the whole request body, so the key is not guaranteed to be there.
+switch ($_POST['action'] ?? '') {
     case 'add_manager_view':
         $preferences->showAddManagerView();
         break;
@@ -47,11 +48,7 @@ switch ($_POST ['action']) {
         // themselves. Otherwise an arbitrary/out-of-scope id could be stored as a
         // "validator", creating an orphan preference row.
         $manager_id = (int) ($_POST['manager_id'] ?? 0);
-        $manager    = new User();
-        if ($manager_id === 0
-            || $manager_id === (int) Session::getLoginUserID()
-            || !$manager->getFromDB($manager_id)
-            || !Session::haveAccessToEntity($manager->fields['entities_id'], true)) {
+        if (!Preference::isValidManager($manager_id)) {
             $message = __('Please select a manager', 'activity');
         } else {
             $preferences->fields['users_id']          = Session::getLoginUserID();

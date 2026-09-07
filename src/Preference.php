@@ -52,6 +52,35 @@ class Preference extends CommonDBTM
     public static $rightname = "plugin_activity";
 
     /**
+     * Is this id acceptable as a validating manager for the current user?
+     *
+     * Security: the id comes from the request body, so it is only a number until
+     * proven otherwise. It must designate a real user, visible in one of the
+     * caller's active entities, and not the caller themselves -- otherwise an
+     * out-of-scope or non-existent id lands in users_id_validate, and one can
+     * appoint oneself as one's own validator. The check used to live inline in
+     * ajax/preferenceactions.php only; front/preference.form.php reached the same
+     * table with no validation at all, so it is shared here and called from both.
+     *
+     * @param int $manager_id
+     *
+     * @return bool
+     */
+    public static function isValidManager(int $manager_id): bool
+    {
+        if ($manager_id === 0 || $manager_id === (int) Session::getLoginUserID()) {
+            return false;
+        }
+
+        $manager = new User();
+        if (!$manager->getFromDB($manager_id)) {
+            return false;
+        }
+
+        return Session::haveAccessToEntity($manager->fields['entities_id'], true);
+    }
+
+    /**
      * Get Tab Name used for itemtype
      *
      * NB : Only called for existing object

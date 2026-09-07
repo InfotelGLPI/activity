@@ -31,12 +31,15 @@ use GlpiPlugin\Activity\Holiday;
 use GlpiPlugin\Activity\HolidayCount;
 use GlpiPlugin\Activity\HolidayPeriod;
 use GlpiPlugin\Activity\HolidayType;
+use GlpiPlugin\Activity\HolidayValidation;
 use GlpiPlugin\Activity\Menu;
 use GlpiPlugin\Activity\Option;
 use GlpiPlugin\Activity\PlanningEventSubCategory;
 use GlpiPlugin\Activity\PlanningExternalEvent;
 use GlpiPlugin\Activity\Profile;
 use GlpiPlugin\Activity\ProjectTask;
+use GlpiPlugin\Activity\PublicHoliday;
+use GlpiPlugin\Activity\Snapshot;
 use GlpiPlugin\Activity\TicketTask;
 
 function plugin_activity_install()
@@ -290,6 +293,32 @@ function plugin_activity_install()
     return true;
 }
 
+/**
+ * Recursively remove a directory left behind by the plugin.
+ *
+ * @param string $dir absolute path
+ *
+ * @return void
+ */
+function plugin_activity_removeDirectory($dir)
+{
+    if (!is_dir($dir)) {
+        return;
+    }
+    foreach (scandir($dir) ?: [] as $entry) {
+        if ($entry === '.' || $entry === '..') {
+            continue;
+        }
+        $path = $dir . '/' . $entry;
+        if (is_dir($path)) {
+            plugin_activity_removeDirectory($path);
+        } else {
+            @unlink($path);
+        }
+    }
+    @rmdir($dir);
+}
+
 // Uninstall process for plugin : need to return true if succeeded
 function plugin_activity_uninstall()
 {
@@ -323,10 +352,34 @@ function plugin_activity_uninstall()
         'DropdownTranslation',
         'NotificationTemplate',
         'Notification'];
+    // Every itemtype the plugin registers leaves rows behind in the core satellite
+    // tables (display preferences, saved searches, document links, notepads...).
+    // Purging Holiday alone left the others orphaned, and they resurfaced as empty
+    // columns or SQL errors once the plugin was reinstalled onto fresh ids.
+    $plugin_itemtypes = [
+        Holiday::class,
+        HolidayCount::class,
+        HolidayPeriod::class,
+        HolidayType::class,
+        HolidayValidation::class,
+        Option::class,
+        PlanningEventSubCategory::class,
+        PlanningExternalEvent::class,
+        ProjectTask::class,
+        PublicHoliday::class,
+        Snapshot::class,
+        TicketTask::class,
+    ];
     foreach ($itemtypes as $itemtype) {
         $item = new $itemtype();
-        $item->deleteByCriteria(['itemtype' => Holiday::class]);
+        foreach ($plugin_itemtypes as $plugin_itemtype) {
+            $item->deleteByCriteria(['itemtype' => $plugin_itemtype]);
+        }
     }
+
+    // Generated CRA PDF files are not tied to any row, so they survive the table
+    // drops above unless they are removed explicitly.
+    plugin_activity_removeDirectory(GLPI_PLUGIN_DOC_DIR . '/activity');
 
     // Delete notifications
     $notif = new Notification();
@@ -462,6 +515,22 @@ function plugin_activity_addDefaultWhere($type)
         case HolidayCount::class:
             $who = (int) Session::getLoginUserID();
             return " `glpi_plugin_activity_holidaycounts`.`users_id` = '$who' ";
+            break;
+        case PlanningExternalEvent::class:
+            // Security: this itemtype is exposed through Search::show() behind the
+            // generic plugin_activity READ right only. Its satellite table carries
+            // neither users_id nor entities_id, so neither the ownership boundary nor
+            // the entity boundary is applied by anything else: the list would show the
+            // logged activity of the whole instance. Restrict through the core event
+            // the row hangs off, mirroring what Report::showGenericSearch() enforces.
+            $dbu = new DbUtils();
+            $sub = "SELECT `id` FROM `glpi_planningexternalevents` WHERE 1 "
+                   . $dbu->getEntitiesRestrictRequest("AND", "glpi_planningexternalevents");
+            if (!Session::haveRight("plugin_activity_all_users", 1)) {
+                $who = (int) Session::getLoginUserID();
+                $sub .= " AND `glpi_planningexternalevents`.`users_id` = '$who' ";
+            }
+            return " `glpi_plugin_activity_planningexternalevents`.`planningexternalevents_id` IN ($sub) ";
             break;
     }
     return "";

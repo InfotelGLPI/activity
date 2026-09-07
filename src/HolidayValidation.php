@@ -68,6 +68,26 @@ class HolidayValidation extends CommonDBChild
      *
      * @return bool
      */
+    /**
+     * Security: users_id_validate is the single source of truth of canValidate()
+     * and of every per-record guard in the plugin, and status carries the outcome
+     * of the workflow. Neither may be designated by the request body. They are
+     * legitimately written by the submission workflow (Holiday::post_addItem()),
+     * which opts in through allowWorkflowWrite(): that path creates one row per
+     * manager of the requester, so the validator is by construction someone other
+     * than the caller -- which is exactly why the gate cannot be "force it to the
+     * session user" nor a right check.
+     */
+    private bool $workflow_write_allowed = false;
+
+    /**
+     * Authorise the next add() of this instance to carry the workflow columns.
+     */
+    public function allowWorkflowWrite(): void
+    {
+        $this->workflow_write_allowed = true;
+    }
+
     public static function canValidate($hId)
     {
         return countElementsInTable(
@@ -131,6 +151,17 @@ class HolidayValidation extends CommonDBChild
         //      $input['comment_validation'] = '';
         $input['submission_date'] = date('Y-m-d H:i');
 
+        // Security (mass assignment): outside the submission workflow the caller
+        // may not designate the validator nor pre-set the outcome. Posting
+        // users_id_validate let one appoint a colleague as the approver of record,
+        // and posting status short-circuited both the accept/refuse mapping and the
+        // "a refusal requires a reason" rule enforced in prepareInputForUpdate().
+        if (!$this->workflow_write_allowed) {
+            $input['users_id_validate'] = Session::getLoginUserID();
+            unset($input['status']);
+        }
+        $this->workflow_write_allowed = false;
+
         return parent::prepareInputForAdd($input);
     }
 
@@ -141,8 +172,13 @@ class HolidayValidation extends CommonDBChild
         if ($holiday->getFromDB($this->fields['plugin_activity_holidays_id'])) {
             // Set global validation to waiting
             if ($holiday->fields['global_validation'] == CommonValidation::NONE) {
-                $input['id']                = $this->fields['plugin_activity_holidays_id'];
-                $input['global_validation'] = CommonValidation::WAITING;
+                $input = [
+                    'id'                => $this->fields['plugin_activity_holidays_id'],
+                    'global_validation' => CommonValidation::WAITING,
+                ];
+                // The workflow, not the request body, drives this transition: opt in
+                // explicitly so Holiday::prepareInputForUpdate() lets the column through.
+                $holiday->allowValidationWrite();
                 $holiday->update($input);
             }
         }
@@ -150,6 +186,14 @@ class HolidayValidation extends CommonDBChild
 
     public function prepareInputForUpdate($input)
     {
+        // Security (mass assignment): no legitimate path ever reassigns the
+        // validator of an existing record, so the column is dropped unconditionally.
+        // The ownership guard in front/holidayvalidation.form.php reads the value
+        // *stored in DB* before the write, so it protects the row, not the payload:
+        // without this, the designated validator could accept a request and, in the
+        // same post, attribute the approval to someone who never gave it.
+        unset($input['users_id_validate']);
+
         $input['validation_date'] = date('Y-m-d H:i:s');
 
         if (isset($input['refuse_holiday']) && $input['refuse_holiday'] == 1) {
@@ -160,7 +204,9 @@ class HolidayValidation extends CommonDBChild
             $input['status'] = CommonValidation::ACCEPTED;
         }
 
-        if ($input['status'] == CommonValidation::REFUSED && $input['comment_validation'] == "") {
+        // Neither key is mandatory in a partial update, so both were read on inputs that
+        // never carry them.
+        if (($input['status'] ?? null) == CommonValidation::REFUSED && ($input['comment_validation'] ?? "") == "") {
             Session::addMessageAfterRedirect(__('If approval is denied, specify a reason.'), false, ERROR);
             return false;
         }
@@ -184,8 +230,12 @@ class HolidayValidation extends CommonDBChild
         //Set global validation to accepted to define one
         if (($holiday->fields['global_validation'] == CommonValidation::WAITING)
           && in_array("status", $this->updates)) {
-            $input['id']                = $this->fields['plugin_activity_holidays_id'];
-            $input['global_validation'] = self::computeValidationStatus($holiday);
+            $input = [
+                'id'                => $this->fields['plugin_activity_holidays_id'],
+                'global_validation' => self::computeValidationStatus($holiday),
+            ];
+            // Computed from the validators' answers, never from the caller's payload.
+            $holiday->allowValidationWrite();
             $holiday->update($input);
         }
 

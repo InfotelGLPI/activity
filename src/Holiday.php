@@ -66,6 +66,26 @@ class Holiday extends CommonDBTM
     public static $itemtype = Holiday::class;
     public static $items_id = 'plugin_activity_holidays_id';
 
+    /**
+     * Security: global_validation and validation_percent are real columns that
+     * showForm() never renders, so the only way they can appear in an update
+     * payload is because someone put them there. They are legitimately written by
+     * the validation workflow (HolidayValidation), which opts in through
+     * allowValidationWrite(). A property cannot be forged from $_POST, which is
+     * exactly why the gate is one rather than a right: the NONE -> WAITING
+     * transition runs in the *requester's* session, and a requester holds no
+     * validation right.
+     */
+    private bool $validation_write_allowed = false;
+
+    /**
+     * Authorise the next update() of this instance to carry the validation columns.
+     */
+    public function allowValidationWrite(): void
+    {
+        $this->validation_write_allowed = true;
+    }
+
     public static $log_history_add    = Log::HISTORY_LOG_SIMPLE_MESSAGE;
     public static $log_history_update = Log::HISTORY_LOG_SIMPLE_MESSAGE;
     public static $log_history_delete = Log::HISTORY_LOG_SIMPLE_MESSAGE;
@@ -223,6 +243,16 @@ class Holiday extends CommonDBTM
         if (!Session::haveRight('plugin_activity_all_users', 1)) {
             $input['users_id'] = $this->fields['users_id'];
         }
+
+        // Security (privilege escalation): same reasoning as users_id above, applied to
+        // the validation state. Neither column is rendered by showForm(), yet update()
+        // persists any posted real column: posting global_validation=3 on one's own
+        // pending request self-approved it, bypassing the validators entirely. Only the
+        // workflow, which calls allowValidationWrite(), may write them.
+        if (!$this->validation_write_allowed) {
+            unset($input['global_validation'], $input['validation_percent']);
+        }
+        $this->validation_write_allowed = false;
 
         return $input;
     }
@@ -398,7 +428,10 @@ class Holiday extends CommonDBTM
                 }
 
                 $holidayValidation->fields['users_id_validate'] = $data['users_id_validate'];
-                $holidayValidation_id                           = $holidayValidation->add($holidayValidation->fields);
+                // The submission workflow, not a request body, designates the
+                // validators: one row per manager of the requester.
+                $holidayValidation->allowWorkflowWrite();
+                $holidayValidation_id = $holidayValidation->add($holidayValidation->fields);
 
                 $mailsend = false;
                 // Send mail for each validator
@@ -1441,6 +1474,15 @@ class Holiday extends CommonDBTM
 
         $finalRows = '';
 
+        // Security: the template is HTML (it carries <br> tags) and the result is used
+        // as the HTML body of the validation mail. These names come from the directory
+        // and from the session, i.e. from data the plugin does not control, so they are
+        // escaped here instead of being trusted: without this, a display name carrying
+        // markup is rendered as markup in the validating manager's mailbox.
+        $dateComplete     = htmlspecialchars($dateComplete, ENT_QUOTES, 'UTF-8');
+        $approverFullName = htmlspecialchars($approverFullName, ENT_QUOTES, 'UTF-8');
+        $userName         = htmlspecialchars($userName, ENT_QUOTES, 'UTF-8');
+
         foreach ($rows as $row => $data) {
             //get row data
             if (strpos($data, "{{holiday_date_complete}}") !== false) {
@@ -1981,6 +2023,22 @@ class Holiday extends CommonDBTM
         switch ($ma->getAction()) {
             case "updateAllValidations":
                 if (Session::haveRight('plugin_activity_can_validate', 1)) {
+                    // Security (mass assignment): MassiveAction::getInput() returns the whole
+                    // POST body minus a handful of infrastructure keys, and update() persists
+                    // every key matching a real column. Passing it through meant any column of
+                    // glpi_plugin_activity_holidayvalidations could be written from the massive
+                    // action form -- users_id_validate included, i.e. re-assigning someone
+                    // else's validation to oneself. Only the two fields the sub-form actually
+                    // renders are forwarded, and the status is constrained to the two
+                    // transitions this action exists for.
+                    $status = (int) ($input['global_validation'] ?? 0);
+                    if (!in_array($status, [CommonValidation::ACCEPTED, CommonValidation::REFUSED], true)) {
+                        foreach ($ids as $key => $val) {
+                            $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_KO);
+                        }
+                        break;
+                    }
+
                     $holidayValidation = new HolidayValidation();
                     $dbu               = new DbUtils();
                     foreach ($ids as $key => $val) {
@@ -1988,9 +2046,12 @@ class Holiday extends CommonDBTM
                         $datas     = $dbu->getAllDataFromTable($holidayValidation->getTable(), $condition);
 
                         foreach ($datas as $data) {
-                            $input['id']     = $data['id'];
-                            $input['status'] = $input['global_validation'];
-                            if ($holidayValidation->update($input)) {
+                            $safe = [
+                                'id'                 => (int) $data['id'],
+                                'status'             => $status,
+                                'comment_validation' => $input['comment_validation'] ?? '',
+                            ];
+                            if ($holidayValidation->update($safe)) {
                                 $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_OK);
                             } else {
                                 $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_KO);

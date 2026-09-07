@@ -36,6 +36,7 @@ use Glpi\Application\View\TemplateRenderer;
 use Group_User;
 use Html;
 use Session;
+use User;
 
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
@@ -72,36 +73,50 @@ class HolidayCount extends CommonDBTM
             && $this->checkUserIsManager($this->fields['users_id']);
     }
 
+    public function canCreateItem(): bool
+    {
+        // Rights: without this override, check(-1, CREATE, $_POST) falls back on the
+        // global plugin_activity CREATE right, i.e. the ordinary activity-logging right
+        // held by every user of the plugin. The counter carries the holiday entitlement
+        // granted to a user, so that fallback turned an HR decision into a self-service
+        // field. $this->fields is populated from the posted input at this point
+        // (CommonDBTM::can()), so the target checked here is the one being asked for.
+        return $this->canManageCounterFor($this->fields['users_id'] ?? 0);
+    }
+
     public function canUpdateItem(): bool
     {
-        // Ownership: the global plugin_activity UPDATE right must NOT allow
-        // editing another user's counter. Only the owner, or a profile holding
-        // plugin_activity_all_users, may update it (mirrors Holiday::canUpdateItem()).
-        // Otherwise check($id, UPDATE) would let a colleague falsify someone
-        // else's holiday balance.
-        if (Session::haveRight('plugin_activity_all_users', 1)) {
-            return true;
-        }
-        return isset($this->fields['users_id'])
-            && $this->fields['users_id'] == Session::getLoginUserID();
+        // Ownership: the global plugin_activity UPDATE right must NOT allow editing a
+        // counter, neither someone else's (a plain horizontal IDOR) nor one's own: the
+        // stored balance is read back by the validating manager through
+        // Holiday::getDetails(), so it is a figure the holder must not set.
+        return $this->canManageCounterFor($this->fields['users_id'] ?? 0);
     }
 
     public function canPurgeItem(): bool
     {
-        // Ownership: a counter may be purged by its owner, by a profile holding
-        // plugin_activity_all_users, or by the manager responsible for validating
-        // that user's holiday requests (mirrors Holiday::canPurgeItem()). The
-        // global plugin_activity PURGE right alone is not enough, otherwise
-        // check($id, PURGE) would be a plain IDOR deleting a colleague's balance.
+        // Same reasoning as canUpdateItem(): letting the holder purge their own counter
+        // is just another way of rewriting a consumed balance.
+        return $this->canManageCounterFor($this->fields['users_id'] ?? 0);
+    }
+
+    /**
+     * Whether the current user may create, update or purge the counter owned by
+     * $users_id. A holiday counter is granted by HR or by the validating manager, never
+     * self-served: the owner keeps read access (canViewItem()) but no write access.
+     */
+    private function canManageCounterFor($users_id): bool
+    {
         if (Session::haveRight('plugin_activity_all_users', 1)) {
             return true;
         }
-        if (isset($this->fields['users_id'])
-            && $this->fields['users_id'] == Session::getLoginUserID()) {
-            return true;
+
+        $users_id = (int) $users_id;
+        if ($users_id <= 0 || $users_id === (int) Session::getLoginUserID()) {
+            return false;
         }
-        return isset($this->fields['users_id'])
-            && $this->checkUserIsManager($this->fields['users_id']);
+
+        return $this->checkUserIsManager($users_id);
     }
 
     /**
@@ -165,13 +180,23 @@ class HolidayCount extends CommonDBTM
      **/
     public function prepareInputForUpdate($input)
     {
-        // Security (identity spoofing): mirror prepareInputForAdd(). The check($id,
-        // UPDATE) guard only proves the caller may edit the record as stored in DB;
-        // it does not vet a users_id present in the payload. Since CommonDBTM::update()
-        // persists any posted real column, a posted users_id would be written verbatim,
-        // letting an owner re-assign the counter to a colleague (falsifying their
-        // holiday balance). Realign the owner on the stored value unless the caller
-        // holds plugin_activity_all_users.
+        // Fail closed for any caller reaching update() without going through
+        // check($id, UPDATE): the write guard belongs to the model, not to the entry
+        // point.
+        if (!$this->canManageCounterFor($this->fields['users_id'] ?? 0)) {
+            Session::addMessageAfterRedirect(
+                __('You are not allowed to change this holiday counter', 'activity'),
+                false,
+                ERROR,
+            );
+            return false;
+        }
+
+        // Security (identity spoofing): the guard above only proves the caller may edit
+        // the record as stored in DB; it does not vet a users_id present in the payload.
+        // Since CommonDBTM::update() persists any posted real column, a posted users_id
+        // would be written verbatim, re-assigning the counter to a colleague. Realign
+        // the owner on the stored value unless the caller holds plugin_activity_all_users.
         if (!Session::haveRight('plugin_activity_all_users', 1)) {
             $input['users_id'] = $this->fields['users_id'];
         }
@@ -184,14 +209,20 @@ class HolidayCount extends CommonDBTM
      **/
     public function prepareInputForAdd($input)
     {
-        // Security (identity spoofing): never trust a posted users_id. A holiday
-        // counter must belong to the current user; only a profile holding
-        // plugin_activity_all_users may manage one on behalf of someone else.
-        // Without this, any holder of plugin_activity CREATE could POST
-        // users_id=<colleague> and inflate/falsify their holiday balance.
-        if (!Session::haveRight('plugin_activity_all_users', 1)) {
-            $input['users_id'] = Session::getLoginUserID();
+        // Security (identity spoofing): never trust a posted users_id. Keep the target
+        // only when the caller is actually entitled to manage that user's counter, and
+        // fail closed otherwise, including when the target is the caller themselves,
+        // which is the self-granting case canCreateItem() exists to reject.
+        $target = (int) ($input['users_id'] ?? 0);
+        if (!$this->canManageCounterFor($target)) {
+            Session::addMessageAfterRedirect(
+                __('You are not allowed to set a holiday counter for this user', 'activity'),
+                false,
+                ERROR,
+            );
+            return false;
         }
+        $input['users_id'] = $target;
 
         if ($input['plugin_activity_holidayperiods_id'] == 0) {
             Session::addMessageAfterRedirect(__("Holiday period is mandatory field", "activity"), false, ERROR);
@@ -314,6 +345,30 @@ class HolidayCount extends CommonDBTM
         $this->initForm($ID, $options);
         $this->showFormHeader($options);
 
+        // The form used to hardcode the session user as the owner, which is exactly the
+        // self-service path canCreateItem() now refuses. Target the record being edited,
+        // or the user passed by the caller, and expose a selector to the profiles
+        // allowed to grant a counter. The write guard still has the final say.
+        $target_users_id = (int) ($this->fields['users_id'] ?? 0);
+        if ($target_users_id <= 0) {
+            $target_users_id = (int) ($options['users_id'] ?? Session::getLoginUserID());
+        }
+
+        $user_dropdown_html = '';
+        if (
+            $this->isNewItem()
+            && (Session::haveRight('plugin_activity_all_users', 1)
+                || Session::haveRight('plugin_activity_can_validate', READ))
+        ) {
+            ob_start();
+            User::dropdown([
+                'name'  => 'users_id',
+                'value' => $target_users_id,
+                'right' => 'all',
+            ]);
+            $user_dropdown_html = ob_get_clean();
+        }
+
         ob_start();
         Dropdown::show(HolidayType::class, [
             'name'     => 'plugin_activity_holidaytypes_id',
@@ -331,8 +386,9 @@ class HolidayCount extends CommonDBTM
         $holiday_period_dropdown_html = ob_get_clean();
 
         TemplateRenderer::getInstance()->display('@activity/holiday_count_form.html.twig', [
-            'users_id'                    => Session::getLoginUserID(),
-            'username'                    => $dbu->getUserName(Session::getLoginUserID()),
+            'users_id'                    => $target_users_id,
+            'username'                    => $dbu->getUserName($target_users_id),
+            'user_dropdown_html'          => $user_dropdown_html,
             'holiday_type_label'          => HolidayType::getTypeName(1),
             'holiday_type_dropdown_html'  => $holiday_type_dropdown_html,
             'holiday_period_label'        => HolidayPeriod::getTypeName(1),

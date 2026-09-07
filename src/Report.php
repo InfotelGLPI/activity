@@ -40,6 +40,7 @@ use Document;
 use Document_Item;
 use Glpi\Application\View\TemplateRenderer;
 use Glpi\DBAL\QueryExpression;
+use Glpi\Exception\Http\NotFoundHttpException;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Manageentities\Config as ManageentitiesConfig;
 use Html;
@@ -282,13 +283,18 @@ class Report extends CommonDBTM
 
         $user = new User();
         $user->getFromDB($input["users_id"]);
+        // Security: the login is fed by the directory (LDAP) and is not constrained to
+        // filesystem-safe characters, so it must never reach a path as-is. Drop any
+        // directory component, then keep a conservative character set.
         $name     = $user->fields['name'] . " - CRA - " . $PDF->GetNoCra(getdate());
-        $filename = $name . ".pdf";
+        $filename = preg_replace('/[^A-Za-z0-9 _.-]/', '_', basename($name)) . ".pdf";
         $docpath  = GLPI_TMP_DIR;
 
         //Sauvegarde du PDF dans le fichier
         if (!is_dir($docpath)) {
-            mkdir($docpath, 0777, true);
+            // 0770 like the rest of the plugin: snapshots carry per-user activity
+            // reports and have no reason to be world-readable.
+            mkdir($docpath, 0770, true);
         }
 
         $PDF->Output(GLPI_TMP_DIR . "/" . $filename, 'F');
@@ -353,6 +359,11 @@ class Report extends CommonDBTM
 
     public function showGenericSearch($input)
     {
+        // Security: the CRA has its own right, plugin_activity_statistics, already
+        // enforced by the menu entry and by the PDF endpoint. Replay it here so that no
+        // parallel entry point can produce a report on the generic plugin_activity
+        // right alone.
+        Session::checkRight('plugin_activity_statistics', READ);
 
         // Display type
         $output_type = Search::HTML_OUTPUT;
@@ -370,11 +381,21 @@ class Report extends CommonDBTM
             $output_type = search::HTML_OUTPUT;
         }
 
+        // Security: resolve the target user from the sanitised $input, never from the
+        // superglobal — callers pass an already-authorised users_id and $_POST is still
+        // fully attacker-controlled at this point.
         if (!isset($input["users_id"]) || empty($input["users_id"])) {
             $users_id = Session::getLoginUserID();
         } else {
-            $users_id = (int) $_POST["users_id"];
+            $users_id = (int) $input["users_id"];
         }
+
+        // Security: defence in depth — enforce the compartmentalisation at the point of
+        // consumption instead of relying on every caller to sanitise its input.
+        if (!Session::haveRight("plugin_activity_all_users", 1)) {
+            $users_id = Session::getLoginUserID();
+        }
+        $input["users_id"] = $users_id;
         if ($output_type == Search::HTML_OUTPUT) {
             Html::header(PlanningExternalEvent::getTypeName(2));
 
@@ -390,7 +411,9 @@ class Report extends CommonDBTM
             // Build hidden fields for export + snapshot forms
             $export_hidden = '';
             $snapshot_hidden = '';
-            $post_without_snapshot = $_POST;
+            // Security: rebuild the export form from the sanitised users_id so a
+            // rejected target cannot be re-submitted through the hidden fields.
+            $post_without_snapshot = array_merge($_POST, ["users_id" => $users_id]);
             unset($post_without_snapshot['snapshot']);
             unset($post_without_snapshot['_glpi_csrf_token']);
             foreach ($post_without_snapshot as $key => $val) {
@@ -1329,16 +1352,20 @@ class Report extends CommonDBTM
                         ], '&'),
                     );
                 } else { // Si il ne souhaite pas -> on affiche le CRA pdf dans une Popup
-                    $user = new User();
-                    $user->getFromDB($input["users_id"]);
-                    $filename = $user->fields['name'] . " - CRA - " . $PDF->GetNoCra(getdate()) . ".pdf";
-                    $seepath  = GLPI_PLUGIN_DOC_DIR . "/activity/";
+                    // Security: the file lands in a directory shared by the whole
+                    // instance and is served back by front/cra.send.php. A name built
+                    // from the login and the CRA number was guessable, and the endpoint
+                    // only checked a global right: any user could enumerate everyone
+                    // else's report. craPdfName() returns an unguessable name carrying
+                    // its owner, and drops the previous PDF of that same user.
+                    $filename = self::craPdfName((int) $input["users_id"]);
+                    $seepath  = self::craPdfDir();
 
                     //Sauvegarde du PDF dans le fichier
                     if (!is_dir($seepath)) {
-                        mkdir($seepath);
+                        mkdir($seepath, 0770, true);
                     }
-                    $PDF->Output($seepath . "/" . $filename, 'F');
+                    $PDF->Output($seepath . $filename, 'F');
 
                     $showPopUp = true;
                 }
@@ -1398,7 +1425,7 @@ class Report extends CommonDBTM
                         ]);
                         if (count($iteratort)) {
                             foreach ($iteratort as $datat) {
-                                $comment .= RichText::getTextFromHtml($datat["text"])
+                                $comment .= htmlspecialchars(RichText::getTextFromHtml($datat["text"]), ENT_QUOTES)
                                     . " (" . self::TotalTpsPassesArrondis($use_hour_on_cra ? $datat["actiontime"] : ($datat["actiontime"] / $AllDay), $options) . ")<br>";
                             }
                         }
@@ -1423,7 +1450,7 @@ class Report extends CommonDBTM
 
                         $comment = "";
                         foreach ($data['events'] as $datat) {
-                            $comment .= RichText::getTextFromHtml($datat["text"])
+                            $comment .= htmlspecialchars(RichText::getTextFromHtml($datat["text"]), ENT_QUOTES)
                                 . " (" . self::TotalTpsPassesArrondis($use_hour_on_cra ? $datat["actiontime"] : ($datat["actiontime"] / $AllDay), $options) . ")<br>";
                         }
 
@@ -2244,13 +2271,67 @@ class Report extends CommonDBTM
         return $result;
     }
 
+    /**
+     * Directory holding the generated CRA PDF files.
+     *
+     * @return string absolute path, with a trailing separator
+     */
+    public static function craPdfDir()
+    {
+        return GLPI_PLUGIN_DOC_DIR . "/activity/";
+    }
+
+    /**
+     * Build an unguessable file name for a generated CRA PDF.
+     *
+     * Security: the previous scheme ("<login> - CRA - <no>.pdf") was fully
+     * predictable, and the directory is shared by every user of the instance. The
+     * name now carries the owner id as a prefix — so front/cra.send.php can enforce
+     * a per-resource authorisation, see self::craPdfOwner() — followed by 16 random
+     * bytes. The previous PDF of that same user is removed so the directory does not
+     * grow without bound.
+     *
+     * @param int $users_id owner of the report
+     *
+     * @return string file name, without any directory component
+     */
+    public static function craPdfName($users_id)
+    {
+        $users_id = (int) $users_id;
+
+        foreach (glob(self::craPdfDir() . $users_id . "-*.pdf") ?: [] as $stale) {
+            @unlink($stale);
+        }
+
+        return $users_id . "-" . bin2hex(random_bytes(16)) . ".pdf";
+    }
+
+    /**
+     * Owner of a generated CRA PDF, read back from its file name.
+     *
+     * @param string $filename file name produced by self::craPdfName()
+     *
+     * @return int|null owner id, or null when the name does not match the scheme
+     */
+    public static function craPdfOwner($filename)
+    {
+        if (preg_match('/^(\d+)-[0-9a-f]{32}\.pdf$/', (string) $filename, $matches) !== 1) {
+            return null;
+        }
+
+        return (int) $matches[1];
+    }
+
     public function send($doc)
     {
 
         $file = GLPI_DOC_DIR . "/" . $doc->fields['filepath'];
 
         if (!file_exists($file)) {
-            die("Error file " . $file . " does not exist");
+            // Security: never echo the absolute path back to the client, it maps the
+            // installation layout. Keep the detail in the log, answer a bare 404.
+            trigger_error(sprintf('Activity: missing CRA file %s', $file), E_USER_WARNING);
+            throw new NotFoundHttpException();
         }
         // Now send the file with header() magic
         header("Expires: Mon, 26 Nov 1962 00:00:00 GMT");
@@ -2259,7 +2340,11 @@ class Report extends CommonDBTM
         header("Content-disposition: filename=\"" . $doc->fields['filename'] . "\"");
         header("Content-type: " . $doc->fields['mime']);
 
-        readfile($file) or die("Error opening file $file");
+        // Same reasoning as above; headers are already sent at this point, so the
+        // failure is only journalised.
+        if (readfile($file) === false) {
+            trigger_error(sprintf('Activity: unable to read CRA file %s', $file), E_USER_WARNING);
+        }
     }
 
     /**

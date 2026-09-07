@@ -441,11 +441,12 @@ class PlanningExternalEvent extends CommonDBTM
                 'glpi_planningeventcategories',
                 $item->fields['planningeventcategories_id'],
             )) {
-                $item->input['name'] = addslashes(
-                    Dropdown::getDropdownName(
-                        'glpi_planningeventcategories',
-                        $item->input['planningeventcategories_id'],
-                    ),
+                // GLPI 10 stores data unescaped and CommonDBTM already escapes on write:
+                // addslashes() here only injected stray backslashes into the event name
+                // whenever a category label carried an apostrophe.
+                $item->input['name'] = Dropdown::getDropdownName(
+                    'glpi_planningeventcategories',
+                    $item->input['planningeventcategories_id'],
                 );
             }
         }
@@ -622,11 +623,10 @@ class PlanningExternalEvent extends CommonDBTM
         $use_we = $opt->fields['use_weekend'];
 
         if ($opt && $opt->fields['use_type_as_name'] == 1) {
-            $item->input["name"] = addslashes(
-                Dropdown::getDropdownName(
-                    'glpi_planningeventcategories',
-                    $item->input['planningeventcategories_id'],
-                ),
+            // Same as above: the value feeds a CommonDBTM input, not a raw query.
+            $item->input["name"] = Dropdown::getDropdownName(
+                'glpi_planningeventcategories',
+                $item->input['planningeventcategories_id'],
             );
         }
 

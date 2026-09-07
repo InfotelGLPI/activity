@@ -285,21 +285,47 @@ class Option extends CommonDBTM
     public function prepareInputForUpdate($input)
     {
         if (isset($input['_filename']) && count($input['_filename']) > 0) {
-            $ext = strtolower(pathinfo($input['_filename'][0], PATHINFO_EXTENSION));
-            if (!in_array($ext, ['jpg', 'jpeg'])) {
+            // Security: the name comes straight from the POST and is later concatenated
+            // onto GLPI_TMP_DIR, so any path separator is rejected outright rather than
+            // normalised away — a caller has no legitimate reason to send one.
+            $posted = (string) $input['_filename'][0];
+            if ($posted === '' || strpbrk($posted, "/\\") !== false) {
+                Session::addMessageAfterRedirect(
+                    __('Invalid filename'),
+                    false,
+                    ERROR,
+                );
+                return false;
+            }
+            $file = basename($posted);
+
+            // Security: the extension says nothing about the content. The uploaded file
+            // becomes a GLPI Document and is then read by CraPDF when rendering the
+            // report, so the real MIME type is what must be checked.
+            $tmpfile = GLPI_TMP_DIR . '/' . $file;
+            $ext     = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+            $mime    = false;
+            if (is_file($tmpfile)) {
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                if ($finfo !== false) {
+                    $mime = finfo_file($finfo, $tmpfile);
+                    finfo_close($finfo);
+                }
+            }
+
+            // Security: fail closed. A rejected upload aborts the whole update instead
+            // of silently dropping the file, so the stored logo is never lost — and
+            // never replaced — on the strength of a name alone.
+            if (!in_array($ext, ['jpg', 'jpeg'], true) || $mime !== 'image/jpeg') {
                 Session::addMessageAfterRedirect(
                     __('The format of the image must be JPG or JPEG', 'activity'),
                     false,
                     ERROR,
                 );
-                unset($input['_filename']);
-            } elseif (!empty($this->fields['cra_logo_id'])) {
-                // Replace existing logo: delete the old Document first
-                $doc = new Document();
-                if ($doc->getFromDB($this->fields['cra_logo_id'])) {
-                    $doc->delete(['id' => $this->fields['cra_logo_id']], true);
-                }
+                return false;
             }
+
+            $input['_filename'][0] = $file;
         }
         return $input;
     }
@@ -307,10 +333,21 @@ class Option extends CommonDBTM
     public function post_updateItem($history = 1)
     {
         if (isset($this->input['_filename']) && count($this->input['_filename']) > 0) {
-            $docId = $this->addLogoFile($this->input);
+            $previous_logo_id = (int) ($this->fields['cra_logo_id'] ?? 0);
+            $docId            = $this->addLogoFile($this->input);
             if ($docId > 0) {
                 $this->fields['cra_logo_id'] = $docId;
                 $this->updateInDB(['cra_logo_id']);
+
+                // Replace existing logo: the old Document is dropped only once the new
+                // one is in place, so a failed import cannot leave the CRA without a
+                // logo.
+                if ($previous_logo_id > 0 && $previous_logo_id !== $docId) {
+                    $doc = new Document();
+                    if ($doc->getFromDB($previous_logo_id)) {
+                        $doc->delete(['id' => $previous_logo_id], true);
+                    }
+                }
             }
         }
     }
@@ -320,7 +357,9 @@ class Option extends CommonDBTM
         if (empty($input['_filename'][0])) {
             return 0;
         }
-        $file = $input['_filename'][0];
+        // The name was normalised and its content validated by prepareInputForUpdate();
+        // basename() is repeated here so the method stays safe on its own.
+        $file = basename((string) $input['_filename'][0]);
         $filename = GLPI_TMP_DIR . '/' . $file;
 
         $doc = new Document();
@@ -331,7 +370,7 @@ class Option extends CommonDBTM
         }
 
         $docId = $doc->add([
-            'name'                    => addslashes(__('CRA logo', 'activity')),
+            'name'                    => __('CRA logo', 'activity'),
             'entities_id'             => $entities_id,
             'is_recursive'            => 1,
             '_only_if_upload_succeed' => 1,
