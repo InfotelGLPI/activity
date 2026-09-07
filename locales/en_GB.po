@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin 2.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-07 11:36+0000\n"
+"POT-Creation-Date: 2026-09-07 11:37+0000\n"
 "PO-Revision-Date: 2020-07-19 20:08+0200\n"
 "Last-Translator: Xavier CAILLAUD <tsmr@thetsmr.fr>\n"
 "Language-Team: \n"
@@ -49,7 +49,7 @@ msgstr[1] ""
 msgid "Activities detail"
 msgstr "Activities detail"
 
-#: setup.php:211 front/menu.php:69 ajax/loadscripts.php:48 src/Menu.php:41
+#: setup.php:216 front/menu.php:69 ajax/loadscripts.php:48 src/Menu.php:41
 #: src/Preference.php:99 src/Profile.php:57 src/Profile.php:108
 #: src/Config.php:51 src/Report.php:1182
 msgid "Activity"
