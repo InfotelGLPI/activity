@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-07 11:37+0000\n"
+"POT-Creation-Date: 2026-09-07 12:07+0000\n"
 "PO-Revision-Date: 2020-11-02 13:59+0000\n"
 "Last-Translator: Soporte Infraestructura Standby, 2023\n"
 "Language-Team: Spanish (Ecuador) (https://app.transifex.com/infotelGLPI/"
@@ -35,6 +35,10 @@ msgstr "Se ha presentado una nueva solicitud de vacaciones"
 #: src/CraPDF.php:632 src/Report.php:1300
 msgid "Absences"
 msgstr "Ausencias"
+
+#: src/Holiday.php:1632
+msgid "Absent"
+msgstr ""
 
 #: templates/holiday_validation_form.html.twig:40
 msgid "Accept holiday"
@@ -133,7 +137,7 @@ msgstr ""
 msgid "Approval requester"
 msgstr ""
 
-#: src/Holiday.php:602 src/Holiday.php:1975
+#: src/Holiday.php:602 src/Holiday.php:1993
 msgid "Approve holiday"
 msgid_plural "Approve holidays"
 msgstr[0] "Aprobar las vacaciones"
@@ -161,7 +165,7 @@ msgstr "Autorizar actividades los fines de semana"
 msgid "Authorize only the whole schedules"
 msgstr "Autorizar sólo los horarios completos"
 
-#: src/Holiday.php:427 src/HolidayType.php:79
+#: src/Holiday.php:427 src/HolidayType.php:101
 msgid "Auto-validated"
 msgstr "Validación automática"
 
@@ -173,11 +177,11 @@ msgstr "Informe de actividades"
 msgid "CRA Footer"
 msgstr "Pie de página del Informe de actividades"
 
-#: src/Option.php:373 templates/option_form.html.twig:94
+#: src/Option.php:403 templates/option_form.html.twig:94
 msgid "CRA logo"
 msgstr ""
 
-#: src/HolidayType.php:117 src/HolidayType.php:132
+#: src/HolidayType.php:139 src/HolidayType.php:154
 msgid "Can't be of more than one type at the same time"
 msgstr "No puede ser de más de un tipo al mismo tiempo"
 
@@ -329,7 +333,7 @@ msgstr "Exportar informe de actividades"
 msgid "Fail to send a mail to %s"
 msgstr "Error al enviar un correo a 1%s"
 
-#: ajax/sendmail.php:83 src/Notification.php:200
+#: ajax/sendmail.php:86 src/Notification.php:200
 msgid "Failed Mail send"
 msgstr "Envío fallido"
 
@@ -341,7 +345,7 @@ msgstr "Generado con GLPI el"
 msgid "Global approval status"
 msgstr ""
 
-#: src/HolidayType.php:84
+#: src/HolidayType.php:106
 msgid "Holiday"
 msgstr "Vacaciones"
 
@@ -363,11 +367,11 @@ msgstr[2] "Periodos de vacaciones"
 msgid "Holiday period is mandatory field"
 msgstr "El período de vacaciones es un campo obligatorio"
 
-#: ajax/sendmail.php:91
+#: ajax/sendmail.php:92
 msgid "Holiday request from"
 msgstr "Solicitud de vacaciones desde"
 
-#: src/NotificationTargetHoliday.php:201 src/HolidayType.php:60
+#: src/NotificationTargetHoliday.php:201 src/HolidayType.php:82
 msgid "Holiday type"
 msgid_plural "Holiday types"
 msgstr[0] "Tipo de vacaciones"
@@ -389,7 +393,7 @@ msgstr[2] "Validación de vacaciones"
 msgid "Holidays"
 msgstr ""
 
-#: src/CraPDF.php:596 src/Report.php:1978
+#: src/CraPDF.php:596 src/Report.php:1976
 msgid "Holidays or exceptional absences"
 msgstr "Vacaciones o ausencias excepcionales"
 
@@ -413,7 +417,7 @@ msgstr "Intervenciones no incluidas en el Informe de actividades"
 msgid "Leave awaiting validation"
 msgstr "Dejar en espera de validación"
 
-#: src/HolidayType.php:104
+#: src/HolidayType.php:126
 msgid "Linked to a period"
 msgstr "Vinculado a un período"
 
@@ -448,7 +452,7 @@ msgstr "Supervisor agregado con éxito."
 msgid "Manager sucessfully deleted."
 msgstr "Supervisor eliminado con éxito."
 
-#: src/HolidayType.php:74
+#: src/HolidayType.php:96
 msgid "Mandatory comment"
 msgstr "Comentario obligatorio"
 
@@ -524,7 +528,7 @@ msgstr "Sólo se admiten horas completas (no se admiten tiempos parciales)"
 msgid "Optional when approved"
 msgstr ""
 
-#: src/CraPDF.php:595 src/Report.php:1980 src/HolidayType.php:99
+#: src/CraPDF.php:595 src/Report.php:1978 src/HolidayType.php:121
 msgid "Part time"
 msgstr "A tiempo parcial"
 
@@ -652,7 +656,7 @@ msgstr "Ver la página"
 msgid "See validation options"
 msgstr "Ver opciones de validación"
 
-#: src/HolidayPeriod.php:55 src/HolidayType.php:69
+#: src/HolidayPeriod.php:55 src/HolidayType.php:91
 msgid "Short name"
 msgstr "Nombre corto"
 
@@ -664,11 +668,11 @@ msgstr ""
 msgid "Show internal helpdesk"
 msgstr "Mostrar el servicio de asistencia interna"
 
-#: src/HolidayType.php:94
+#: src/HolidayType.php:116
 msgid "Sickness"
 msgstr "Enfermedad"
 
-#: src/CraPDF.php:597 src/Report.php:1982
+#: src/CraPDF.php:597 src/Report.php:1980
 msgid "Sickness or maternity"
 msgstr "Enfermedad o maternidad"
 
@@ -725,7 +729,7 @@ msgstr "La fecha de finalización elegida es el fin de semana"
 msgid "The following user is unavailable / on holiday : "
 msgstr "El siguiente usuario no está disponible / está de vacaciones : "
 
-#: src/Option.php:321
+#: src/Option.php:351
 msgid "The format of the image must be JPG or JPEG"
 msgstr ""
 
@@ -791,7 +795,7 @@ msgstr ""
 msgid "Use the view by day men in planning"
 msgstr "Utilizar la vista por día de los hombres en la planificación"
 
-#: src/HolidayType.php:89
+#: src/HolidayType.php:111
 msgid "Use this holiday in the counter"
 msgstr "Utilice estas vacaciones en el contador"
 
@@ -877,7 +881,7 @@ msgstr "para"
 msgid "is on CRA by default"
 msgstr "está en el Informe de actividades de forma predeterminada"
 
-#: ajax/sendmail.php:91
+#: ajax/sendmail.php:92
 msgid "of"
 msgstr "de"
 
