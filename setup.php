@@ -27,7 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
-define('PLUGIN_ACTIVITY_VERSION', '3.2.14');
+define('PLUGIN_ACTIVITY_VERSION', '3.2.15');
 
 global $CFG_GLPI;
 
@@ -120,11 +120,16 @@ function plugin_init_activity()
                     $PLUGIN_HOOKS[Hooks::MENU_TOADD]['activity'] = ['tools' => Menu::class];
                     $PLUGIN_HOOKS[Hooks::HELPDESK_MENU_ENTRY]['activity'] = PLUGIN_ACTIVITY_WEBDIR . '/front/menu.php';
                     $PLUGIN_HOOKS[Hooks::HELPDESK_MENU_ENTRY_ICON]['activity'] = Holiday::getIcon();
+
+                    // The dashboard widgets read activity data, so they belong behind the
+                    // same right as the menu. Registered outside this block they were
+                    // offered to every authenticated user of the central interface,
+                    // including profiles holding no activity right at all.
+                    $PLUGIN_HOOKS['mydashboard']['activity'] = [Dashboard::class];
                 }
 
                 $PLUGIN_HOOKS['redirect_page']['activity'] = PLUGIN_ACTIVITY_WEBDIR . '/front/holiday.form.php';
             }
-            $PLUGIN_HOOKS['mydashboard']['activity'] = [Dashboard::class];
 
             if (Session::haveRight("plugin_activity", UPDATE) && class_exists(Profile::class)) {
                 $PLUGIN_HOOKS[Hooks::CONFIG_PAGE]['activity'] = 'front/config.form.php';
