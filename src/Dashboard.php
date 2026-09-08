@@ -260,7 +260,7 @@ class Dashboard extends CommonGLPI
                 // JSON.parse resolves back to the original characters.
                 $activities = json_encode(
                     $this->getActivities($planning_users_id),
-                    JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
+                    JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT,
                 );
                 $rand       = mt_rand();
                 $html       = '<script type="text/javascript">$("#calendarwidget' . $rand . '").fullCalendar({header: {
