@@ -1,5 +1,3 @@
-<?php
-
 /**
  * -------------------------------------------------------------------------
  * activity plugin for GLPI
@@ -27,11 +25,11 @@
  * --------------------------------------------------------------------------
  */
 
-header('Content-Type: text/javascript');
-
-?>
-
-var root_activity_doc = "<?php echo PLUGIN_ACTIVITY_WEBDIR; ?>";
+// Plugin web root, mirroring PLUGIN_ACTIVITY_WEBDIR from setup.php. GLPI exposes
+// both variables in the page <head> (config_js) before any plugin script is
+// loaded, so no server-side interpolation is needed here.
+var root_activity_doc = ((window.CFG_GLPI && CFG_GLPI.root_doc) || '')
+   + ((window.GLPI_PLUGINS_PATH && GLPI_PLUGINS_PATH.activity) || '/plugins/activity');
 (function ($) {
    $.fn.activity_load_scripts = function () {
 

@@ -68,7 +68,7 @@ function plugin_init_activity()
     $activityScripts = [
         'scripts/scripts-activitydate.js',
         'scripts/scripts-activityholidays.js',
-        'scripts/activity_load_scripts.js.php',
+        'scripts/activity_load_scripts.js',
     ];
 
     if (isset($_SESSION["glpiactiveprofile"]["interface"])
