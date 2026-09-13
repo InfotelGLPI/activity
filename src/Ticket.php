@@ -49,7 +49,16 @@ class Ticket
 
             $in_holiday = Holiday::isUserInHoliday(date('Y-m-d H:i:s', time()), [$item->input['users_id']]);
             if ($in_holiday) {
-                Session::addMessageAfterRedirect(__("The following user is unavailable / on holiday : ", 'activity') . implode("', '", $in_holiday), true, ERROR, false);
+                // Security (stored XSS): addMessageAfterRedirect() performs no escaping
+                // and the core renders the messages with |raw, so the user names read
+                // from the database were injected as markup. Escape the assembled
+                // string, exactly as the core does for its own DB-sourced messages.
+                Session::addMessageAfterRedirect(
+                    htmlescape(__("The following user is unavailable / on holiday : ", 'activity') . implode("', '", $in_holiday)),
+                    true,
+                    ERROR,
+                    false,
+                );
             }
         }
     }

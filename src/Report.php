@@ -2331,8 +2331,26 @@ class Report extends CommonDBTM
         header("Expires: Mon, 26 Nov 1962 00:00:00 GMT");
         header('Pragma: private'); /// IE BUG + SSL
         header('Cache-control: private, must-revalidate'); /// IE BUG + SSL
-        header("Content-disposition: filename=\"" . $doc->fields['filename'] . "\"");
-        header("Content-type: " . $doc->fields['mime']);
+        // Security (header injection / content sniffing): both values used to be
+        // concatenated verbatim into the response headers. A name carrying a CR/LF
+        // or a double quote broke out of the quoted-string, and an arbitrary MIME
+        // type let the browser render the payload instead of downloading it.
+        // Rebuild an ASCII-only quoted name, keep the original through the RFC 5987
+        // form, and only forward a syntactically valid media type. The disposition
+        // keeps its historical shape so the CRA PDF is still displayed inline.
+        $filename  = basename((string) $doc->fields['filename']);
+        $safe_name = preg_replace('/[^\w \-\.]/u', '_', $filename);
+        if ($safe_name === '' || $safe_name === null) {
+            $safe_name = 'document';
+        }
+        $mime = (string) ($doc->fields['mime'] ?? '');
+        if (preg_match('#^[\w.+-]+/[\w.+-]+$#', $mime) !== 1) {
+            $mime = 'application/octet-stream';
+        }
+        header('Content-disposition: filename="' . $safe_name . '"; '
+               . "filename*=UTF-8''" . rawurlencode($filename));
+        header('Content-type: ' . $mime);
+        header('X-Content-Type-Options: nosniff');
 
         // Same reasoning as above; headers are already sent at this point, so the
         // failure is only journalised.

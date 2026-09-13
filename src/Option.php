@@ -97,6 +97,7 @@ class Option extends CommonDBTM
     {
         $ong = [];
         $this->addStandardTab(__CLASS__, $ong, $options);
+        $this->addStandardTab(CheckSchema::class, $ong, $options);
         return $ong;
     }
 

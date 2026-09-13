@@ -295,13 +295,17 @@ class HolidayValidation extends CommonDBChild
                 $email = $user->getDefaultEmail();
                 if (!empty($email)) {
                     //TRANS: %s is the user name
-                    Session::addMessageAfterRedirect(sprintf(__('Mail sent to %s', 'activity'), $user->getDefaultEmail()));
+                    // Security (stored XSS): the address and the name are database
+                    // content and the core renders redirect messages with |raw.
+                    Session::addMessageAfterRedirect(
+                        htmlescape(sprintf(__('Mail sent to %s', 'activity'), $user->getDefaultEmail())),
+                    );
                 } else {
                     Session::addMessageAfterRedirect(
-                        sprintf(
+                        htmlescape(sprintf(
                             __('The selected user (%s) has no valid email address. The request has been created, without email confirmation.'),
                             $user->getName(),
-                        ),
+                        )),
                         false,
                         ERROR,
                     );

@@ -198,8 +198,15 @@ class Dashboard extends CommonGLPI
                         'name' =>  $actname];
                     $nameact[]  = $actname;
                 }
-                $dataPieset         = json_encode($datas);
-                $labelsPie          = json_encode($nameact);
+                // Security (stored XSS): both values are interpolated into an inline
+                // <script> block by PieChart::launchPieGraph(). Plain json_encode()
+                // leaves "</script>" intact, so an activity name carrying it closed
+                // the block early. The HEX flags escape < > & as \u00xx, which the JS
+                // parser resolves back to the original characters. Only TAG and AMP
+                // are used: HEX_QUOT / HEX_APOS are not needed here and are avoided
+                // inside a JS object literal.
+                $dataPieset         = json_encode($datas, JSON_HEX_TAG | JSON_HEX_AMP);
+                $labelsPie          = json_encode($nameact, JSON_HEX_TAG | JSON_HEX_AMP);
 
                 $graph_datas = ['title'   => $title,
                     'comment' => $comment,

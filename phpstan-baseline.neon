@@ -97,12 +97,6 @@ parameters:
 			path: install/update_251_300.php
 
 		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
-			count: 1
-			path: src/Action.php
-
-		-
 			message: '#^PHPDoc tag @return has invalid value \(\$value\)\: Unexpected token "\$value", expected type at offset 95 on line 6$#'
 			identifier: phpDoc.parseError
 			count: 1
@@ -117,12 +111,6 @@ parameters:
 		-
 			message: '#^PHPDoc tag @param references unknown parameter\: \$ID$#'
 			identifier: parameter.notFound
-			count: 1
-			path: src/Config.php
-
-		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
 			count: 1
 			path: src/Config.php
 
@@ -183,12 +171,6 @@ parameters:
 		-
 			message: '#^Variable \$working_days might not be defined\.$#'
 			identifier: variable.undefined
-			count: 1
-			path: src/CraPDF.php
-
-		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
 			count: 1
 			path: src/CraPDF.php
 
@@ -457,12 +439,6 @@ parameters:
 			path: src/Holiday.php
 
 		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
-			count: 1
-			path: src/Holiday.php
-
-		-
 			message: '#^If condition is always true\.$#'
 			identifier: if.alwaysTrue
 			count: 1
@@ -481,24 +457,6 @@ parameters:
 			path: src/HolidayCount.php
 
 		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
-			count: 1
-			path: src/HolidayCount.php
-
-		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
-			count: 1
-			path: src/HolidayPeriod.php
-
-		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
-			count: 1
-			path: src/HolidayType.php
-
-		-
 			message: '#^Method GlpiPlugin\\Activity\\HolidayValidation\:\:getHistoryChangeWhenUpdateField\(\) should return array but returns false\.$#'
 			identifier: return.type
 			count: 1
@@ -515,18 +473,6 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: src/HolidayValidation.php
-
-		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
-			count: 1
-			path: src/HolidayValidation.php
-
-		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
-			count: 1
-			path: src/LateralMenu.php
 
 		-
 			message: '#^Missing PHPDoc tag @var for global variable \$_FILES$#'
@@ -577,12 +523,6 @@ parameters:
 			path: src/NotificationTargetHoliday.php
 
 		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
-			count: 1
-			path: src/NotificationTargetHoliday.php
-
-		-
 			message: '#^Call to an undefined method CommonGLPI\:\:showOptionsForm\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -605,18 +545,6 @@ parameters:
 			identifier: parameter.notFound
 			count: 1
 			path: src/Option.php
-
-		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
-			count: 1
-			path: src/Option.php
-
-		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
-			count: 1
-			path: src/PlanningEventSubCategory.php
 
 		-
 			message: '#^Call to static method getInstance\(\) on an unknown class GlpiPlugin\\Planningoptions\\Config\.$#'
@@ -703,12 +631,6 @@ parameters:
 			path: src/PlanningExternalEvent.php
 
 		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
-			count: 1
-			path: src/PlanningExternalEvent.php
-
-		-
 			message: '#^Default value of the parameter \#2 \$withtemplate \(int\) of method GlpiPlugin\\Activity\\Preference\:\:getTabNameForItem\(\) is incompatible with type bool\.$#'
 			identifier: parameter.defaultValue
 			count: 1
@@ -733,12 +655,6 @@ parameters:
 			path: src/Preference.php
 
 		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
-			count: 1
-			path: src/Preference.php
-
-		-
 			message: '#^Call to an undefined method CommonGLPI\:\:getField\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -751,20 +667,8 @@ parameters:
 			path: src/Profile.php
 
 		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
-			count: 1
-			path: src/Profile.php
-
-		-
 			message: '#^If condition is always true\.$#'
 			identifier: if.alwaysTrue
-			count: 1
-			path: src/ProjectTask.php
-
-		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
 			count: 1
 			path: src/ProjectTask.php
 
@@ -777,12 +681,6 @@ parameters:
 		-
 			message: '#^Method GlpiPlugin\\Activity\\PublicHoliday\:\:displayPlanningItem\(\) should return GlpiPlugin\\Activity\\Nothing but returns string\.$#'
 			identifier: return.type
-			count: 1
-			path: src/PublicHoliday.php
-
-		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
 			count: 1
 			path: src/PublicHoliday.php
 
@@ -997,12 +895,6 @@ parameters:
 			path: src/Report.php
 
 		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
-			count: 1
-			path: src/Report.php
-
-		-
 			message: '#^Expression in empty\(\) is not falsy\.$#'
 			identifier: empty.expr
 			count: 1
@@ -1035,11 +927,5 @@ parameters:
 		-
 			message: '#^PHPDoc tag @param references unknown parameter\: \$tag$#'
 			identifier: parameter.notFound
-			count: 1
-			path: src/TicketTask.php
-
-		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
 			count: 1
 			path: src/TicketTask.php

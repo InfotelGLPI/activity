@@ -312,7 +312,10 @@ class Holiday extends CommonDBTM
             $holidayType = new HolidayType();
             $holidayType->getFromDB($input["plugin_activity_holidaytypes_id"]);
             if ($holidayType->fields['mandatory_comment'] == 1 && $input['comment'] == "") {
-                $message = sprintf(__("You have to fill a comment for the holiday type '%s'"), $holidayType->fields['name']);
+                // Security (stored XSS): the holiday type name comes from the database
+                // and the message is rendered with |raw by the core. Escape the whole
+                // string once sprintf() has assembled it.
+                $message = htmlescape(sprintf(__("You have to fill a comment for the holiday type '%s'"), $holidayType->fields['name']));
                 Session::addMessageAfterRedirect($message, false, ERROR);
                 return false;
             }
@@ -459,13 +462,17 @@ class Holiday extends CommonDBTM
                     $email = $user->getDefaultEmail();
                     if (!empty($email)) {
                         //TRANS: %s is the user name
-                        Session::addMessageAfterRedirect(sprintf(__('Approval request send to %s', 'activity'), $user->getName()));
+                        // Security (stored XSS): user names are database content and the
+                        // core renders redirect messages with |raw.
+                        Session::addMessageAfterRedirect(
+                            htmlescape(sprintf(__('Approval request send to %s', 'activity'), $user->getName())),
+                        );
                     } else {
                         Session::addMessageAfterRedirect(
-                            sprintf(
+                            htmlescape(sprintf(
                                 __('The selected user (%s) has no valid email address. The request has been created, without email confirmation.'),
                                 $user->getName(),
-                            ),
+                            )),
                             false,
                             ERROR,
                         );
