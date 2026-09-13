@@ -32,10 +32,6 @@ namespace GlpiPlugin\Activity;
 use CommonDBTM;
 use Html;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
-
 class PublicHoliday extends CommonDBTM
 {
     public $dohistory = false;

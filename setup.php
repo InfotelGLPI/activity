@@ -31,6 +31,7 @@ define('PLUGIN_ACTIVITY_VERSION', '3.2.15');
 
 global $CFG_GLPI;
 
+use Glpi\Http\SessionManager;
 use Glpi\Plugin\Hooks;
 use GlpiPlugin\Activity\Dashboard;
 use GlpiPlugin\Activity\Holiday;
@@ -60,6 +61,26 @@ function plugin_init_activity()
     global $PLUGIN_HOOKS, $CFG_GLPI;
 
     $PLUGIN_HOOKS[Hooks::CHANGE_PROFILE]['activity'] = [Profile::class, 'initProfile'];
+
+    // The iCal feed of front/planning.php authenticates with a personal token, exactly
+    // like the core /front/planning.php?genical route that SessionManager hardcodes as
+    // stateless. Without this declaration the firewall refuses the anonymous request of
+    // a calendar client - which never sends a cookie - before the controller runs, so
+    // the feed could never work.
+    //
+    // Unlike the core rule, a plugin pattern is matched against the path only and cannot
+    // test for the genical parameter, so it covers the whole controller. That is safe on
+    // both counts. Functionally, the SessionStart listener runs at priority 130 while
+    // plugins are initialised at 110, so the pattern is not yet registered when the
+    // session is started: the regular planning page keeps its session exactly as before.
+    // Security-wise, the only listener that does see the pattern is FirewallStrategyListener,
+    // and every other branch of the controller opens with its own Session::checkRight(),
+    // so dropping the firewall leaves them fail-closed.
+    SessionManager::registerPluginStatelessPath(
+        'activity',
+        '#^/front/planning\.php$#',
+    );
+
     if (isset($_SESSION["glpiactiveprofile"]["interface"])
         && $_SESSION["glpiactiveprofile"]["interface"] != "helpdesk") {
         $PLUGIN_HOOKS[Hooks::ADD_CSS]['activity'] = ['activity.css'];

@@ -32,10 +32,6 @@ namespace GlpiPlugin\Activity;
 use CommonDropdown;
 use Session;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
-
 /// PlanningEventSubCategory class
 class PlanningEventSubCategory extends CommonDropdown
 {

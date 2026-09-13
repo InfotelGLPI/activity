@@ -32,10 +32,6 @@ namespace GlpiPlugin\Activity;
 use CommonDropdown;
 use Session;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
-
 class HolidayPeriod extends CommonDropdown
 {
     public $can_be_translated  = true;

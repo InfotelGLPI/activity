@@ -51,10 +51,6 @@ use Session;
 use Ticket;
 use Ticket_User;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
-
 class PlanningExternalEvent extends CommonDBTM
 {
     // Event color

@@ -57,12 +57,16 @@ if (isset($_GET["file"])) { // for other file
         }
         if ($send && file_exists($send)) {
             $real = realpath($send);
-            $base = realpath(GLPI_DOC_DIR);
-            // Compare against the base WITH a trailing separator: a bare prefix match
-            // would let a sibling directory sharing the prefix (e.g. GLPI_DOC_DIR
-            // + "_backup") slip through the containment check.
+            // Only $splitter[1] used to be constrained, so the first segment was free:
+            // any subdirectory of GLPI_DOC_DIR holding an "activity" folder was a valid
+            // source. Confine to the single directory CRA reports are written to rather
+            // than to GLPI_DOC_DIR at large -- the narrowest base that still serves
+            // every legitimate file. The trailing separator matters: a bare prefix match
+            // would let a sibling directory sharing the prefix (e.g. "activity_backup")
+            // slip through the containment check.
+            $base = realpath(Report::craPdfDir());
             if ($real === false || $base === false
-                || !str_starts_with($real, $base . DIRECTORY_SEPARATOR)) {
+                || !str_starts_with($real, rtrim($base, '/\\') . DIRECTORY_SEPARATOR)) {
                 throw new BadRequestHttpException(__('Unauthorized access to this file'), true);
             }
             $doc = new Document();

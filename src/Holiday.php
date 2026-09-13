@@ -49,10 +49,6 @@ use Toolbox;
 use User;
 use UserEmail;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
-
 class Holiday extends CommonDBTM
 {
     public $dohistory = true;
@@ -272,6 +268,20 @@ class Holiday extends CommonDBTM
         if (!Session::haveRight('plugin_activity_all_users', 1)) {
             $input['users_id'] = Session::getLoginUserID();
         }
+
+        // Security (privilege escalation): mirror prepareInputForUpdate(). Both columns
+        // are real columns of glpi_plugin_activity_holidays and add() persists any
+        // posted real column, but neither is rendered by showForm(): the validation
+        // state is the outcome of the HolidayValidation workflow, never an input of the
+        // request form. Unlike validation_percent, which is overwritten unconditionally
+        // below, global_validation was only defaulted when the key was *absent*, so a
+        // caller holding nothing more than plugin_activity_can_requestholiday could POST
+        // global_validation=3 and file an already-ACCEPTED request: post_addItem() then
+        // writes every HolidayValidation row as ACCEPTED and skips the `newvalidation`
+        // notification, so no validator is ever asked nor even told. The legitimate
+        // writers are untouched: the auto_validated branch below sets the column after
+        // this point, and the workflow goes through allowValidationWrite() + update().
+        unset($input['global_validation'], $input['validation_percent']);
 
         $AllDay = Report::getAllDay();
 
@@ -1567,6 +1577,20 @@ class Holiday extends CommonDBTM
             if (!empty($group_users)) {
                 $where['glpi_plugin_activity_holidays.users_id'] = $group_users;
             }
+        }
+
+        // Security (confidentiality): this method is a planning_populate hook, so the
+        // only filter applied upstream is the core `planning` right -- READALL is
+        // commonly granted to supervisors to see the team workload. The plugin's own
+        // partitioning right is what front/popup.php, ajax/activityholidays.php and
+        // Dashboard enforce everywhere else, and the tables carry no entities_id to
+        // compensate. Without it, a holder of planning/READALL could read colleagues'
+        // absence type (including the ones flagged is_sickness) and free comment,
+        // which usually states the reason, simply by switching to the core planning
+        // view. Narrow the query to the caller rather than returning nothing, so the
+        // user keeps seeing their own holidays whatever the requested filter is.
+        if (!Session::haveRight('plugin_activity_all_users', 1)) {
+            $where['glpi_plugin_activity_holidays.users_id'] = (int) Session::getLoginUserID();
         }
 
         $iterator = $DB->request([

@@ -35,8 +35,6 @@ Html::header_nocache();
 Session::checkRight("plugin_activity_can_requestholiday", READ);
 header("Content-Type: text/html; charset=UTF-8");
 
-$holiday = new HolidayType();
-
 if (isset($_POST['load_holiday_period'])) {
-    echo $holiday->isPeriod($_POST['holiday_type_id']);
+    echo HolidayType::isPeriod((int) ($_POST['holiday_type_id'] ?? 0));
 }

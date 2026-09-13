@@ -35,10 +35,6 @@ use Dropdown;
 use Glpi\Application\View\TemplateRenderer;
 use Glpi\DBAL\QuerySubQuery;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
-
 class ProjectTask extends CommonDBTM
 {
     public $dohistory = false;

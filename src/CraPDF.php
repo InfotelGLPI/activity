@@ -31,10 +31,6 @@ namespace GlpiPlugin\Activity;
 
 use AllowDynamicProperties;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
-
 #[AllowDynamicProperties]
 class CraPDF extends \TCPDF
 {

@@ -40,10 +40,6 @@ use Html;
 use Plugin;
 use Session;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
-
 class TicketTask extends CommonDBTM
 {
     public $dohistory = false;

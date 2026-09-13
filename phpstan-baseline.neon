@@ -67,18 +67,6 @@ parameters:
 			path: front/holiday.form.php
 
 		-
-			message: '#^Parameter \#2 \$rightname of static method Profile_User\:\:getUserEntitiesForRight\(\) expects string, int given\.$#'
-			identifier: argument.type
-			count: 2
-			path: front/planning.php
-
-		-
-			message: '#^Static method Profile_User\:\:getUserEntitiesForRight\(\) invoked with 2 parameters, 3\-4 required\.$#'
-			identifier: arguments.count
-			count: 2
-			path: front/planning.php
-
-		-
 			message: '#^Right side of \|\| is always false\.$#'
 			identifier: booleanOr.rightAlwaysFalse
 			count: 1

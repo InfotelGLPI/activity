@@ -59,7 +59,7 @@
             plugin_activity.labelTd.classList.add('col-form-label');
             plugin_activity.labelTd.classList.add('col-2');
             plugin_activity.labelTd.classList.add('text-xxl-end');
-            plugin_activity.labelTd.innerText = '{{ subcategory_label }}';
+            plugin_activity.labelTd.innerText = {{ subcategory_label|json_encode|raw }};
             plugin_activity.newRow.append(plugin_activity.labelTd);
             plugin_activity.dropdownTd = document.createElement('div');
             plugin_activity.dropdownTd.classList.add('col-10');

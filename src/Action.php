@@ -29,10 +29,6 @@
 
 namespace GlpiPlugin\Activity;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
-
 class Action
 {
     public const ADD_ACTIVITY = 'add_activity';

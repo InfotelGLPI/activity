@@ -34,10 +34,6 @@ use Html;
 use NotificationTarget;
 use UserEmail;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
-
 // Class NotificationTargetHoliday
 class NotificationTargetHoliday extends NotificationTarget
 {

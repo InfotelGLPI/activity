@@ -291,7 +291,7 @@ class Dashboard extends CommonGLPI
                                                                                                    }
                                                                                                },
                                                                                                eventMouseover: function(event, jsEvent, view) {
-                                                                                                   $(".fc-event-inner", this).append("<div id="+event.id+">"+event.description+"</div>");
+                                                                                                   $(".fc-event-inner", this).append("<div id=\"" + event.id + "\">" + event.description + "</div>");
                                                                                                },
                                                                                                eventMouseout: function(event, jsEvent, view) {
                                                                                                    $("#"+event.id).remove();

@@ -70,10 +70,6 @@ TemplateRenderer::getInstance()->display('@activity/menu.html.twig', [
     'blocks' => $blocks,
 ]);
 
-if (!$can && !$canholiday  && !$canvalidateholiday) {
-    throw new AccessDeniedHttpException();
-}
-
 if (Session::getCurrentInterface() == 'central') {
     Html::footer();
 } else {

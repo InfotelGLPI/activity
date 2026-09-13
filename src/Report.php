@@ -54,10 +54,6 @@ use User;
 
 use function Safe\mkdir;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
-
 #[\AllowDynamicProperties]
 class Report extends CommonDBTM
 {

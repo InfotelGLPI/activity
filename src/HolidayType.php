@@ -32,10 +32,6 @@ namespace GlpiPlugin\Activity;
 use CommonDropdown;
 use Session;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
-
 /// HolidayType class
 class HolidayType extends CommonDropdown
 {
@@ -73,9 +69,10 @@ class HolidayType extends CommonDropdown
                  && Session::haveRight("plugin_activity_all_users", 1);
     }
 
-    //static function canView() {
-    //   return Session::haveRight('plugin_activity', CREATE);
-    //}
+    // canView() is deliberately left on the inherited `dropdown` right: the holiday
+    // type is a plain label that every requester has to read to fill the request form,
+    // so restricting it to plugin_activity_all_users would empty that dropdown. Only
+    // the write paths above carry the plugin's own administrative right.
 
     public static function getTypeName($nb = 0)
     {
@@ -159,13 +156,24 @@ class HolidayType extends CommonDropdown
         return $input;
     }
 
-    public static function isPeriod($holiday_type_id)
+    /**
+     * Tell whether the given holiday type is bound to a period.
+     *
+     * The id comes straight from an AJAX client, so an unknown one used to read
+     * fields['is_period'] on an empty array and emit an undefined-key warning inside
+     * the response body instead of answering plainly.
+     *
+     * @param int $holiday_type_id
+     *
+     * @return bool
+     */
+    public static function isPeriod($holiday_type_id): bool
     {
-        $holidaytype = new HolidayType();
-        $holidaytype->getFromDB($holiday_type_id);
-        if ($holidaytype->fields['is_period']) {
-            return true;
+        $holidaytype = new self();
+        if (!$holidaytype->getFromDB((int) $holiday_type_id)) {
+            return false;
         }
-        return false;
+
+        return (bool) $holidaytype->fields['is_period'];
     }
 }

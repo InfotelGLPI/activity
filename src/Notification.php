@@ -40,12 +40,6 @@ use User;
 class Notification extends CommonDBTM
 {
     /**
-     * @var boolean activate the history for the plugin
-     */
-    public $dohistory = true;
-
-
-    /**
      * @param $options   array
      **/
     public function sendNotification($options = [])

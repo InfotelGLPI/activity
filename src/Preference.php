@@ -39,10 +39,6 @@ use Session;
 use Toolbox;
 use User;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
-
 /**
  * class plugin_activity_preference
  * Load and store the preference configuration from the database

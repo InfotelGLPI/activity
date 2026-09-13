@@ -27,7 +27,12 @@
  * --------------------------------------------------------------------------
  */
 
-Session::checkRight("plugin_activity", READ);
+// The iCal branch authenticates with a personal token instead of the session, so it
+// cannot require a session right; every other branch still does, which keeps them
+// fail-closed now that the route is declared stateless in setup.php.
+if (!isset($_GET['genical'])) {
+    Session::checkRight("plugin_activity", READ);
+}
 
 if (!isset($_GET["uID"])) {
     $_GET["uID"] = 0;
@@ -50,30 +55,62 @@ if (isset($_GET['checkavailability'])) {
 
 } elseif (isset($_GET['genical'])) {
     if (isset($_GET['token'])) {
-        // Check user token
-        $user = new User();
-        if ($user->getFromDBByToken($_GET['token'])) {
+        // GLPI 11 removed User::getFromDBByToken() and centralised the token flow in
+        // Session::authWithToken(), which builds an Auth and goes through Session::init().
+        // The previous pairing - getFromDBByToken() + loadMinimalSession() - was therefore
+        // a fatal call to an undefined method; and even before that, loadMinimalSession()
+        // is a no-op whenever $_SESSION['glpiID'] is set, so rights used to be evaluated
+        // on the token bearer while generateIcal() ran in the caller's own entity and
+        // profile context. Mirrors core front/planning.php.
+        $user = Session::authWithToken(
+            $_GET['token'],
+            'personal_token',
+            isset($_GET['entities_id']) ? (int) $_GET['entities_id'] : null,
+            isset($_GET['is_recursive']) ? (bool) $_GET['is_recursive'] : null,
+        );
+        if ($user) {
             if (isset($_GET['entities_id']) && isset($_GET['is_recursive'])) {
-                $user->loadMinimalSession($_GET['entities_id'], $_GET['is_recursive']);
+                // Load entities and profiles, needed to pass canViewItem() in the
+                // populatePlanning() hooks during an iCal export.
+                $_SESSION["glpidefault_entity"] = $user->fields['entities_id'];
+                Session::initEntityProfiles($user->getID());
+                if (isset($_SESSION['glpiprofiles'][$user->fields['profiles_id']])) {
+                    Session::changeProfile($user->fields['profiles_id']);
+                } else {
+                    Session::changeProfile(key($_SESSION['glpiprofiles']));
+                }
             }
+
+            // $_GET values are strings, so the previous `!== 0` identity test against an
+            // integer was true as soon as the parameter was present, gID=0 included, and
+            // the 'mine' shortcut has to be read before any cast.
+            $gid_is_mine = (($_GET["gID"] ?? '') === 'mine');
+            $gid         = $gid_is_mine ? 0 : (int) ($_GET["gID"] ?? 0);
+            $uid         = (int) ($_GET["uID"] ?? 0);
+
             //// check if the request is valid: rights on uID / gID
             // First check mine : user then groups
             $ismine = false;
-            if ($user->getID() == $_GET["uID"]) {
+            if ($user->getID() == $uid) {
                 $ismine = true;
             }
             // Check groups if have right to see
-            if (!$ismine && ($_GET["gID"] !== 0)) {
-                if ($_GET["gID"] === 'mine') {
+            if (!$ismine && ($gid_is_mine || $gid > 0)) {
+                if ($gid_is_mine) {
                     $ismine = true;
                 } else {
+                    // GLPI 11 declares getUserEntitiesForRight($user_ID, $rightname,
+                    // $rights, $is_recursive = true): calling it with two arguments
+                    // passed the right bit as the right *name* and raised a fatal
+                    // ArgumentCountError instead of a clean refusal.
                     $entities = Profile_User::getUserEntitiesForRight(
                         $user->getID(),
+                        \Planning::$rightname,
                         \Planning::READGROUP,
                     );
                     $groups   = Group_User::getUserGroups($user->getID());
                     foreach ($groups as $group) {
-                        if (($_GET["gID"] == $group['id'])
+                        if (($gid == $group['id'])
                             && in_array($group['entities_id'], $entities)) {
                             $ismine = true;
                         }
@@ -85,8 +122,12 @@ if (isset($_GET['checkavailability'])) {
             // If not mine check global right
             if (!$ismine) {
                 // First check user
-                $entities = Profile_User::getUserEntitiesForRight($user->getID(), \Planning::READALL);
-                if ($_GET["uID"]) {
+                $entities = Profile_User::getUserEntitiesForRight(
+                    $user->getID(),
+                    \Planning::$rightname,
+                    \Planning::READALL,
+                );
+                if ($uid) {
                     $userentities = Profile_User::getUserEntities($user->getID());
                     $intersect    = array_intersect($entities, $userentities);
                     if (count($intersect)) {
@@ -94,9 +135,9 @@ if (isset($_GET['checkavailability'])) {
                     }
                 }
                 // Else check group
-                if (!$canview && $_GET['gID']) {
+                if (!$canview && $gid) {
                     $group = new Group();
-                    if ($group->getFromDB($_GET['gID'])) {
+                    if ($group->getFromDB($gid)) {
                         if (in_array($group->getEntityID(), $entities)) {
                             $canview = true;
                         }
@@ -105,7 +146,10 @@ if (isset($_GET['checkavailability'])) {
             }
 
             if ($ismine || $canview) {
-                \Planning::generateIcal($_GET["uID"], $_GET["gID"], $_GET["limititemtype"]);
+                \Planning::generateIcal($uid, $gid_is_mine ? 'mine' : $gid, $_GET["limititemtype"]);
+                // The feed is a one-shot machine-to-machine response: drop the session
+                // opened by authWithToken() so no cookie survives the export.
+                Session::destroy();
             }
         }
     }
