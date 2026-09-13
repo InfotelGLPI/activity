@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-13 10:11+0000\n"
+"POT-Creation-Date: 2026-09-13 12:05+0000\n"
 "PO-Revision-Date: 2020-11-02 13:59+0000\n"
 "Last-Translator: Soporte Infraestructura Standby, 2023\n"
 "Language-Team: Spanish (Ecuador) (https://app.transifex.com/infotelGLPI/"
@@ -23,7 +23,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
 "1 : 2;\n"
 
-#: src/Notification.php:187 src/Notification.php:190
+#: src/Notification.php:201 src/Notification.php:204
 #, php-format
 msgid "A mail has been sent to %s"
 msgstr "Se ha enviado un correo a %s"
@@ -59,7 +59,7 @@ msgstr[2] ""
 msgid "Activities detail"
 msgstr "Detalle de las actividades"
 
-#: setup.php:237 front/menu.php:69 ajax/loadscripts.php:48 src/Menu.php:41
+#: setup.php:233 front/menu.php:69 ajax/loadscripts.php:48 src/Menu.php:41
 #: src/Preference.php:95 src/Profile.php:53 src/Profile.php:104
 #: src/Config.php:47 src/Report.php:1178
 msgid "Activity"
@@ -102,14 +102,6 @@ msgstr "Agregar una actividad"
 msgid "All day"
 msgstr "Todo el día"
 
-#: ajax/preferenceactions.php:61
-msgid "An error happend while adding the manager"
-msgstr "Se ha producido un error al agregar el supervisor"
-
-#: ajax/preferenceactions.php:68
-msgid "An error happend while deleting the manager"
-msgstr "Se ha producido un error al eliminar el supervisor"
-
 #: src/NotificationTargetHoliday.php:46 src/NotificationTargetHoliday.php:261
 msgid "Answer to a personal holiday request"
 msgstr "Respuesta a una solicitud personal de vacaciones"
@@ -136,7 +128,7 @@ msgstr ""
 msgid "Approval requester"
 msgstr ""
 
-#: src/Holiday.php:619 src/Holiday.php:2024
+#: src/Holiday.php:619 src/Holiday.php:2039
 msgid "Approve holiday"
 msgid_plural "Approve holidays"
 msgstr[0] "Aprobar las vacaciones"
@@ -152,7 +144,7 @@ msgstr ""
 msgid "Approvers"
 msgstr "Aprobadores"
 
-#: src/HolidayPeriod.php:66
+#: src/HolidayPeriod.php:97
 msgid "Archived"
 msgstr "Archivados"
 
@@ -320,7 +312,7 @@ msgstr ""
 "A menos que se ingrese en el mes, este total debe ser igual al número de "
 "días hábiles de este mes, es decir"
 
-#: src/PlanningEventSubCategory.php:49
+#: src/PlanningEventSubCategory.php:70
 msgid "Event subcategory"
 msgid_plural "Event subcategories"
 msgstr[0] ""
@@ -331,17 +323,22 @@ msgstr[2] ""
 msgid "Export CRA"
 msgstr "Exportar informe de actividades"
 
-#: src/Notification.php:195
+#: src/Notification.php:209
 #, php-format
 msgid "Fail to send a mail to %s"
 msgstr "Error al enviar un correo a 1%s"
 
-#: ajax/sendmail.php:86 src/Notification.php:194
+#: ajax/sendmail.php:94 src/Notification.php:208
 msgid "Failed Mail send"
 msgstr "Envío fallido"
 
 #: src/CheckSchema.php:159
 msgid "Failed to check the sanity of the tables!"
+msgstr ""
+
+#: src/Notification.php:88
+#, php-format
+msgid "Failed to send email to \"%s\""
 msgstr ""
 
 #: src/CraPDF.php:734
@@ -363,7 +360,7 @@ msgstr[0] "Contador de vacaciones"
 msgstr[1] "Contador de vacaciones"
 msgstr[2] "Contadores de vacaciones"
 
-#: src/HolidayPeriod.php:41
+#: src/HolidayPeriod.php:72
 msgid "Holiday period"
 msgid_plural "Holiday periods"
 msgstr[0] "Periodos de vacaciones"
@@ -374,7 +371,7 @@ msgstr[2] "Periodos de vacaciones"
 msgid "Holiday period is mandatory field"
 msgstr "El período de vacaciones es un campo obligatorio"
 
-#: ajax/sendmail.php:92
+#: ajax/sendmail.php:100
 msgid "Holiday request from"
 msgstr "Solicitud de vacaciones desde"
 
@@ -441,7 +438,7 @@ msgstr "Lista de vacaciones"
 msgid "List of my managers"
 msgstr "Lista de mis supervisores"
 
-#: src/Notification.php:186
+#: src/Notification.php:200
 msgid "Mail sent"
 msgstr "Correo enviado"
 
@@ -449,14 +446,6 @@ msgstr "Correo enviado"
 #, php-format
 msgid "Mail sent to %s"
 msgstr "Correo enviado a 1%s"
-
-#: ajax/preferenceactions.php:59
-msgid "Manager sucessfully added."
-msgstr "Supervisor agregado con éxito."
-
-#: ajax/preferenceactions.php:77
-msgid "Manager sucessfully deleted."
-msgstr "Supervisor eliminado con éxito."
 
 #: src/HolidayType.php:93
 msgid "Mandatory comment"
@@ -558,23 +547,23 @@ msgstr "Planificación del acceso"
 msgid "Please activate the plugin"
 msgstr "Por favor, active el complemento"
 
-#: src/Holiday.php:299 src/HolidayPeriod.php:76
+#: src/Holiday.php:299 src/HolidayPeriod.php:107
 msgid "Please fill a begin date"
 msgstr "Por favor, introduzca una fecha de inicio"
 
-#: src/Notification.php:140
+#: src/Notification.php:154
 msgid "Please fill a mail body"
 msgstr "Por favor, rellene el cuerpo de un correo"
 
-#: src/Notification.php:137
+#: src/Notification.php:151
 msgid "Please fill a subject"
 msgstr "Por favor, rellene un asunto"
 
-#: src/Holiday.php:303 src/HolidayPeriod.php:80
+#: src/Holiday.php:303 src/HolidayPeriod.php:111
 msgid "Please fill an end date"
 msgstr "Indique una fecha de finalización"
 
-#: front/preference.form.php:51 ajax/preferenceactions.php:52
+#: front/preference.form.php:51
 msgid "Please select a manager"
 msgstr "Por favor, seleccione un supervisor"
 
@@ -674,7 +663,7 @@ msgstr "Ver la página"
 msgid "See validation options"
 msgstr "Ver opciones de validación"
 
-#: src/HolidayPeriod.php:51 src/HolidayType.php:88
+#: src/HolidayPeriod.php:82 src/HolidayType.php:88
 msgid "Short name"
 msgstr "Nombre corto"
 
@@ -921,9 +910,21 @@ msgstr "para"
 msgid "is on CRA by default"
 msgstr "está en el Informe de actividades de forma predeterminada"
 
-#: ajax/sendmail.php:92
+#: ajax/sendmail.php:100
 msgid "of"
 msgstr "de"
+
+#~ msgid "An error happend while adding the manager"
+#~ msgstr "Se ha producido un error al agregar el supervisor"
+
+#~ msgid "An error happend while deleting the manager"
+#~ msgstr "Se ha producido un error al eliminar el supervisor"
+
+#~ msgid "Manager sucessfully added."
+#~ msgstr "Supervisor agregado con éxito."
+
+#~ msgid "Manager sucessfully deleted."
+#~ msgstr "Supervisor eliminado con éxito."
 
 #~ msgid ""
 #~ "You must fill a registration number for this user before generating the "

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-13 10:11+0000\n"
+"POT-Creation-Date: 2026-09-13 12:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: src/Notification.php:187 src/Notification.php:190
+#: src/Notification.php:201 src/Notification.php:204
 #, php-format
 msgid "A mail has been sent to %s"
 msgstr ""
@@ -53,7 +53,7 @@ msgstr[1] ""
 msgid "Activities detail"
 msgstr ""
 
-#: setup.php:237 front/menu.php:69 ajax/loadscripts.php:48 src/Menu.php:41
+#: setup.php:233 front/menu.php:69 ajax/loadscripts.php:48 src/Menu.php:41
 #: src/Preference.php:95 src/Profile.php:53 src/Profile.php:104
 #: src/Config.php:47 src/Report.php:1178
 msgid "Activity"
@@ -95,14 +95,6 @@ msgstr ""
 msgid "All day"
 msgstr ""
 
-#: ajax/preferenceactions.php:61
-msgid "An error happend while adding the manager"
-msgstr ""
-
-#: ajax/preferenceactions.php:68
-msgid "An error happend while deleting the manager"
-msgstr ""
-
 #: src/NotificationTargetHoliday.php:46 src/NotificationTargetHoliday.php:261
 msgid "Answer to a personal holiday request"
 msgstr ""
@@ -129,7 +121,7 @@ msgstr ""
 msgid "Approval requester"
 msgstr ""
 
-#: src/Holiday.php:619 src/Holiday.php:2024
+#: src/Holiday.php:619 src/Holiday.php:2039
 msgid "Approve holiday"
 msgid_plural "Approve holidays"
 msgstr[0] ""
@@ -144,7 +136,7 @@ msgstr ""
 msgid "Approvers"
 msgstr ""
 
-#: src/HolidayPeriod.php:66
+#: src/HolidayPeriod.php:97
 msgid "Archived"
 msgstr ""
 
@@ -305,7 +297,7 @@ msgid ""
 "days this month"
 msgstr ""
 
-#: src/PlanningEventSubCategory.php:49
+#: src/PlanningEventSubCategory.php:70
 msgid "Event subcategory"
 msgid_plural "Event subcategories"
 msgstr[0] ""
@@ -315,17 +307,22 @@ msgstr[1] ""
 msgid "Export CRA"
 msgstr ""
 
-#: src/Notification.php:195
+#: src/Notification.php:209
 #, php-format
 msgid "Fail to send a mail to %s"
 msgstr ""
 
-#: ajax/sendmail.php:86 src/Notification.php:194
+#: ajax/sendmail.php:94 src/Notification.php:208
 msgid "Failed Mail send"
 msgstr ""
 
 #: src/CheckSchema.php:159
 msgid "Failed to check the sanity of the tables!"
+msgstr ""
+
+#: src/Notification.php:88
+#, php-format
+msgid "Failed to send email to \"%s\""
 msgstr ""
 
 #: src/CraPDF.php:734
@@ -346,7 +343,7 @@ msgid_plural "Holiday counters"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/HolidayPeriod.php:41
+#: src/HolidayPeriod.php:72
 msgid "Holiday period"
 msgid_plural "Holiday periods"
 msgstr[0] ""
@@ -356,7 +353,7 @@ msgstr[1] ""
 msgid "Holiday period is mandatory field"
 msgstr ""
 
-#: ajax/sendmail.php:92
+#: ajax/sendmail.php:100
 msgid "Holiday request from"
 msgstr ""
 
@@ -419,21 +416,13 @@ msgstr ""
 msgid "List of my managers"
 msgstr ""
 
-#: src/Notification.php:186
+#: src/Notification.php:200
 msgid "Mail sent"
 msgstr ""
 
 #: src/HolidayValidation.php:301
 #, php-format
 msgid "Mail sent to %s"
-msgstr ""
-
-#: ajax/preferenceactions.php:59
-msgid "Manager sucessfully added."
-msgstr ""
-
-#: ajax/preferenceactions.php:77
-msgid "Manager sucessfully deleted."
 msgstr ""
 
 #: src/HolidayType.php:93
@@ -534,23 +523,23 @@ msgstr ""
 msgid "Please activate the plugin"
 msgstr ""
 
-#: src/Holiday.php:299 src/HolidayPeriod.php:76
+#: src/Holiday.php:299 src/HolidayPeriod.php:107
 msgid "Please fill a begin date"
 msgstr ""
 
-#: src/Notification.php:140
+#: src/Notification.php:154
 msgid "Please fill a mail body"
 msgstr ""
 
-#: src/Notification.php:137
+#: src/Notification.php:151
 msgid "Please fill a subject"
 msgstr ""
 
-#: src/Holiday.php:303 src/HolidayPeriod.php:80
+#: src/Holiday.php:303 src/HolidayPeriod.php:111
 msgid "Please fill an end date"
 msgstr ""
 
-#: front/preference.form.php:51 ajax/preferenceactions.php:52
+#: front/preference.form.php:51
 msgid "Please select a manager"
 msgstr ""
 
@@ -647,7 +636,7 @@ msgstr ""
 msgid "See validation options"
 msgstr ""
 
-#: src/HolidayPeriod.php:51 src/HolidayType.php:88
+#: src/HolidayPeriod.php:82 src/HolidayType.php:88
 msgid "Short name"
 msgstr ""
 
@@ -891,6 +880,6 @@ msgstr ""
 msgid "is on CRA by default"
 msgstr ""
 
-#: ajax/sendmail.php:92
+#: ajax/sendmail.php:100
 msgid "of"
 msgstr ""
