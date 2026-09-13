@@ -44,6 +44,27 @@ class PlanningEventSubCategory extends CommonDropdown
             && Session::haveRight("plugin_activity_all_users", 1);
     }
 
+    /**
+     * Security: canCreate() was overridden but canUpdate() and canPurge() were not, so
+     * they fell back to CommonDBTM and therefore to $rightname, that is to the core
+     * `dropdown` right -- routinely granted to Technician and Supervisor profiles. The
+     * creation of a subcategory was thus reserved to the plugin administrators while its
+     * modification and its deletion were not, which makes the restriction on creation
+     * pointless: an existing row could simply be renamed. Same asymmetry as the one
+     * already fixed in HolidayType.
+     */
+    public static function canUpdate(): bool
+    {
+        return Session::haveRight('plugin_activity', UPDATE)
+            && Session::haveRight("plugin_activity_all_users", 1);
+    }
+
+    public static function canPurge(): bool
+    {
+        return Session::haveRight('plugin_activity', PURGE)
+            && Session::haveRight("plugin_activity_all_users", 1);
+    }
+
     public static function getTypeName($nb = 0)
     {
         return _n('Event subcategory', 'Event subcategories', $nb, 'activity');

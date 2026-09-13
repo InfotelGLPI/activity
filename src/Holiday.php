@@ -1703,11 +1703,26 @@ class Holiday extends CommonDBTM
                 $html .= "<strong>" . __('End date') . "</strong> : " . Html::convdatetime($val["end"]) . "<br>";
             }
             if ($val["users_id"] && $who != 0) {
-                $html .= "<strong>" . __('User') . "</strong> : " . $dbu->getUserName($val["users_id"]) . "<br>";
+                // Security (stored XSS): both values below come straight from the
+                // database - getUserName() returns glpi_users.realname/firstname/name as
+                // stored, and $val["type"] is glpi_plugin_activity_holidaytypes.name
+                // copied raw into the interval array by populatePlanning(). Since GLPI 10
+                // the database holds unescaped data, so escaping belongs to the output
+                // point. The fragment returned here is placed by Planning into the
+                // "content" and "tooltip" properties of the fullcalendar events, which
+                // are rendered as HTML, not as text: a realname carrying a tag executed
+                // in the session of every validator opening the planning. The core
+                // escapes exactly the same data in
+                // Glpi\Features\PlanningEvent::displayPlanningItem(). The neighbouring
+                // fields of this method were already safe ($val["name"] through
+                // Html::resume_text(), $val["content"] through RichText::getSafeHtml()),
+                // which is what made these two stand out. Escaping is applied here only,
+                // at the sink, so the values can never be escaped twice.
+                $html .= "<strong>" . __('User') . "</strong> : " . htmlescape($dbu->getUserName($val["users_id"])) . "<br>";
             }
             if ($val["type"]) {
                 $html .= "<strong>" . HolidayType::getTypeName(1) . "</strong> : " .
-                     $val["type"] . "<br>";
+                     htmlescape($val["type"]) . "<br>";
             }
             if ($val["content"]) {
                 $html .= "<strong>" . __('Description') . "</strong> : " . $val["content"];

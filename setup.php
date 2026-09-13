@@ -81,10 +81,6 @@ function plugin_init_activity()
         '#^/front/planning\.php$#',
     );
 
-    if (isset($_SESSION["glpiactiveprofile"]["interface"])
-        && $_SESSION["glpiactiveprofile"]["interface"] != "helpdesk") {
-        $PLUGIN_HOOKS[Hooks::ADD_CSS]['activity'] = ['activity.css'];
-    }
 
     $activityScripts = [
         'scripts/scripts-activitydate.js',

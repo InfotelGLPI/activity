@@ -50,7 +50,16 @@ class Notification extends CommonDBTM
         $mmail = new GLPIMailer($transport);
         $mail = $mmail->getEmail();
 
-        $mail->getHeaders()->addTextHeader("Message-Id", $options['messageid']);
+        // No caller fills a 'messageid' key: sendComm() builds its options array
+        // without it and send() only merges what it is handed. Reading it
+        // unconditionally raised an "Undefined array key" warning and passed null to
+        // addTextHeader(), whose Symfony Mime signature expects a string, so PHP 8
+        // aborted on a TypeError before the transport was even opened: the holiday
+        // notification never left, and sendComm() never got the return value it
+        // historises. Only set the header when one is actually supplied.
+        if (!empty($options['messageid'])) {
+            $mail->getHeaders()->addTextHeader("Message-Id", (string) $options['messageid']);
+        }
 
         $mail->from(new Address($options['from'], $options["fromname"]));
 
@@ -72,8 +81,13 @@ class Notification extends CommonDBTM
         }
 
         if (!$mmail->send()) {
+            // Keep the string extractable (the placeholder stays inside __(), the value
+            // outside) and escape it: addMessageAfterRedirect() messages are rendered as
+            // HTML by GLPI 11, and the rest of the plugin already wraps them in
+            // htmlescape() - see Holiday::prepareInputForAdd().
+            $alert = htmlescape(sprintf(__('Failed to send email to "%s"', 'activity'), $options['to']));
             Session::addMessageAfterRedirect(
-                __('Failed to send email to ' . $options['to']),
+                $alert,
                 false,
                 ERROR,
             );
@@ -134,10 +148,10 @@ class Notification extends CommonDBTM
 
 
         if ($subject == "") {
-            Session::addMessageAfterRedirect(__('Please fill a subject', 'activity'), ERROR);
+            Session::addMessageAfterRedirect(__('Please fill a subject', 'activity'), false, ERROR);
 
         } elseif ($body == "") {
-            Session::addMessageAfterRedirect(__('Please fill a mail body', 'activity'), ERROR);
+            Session::addMessageAfterRedirect(__('Please fill a mail body', 'activity'), false, ERROR);
 
         } else {
             // Envoi du mail

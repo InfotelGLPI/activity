@@ -13,30 +13,6 @@ parameters:
 			path: ajax/generateTXTFile.php
 
 		-
-			message: '#^Call to an undefined method GlpiPlugin\\Activity\\Preference\:\:addManagerToView\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: ajax/preferenceactions.php
-
-		-
-			message: '#^Call to an undefined method GlpiPlugin\\Activity\\Preference\:\:removeManagerFroMView\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: ajax/preferenceactions.php
-
-		-
-			message: '#^Call to an undefined method GlpiPlugin\\Activity\\Preference\:\:showMessage\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: ajax/preferenceactions.php
-
-		-
-			message: '#^Variable \$hId might not be defined\.$#'
-			identifier: variable.undefined
-			count: 4
-			path: ajax/sendmail.php
-
-		-
 			message: '#^You should not use the `exit` function\. It prevents the execution of post\-request/post\-command routines\.$#'
 			identifier: glpi.forbidExit
 			count: 1
@@ -478,12 +454,6 @@ parameters:
 			message: '#^Missing PHPDoc tag @var for global variable \$_FILES$#'
 			identifier: glpi.missingGlobalVarType
 			count: 1
-			path: src/Notification.php
-
-		-
-			message: '#^Parameter \#2 \$check_once of static method Session\:\:addMessageAfterRedirect\(\) expects bool, int given\.$#'
-			identifier: argument.type
-			count: 2
 			path: src/Notification.php
 
 		-

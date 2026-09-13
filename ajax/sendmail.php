@@ -27,6 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\BadRequestHttpException;
 use Glpi\Exception\Http\NotFoundHttpException;
 use GlpiPlugin\Activity\Holiday;
 use GlpiPlugin\Activity\HolidayValidation;
@@ -34,16 +35,23 @@ use GlpiPlugin\Activity\Notification;
 
 Session::checkRight("plugin_activity_can_validate", READ);
 
-if (!isset($_POST['holidays_id']) && !isset($_GET['holidays_id'])) {
+// Security (CSRF): this endpoint is state-changing -- it writes a temporary file, sends
+// the holiday request by mail and historises the notification. GLPI 11 validates the CSRF
+// token in CheckCsrfListener, which by design only inspects non-GET requests, so accepting
+// the identifier from the query string meant the whole workflow could be triggered without
+// any token, for instance by an <img> tag rendered in a validator's browser. Serving POST
+// only puts every call back under the token check. The $_GET branch had no caller anyway:
+// nothing in the plugin links to this file, and the $_POST branch alone covers the
+// historical AJAX usage.
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    throw new BadRequestHttpException();
+}
+
+if (!isset($_POST['holidays_id'])) {
     throw new NotFoundHttpException();
 }
 
-if (isset($_POST['holidays_id'])) {
-    $hId = (int) $_POST['holidays_id'];
-}
-if (isset($_GET['holidays_id'])) {
-    $hId = (int) $_GET['holidays_id'];
-}
+$hId = (int) $_POST['holidays_id'];
 
 $holiday = new Holiday();
 $holiday->getFromDB($hId);
