@@ -29,6 +29,7 @@
 
 use Glpi\Exception\Http\AccessDeniedHttpException;
 use Glpi\Exception\Http\BadRequestHttpException;
+use GlpiPlugin\Activity\Holiday;
 use GlpiPlugin\Activity\Report;
 
 if (isset($_GET["file"])) { // for other file
@@ -45,11 +46,21 @@ if (isset($_GET["file"])) { // for other file
             // PDF directory is shared by the whole instance. Authorising on the right
             // alone let any user read every colleague's report, so the ownership
             // encoded in the file name is checked here as well.
+            // The predicate below is the one Report::showForm() applies before generating a CRA
+            // for somebody else (src/Report.php): plugin_activity_all_users is a global right,
+            // not an entity-aware one, so on its own it spans the whole instance. There it is
+            // paired with Holiday::isUserInSessionEntities(), which narrows the set to the users
+            // visible from the active entities; here the download step only tested the right, so
+            // a holder of plugin_activity_all_users confined to one entity could fetch the
+            // already generated PDF of a user belonging to a sibling entity. The two paths now
+            // answer the same question. isUserInSessionEntities() returns true for the caller
+            // themselves, so the self-service case is unaffected.
             $owner = Report::craPdfOwner($splitter[2]);
             if (
                 $owner === null
                 || ($owner !== (int) Session::getLoginUserID()
-                    && !Session::haveRight("plugin_activity_all_users", 1))
+                    && (!Session::haveRight("plugin_activity_all_users", 1)
+                        || !Holiday::isUserInSessionEntities($owner)))
             ) {
                 throw new AccessDeniedHttpException();
             }

@@ -581,7 +581,15 @@ function plugin_activity_post_item_form($params)
             }
             break;
         case 'ProjectTask':
-            if ($opt->getUseProject()) {
+            // The two sibling branches of this switch both require plugin_activity READ before
+            // injecting their fields; this one relied on the getUseProject() configuration flag
+            // alone. The flag says whether the feature is enabled for the instance, not whether
+            // the caller may use it, so on an instance with the project module turned on the
+            // block was rendered to every holder of the core ProjectTask right - including
+            // profiles with no activity right at all. The fields it adds carry the plugin's own
+            // referential (activity types, the caller's declarable time) and post back to the
+            // plugin's tables, so the right is checked here the same way.
+            if ($opt->getUseProject() && Session::haveRight("plugin_activity", READ)) {
                 ProjectTask::addField($params);
             }
             break;
