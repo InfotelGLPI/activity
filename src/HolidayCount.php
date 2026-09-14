@@ -58,8 +58,11 @@ class HolidayCount extends CommonDBTM
         // profile holding plugin_activity_all_users, or the manager responsible
         // for validating that user's holiday requests may read it. Every
         // can()/check()/display() path inherits this gate.
+        // Same entity boundary as Holiday: this table carries no entities_id either, so
+        // plugin_activity_all_users has to be read as "every user I can see" and not "every
+        // user of the instance".
         if (Session::haveRight('plugin_activity_all_users', 1)) {
-            return true;
+            return Holiday::isUserInSessionEntities($this->fields['users_id'] ?? 0);
         }
         if (isset($this->fields['users_id'])
             && $this->fields['users_id'] == Session::getLoginUserID()) {
@@ -103,8 +106,11 @@ class HolidayCount extends CommonDBTM
      */
     private function canManageCounterFor($users_id): bool
     {
+        // Same entity boundary as canViewItem() above, on the writing side this time: the
+        // counter is the holiday entitlement of the user, so granting it across entities is
+        // exactly the operation the right was never meant to authorise.
         if (Session::haveRight('plugin_activity_all_users', 1)) {
-            return true;
+            return Holiday::isUserInSessionEntities($users_id);
         }
 
         $users_id = (int) $users_id;
@@ -140,6 +146,14 @@ class HolidayCount extends CommonDBTM
             $groups     = [];
             foreach ($groupusers as $groupuser) {
                 $groups[] = $groupuser["id"];
+            }
+
+            // Same rights path as Holiday::checkUserIsManager(): canManageCounterFor() reads
+            // this answer for canCreateItem(), canUpdateItem(), canPurgeItem() and
+            // prepareInputForUpdate(). A target user with no group has no group manager, so the
+            // caller is not one - the empty IN used to raise an exception before saying it.
+            if (empty($groups)) {
+                return false;
             }
 
             $restrict = ["groups_id" => $groups, "is_manager" => 1];

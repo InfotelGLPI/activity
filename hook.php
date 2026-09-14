@@ -511,7 +511,19 @@ function plugin_activity_addDefaultWhere($type)
             if (!Session::haveRight("plugin_activity_all_users", 1)) {
                 return " `glpi_plugin_activity_holidays`.`users_id` = '$who' ";
             }
-            break;
+            // Security: the holidays table carries no entities_id, so the core adds no entity
+            // restriction of its own and the break below returned an empty WHERE - the search
+            // listed the requests of the whole instance to anyone holding
+            // plugin_activity_all_users, a right GLPI grants profile by profile AND entity by
+            // entity. Restrict through the entities the requester holds a profile in, the way
+            // the PlanningExternalEvent branch below restricts through the entity of the core
+            // event. glpi_profiles_users and the recursive flag are what makes this the exact
+            // counterpart of Holiday::isUserInSessionEntities(), which gates the form: what
+            // the list shows is what the form opens.
+            $dbu = new DbUtils();
+            $sub = "SELECT `users_id` FROM `glpi_profiles_users` WHERE 1 "
+                   . $dbu->getEntitiesRestrictRequest("AND", "glpi_profiles_users", '', '', true);
+            return " `glpi_plugin_activity_holidays`.`users_id` IN ($sub) ";
         case HolidayCount::class:
             $who = (int) Session::getLoginUserID();
             return " `glpi_plugin_activity_holidaycounts`.`users_id` = '$who' ";

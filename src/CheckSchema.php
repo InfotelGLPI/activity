@@ -133,7 +133,12 @@ class CheckSchema extends CommonDBTM
     ): bool {
         global $DB;
 
-        Session::checkRight('plugin_activity', UPDATE);
+        // What this method publishes is the structure of the plugin tables, as reported by
+        // DatabaseSchemaIntegrityChecker: an administration matter, and the right the only
+        // entry point leading here (front/config.form.php) already carries. It used to replay
+        // the much weaker plugin_activity/UPDATE, so a direct call from a future endpoint would
+        // have mapped the schema for any user allowed to declare his activity.
+        Session::checkRight('config', UPDATE);
 
         $schemaFile = $this->getSchemaPath($version);
 

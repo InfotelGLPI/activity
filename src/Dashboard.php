@@ -128,6 +128,30 @@ class Dashboard extends CommonGLPI
         return $widgets;
     }
 
+    /**
+     * Resolve the user a widget reports on, from the parameters of that widget.
+     *
+     * The three widgets that report on someone repeated the same five lines: take
+     * $opt['users_id'] when plugin_activity_all_users is held, fall back on the caller
+     * otherwise. Widget parameters are persisted with the dashboard and reposted on every
+     * refresh, so that identifier is caller-controlled just like a form field, and the right
+     * is granted profile by profile AND entity by entity - holding it is not a pass to the
+     * whole instance. The entity predicate is therefore replayed here, once, rather than
+     * duplicated three times: a widget added later inherits the check instead of having to
+     * remember it.
+     */
+    private static function resolveWidgetUser($opt): int
+    {
+        $users_id = (int) ($opt['users_id'] ?? 0);
+        if ($users_id > 0
+            && Session::haveRight('plugin_activity_all_users', 1)
+            && Holiday::isUserInSessionEntities($users_id)) {
+            return $users_id;
+        }
+
+        return (int) Session::getLoginUserID();
+    }
+
     public function getWidgetContentForItem($widgetId, $opt = [])
     {
         global $CFG_GLPI, $DB;
@@ -155,11 +179,7 @@ class Dashboard extends CommonGLPI
                 $mois_courant   = intval(date('m', time()));
                 $annee_courante = date('Y', time());
 
-                if (isset($opt['users_id']) && Session::haveRight("plugin_activity_all_users", 1)) {
-                    $users_id = $opt['users_id'];
-                } else {
-                    $users_id = $_SESSION['glpiID'];
-                }
+                $users_id = self::resolveWidgetUser($opt);
 
                 if (isset($opt["month"])
                     && $opt["month"] > 0) {
@@ -249,16 +269,19 @@ class Dashboard extends CommonGLPI
                 foreach ($lang_days as $day) {
                     $lang_days_short[] = substr($day, 0, 3);
                 }
-                $widget->setWidgetTitle("<a href='" . PLUGIN_ACTIVITY_WEBDIR . "/front/activity.form.php'>" . __('Planning access', 'activity') . "</a>");
+                // front/activity.form.php has never existed in this plugin, so the widget title
+                // led to a 404. The GLPI 11 routing exemption that maps /plugins/<key>/<path>
+                // onto <plugin>/public/<path> explicitly excludes /front, /ajax and /report: the
+                // URL was handed to the router as written and no file answered it. This widget
+                // draws the calendar of the external events of the resolved user, so the page it
+                // should open is the list of those events - the same target
+                // PlanningExternalEvent::getMenuContent() already advertises.
+                $widget->setWidgetTitle("<a href='" . PLUGIN_ACTIVITY_WEBDIR . "/front/planningexternalevent.php'>" . __('Planning access', 'activity') . "</a>");
 
                 // Dashboard::init() is commented out in full, so $this->datas is never
                 // populated on this path and this read landed on null. Resolve the target
                 // the way the other widgets do.
-                if (isset($opt['users_id']) && Session::haveRight("plugin_activity_all_users", 1)) {
-                    $planning_users_id = (int) $opt['users_id'];
-                } else {
-                    $planning_users_id = (int) Session::getLoginUserID();
-                }
+                $planning_users_id = self::resolveWidgetUser($opt);
 
                 // Security (stored XSS): the result is interpolated into an inline
                 // <script> block below. Plain json_encode() leaves "</script>" intact, so
@@ -347,12 +370,9 @@ class Dashboard extends CommonGLPI
                 // the notes their author chose to keep out of everyone else's sight. Without
                 // a filter on the technician the query returned those of every intervener of
                 // the entity tree. Same rule as widget 1: the caller's own interventions,
-                // unless they hold the right that materialises the transverse view.
-                if (isset($opt['users_id']) && Session::haveRight("plugin_activity_all_users", 1)) {
-                    $tech_users_id = (int) $opt['users_id'];
-                } else {
-                    $tech_users_id = (int) Session::getLoginUserID();
-                }
+                // unless they hold the right that materialises the transverse view - bounded,
+                // like everywhere else, to the entities the right was actually granted in.
+                $tech_users_id = self::resolveWidgetUser($opt);
 
                 $iterator = $DB->request([
                     'SELECT' => [

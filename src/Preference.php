@@ -149,11 +149,16 @@ class Preference extends CommonDBTM
             $groupusers = Group_User::getUserGroups($user_id);
             $groups = array_column($groupusers, 'id');
 
-            $raw_managers = getAllDataFromTable('glpi_groups_users', [
-                'groups_id' => $groups,
-                'is_manager' => 1,
-                'NOT' => ['users_id' => $user_id],
-            ]);
+            // A user attached to no group has no group manager to display, and the empty IN
+            // would throw instead of returning no row.
+            $raw_managers = [];
+            if (!empty($groups)) {
+                $raw_managers = getAllDataFromTable('glpi_groups_users', [
+                    'groups_id' => $groups,
+                    'is_manager' => 1,
+                    'NOT' => ['users_id' => $user_id],
+                ]);
+            }
             $managers = array_map(static function (array $row): array {
                 return [
                     'id'       => $row['id'],

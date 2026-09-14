@@ -91,6 +91,87 @@ class PlanningExternalEvent extends CommonDBTM
         );
     }
 
+    public function canViewItem(): bool
+    {
+        return $this->canOnParentEvent(READ);
+    }
+
+    public function canUpdateItem(): bool
+    {
+        return $this->canOnParentEvent(UPDATE);
+    }
+
+    public function canPurgeItem(): bool
+    {
+        return $this->canOnParentEvent(PURGE);
+    }
+
+    /**
+     * Resolve a right on the core event this row hangs off.
+     *
+     * Security: this table is a satellite of glpi_planningexternalevents - it holds only
+     * is_oncra, actiontime, the sub-category and the project, keyed by
+     * planningexternalevents_id. It carries neither users_id nor entities_id, so
+     * isEntityAssign() is false and CommonDBTM::checkEntity() is a no-op: with
+     * $rightname = "plugin_activity" and no override, can($id, $right) collapsed to the
+     * global plugin right and returned true for any id of the table. Since
+     * front/planningexternalevent.php calls Search::show() with default options, the
+     * standard update and purge massive actions were offered, and MassiveAction gates them
+     * on can($id, $right) alone: any holder of the ordinary plugin right could rewrite or
+     * delete the logged activity of anyone, in any entity, by enumerating the
+     * auto-increment - falsifying the CRA that feeds billing and HR tracking while leaving
+     * the core event untouched.
+     *
+     * The boundary lives on the core event, so it is resolved there, exactly as
+     * TicketTask::canOnParentCoreTask() does for the other satellite of this plugin. The
+     * ownership rule is the one plugin_activity_addDefaultWhere() already applies to the
+     * search list (hook.php): outside plugin_activity_all_users, only one's own events;
+     * with that right, only the entities it was actually granted in, since GLPI grants a
+     * right profile by profile AND entity by entity. List and object therefore agree on
+     * what is reachable, which is what kept the massive actions ahead of the list in the
+     * first place.
+     */
+    private function canOnParentEvent(int $right): bool
+    {
+        $events_id = (int) ($this->fields['planningexternalevents_id'] ?? 0);
+        if ($events_id <= 0) {
+            return false;
+        }
+
+        $event = new \PlanningExternalEvent();
+        if (!$event->can($events_id, $right)) {
+            return false;
+        }
+
+        $owner = (int) ($event->fields['users_id'] ?? 0);
+        if ($owner === (int) Session::getLoginUserID()) {
+            return true;
+        }
+
+        return Session::haveRight('plugin_activity_all_users', 1)
+               && Holiday::isUserInSessionEntities($owner);
+    }
+
+    public function getForbiddenStandardMassiveAction()
+    {
+        $forbidden = parent::getForbiddenStandardMassiveAction();
+
+        // The row only exists to qualify a core event, and this table has neither
+        // is_deleted nor comment nor notes: soft deletion, restore, comment amendment and
+        // note addition have nothing to act on, while cloning would produce a second
+        // qualification of the same event - a duplicate the CRA would count twice.
+        // Transfer moves records between entities, which is meaningless for a satellite
+        // that has no entities_id of its own.
+        $forbidden[] = 'clone';
+        $forbidden[] = 'delete';
+        $forbidden[] = 'restore';
+        $forbidden[] = 'add_note';
+        $forbidden[] = 'amend_comment';
+        $forbidden[] = 'add_transfer_list';
+
+        return $forbidden;
+    }
+
     /**
      * Display menu
      */

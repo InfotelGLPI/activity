@@ -109,11 +109,20 @@ function plugin_init_activity()
         Plugin::registerClass(PublicHoliday::class, ['planning_types' => true]);
         Plugin::registerClass(TicketTask::class, ['planning_types' => true]);
 
+        // getFromDB() was called without testing its return value and fields was read straight
+        // after: when the configuration row is missing - deleted by hand, or plugin activated
+        // before the install script finished - CommonDBTM leaves fields empty and PHP emits an
+        // "Undefined array key" warning. This block runs on every single request as long as the
+        // plugin is active, so the warning was repeated on every page of the instance: visible
+        // in the interface in debug mode, and drowning the real alerts in the error log
+        // otherwise. Preference::showPreferenceForm() already applies this practice.
         $opt = new Option();
-        $opt->getFromDB(1);
+        $use_timerepartition = $opt->getFromDB(1)
+            ? (bool) ($opt->fields['use_timerepartition'] ?? false)
+            : false;
 
         if (Plugin::isPluginActive("manageentities")
-            || $opt->fields['use_timerepartition']) {
+            || $use_timerepartition) {
             unset($CFG_GLPI['planning_types'][3]);
             unset($_SESSION['glpi_plannings']['filters']['TicketTask']);
         }

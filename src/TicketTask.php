@@ -389,7 +389,12 @@ class TicketTask extends CommonDBTM
                 $interv[$key]["begin"]           = $int["start"];
                 $interv[$key]["end"]             = $int["end"];
                 $interv[$key]["editable"]         = false;
-                $interv[$key]["name"]     = Html::resume_text($int["title"], $CFG_GLPI["cut"]); // name is re-encoded on JS side
+                // The trailing comment that stood here claimed the value was re-encoded on the
+                // JS side. It is not: js/planning.js interpolates the fragment built by
+                // displayPlanningItem() straight into the DOM, and Html::resume_text() only
+                // truncates - it does not escape. The escaping is applied at the sink below,
+                // like the two sister classes of this plugin do.
+                $interv[$key]["name"]     = Html::resume_text($int["title"], $CFG_GLPI["cut"]);
                 $interv[$key]["content"]  = RichText::getSafeHtml(Html::resume_text($int["description"], $CFG_GLPI["cut"]));
             }
         }
@@ -454,7 +459,18 @@ class TicketTask extends CommonDBTM
         $rand     = mt_rand();
 
         if ($val["name"]) {
-            $html .= $val["name"] . "<br>";
+            // Security (stored XSS): Planning::constructEventsArray() puts the fragment returned
+            // here into the "content" and "tooltip" properties of the fullcalendar events, and
+            // js/planning.js reinjects both verbatim - this is an HTML sink, not a text one.
+            // "name" is fed by populatePlanning() above with the title of the activity, which
+            // comes from glpi_entities.name or from glpi_plugin_activity_configs.name: a
+            // delegated administrator holding nothing more than the entity or config write bit
+            // therefore had his markup executed in the session of every technician whose
+            // planning displays the activity, up to the global super-admin. Holiday and
+            // PublicHoliday already escape at this exact point; this was the last of the three.
+            // "content" needs no treatment here, populatePlanning() already passes it through
+            // RichText::getSafeHtml().
+            $html .= htmlescape($val["name"]) . "<br>";
         }
 
         if ($val["end"]) {

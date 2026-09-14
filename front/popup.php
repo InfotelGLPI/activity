@@ -61,7 +61,10 @@ if (isset($_GET["popup"])) {
 if (isset($_SESSION["glpipopup"]["name"])) {
     switch ($_SESSION["glpipopup"]["name"]) {
         case "planningexternalevents":
-            Html::popHeader(PlanningExternalEvent::getTypeName(2), $_SERVER['PHP_SELF']);
+            // PHP_SELF designates the GLPI 11 front controller, not this script, so the
+            // breadcrumb of the popup pointed at the router. The web path of the plugin is
+            // known from setup.php.
+            Html::popHeader(PlanningExternalEvent::getTypeName(2), PLUGIN_ACTIVITY_WEBDIR . '/front/popup.php');
             $_POST['target'] = "popup.php";
             $report = new Report();
             $report->showGenericSearch(array_merge($_POST, ['users_id' => $users_id]));
@@ -73,7 +76,8 @@ if (isset($_SESSION["glpipopup"]["name"])) {
             if (!$holiday->can((int) $_GET["id"], READ)) {
                 throw new AccessDeniedHttpException();
             }
-            Html::popHeader(Holiday::getTypeName(2), $_SERVER['PHP_SELF']);
+            // Same as the branch above: PHP_SELF is the router under GLPI 11.
+            Html::popHeader(Holiday::getTypeName(2), PLUGIN_ACTIVITY_WEBDIR . '/front/popup.php');
             $holiday->showForm($_GET["id"], ['users_id' => $users_id]);
             break;
     }

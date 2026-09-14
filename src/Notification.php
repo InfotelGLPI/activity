@@ -201,7 +201,12 @@ class Notification extends CommonDBTM
             $opt[2] = sprintf(__('A mail has been sent to %s', 'activity'), $mail);
 
             if ($send) {
-                Session::addMessageAfterRedirect(sprintf(__('A mail has been sent to %s', 'activity'), $mail));
+                // $mail comes from the plugin configuration (glpi_plugin_activity_options), and
+                // GLPI 11 renders redirect messages with |raw - so the value has to be escaped
+                // at the output point. The placeholder stays inside __() and the value outside
+                // so the string remains extractable, as on line 88 of this file.
+                $alert = htmlescape(sprintf(__('A mail has been sent to %s', 'activity'), $mail));
+                Session::addMessageAfterRedirect($alert);
                 Log::history($input["id"], Holiday::getType(), $opt, '', Log::HISTORY_LOG_SIMPLE_MESSAGE);
             } else {
                 $opt[0] = 0;

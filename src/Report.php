@@ -390,6 +390,14 @@ class Report extends CommonDBTM
         // consumption instead of relying on every caller to sanitise its input.
         if (!Session::haveRight("plugin_activity_all_users", 1)) {
             $users_id = Session::getLoginUserID();
+        } elseif (!Holiday::isUserInSessionEntities($users_id)) {
+            // The right was held, but on a profile of another entity: it is not a pass to the
+            // whole instance. The user dropdown rendered further down is already restricted by
+            // 'entity' => $_SESSION['glpiactiveentities'], so until now the restriction existed
+            // in the interface only - replaying the POST with any other users_id, an integer
+            // trivial to enumerate, produced the report all the same. The same predicate as the
+            // dropdown is replayed here so what the selector offers is what the report accepts.
+            $users_id = Session::getLoginUserID();
         }
         $input["users_id"] = $users_id;
         if ($output_type == Search::HTML_OUTPUT) {
@@ -2153,7 +2161,12 @@ class Report extends CommonDBTM
                 $order = 'DESC';
             }
         }
-        $link  = $_SERVER['PHP_SELF'];
+        // In GLPI 11 every request goes through the front controller (public/index.php), so
+        // PHP_SELF designates the router and not the logical script: the column sort links of
+        // the report pointed away from front/cra.php and lost the search criteria on click.
+        // REQUEST_URI carries the route actually called; its query string is stripped because
+        // the parameters are rebuilt one by one just below.
+        $link  = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '';
         $first = true;
         foreach ($_REQUEST as $name => $value) {
             if (!in_array($name, ['sort', 'order', 'PHPSESSID'])) {

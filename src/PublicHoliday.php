@@ -30,6 +30,7 @@
 namespace GlpiPlugin\Activity;
 
 use CommonDBTM;
+use Glpi\RichText\RichText;
 use Html;
 
 class PublicHoliday extends CommonDBTM
@@ -152,18 +153,33 @@ class PublicHoliday extends CommonDBTM
         $rand     = mt_rand();
 
         if ($val["name"]) {
-            $html .= $val["name"] . "<br>";
+            // Security (stored XSS): Planning places the fragment returned here into the
+            // "content" and "tooltip" properties of the fullcalendar events, which are rendered
+            // as HTML and not as text, so escaping belongs to this sink - the sister class does
+            // exactly that in Holiday::displayPlanningItem(), and so does the core in
+            // Glpi\Features\PlanningEvent::displayPlanningItem(). What kept the omission
+            // harmless so far is upstream, not here: populatePlanning() of this very class fills
+            // "name" with the static translated type name and "content" with a single space.
+            // Nothing in the signature of this method says so, and the day either key is fed
+            // from the database the escaping has to already be in place.
+            $html .= htmlescape($val["name"]) . "<br>";
         }
 
         if ($val["end"]) {
             $html .= "<strong>" . __('End date') . "</strong> : " . Html::convdatetime($val["end"]) . "<br>";
         }
 
+        // The description is meant to carry markup, so it is sanitised rather than escaped:
+        // Html::showToolTip() renders its argument as HTML too. Holiday applies the same
+        // RichText::getSafeHtml() to the same key, only at populate time rather than at the
+        // sink, which is why its own displayPlanningItem() may interpolate it directly.
+        $content = RichText::getSafeHtml($val["content"]);
+
         if ($complete) {
-            $html .= "<div class='event-description'>" . $val["content"] . "</div>";
+            $html .= "<div class='event-description'>" . $content . "</div>";
         } else {
             $html .= Html::showToolTip(
-                $val["content"],
+                $content,
                 ['applyto' => "cri_" . $val["id"] . $rand,
                     'display' => false],
             );

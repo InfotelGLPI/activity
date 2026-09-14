@@ -36,6 +36,7 @@ use Dropdown;
 use Entity;
 use Glpi\Application\View\TemplateRenderer;
 use Glpi\DBAL\QueryExpression;
+use Glpi\DBAL\QuerySubQuery;
 use Glpi\RichText\RichText;
 use Group_User;
 use Html;
@@ -44,6 +45,7 @@ use Log;
 use MassiveAction;
 use NotificationEvent;
 use Planning;
+use Profile_User;
 use Session;
 use Toolbox;
 use User;
@@ -105,6 +107,49 @@ class Holiday extends CommonDBTM
         return Session::haveRight('plugin_activity_can_requestholiday', 1);
     }
 
+    /**
+     * Whether $users_id belongs to the entities of the current session.
+     *
+     * The holidays and holidaycounts tables carry no entities_id (install/sql/empty.sql), so
+     * CommonDBTM::checkEntity() is a no-op and nothing else partitions those records. The
+     * plugin_activity_all_users right was therefore read as "every user of the instance",
+     * while GLPI grants a right profile by profile AND entity by entity: holding it in one
+     * entity opened the requests - requester, absence type including the ones flagged
+     * is_sickness, dates, comment - of every other entity, in reading as in writing.
+     *
+     * What makes a user visible is glpi_profiles_users and not the default entity of
+     * glpi_users: someone declared at the root with a recursive profile is legitimately
+     * visible from every child entity. getUserEntities() expands that recursion exactly as
+     * getEntitiesRestrictRequest(..., $is_recursive = true) does in the Holiday branch of
+     * plugin_activity_addDefaultWhere(), so the search list and this predicate always agree -
+     * a request the list shows is a request the form opens, and the other way round.
+     */
+    public static function isUserInSessionEntities($users_id): bool
+    {
+        $users_id = (int) $users_id;
+        if ($users_id <= 0) {
+            return false;
+        }
+        if ($users_id === (int) Session::getLoginUserID()) {
+            return true;
+        }
+
+        // populatePlanning() asks this question once per intervention and a planning view
+        // routinely carries dozens of them, most of them belonging to the same handful of
+        // people: without the memo each one paid a getUserEntities() round trip. The active
+        // entities of the session cannot change without a new request, so caching for the
+        // lifetime of the process is safe.
+        static $known = [];
+        if (isset($known[$users_id])) {
+            return $known[$users_id];
+        }
+
+        return $known[$users_id] = count(array_intersect(
+            Profile_User::getUserEntities($users_id, true),
+            $_SESSION['glpiactiveentities'] ?? [],
+        )) > 0;
+    }
+
     public function canViewItem(): bool
     {
         // Ownership: the global plugin_activity_can_requestholiday right must
@@ -114,7 +159,7 @@ class Holiday extends CommonDBTM
         // and the display gate in showForm()). Otherwise can($id, READ) — used
         // by the AJAX/popup render paths — would be a plain horizontal IDOR.
         if (Session::haveRight('plugin_activity_all_users', 1)) {
-            return true;
+            return self::isUserInSessionEntities($this->fields['users_id'] ?? 0);
         }
         if (isset($this->fields['users_id'])
             && $this->fields['users_id'] == Session::getLoginUserID()) {
@@ -142,7 +187,7 @@ class Holiday extends CommonDBTM
         // plugin_activity_all_users, may update it (mirrors the display gate in
         // showForm()). Otherwise check($id, UPDATE) would be a plain IDOR.
         if (Session::haveRight('plugin_activity_all_users', 1)) {
-            return true;
+            return self::isUserInSessionEntities($this->fields['users_id'] ?? 0);
         }
         return isset($this->fields['users_id'])
             && $this->fields['users_id'] == Session::getLoginUserID();
@@ -156,7 +201,7 @@ class Holiday extends CommonDBTM
         // showForm()). The global plugin_activity PURGE right alone is not
         // enough, otherwise check($id, PURGE) would be a plain IDOR.
         if (Session::haveRight('plugin_activity_all_users', 1)) {
-            return true;
+            return self::isUserInSessionEntities($this->fields['users_id'] ?? 0);
         }
         if (isset($this->fields['users_id'])
             && $this->fields['users_id'] == Session::getLoginUserID()) {
@@ -235,8 +280,13 @@ class Holiday extends CommonDBTM
         // would be written verbatim, letting an owner re-assign the request to a
         // colleague (polluting their balance/planning and firing validation
         // notifications to their managers). Realign the owner on the stored value
-        // unless the caller holds plugin_activity_all_users.
-        if (!Session::haveRight('plugin_activity_all_users', 1)) {
+        // unless the caller holds plugin_activity_all_users - and, as on the reading
+        // side, unless the designated owner belongs to the entities the right was
+        // granted in. Both ends matter here: the request being edited is already
+        // covered by canUpdateItem(), but the users_id being written is not, so
+        // without this check the record could be pushed out of the caller's own scope.
+        if (!Session::haveRight('plugin_activity_all_users', 1)
+            || !self::isUserInSessionEntities($input['users_id'] ?? 0)) {
             $input['users_id'] = $this->fields['users_id'];
         }
 
@@ -264,8 +314,12 @@ class Holiday extends CommonDBTM
         // (the owner selector in showForm() is likewise gated on that right).
         // Without this, any holder of plugin_activity_can_requestholiday could
         // POST users_id=<colleague> and pollute their balance/planning and
-        // trigger validation notifications to their managers.
-        if (!Session::haveRight('plugin_activity_all_users', 1)) {
+        // trigger validation notifications to their managers. The right is bounded
+        // by the entities it was granted in, exactly as it is on the reading side:
+        // filing an absence for someone is a write on their HR record, so it is the
+        // last place where the right should be read as instance-wide.
+        if (!Session::haveRight('plugin_activity_all_users', 1)
+            || !self::isUserInSessionEntities($input['users_id'] ?? 0)) {
             $input['users_id'] = Session::getLoginUserID();
         }
 
@@ -419,10 +473,17 @@ class Holiday extends CommonDBTM
                 $groups[] = $groupuser["id"];
             }
 
-            $restrict = ["groups_id"  => $groups,
-                "is_manager" => 1,
-                "NOT"        => ["users_id" => $user_id]];
-            $managers = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
+            // A requester attached to no group has no group manager, so there is nobody to
+            // designate as a validator. Passing the empty array straight to the criterion made
+            // DBmysqlIterator::analyseCriterion() throw ('Empty IN are not allowed') and the
+            // whole submission ended on a 500 instead of simply producing no validation row.
+            $managers = [];
+            if (!empty($groups)) {
+                $restrict = ["groups_id"  => $groups,
+                    "is_manager" => 1,
+                    "NOT"        => ["users_id" => $user_id]];
+                $managers = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
+            }
 
             foreach ($managers as $manager) {
                 $datas[]['users_id_validate'] = $manager['users_id'];
@@ -567,15 +628,24 @@ class Holiday extends CommonDBTM
                 $groups[] = $groupuser["id"];
             }
 
-            $restrict          = ["groups_id"  => $groups,
-                "is_manager" => 1,
-                "users_id"   => $user_id];
-            $users_id_validate = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
+            // Both criteria are built on the groups of the current user, and a user who is not
+            // yet attached to any group produced an empty IN - which throws rather than
+            // matching nothing, so merely opening the plugin menu answered with a 500. Without
+            // a group there is neither a manager to submit a request to nor a request to
+            // approve, which is exactly what these two empty lists express to the entries below.
+            $users_id_validate = [];
+            $have_manager      = [];
+            if (!empty($groups)) {
+                $restrict          = ["groups_id"  => $groups,
+                    "is_manager" => 1,
+                    "users_id"   => $user_id];
+                $users_id_validate = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
 
-            $restrict     = ["groups_id"  => $groups,
-                "is_manager" => 1,
-                "NOT"        => ["users_id" => $user_id]];
-            $have_manager = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
+                $restrict     = ["groups_id"  => $groups,
+                    "is_manager" => 1,
+                    "NOT"        => ["users_id" => $user_id]];
+                $have_manager = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
+            }
         }
 
         $opt['criteria'][0]['field']      = 7; // Search options
@@ -887,10 +957,15 @@ class Holiday extends CommonDBTM
                 $groups[] = $groupuser["id"];
             }
 
-            $restrict = ["groups_id"  => $groups,
-                "is_manager" => 1,
-                "NOT"        => ["users_id" => $user_id]];
-            $managers = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
+            // Same empty IN as in post_addItem(): the TXT export of a request filed by a user
+            // without a group failed on an exception instead of listing no validator.
+            $managers = [];
+            if (!empty($groups)) {
+                $restrict = ["groups_id"  => $groups,
+                    "is_manager" => 1,
+                    "NOT"        => ["users_id" => $user_id]];
+                $managers = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
+            }
             foreach ($managers as $manager) {
                 $datas['users_id_validate'] = $manager['users_id'];
             }
@@ -989,6 +1064,15 @@ class Holiday extends CommonDBTM
                 $groups[] = $groupuser["id"];
             }
 
+            // This method sits in the rights path - canViewItem(), canUpdateItem() and
+            // canPurgeItem() all call it - so the empty IN turned a permission check into a
+            // 500 as soon as a validator opened the request of a colleague not attached to any
+            // group. Without a group there can be no group manager: that is the answer, and it
+            // is a negative one.
+            if (empty($groups)) {
+                return false;
+            }
+
             $restrict = ["groups_id"  => $groups,
                 "is_manager" => 1];
             $managers = $dbu->getAllDataFromTable('glpi_groups_users', $restrict);
@@ -1025,6 +1109,13 @@ class Holiday extends CommonDBTM
             $groups     = [];
             foreach ($groupusers as $groupuser) {
                 $groups[] = $groupuser["id"];
+            }
+
+            // Without a group the user has no group manager, which is the false this method
+            // returns anyway once $datas stays empty - but the criterion had to be reached to
+            // say so, and the empty IN threw before that.
+            if (empty($groups)) {
+                return false;
             }
 
             $restrict = [
@@ -1651,10 +1742,14 @@ class Holiday extends CommonDBTM
             // part: the holiday type (sickness included) and the free-text comment,
             // which frequently carries the reason. Rather than hiding the event, which
             // would break the legitimate workload view, the slot stays visible and only
-            // its content is neutralised for callers without plugin_activity_all_users.
+            // its content is neutralised for callers without plugin_activity_all_users -
+            // and, for the same reason as everywhere else in this class, for callers
+            // holding it on a profile of another entity: the absence type and the comment
+            // are the sensitive part, so the entity boundary applies to them too.
             if (
                 (int) $data["users_id"] === (int) Session::getLoginUserID()
-                || Session::haveRight('plugin_activity_all_users', 1)
+                || (Session::haveRight('plugin_activity_all_users', 1)
+                    && self::isUserInSessionEntities($data["users_id"] ?? 0))
             ) {
                 $interv[$key]["name"]    = Html::resume_text($data["name"], $CFG_GLPI["cut"]); // name is re-encoded on JS side
                 $interv[$key]["content"] = RichText::getSafeHtml(Html::resume_text($data["comment"], $CFG_GLPI["cut"]));
@@ -1748,6 +1843,35 @@ class Holiday extends CommonDBTM
         $where = [
             'glpi_plugin_activity_holidays.users_id'    => $criteria['users_id'],
             'glpi_plugin_activity_holidays.actiontime'  => ['!=', 0],
+        ];
+
+        // Security: this is the single sink behind the CRA report, its PDF export and the
+        // dashboard widgets, and it used to restrict on users_id alone - whatever users_id the
+        // caller handed over. The neighbouring CRA queries do not work that way:
+        // PlanningExternalEvent::queryTickets() and queryAllExternalEvents() both apply
+        // getEntitiesRestrictCriteria(), so tickets and events were compartmentalised while
+        // holidays were not. Restricting here rather than in each caller closes the report, the
+        // export and the widgets in one place, and keeps a future caller from reopening it.
+        //
+        // The restriction cannot be placed on the record: the holidays table carries no
+        // entities_id (install/sql/empty.sql), so there is no column to compare. What carries
+        // the entity is the requester, through glpi_profiles_users - and not
+        // glpi_users.entities_id, which is only a default entity: someone declared at the root
+        // with a recursive profile is legitimately visible from every child entity. This is the
+        // same predicate as Holiday::isUserInSessionEntities() and as the Holiday branch of
+        // plugin_activity_addDefaultWhere(), so the search list, the form and the report all
+        // agree on who is visible. The recursive flag makes getEntitiesRestrictCriteria() emit
+        // (entities_id IN active OR (is_recursive = 1 AND entities_id IN ancestors)), which is the
+        // SQL counterpart of Profile_User::getUserEntities($id, true); when the session is set to
+        // show every entity it emits a bare true instead, leaving the sub-query unrestricted -
+        // the intended behaviour in that case.
+        $dbu     = new DbUtils();
+        $where[] = [
+            'glpi_plugin_activity_holidays.users_id' => ['IN', new QuerySubQuery([
+                'SELECT' => 'users_id',
+                'FROM'   => 'glpi_profiles_users',
+                'WHERE'  => $dbu->getEntitiesRestrictCriteria('glpi_profiles_users', '', '', true),
+            ])],
         ];
 
         if (isset($criteria['begin'])) {

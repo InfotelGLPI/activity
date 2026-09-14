@@ -34,7 +34,13 @@ use GlpiPlugin\Activity\Menu;
 use GlpiPlugin\Activity\Option;
 
 if (Plugin::isPluginActive("activity")) {
-    if (Session::haveRight("plugin_activity", UPDATE)) {
+    // The entry used to be open to plugin_activity in UPDATE - the right of an ordinary user
+    // allowed to declare his own activity - while every write branch below and the twin
+    // controller front/option.form.php gate on config/UPDATE. The display branch was therefore
+    // the only unguarded one, and it hands out the whole plugin setup: notification addresses,
+    // helpdesk routing, and the schema check tab with the structure of the plugin tables. The
+    // page now carries the same right as what it shows and what it writes.
+    if (Session::haveRight("config", UPDATE)) {
         $opt = new Option();
 
         if (isset($_POST["update"])) {

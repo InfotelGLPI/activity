@@ -104,19 +104,34 @@ class HolidayValidation extends CommonDBChild
         // validation may be viewed only by a designated validator of the target
         // holiday, by the holiday requester, or by a profile holding
         // plugin_activity_all_users. Mirrors front/holidayvalidation.form.php.
-        if (Session::haveRight('plugin_activity_all_users', 1)) {
-            return true;
-        }
         $holidays_id = (int) ($this->fields['plugin_activity_holidays_id'] ?? 0);
         if ($holidays_id <= 0) {
             return false;
         }
+        // The parent request is what carries the requester, so it is read first: every branch
+        // below needs it, and a validation whose holiday no longer exists is not viewable.
+        $holiday = new Holiday();
+        if (!$holiday->getFromDB($holidays_id)) {
+            return false;
+        }
+
+        // Security: plugin_activity_all_users used to short-circuit this method with an
+        // unconditional true, without ever looking at whose request was being opened. GLPI
+        // grants a right profile by profile AND entity by entity, so holding it in one entity
+        // opened the validation circuit - requester, dates, absence type including the ones
+        // flagged is_sickness, comment - of every other entity. Holiday itself establishes that
+        // this is not the intended reading: its canViewItem(), canUpdateItem() and
+        // canPurgeItem() all bound the same right to isUserInSessionEntities(). The divergence
+        // between the two classes was an omission, not a design choice, all the more so as this
+        // record has no entities_id of its own and CommonDBTM::checkEntity() is therefore a
+        // no-op here.
+        if (Session::haveRight('plugin_activity_all_users', 1)) {
+            return Holiday::isUserInSessionEntities($holiday->fields['users_id'] ?? 0);
+        }
         if (self::canValidate($holidays_id)) {
             return true;
         }
-        $holiday = new Holiday();
-        return $holiday->getFromDB($holidays_id)
-            && (int) $holiday->fields['users_id'] === Session::getLoginUserID();
+        return (int) $holiday->fields['users_id'] === Session::getLoginUserID();
     }
 
     public static function getIcon()

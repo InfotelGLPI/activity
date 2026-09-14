@@ -55,7 +55,17 @@ class Config extends CommonDBTM
         }
 
         $dbu = new DbUtils();
-        $dataConfig = $dbu->getAllDataFromTable($this->getTable());
+        // GLPI does not scope a query by itself: the criterion has to be composed, which is
+        // what getConfigFromDB() below already does. Without it this listing displayed the
+        // configuration rows of every entity of the instance - their label, their entity and
+        // their recursive flag - to any profile holding plugin_activity in write, including
+        // the rows of sibling entities the caller has no access to. The fourth argument takes
+        // the recursive rows of the ancestor entities into account, exactly as getConfigFromDB()
+        // does with its own OR / is_recursive criterion.
+        $dataConfig = $dbu->getAllDataFromTable(
+            $this->getTable(),
+            $dbu->getEntitiesRestrictCriteria($this->getTable(), 'entities_id', '', true),
+        );
         $used_entities = array_column($dataConfig, 'entities_id');
 
         ob_start();

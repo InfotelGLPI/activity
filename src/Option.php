@@ -59,14 +59,26 @@ class Option extends CommonDBTM
         return PLUGIN_ACTIVITY_WEBDIR . '/front/config.form.php' . ($full ? '?' : '');
     }
 
+    // Defense in depth for front/config.form.php: Option is the setup itself, and its form is
+    // also reachable through the tab machinery (ajax/common.tabs.php replays check($id, READ)
+    // on this class before rendering the Plugin setup and Schema check tabs), which the guard
+    // of the controller does not cover. Reading the setup is an administration act and follows
+    // the same right as writing it.
     public static function canView(): bool
     {
-        return \Session::haveRight('plugin_activity', READ);
+        return \Session::haveRight('config', UPDATE);
     }
 
+    // Same right as canView() above and as the two controllers that write the setup
+    // (front/config.form.php and front/option.form.php): this object IS the plugin
+    // configuration - notification addresses, helpdesk routing - and plugin_activity/UPDATE is
+    // the right of an ordinary user allowed to declare his own activity. No current call path
+    // reaches this guard without having passed config/UPDATE first, so the gap was latent, but
+    // any tab, massive action or AJAX endpoint added later on canCreate() would have opened the
+    // setup to a standard business profile.
     public static function canCreate(): bool
     {
-        return \Session::haveRight('plugin_activity', UPDATE);
+        return \Session::haveRight('config', UPDATE);
     }
 
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
@@ -261,7 +273,12 @@ class Option extends CommonDBTM
      */
     public function getUseProject()
     {
-        return $this->fields['use_project'];
+        // setup.php reads this getter on every request whose URI contains "projecttask", on an
+        // Option loaded without testing getFromDB(): when the configuration row is missing the
+        // fields array is empty and the direct access emitted an "Undefined array key" warning
+        // on each of those requests. Same fallback as the use_timerepartition guard of
+        // setup.php.
+        return $this->fields['use_project'] ?? 0;
     }
 
     /**
@@ -304,12 +321,31 @@ class Option extends CommonDBTM
             'use_project',
             'use_weekend',
             'use_planning_activity_hours',
+            // These five were missing while showForm() renders them and option_form.html.twig
+            // displays them (lines 47, 67, 72, 82 and 172). array_filter() dropped them without
+            // a word: update() never received the columns, no error was raised, no message was
+            // shown and the history recorded nothing, so a super-admin changing the default
+            // validation percentage or the planning-event columns saw the success banner and
+            // the old value coming back. The allow-list has to cover exactly what the template
+            // exposes, which is what the comment above already claimed.
+            'is_cra_default',
+            'is_cra_default_project',
+            'show_planningevents_entity',
+            'show_planningevents_project',
+            'default_validation_percent',
         ];
         $input = array_filter(
             $input,
             static fn($key) => in_array($key, $allowed, true) || str_starts_with((string) $key, '_'),
             ARRAY_FILTER_USE_KEY,
         );
+
+        if (isset($input['default_validation_percent'])) {
+            // The column is an unsigned integer read back as a percentage by the validation
+            // workflow: bound it here rather than trusting the posted field, so a negative or
+            // out-of-range value cannot reach the computation.
+            $input['default_validation_percent'] = min(100, max(0, (int) $input['default_validation_percent']));
+        }
 
         if (isset($input['_filename']) && count($input['_filename']) > 0) {
             // Security: the name comes straight from the POST and is later concatenated
