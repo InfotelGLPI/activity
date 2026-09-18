@@ -281,3 +281,27 @@ body.iframed {
 #holiday .modal-body iframe {
     min-height: min(600px, 88vh);
 }
+
+/*
+ * Dark-palette adaptation for the activity report (CRA).
+ *
+ * The report is a legacy table whose day header and week-end columns carry their
+ * background as an inline style, which no CSS rule can override without !important.
+ * Report.php reads them as variables instead, keeping the original colour as the
+ * fallback, so a page served without this file renders exactly as it did before.
+ *
+ * The light values below are the original ones, untouched. The dark ones were picked
+ * so each band stands out from the card surface by the contrast ratio it had against
+ * white: 1.10:1 for the day header, 1.61:1 for the week-ends. Darkening the light
+ * greys instead would have inverted their relative prominence, the near-white header
+ * becoming the most visible band of the table.
+ */
+:root {
+    --act-cra-header-bg: #f3f4f5;
+    --act-cra-weekend-bg: #cccccc;
+}
+
+:root[data-glpi-theme-dark="1"] {
+    --act-cra-header-bg: #101010;
+    --act-cra-weekend-bg: #313131;
+}

@@ -1178,7 +1178,7 @@ class Report extends CommonDBTM
 
             /*days*/
             if ($output_type == Search::HTML_OUTPUT) {
-                echo "<tr class='tab_bg_1' style='background-color:#f3f4f5;font-weight:bold'>";
+                echo "<tr class='tab_bg_1' style='background-color:var(--act-cra-header-bg, #f3f4f5);font-weight:bold'>";
             } else {
                 echo Search::showNewLine($output_type, true);
             }
@@ -1309,7 +1309,7 @@ class Report extends CommonDBTM
                 $class = "class='center'";
                 $style = "";
                 if ($holiday->countWe($d, $d, $holiday->getHolidays()) > 0) {
-                    $style = " style='background-color:#CCCCCC' ";
+                    $style = " style='background-color:var(--act-cra-weekend-bg, #CCCCCC)' ";
                 }
                 echo Search::showItem($output_type, '', $num, $row_num, $class . $style);
             }
@@ -1892,7 +1892,7 @@ class Report extends CommonDBTM
                     $class = "class='center'";
                     $style = "";
                     if (isset($data['options']['weekend'])) {
-                        $style = " style='background-color:#CCCCCC' ";
+                        $style = " style='background-color:var(--act-cra-weekend-bg, #CCCCCC)' ";
                     }
 
                     // Get tickets link for value
@@ -1936,7 +1936,7 @@ class Report extends CommonDBTM
                 $class = "class='center'";
                 $style = "";
                 if ($holiday->countWe($d, $d, $holiday->getHolidays()) > 0) {
-                    $style = " style='background-color:#CCCCCC' ";
+                    $style = " style='background-color:var(--act-cra-weekend-bg, #CCCCCC)' ";
                 }
                 echo Search::showItem($output_type, '', $num, $row_num, $class . $style);
             }
@@ -2084,7 +2084,7 @@ class Report extends CommonDBTM
 
                     $time_total[$i]['value'] = $time_total[$i]['value'] + $data['values'];
                     if (isset($data['options']['weekend'])) {
-                        $time_total[$i]['style'] = " style='background-color:#CCCCCC' ";
+                        $time_total[$i]['style'] = " style='background-color:var(--act-cra-weekend-bg, #CCCCCC)' ";
                     }
                     $i++;
                 }
