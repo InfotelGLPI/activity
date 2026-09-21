@@ -91,8 +91,6 @@ function plugin_init_activity()
     if (isset($_SESSION["glpiactiveprofile"]["interface"])
         && $_SESSION["glpiactiveprofile"]["interface"] != "helpdesk") {
         $PLUGIN_HOOKS[Hooks::ADD_CSS]['activity'] = ['activity.css'];
-        // Prepend touch-punch only for central interface users
-        array_unshift($activityScripts, '/lib/jquery/js/jquery.ui.touch-punch.min.js');
     }
 
     if (Session::haveRight("plugin_activity", UPDATE)
