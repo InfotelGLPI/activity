@@ -27,17 +27,19 @@
  * --------------------------------------------------------------------------
  */
 
-namespace GlpiPlugin\Activity;
+// Stub of the optional manageentities plugin, for static analysis only
 
-class Action
+namespace GlpiPlugin\Manageentities;
+
+class TechLead extends \CommonDBTM
 {
-    public const ADD_ACTIVITY = 'add_activity';
-    public const LIST_ACTIVITIES = 'list_activities';
-    public const HOLIDAY_REQUEST = 'holiday_request';
-    public const LIST_HOLIDAYS = 'list_holidays';
-    public const APPROVE_HOLIDAYS = 'validate_holidays';
-    public const CRA = 'cra';
-    public const ENTITY_DISTRIBUTION = 'entity_distribution';
-    public const HOLIDAY_COUNT = 'holiday_count';
-    public const MANAGER = 'manager';
+    /**
+     * @param array $entities
+     *
+     * @return array<int, array<int, array{users_id: int, is_default: bool}>>
+     */
+    public static function getTechLeadsByEntity(array $entities): array
+    {
+        return [];
+    }
 }

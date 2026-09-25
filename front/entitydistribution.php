@@ -27,17 +27,20 @@
  * --------------------------------------------------------------------------
  */
 
-namespace GlpiPlugin\Activity;
+use GlpiPlugin\Activity\EntityDistribution;
+use GlpiPlugin\Activity\Menu;
 
-class Action
-{
-    public const ADD_ACTIVITY = 'add_activity';
-    public const LIST_ACTIVITIES = 'list_activities';
-    public const HOLIDAY_REQUEST = 'holiday_request';
-    public const LIST_HOLIDAYS = 'list_holidays';
-    public const APPROVE_HOLIDAYS = 'validate_holidays';
-    public const CRA = 'cra';
-    public const ENTITY_DISTRIBUTION = 'entity_distribution';
-    public const HOLIDAY_COUNT = 'holiday_count';
-    public const MANAGER = 'manager';
+// Same right as the CRA this page is computed from
+Session::checkRight(EntityDistribution::$rightname, READ);
+
+Html::header(EntityDistribution::getTypeName(), '', "tools", Menu::class);
+
+if (isset($_POST['set_techleads'])) {
+    EntityDistribution::setTechLeads($_POST);
+    // Rendered again below with the same year and technician filter
+    Html::displayMessageAfterRedirect();
 }
+
+EntityDistribution::showDistribution($_POST);
+
+Html::footer();

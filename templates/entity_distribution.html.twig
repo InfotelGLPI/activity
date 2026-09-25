@@ -1,0 +1,142 @@
+{#
+ # -------------------------------------------------------------------------
+ # activity plugin for GLPI
+ # Copyright (C) 2019-2026 by the activity Development Team.
+ #
+ # https://github.com/InfotelGLPI/activity
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of activity.
+ #
+ # activity is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # activity is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with activity. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+<div class="card mb-3">
+    <div class="card-header d-flex align-items-center gap-2">
+        <i class="{{ icon }}"></i>
+        <strong>{{ title }}</strong>
+    </div>
+    <div class="card-body">
+        <form method="post" action="{{ form_action }}">
+            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+            <div class="row g-3 align-items-end">
+                <div class="col-auto">
+                    <label class="col-form-label fw-bold" for="activity_distribution_year">{{ __('Year', 'activity') }}</label>
+                </div>
+                <div class="col-auto">
+                    <select class="form-select" name="year" id="activity_distribution_year">
+                        {% for option in years %}
+                            <option value="{{ option }}" {{ option == year ? 'selected' : '' }}>{{ option }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% if can_see_all_users %}
+                    <div class="col-auto">
+                        <label class="col-form-label fw-bold">{{ __('Technician') }}</label>
+                    </div>
+                    <div class="col-auto">
+                        {# Server-side markup built by User::dropdown(). #}
+                        {{ user_dropdown|raw }}
+                    </div>
+                {% endif %}
+                <div class="col-auto">
+                    <button type="submit" name="submit" class="btn btn-primary">
+                        <i class="ti ti-search me-1"></i>{{ __('Post', 'activity') }}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="card-footer text-muted">
+        {{ __('Time of the ticket tasks shown on the CRA, grouped by client (entity) of the ticket.', 'activity') }}
+    </div>
+</div>
+
+{% if techs is empty %}
+    <div class="alert alert-info">
+        {{ __('No ticket task on the CRA for this period.', 'activity') }}
+    </div>
+{% endif %}
+
+{% for tech in techs %}
+    <div class="card mb-3">
+        <div class="card-header d-flex align-items-center gap-2">
+            <i class="ti ti-user"></i>
+            <strong>{{ tech.name }}</strong>
+            <span class="ms-auto badge bg-blue-lt">{{ __('Total') }} : {{ tech.total_readable }}</span>
+            {% if can_set_techleads %}
+                <form method="post" action="{{ form_action }}" class="d-inline">
+                    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="year" value="{{ year }}">
+                    <input type="hidden" name="users_id" value="{{ users_id }}">
+                    <input type="hidden" name="techs_id" value="{{ tech.id }}">
+                    <button type="submit" name="set_techleads" class="btn btn-sm btn-outline-primary"
+                            title="{{ __('Define this technician as tech lead of the clients listed below', 'activity') }}">
+                        <i class="ti ti-user-star me-1"></i>{{ __('Set as tech lead of these clients', 'activity') }}
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover card-table">
+                <thead>
+                    <tr>
+                        <th>{{ _n('Client', 'Clients', 1, 'activity') }}</th>
+                        {% if show_techleads %}
+                            <th>{{ _n('Tech lead', 'Tech leads', 2, 'activity') }}</th>
+                        {% endif %}
+                        <th class="text-end">{{ _n('Ticket', 'Tickets', 2) }}</th>
+                        <th class="text-end">{{ _n('Task', 'Tasks', 2) }}</th>
+                        <th class="text-end">{{ __('Duration') }}</th>
+                        <th style="width: 30%;">{{ __('Distribution', 'activity') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entity in tech.entities %}
+                        <tr>
+                            <td>{{ entity.name }}</td>
+                            {% if show_techleads %}
+                                <td>
+                                    {% for lead in techleads[entity.id]|default([]) %}
+                                        <span class="badge {{ lead.is_default ? 'bg-green-lt' : (lead.users_id == tech.id ? 'bg-blue-lt' : 'bg-secondary-lt') }} me-1"
+                                              {% if lead.is_default %}title="{{ __('Main tech lead', 'activity') }}"{% endif %}>
+                                            {% if lead.is_default %}<i class="ti ti-star me-1"></i>{% endif %}{{ lead.name }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endfor %}
+                                </td>
+                            {% endif %}
+                            <td class="text-end">{{ entity.nb_tickets }}</td>
+                            <td class="text-end">{{ entity.nb_tasks }}</td>
+                            <td class="text-end">{{ entity.total_readable }}</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="progress flex-grow-1">
+                                        <div class="progress-bar" role="progressbar" style="width: {{ entity.percent }}%;"
+                                             aria-valuenow="{{ entity.percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <span class="text-nowrap">{{ entity.percent }} %</span>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endfor %}

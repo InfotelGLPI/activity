@@ -296,6 +296,12 @@ class PlanningExternalEvent extends CommonDBTM
                 'label' => __('CRA', 'activity'),
                 'rights' => Session::haveRight("plugin_activity_statistics", 1),
             ],
+            Action::ENTITY_DISTRIBUTION => [
+                'link' => PLUGIN_ACTIVITY_WEBDIR . "/front/entitydistribution.php",
+                'img' => EntityDistribution::getIcon(),
+                'label' => EntityDistribution::getTypeName(),
+                'rights' => Session::haveRight(EntityDistribution::$rightname, READ),
+            ],
         ];
 
         return $listActions;

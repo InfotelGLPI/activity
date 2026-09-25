@@ -44,6 +44,7 @@ class LateralMenu extends CommonDBTM
             Action::ADD_ACTIVITY,
             Action::HOLIDAY_REQUEST,
             Action::CRA,
+            Action::ENTITY_DISTRIBUTION,
             Action::APPROVE_HOLIDAYS,
         ];
 
