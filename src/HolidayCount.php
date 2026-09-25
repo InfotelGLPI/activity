@@ -206,8 +206,11 @@ class HolidayCount extends CommonDBTM
         // the record as stored in DB; it does not vet a users_id present in the payload.
         // Since CommonDBTM::update() persists any posted real column, a posted users_id
         // would be written verbatim, re-assigning the counter to a colleague. Realign
-        // the owner on the stored value unless the caller holds plugin_activity_all_users.
-        if (!Session::haveRight('plugin_activity_all_users', 1)) {
+        // the owner on the stored value unless the caller may manage the new owner's
+        // counter too: same check as prepareInputForAdd(), entity boundary included.
+        if (isset($input['users_id'])
+            && (int) $input['users_id'] !== (int) $this->fields['users_id']
+            && !$this->canManageCounterFor($input['users_id'])) {
             $input['users_id'] = $this->fields['users_id'];
         }
 

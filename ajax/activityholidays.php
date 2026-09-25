@@ -41,10 +41,13 @@ if (isset($_POST['load_holiday_details'])) {
     $target_users_id = (int) $_POST['users_id'];
     // Only the session user may read their own leave balance, unless the profile
     // holds the "all users" right (the right gating every other cross-user view).
+    // That right is granted per entity, so it only reaches users visible from the
+    // active entities, as in Holiday::canViewItem() and HolidayCount::canViewItem().
     if ($target_users_id !== Session::getLoginUserID()
-        && !Session::haveRight('plugin_activity_all_users', 1)) {
+        && (!Session::haveRight('plugin_activity_all_users', 1)
+            || !Holiday::isUserInSessionEntities($target_users_id))) {
         http_response_code(403);
         return;
     }
-    $holiday->getDetails($target_users_id, $_POST['holiday_period_id']);
+    $holiday->getDetails($target_users_id, (int) ($_POST['holiday_period_id'] ?? 0));
 }
