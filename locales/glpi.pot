@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-25 06:39+0000\n"
+"POT-Creation-Date: 2026-09-25 09:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: src/EntityDistribution.php:297
+#, php-format
+msgid "%1$s client(s) added for %2$s"
+msgstr ""
 
 #: src/Notification.php:201 src/Notification.php:208
 #, php-format
@@ -73,7 +78,7 @@ msgstr ""
 msgid "Activity report"
 msgstr ""
 
-#: src/PlanningExternalEvent.php:613 src/PlanningExternalEvent.php:711
+#: src/PlanningExternalEvent.php:619 src/PlanningExternalEvent.php:717
 msgid "Activity type is mandatory field"
 msgstr ""
 
@@ -93,6 +98,10 @@ msgstr ""
 
 #: src/Holiday.php:1441 src/Holiday.php:1468 src/Dashboard.php:311
 msgid "All day"
+msgstr ""
+
+#: src/EntityDistribution.php:223
+msgid "All technicians"
 msgstr ""
 
 #: src/NotificationTargetHoliday.php:46 src/NotificationTargetHoliday.php:261
@@ -181,9 +190,11 @@ msgstr ""
 msgid "Choose your project when entering externals events and display on CRA"
 msgstr ""
 
-#: src/CraPDF.php:403
+#: src/CraPDF.php:403 templates/entity_distribution.html.twig:98
 msgid "Client"
-msgstr ""
+msgid_plural "Clients"
+msgstr[0] ""
+msgstr[1] ""
 
 #: templates/holiday_massive_action_subform.html.twig:34
 msgid "Comment"
@@ -209,7 +220,7 @@ msgid "Counter"
 msgstr ""
 
 #: src/PlanningExternalEvent.php:198 src/Profile.php:111 src/Holiday.php:676
-#: src/LateralMenu.php:64
+#: src/LateralMenu.php:65
 msgid "Create a holiday request"
 msgstr ""
 
@@ -247,6 +258,10 @@ msgstr ""
 msgid "Define internal helpdesk"
 msgstr ""
 
+#: templates/entity_distribution.html.twig:88
+msgid "Define this technician as tech lead of the clients listed below"
+msgstr ""
+
 #: templates/preference_form.html.twig:62 templates/holiday_form.html.twig:172
 #: templates/config_form.html.twig:101
 msgctxt "button"
@@ -270,6 +285,14 @@ msgid ""
 "Display of activity by month for a user (tickets, activity, holidays, others)"
 msgstr ""
 
+#: templates/entity_distribution.html.twig:105
+msgid "Distribution"
+msgstr ""
+
+#: src/EntityDistribution.php:52
+msgid "Distribution by client"
+msgstr ""
+
 #: templates/holiday_validation_form.html.twig:33
 msgid "Do you approve this holiday ?"
 msgstr ""
@@ -278,7 +301,7 @@ msgstr ""
 msgid "Document"
 msgstr ""
 
-#: templates/holiday_form.html.twig:122
+#: templates/holiday_form.html.twig:122 templates/entity_distribution.html.twig:104
 msgid "Duration"
 msgstr ""
 
@@ -424,6 +447,10 @@ msgstr ""
 msgid "Mail sent to %s"
 msgstr ""
 
+#: templates/entity_distribution.html.twig:116
+msgid "Main tech lead"
+msgstr ""
+
 #: src/HolidayType.php:93
 msgid "Mandatory comment"
 msgstr ""
@@ -466,11 +493,15 @@ msgstr ""
 msgid "No query could be suggested for this difference."
 msgstr ""
 
+#: templates/entity_distribution.html.twig:71
+msgid "No ticket task on the CRA for this period."
+msgstr ""
+
 #: src/NotificationTargetHoliday.php:176 src/NotificationTargetHoliday.php:242
 msgid "Number of days"
 msgstr ""
 
-#: src/PlanningExternalEvent.php:592 src/PlanningExternalEvent.php:755
+#: src/PlanningExternalEvent.php:598 src/PlanningExternalEvent.php:761
 msgid ""
 "One of the dates is on weekend, please add the date in the exceptionsof the "
 "reccurent rule"
@@ -490,11 +521,11 @@ msgstr ""
 msgid "Only one counter by period is allowed"
 msgstr ""
 
-#: src/PlanningExternalEvent.php:551 src/PlanningExternalEvent.php:787
+#: src/PlanningExternalEvent.php:557 src/PlanningExternalEvent.php:793
 msgid "Only pairs schedules are allowed"
 msgstr ""
 
-#: src/PlanningExternalEvent.php:543 src/PlanningExternalEvent.php:781
+#: src/PlanningExternalEvent.php:549 src/PlanningExternalEvent.php:787
 msgid "Only whole hours are allowed (no split times)"
 msgstr ""
 
@@ -546,7 +577,7 @@ msgstr ""
 msgid "Plugin setup"
 msgstr ""
 
-#: templates/cra_search.html.twig:61
+#: templates/cra_search.html.twig:61 templates/entity_distribution.html.twig:58
 msgid "Post"
 msgstr ""
 
@@ -635,6 +666,10 @@ msgstr ""
 msgid "See validation options"
 msgstr ""
 
+#: templates/entity_distribution.html.twig:89
+msgid "Set as tech lead of these clients"
+msgstr ""
+
 #: src/HolidayType.php:88 src/HolidayPeriod.php:82
 msgid "Short name"
 msgstr ""
@@ -682,7 +717,7 @@ msgstr ""
 msgid "Status of the approval request"
 msgstr ""
 
-#: src/PlanningExternalEvent.php:368
+#: src/PlanningExternalEvent.php:374
 msgid "Subcategory"
 msgstr ""
 
@@ -694,17 +729,33 @@ msgstr ""
 msgid "Take a snapshot of the CRA"
 msgstr ""
 
-#: src/PlanningExternalEvent.php:644 src/PlanningExternalEvent.php:806
+#: templates/entity_distribution.html.twig:103
+msgid "Task"
+msgid_plural "Tasks"
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/entity_distribution.html.twig:100
+msgid "Tech lead"
+msgid_plural "Tech leads"
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/entity_distribution.html.twig:49
+msgid "Technician"
+msgstr ""
+
+#: src/PlanningExternalEvent.php:650 src/PlanningExternalEvent.php:812
 #: src/Holiday.php:424
 msgid "The chosen begin date is on weekend"
 msgstr ""
 
-#: src/PlanningExternalEvent.php:630 src/PlanningExternalEvent.php:794
+#: src/PlanningExternalEvent.php:636 src/PlanningExternalEvent.php:800
 #: src/Holiday.php:431
 msgid "The chosen date is a public holiday"
 msgstr ""
 
-#: src/PlanningExternalEvent.php:655 src/PlanningExternalEvent.php:815
+#: src/PlanningExternalEvent.php:661 src/PlanningExternalEvent.php:821
 msgid "The chosen end date is on weekend"
 msgstr ""
 
@@ -746,6 +797,22 @@ msgstr ""
 msgid "There is no manager for your groups"
 msgstr ""
 
+#: templates/entity_distribution.html.twig:102
+msgid "Ticket"
+msgid_plural "Tickets"
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/entity_distribution.html.twig:65
+msgid ""
+"Time of the ticket tasks shown on the CRA, grouped by client (entity) of the "
+"ticket."
+msgstr ""
+
+#: templates/entity_distribution.html.twig:80
+msgid "Total"
+msgstr ""
+
 #: src/CraPDF.php:680
 msgid "Total OK"
 msgstr ""
@@ -775,7 +842,8 @@ msgid "Use hour on cra and not half day"
 msgstr ""
 
 #: templates/planningexternalevent_post_item_form.html.twig:31
-#: templates/tickettask_post_form.html.twig:33 templates/projecttask_post_form.html.twig:29
+#: templates/tickettask_post_form.html.twig:33
+#: templates/projecttask_post_form.html.twig:29
 msgid "Use in CRA"
 msgstr ""
 
@@ -815,7 +883,7 @@ msgid_plural "Users"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/PlanningExternalEvent.php:621 src/PlanningExternalEvent.php:717
+#: src/PlanningExternalEvent.php:627 src/PlanningExternalEvent.php:723
 #: src/Holiday.php:397
 msgid "User is mandatory field"
 msgstr ""
@@ -841,7 +909,7 @@ msgstr[1] ""
 msgid "Validation of your holiday request"
 msgstr ""
 
-#: src/CraPDF.php:395
+#: src/CraPDF.php:395 templates/entity_distribution.html.twig:38
 msgid "Year"
 msgstr ""
 
