@@ -687,7 +687,7 @@ msgstr[2] "Gestion des droits"
 #: templates/holiday_validation_summary.html.twig:60
 msgctxt "button"
 msgid "Save"
-msgstr "SAuver"
+msgstr "Sauvegarder"
 
 #: src/CheckSchema.php:56
 msgid "Schema check"
