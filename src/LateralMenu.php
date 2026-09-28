@@ -51,9 +51,9 @@ class LateralMenu extends CommonDBTM
         foreach ($listActions as $key => $action) {
             if (in_array($key, $types) && $action['rights']) {
                 $actions[] = [
-                    'link'    => $action['link'],
-                    'label'   => $action['label'],
-                    'onclick' => $action['onclick'] ?? '',
+                    'link'  => $action['link'],
+                    'label' => $action['label'],
+                    'modal' => $action['modal'] ?? '',
                 ];
             }
         }

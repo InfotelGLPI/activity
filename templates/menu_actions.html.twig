@@ -1,0 +1,58 @@
+{#
+ # -------------------------------------------------------------------------
+ # activity plugin for GLPI
+ # Copyright (C) 2019-2026 by the activity Development Team.
+ #
+ # https://github.com/InfotelGLPI/activity
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of activity.
+ #
+ # activity is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # activity is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with activity. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{% if widget %}
+    <div class="d-flex flex-wrap justify-content-center gap-3">
+        {% for action in actions %}
+            <div class="nb">{{ _self.action_link(action) }}</div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="center">
+        <table class="tab_cadre_fixe activity_menu" style="width: 400px;">
+            <tr><th colspan="2">{{ title }}</th></tr>
+            {% for pair in actions|batch(2) %}
+                <tr class="twhite">
+                    {% for action in pair %}
+                        <td class="center">{{ _self.action_link(action) }}</td>
+                    {% endfor %}
+                    {% if pair|length == 1 and actions|length > 1 %}
+                        <td></td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endif %}
+
+{% macro action_link(action) %}
+    <a href="{{ action.link }}"
+       {% if action.modal is defined and action.modal is not empty %}data-bs-toggle="modal" data-bs-target="#{{ action.modal }}"{% endif %}>
+        <i class="{{ action.img }}" style="font-size: 3.5em;" title="{{ action.label }}"></i>
+        <br><br>{{ action.label }}
+    </a>
+{% endmacro %}

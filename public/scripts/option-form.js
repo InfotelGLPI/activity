@@ -1,5 +1,3 @@
-<?php
-
 /**
  * -------------------------------------------------------------------------
  * activity plugin for GLPI
@@ -27,29 +25,30 @@
  * --------------------------------------------------------------------------
  */
 
-Html::header_nocache();
+/*
+ * Plugin options form (option_form.html.twig): a block carrying
+ * data-activity-toggle="<name>" is shown only while the yes/no selector <name> is on "yes".
+ *
+ * The selectors are select2 widgets, which trigger their change event through jQuery
+ * only, hence the jQuery delegated listener.
+ */
 
-Session::checkRight("plugin_activity", READ);
-header("Content-Type: application/json; charset=UTF-8");
-
-// Security: return pure JSON data (never HTML with <script> tags). The client
-// parses this with JSON.parse and calls the behaviours itself, instead of
-// eval()-ing server output — so no reflected value can ever become executable JS.
-$response = [];
-if (isset($_POST['action']) && $_POST['action'] === "load") {
-    //TODO comment For ?
-    if (Session::getCurrentInterface() == "central"
-          && (strpos($_SERVER['REQUEST_URI'], "cra.php") !== false)) {
-        $response['lang_month'] = array_values(Toolbox::getMonthsOfYearArray());
+const sync = (name) => {
+    const select = document.querySelector(`select[name="${CSS.escape(name)}"]`);
+    if (!select) {
+        return;
     }
+    document.querySelectorAll(`[data-activity-toggle="${CSS.escape(name)}"]`).forEach((block) => {
+        block.style.display = select.value !== '0' ? '' : 'none';
+    });
+};
 
-    $response['slidepanel'] = [
-        'name'        => 'showLateralMenu',
-        'title'       => _n('Activity', 'Activities', 1, 'activity'),
-        'url'         => PLUGIN_ACTIVITY_WEBDIR . '/ajax/lateralmenu.php',
-        'position'    => 'right',
-        'close_label' => __('Close'),
-    ];
-}
+document.querySelectorAll('[data-activity-toggle]').forEach((block) => {
+    sync(block.dataset.activityToggle);
+});
 
-echo json_encode($response);
+$(document).on('change', 'select', (event) => {
+    if (document.querySelector(`[data-activity-toggle="${CSS.escape(event.target.name)}"]`)) {
+        sync(event.target.name);
+    }
+});

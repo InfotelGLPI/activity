@@ -66,16 +66,6 @@ class Config extends CommonDBTM
             $this->getTable(),
             $dbu->getEntitiesRestrictCriteria($this->getTable(), 'entities_id', '', true),
         );
-        $used_entities = array_column($dataConfig, 'entities_id');
-
-        ob_start();
-        Dropdown::show('Entity', ['name' => 'entities_id', 'used' => $used_entities]);
-        $entity_dropdown_html = ob_get_clean();
-
-        ob_start();
-        Dropdown::showYesNo('is_recursive');
-        $is_recursive_html = ob_get_clean();
-
         $entries = [];
         foreach ($dataConfig as $field) {
             $entries[] = [
@@ -88,8 +78,7 @@ class Config extends CommonDBTM
 
         TemplateRenderer::getInstance()->display('@activity/config_form.html.twig', [
             'form_url'            => Toolbox::getItemTypeFormURL(Config::class),
-            'entity_dropdown_html' => $entity_dropdown_html,
-            'is_recursive_html'   => $is_recursive_html,
+            'used_entities'       => array_column($dataConfig, 'entities_id'),
             'entries'             => $entries,
             'canedit'             => $this->canCreate(),
         ]);

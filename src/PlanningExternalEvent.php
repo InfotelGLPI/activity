@@ -83,6 +83,129 @@ class PlanningExternalEvent extends CommonDBTM
         return \PlanningExternalEvent::getTypeName($nb);
     }
 
+    /**
+     * This satellite table only carries the plugin fields (CRA flag, duration, sub-category,
+     * project) of a core event: the displayable data (name, dates, user, category, entity)
+     * is read through a join on glpi_planningexternalevents.
+     */
+    public function rawSearchOptions()
+    {
+        $tab = [];
+
+        $tab[] = [
+            'id'   => 'common',
+            'name' => self::getTypeName(1),
+        ];
+
+        // Standard joins: this table -> core event (planningexternalevents_id) -> dropdown.
+        $event_join = [
+            'beforejoin' => [
+                'table' => \PlanningExternalEvent::getTable(),
+            ],
+        ];
+
+        $tab[] = [
+            'id'            => '1',
+            'table'         => \PlanningExternalEvent::getTable(),
+            'field'         => 'name',
+            'name'          => __('Title'),
+            'datatype'      => 'itemlink',
+            // Resolved from the table: links to the core event form (this table has none).
+            'massiveaction' => false,
+            'linkfield'     => 'planningexternalevents_id',
+        ];
+
+        $tab[] = [
+            'id'            => '2',
+            'table'         => \PlanningExternalEvent::getTable(),
+            'field'         => 'begin',
+            'name'          => __('Start date'),
+            'datatype'      => 'datetime',
+            'massiveaction' => false,
+            'linkfield'     => 'planningexternalevents_id',
+        ];
+
+        $tab[] = [
+            'id'            => '3',
+            'table'         => \PlanningExternalEvent::getTable(),
+            'field'         => 'end',
+            'name'          => __('End date'),
+            'datatype'      => 'datetime',
+            'massiveaction' => false,
+            'linkfield'     => 'planningexternalevents_id',
+        ];
+
+        $tab[] = [
+            'id'            => '4',
+            'table'         => \User::getTable(),
+            'field'         => 'name',
+            'name'          => \User::getTypeName(1),
+            'datatype'      => 'dropdown',
+            'right'         => 'all',
+            'massiveaction' => false,
+            'joinparams'    => $event_join,
+        ];
+
+        $tab[] = [
+            'id'            => '5',
+            'table'         => PlanningEventCategory::getTable(),
+            'field'         => 'name',
+            'name'          => PlanningEventCategory::getTypeName(1),
+            'datatype'      => 'dropdown',
+            'massiveaction' => false,
+            'joinparams'    => $event_join,
+        ];
+
+        $tab[] = [
+            'id'            => '6',
+            'table'         => PlanningEventSubCategory::getTable(),
+            'field'         => 'name',
+            'name'          => PlanningEventSubCategory::getTypeName(1),
+            'datatype'      => 'dropdown',
+            'massiveaction' => false,
+            'linkfield'     => 'planningeventsubcategories_id',
+        ];
+
+        $tab[] = [
+            'id'            => '7',
+            'table'         => \Project::getTable(),
+            'field'         => 'name',
+            'name'          => \Project::getTypeName(1),
+            'datatype'      => 'dropdown',
+            'massiveaction' => false,
+        ];
+
+        $tab[] = [
+            'id'            => '8',
+            'table'         => $this->getTable(),
+            'field'         => 'is_oncra',
+            'name'          => __('Use in CRA', 'activity'),
+            'datatype'      => 'bool',
+            'massiveaction' => false,
+        ];
+
+        $tab[] = [
+            'id'            => '9',
+            'table'         => $this->getTable(),
+            'field'         => 'actiontime',
+            'name'          => __('Duration'),
+            'datatype'      => 'timestamp',
+            'massiveaction' => false,
+        ];
+
+        $tab[] = [
+            'id'            => '80',
+            'table'         => Entity::getTable(),
+            'field'         => 'completename',
+            'name'          => Entity::getTypeName(1),
+            'datatype'      => 'dropdown',
+            'massiveaction' => false,
+            'joinparams'    => $event_join,
+        ];
+
+        return $tab;
+    }
+
     public static function cleanForItem(CommonDBTM $item)
     {
         $temp = new self();
@@ -177,93 +300,27 @@ class PlanningExternalEvent extends CommonDBTM
      */
     public static function menu($class, $listActions, $widget = false)
     {
-        global $CFG_GLPI;
-
-        $i = 0;
-
-        $allactions = [];
-        foreach ($listActions as $actions) {
-            if ($actions['rights']) {
-                $allactions[] = $actions;
-            }
+        $actions = array_values(array_filter($listActions, static fn($action) => $action['rights']));
+        if ($actions === []) {
+            return '';
         }
 
-        $number = count($allactions);
-        $return = "";
-        if ($number > 0) {
-            $return .= Ajax::createIframeModalWindow(
-                'holiday',
-                PLUGIN_ACTIVITY_WEBDIR . "/front/holiday.form.php",
-                [
-                    'title' => __('Create a holiday request', 'activity'),
-                    'reloadonclose' => false,
-                    'width' => '1200',
-                    'height' => '600',
-                    'dialog_class' => 'modal-xl',
-                    'display' => false,
-                ],
-            );
-
-            $return .= "<div class='center'>";
-
-            if (!$widget) {
-                $return .= "<table class='tab_cadre_fixe activity_menu' style='width: 400px;'>";
-            }
-
-            if (!$widget) {
-                $return .= "<tr><th colspan='4'>" . $class::getTypeName(2) . "</th></tr>";
-            } else {
-                $return .= "<div>";
-            }
-
-            foreach ($allactions as $action) {
-                if (!$widget) {
-                    if ((($i % 2) == 0) && ($number > 1)) {
-                        $return .= "<tr class='twhite'>";
-                    }
-                    if ($number == 1) {
-                        $return .= "<tr class='twhite'>";
-                    }
-                }
-                if (!$widget) {
-                    $return .= "<td class='center'>";
-                } else {
-                    $return .= "<div class='nb'>";
-                }
-                $return .= "<a href=\"" . $action['link'] . "\"";
-                if (isset($action['onclick']) && !empty($action['onclick'])) {
-                    $return .= $action['onclick'];
-                }
-                $return .= ">";
-                $return .= "<i class='" . $action['img'] . "' style='font-size: 3.5em;' title='" . $action['label'] . "'></i>";
-                $return .= "<br><br>" . $action['label'] . "</a>";
-
-                if (!$widget) {
-                    $return .= "</td>";
-                } else {
-                    $return .= "</div>";
-                }
-                $i++;
-                if (!$widget) {
-                    if (($i == $number) && (($number % 2) != 0) && ($number > 1)) {
-                        $return .= "<td></td>";
-                        $return .= "</tr>";
-                    }
-                }
-            }
-            if ($widget) {
-                $return .= "</tr>";
-            } else {
-                $return .= "</div>";
-            }
-
-            if (!$widget) {
-                $return .= "</table>";
-            }
-            $return .= "</div>";
-        }
-
-        return $return;
+        return Ajax::createIframeModalWindow(
+            'holiday',
+            PLUGIN_ACTIVITY_WEBDIR . "/front/holiday.form.php",
+            [
+                'title' => __('Create a holiday request', 'activity'),
+                'reloadonclose' => false,
+                'width' => '1200',
+                'height' => '600',
+                'dialog_class' => 'modal-xl',
+                'display' => false,
+            ],
+        ) . TemplateRenderer::getInstance()->render('@activity/menu_actions.html.twig', [
+            'title'   => $class::getTypeName(2),
+            'actions' => $actions,
+            'widget'  => $widget,
+        ]);
     }
 
     public static function getActionsOn()
@@ -274,7 +331,7 @@ class PlanningExternalEvent extends CommonDBTM
         //    link     -> url of link
         //    img      -> ulr of the img to show
         //    label    -> label to show
-        //    onclick  -> if set, set the onclick value of the href
+        //    modal    -> if set, id of the modal the link opens
         //    rights   -> if true, action shown
 
         $listActions = [
@@ -333,10 +390,6 @@ class PlanningExternalEvent extends CommonDBTM
             ? $self->fields['is_oncra']
             : $is_cra_default;
 
-        ob_start();
-        Dropdown::showYesNo('is_oncra', $is_oncra_value, -1, ['value' => 1]);
-        $is_oncra_dropdown_html = ob_get_clean();
-
         // Subcategory dropdown
         $subcategory_dropdown_html = '';
         $field_id                  = '';
@@ -357,23 +410,15 @@ class PlanningExternalEvent extends CommonDBTM
             $field_id = 'dropdown_planningeventsubcategories_id' . $rand;
         }
 
-        // Project dropdown
-        $project_dropdown_html = '';
-        if ($opt->fields['show_planningevents_project']) {
-            ob_start();
-            \Project::dropdown(['name' => 'projects_id', 'value' => $self->fields['projects_id'] ?? 0]);
-            $project_dropdown_html = ob_get_clean();
-        }
-
         TemplateRenderer::getInstance()->display('@activity/planningexternalevent_post_item_form.html.twig', [
             'can_use_cra'               => Session::haveRight('plugin_activity_statistics', 1),
-            'is_oncra_dropdown_html'    => $is_oncra_dropdown_html,
+            'is_oncra_value'            => $is_oncra_value,
             'use_subcategories'         => (bool) $opt->fields['use_planningeventsubcategories'],
             'subcategory_dropdown_html' => $subcategory_dropdown_html,
             'field_id'                  => $field_id,
             'subcategory_label'         => __('Subcategory', 'activity'),
             'show_project'              => (bool) $opt->fields['show_planningevents_project'],
-            'project_dropdown_html'     => $project_dropdown_html,
+            'projects_id'               => $self->fields['projects_id'] ?? 0,
         ]);
     }
 

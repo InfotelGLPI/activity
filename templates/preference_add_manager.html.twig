@@ -38,7 +38,7 @@
 
             <div class="row g-3 align-items-end">
                 <div class="col-sm-8">
-                    {{ user_dropdown_html|raw }}
+                    {% do call('User::dropdown', [user_dropdown_options]) %}
                 </div>
                 <div class="col-sm-4">
                     <button type="submit" name="add" class="btn btn-primary w-100">

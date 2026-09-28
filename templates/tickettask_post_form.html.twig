@@ -25,16 +25,16 @@
  # --------------------------------------------------------------------------
  #}
 
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
 {% if can_use_cra %}
-    <tr class="tab_bg_1">
-        <td colspan="3"></td>
-        <td>
-            <div id="is_oncra_{{ item_id }}" class="label right">
-                <i class="ti ti-flag" title="{{ __('Use in CRA', 'activity') }}"></i>
-                {{ is_oncra_dropdown_html|raw }}
-            </div>
-        </td>
-    </tr>
+    <div class="row justify-content-end">
+        {{ fields.dropdownYesNo('is_oncra', is_oncra_value, __('Use in CRA', 'activity'), {
+            'field_class': 'col-auto',
+            'label_class': 'col-auto',
+            'input_class': 'col-auto',
+        }) }}
+    </div>
 {% else %}
     <input type="hidden" name="is_oncra" value="1">
 {% endif %}

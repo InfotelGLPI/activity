@@ -34,7 +34,7 @@
 <table class="center" cellspacing="5" style="margin-left: auto; margin-right: auto;">
     <tr>
         {% for block in blocks %}
-            {# Server-side markup built by PlanningExternalEvent::menu(). #}
+            {# raw: core modal markup + the rendered @activity/menu_actions.html.twig, see PlanningExternalEvent::menu() #}
             <td>{{ block|raw }}</td>
         {% endfor %}
     </tr>

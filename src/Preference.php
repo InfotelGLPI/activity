@@ -205,20 +205,16 @@ class Preference extends CommonDBTM
             }
         }
 
-        ob_start();
-        User::dropdown([
-            'name'   => 'users_id_validate',
-            'entity' => $_SESSION['glpiactiveentities'],
-            'right'  => 'all',
-            'used'   => $used,
-        ]);
-        $user_dropdown_html = ob_get_clean();
-
         TemplateRenderer::getInstance()->display('@activity/preference_add_manager.html.twig', [
             'form_url'          => Toolbox::getItemTypeFormURL(Preference::class),
             'use_groupmanager'  => $use_groupmanager,
             'users_id'          => Session::getLoginUserID(),
-            'user_dropdown_html' => $user_dropdown_html,
+            'user_dropdown_options' => [
+                'name'   => 'users_id_validate',
+                'entity' => $_SESSION['glpiactiveentities'],
+                'right'  => 'all',
+                'used'   => $used,
+            ],
         ]);
     }
 }

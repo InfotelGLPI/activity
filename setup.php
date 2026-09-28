@@ -82,23 +82,29 @@ function plugin_init_activity()
     );
 
 
-    $activityScripts = [
-        'scripts/scripts-activitydate.js',
-        'scripts/scripts-activityholidays.js',
-        'scripts/activity_load_scripts.js',
-    ];
-
     if (isset($_SESSION["glpiactiveprofile"]["interface"])
         && $_SESSION["glpiactiveprofile"]["interface"] != "helpdesk") {
         $PLUGIN_HOOKS[Hooks::ADD_CSS]['activity'] = ['activity.css'];
     }
 
+    // Not gated on the rights below: the plugin options and the planning event forms are
+    // shown to other profiles too. Each module only acts on its own data-* attributes.
+    $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT_MODULE]['activity'] = [
+        'scripts/holiday-form.js',
+        'scripts/cra-search.js',
+        'scripts/option-form.js',
+        'scripts/planningexternalevent-subcategory.js',
+    ];
+
     if (Session::haveRight("plugin_activity", UPDATE)
         || Session::haveRight("plugin_activity_can_requestholiday", 1)
         || Session::haveRight("plugin_activity_can_validate", 1)
         || Session::haveRight("plugin_activity_all_users", 1)) {
-        $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['activity'] = $activityScripts;
-        $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT_MODULE]['activity'] = ['scripts/holiday-form.js'];
+        $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['activity'] = ['scripts/scripts-activityholidays.js'];
+        if (Session::haveRight("plugin_activity", READ)) {
+            // Header icon opening the lateral menu, served by ajax/lateralmenu.php
+            $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT_MODULE]['activity'][] = 'scripts/lateral-menu.js';
+        }
     }
 
     $PLUGIN_HOOKS[Hooks::POST_INIT]['activity'] = 'plugin_activity_postinit';

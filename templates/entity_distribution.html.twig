@@ -49,8 +49,7 @@
                         <label class="col-form-label fw-bold">{{ __('Technician') }}</label>
                     </div>
                     <div class="col-auto">
-                        {# Server-side markup built by User::dropdown(). #}
-                        {{ user_dropdown|raw }}
+                        {% do call('User::dropdown', [user_dropdown_options]) %}
                     </div>
                 {% endif %}
                 <div class="col-auto">

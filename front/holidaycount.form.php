@@ -33,11 +33,6 @@ use GlpiPlugin\Activity\Menu;
 if (!isset($_GET["id"])) {
     $_GET["id"] = "";
 }
-if (!isset($_GET["users_id"])) {
-    $users_id = Session::getLoginUserID();
-} else {
-    $users_id = $_GET["users_id"];
-}
 
 $count = new HolidayCount();
 

@@ -144,7 +144,7 @@ a.activity_href {
 
 /** "slide panel" component */
 
-a#showLateralMenuLink {
+a#plugin_activity_lateral_menu_link {
     margin-left: 10px;
     margin-right: 10px;
 }

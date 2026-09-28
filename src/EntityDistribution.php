@@ -38,7 +38,6 @@ use Html;
 use Plugin;
 use Session;
 use Ticket;
-use User;
 
 /**
  * Distribution, per technician, of the CRA ticket task time over the clients (entities)
@@ -212,19 +211,6 @@ class EntityDistribution extends CommonGLPI
         $users_id = self::resolveUser($input['users_id'] ?? 0);
 
         $can_see_all_users = (bool) Session::haveRight('plugin_activity_all_users', 1);
-        $user_dropdown     = '';
-        if ($can_see_all_users) {
-            $user_dropdown = User::dropdown([
-                'name'                => 'users_id',
-                'value'               => $users_id,
-                'right'               => 'interface',
-                'entity'              => $_SESSION['glpiactiveentities'],
-                'display_emptychoice' => true,
-                'emptylabel'          => __('All technicians', 'activity'),
-                'display'             => false,
-            ]);
-        }
-
         $techs = self::getData($year, $users_id);
 
         TemplateRenderer::getInstance()->display('@activity/entity_distribution.html.twig', [
@@ -234,7 +220,14 @@ class EntityDistribution extends CommonGLPI
             'years'             => $years,
             'year'              => $year,
             'can_see_all_users' => $can_see_all_users,
-            'user_dropdown'     => $user_dropdown,
+            'user_dropdown_options' => [
+                'name'                => 'users_id',
+                'value'               => $users_id,
+                'right'               => 'interface',
+                'entity'              => $_SESSION['glpiactiveentities'],
+                'display_emptychoice' => true,
+                'emptylabel'          => __('All technicians', 'activity'),
+            ],
             'techs'             => $techs,
             'users_id'          => $users_id,
             'show_techleads'    => self::useTechLeads(),

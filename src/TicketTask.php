@@ -31,7 +31,6 @@ namespace GlpiPlugin\Activity;
 
 use CommonDBTM;
 use DbUtils;
-use Dropdown;
 use Glpi\Application\View\TemplateRenderer;
 use Glpi\DBAL\QueryExpression;
 use Glpi\DBAL\QuerySubQuery;
@@ -131,14 +130,9 @@ class TicketTask extends CommonDBTM
             ? $self->fields['is_oncra']
             : $is_cra_default;
 
-        ob_start();
-        Dropdown::showYesNo('is_oncra', $is_oncra_value, -1, ['value' => 1]);
-        $is_oncra_dropdown_html = ob_get_clean();
-
         TemplateRenderer::getInstance()->display('@activity/tickettask_post_form.html.twig', [
-            'can_use_cra'           => Session::haveRight('plugin_activity_statistics', 1),
-            'item_id'               => $item->getID(),
-            'is_oncra_dropdown_html' => $is_oncra_dropdown_html,
+            'can_use_cra'    => Session::haveRight('plugin_activity_statistics', 1),
+            'is_oncra_value' => $is_oncra_value,
         ]);
     }
 

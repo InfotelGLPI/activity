@@ -25,6 +25,14 @@
  # --------------------------------------------------------------------------
  #}
 
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+{#
+ # Plugin options, a single record (id 1). The blocks carrying data-activity-toggle are
+ # shown only while the matching yes/no selector is on "yes" (public/scripts/option-form.js).
+ #}
+{% set row = {'field_class': 'col-12', 'label_class': 'col-sm-5', 'input_class': 'col-sm-7'} %}
+
 <form name="form" method="post" action="{{ form_url }}" enctype="multipart/form-data">
     <input type="hidden" name="id" value="1">
     <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
@@ -36,85 +44,39 @@
             <strong>{{ __('CRA', 'activity') }}</strong>
         </div>
         <div class="card-body">
+            <div class="row">
+                {{ fields.dropdownYesNo('use_type_as_name', values.use_type_as_name, __('Replace activity name by the activity type', 'activity'), row) }}
+                {{ fields.dropdownYesNo('is_cra_default', values.is_cra_default, __('is on CRA by default', 'activity'), row) }}
+                {{ fields.dropdownYesNo('use_hour_on_cra', values.use_hour_on_cra, __('Use hour on cra and not half day', 'activity'), row) }}
+                {{ fields.dropdownYesNo('use_planning_activity_hours', values.use_planning_activity_hours, __('Use the planning activity hours to limit hours per day on the CRA', 'activity'), row) }}
+                {{ fields.dropdownYesNo('use_planningeventsubcategories', values.use_planningeventsubcategories, __('Use event subcategories', 'activity'), row) }}
+                {{ fields.dropdownYesNo('show_planningevents_entity', values.show_planningevents_entity, __('Show event entity on CRA', 'activity'), row) }}
+                {{ fields.dropdownYesNo('show_planningevents_project', values.show_planningevents_project, __('Choose your project when entering externals events and display on CRA', 'activity'), row) }}
+                {{ fields.dropdownYesNo('use_project', values.use_project, __('Use projects', 'activity'), row) }}
+                {{ fields.dropdownYesNo('is_cra_default_project', values.is_cra_default_project, __('is on CRA by default', 'activity') ~ ' - ' ~ project_typename, row|merge({
+                    'add_field_attribs': {'data-activity-toggle': 'use_project', 'style': values.use_project ? '' : 'display: none'},
+                })) }}
+                {{ fields.textField('principal_client', values.principal_client, __('Principal client', 'activity'), row) }}
 
-            <div class="row mb-3">
-                <label class="col-sm-5 col-form-label">{{ __('Replace activity name by the activity type', 'activity') }}</label>
-                <div class="col-sm-7">{{ use_type_as_name_html|raw }}</div>
-            </div>
-
-            <div class="row mb-3">
-                <label class="col-sm-5 col-form-label">{{ __('is on CRA by default', 'activity') }}</label>
-                <div class="col-sm-7">{{ is_cra_default_html|raw }}</div>
-            </div>
-
-            <div class="row mb-3">
-                <label class="col-sm-5 col-form-label">{{ __('Use hour on cra and not half day', 'activity') }}</label>
-                <div class="col-sm-7">{{ use_hour_on_cra_html|raw }}</div>
-            </div>
-
-            <div class="row mb-3">
-                <label class="col-sm-5 col-form-label">{{ __('Use the planning activity hours to limit hours per day on the CRA', 'activity') }}</label>
-                <div class="col-sm-7">{{ use_planning_activity_hours_html|raw }}</div>
-            </div>
-
-            <div class="row mb-3">
-                <label class="col-sm-5 col-form-label">{{ __('Use event subcategories', 'activity') }}</label>
-                <div class="col-sm-7">{{ use_planningeventsubcategories_html|raw }}</div>
-            </div>
-
-            <div class="row mb-3">
-                <label class="col-sm-5 col-form-label">{{ __('Show event entity on CRA', 'activity') }}</label>
-                <div class="col-sm-7">{{ show_planningevents_entity_html|raw }}</div>
-            </div>
-
-            <div class="row mb-3">
-                <label class="col-sm-5 col-form-label">{{ __('Choose your project when entering externals events and display on CRA', 'activity') }}</label>
-                <div class="col-sm-7">{{ show_planningevents_project_html|raw }}</div>
-            </div>
-
-            <div class="row mb-3">
-                <label class="col-sm-5 col-form-label">{{ __('Use projects', 'activity') }}</label>
-                <div class="col-sm-7">{{ use_project_html|raw }}</div>
-            </div>
-
-            <div class="row mb-3" id="activity_display_use_project" {% if not fields.use_project %}style="display:none"{% endif %}>
-                <label class="col-sm-5 col-form-label">{{ __('is on CRA by default', 'activity') }} - {{ project_typename }}</label>
-                <div class="col-sm-7">{{ is_cra_default_project_html|raw }}</div>
-            </div>
-
-            <div class="row mb-3">
-                <label class="col-sm-5 col-form-label">{{ __('Principal client', 'activity') }}</label>
-                <div class="col-sm-7">
-                    <input type="text" name="principal_client" class="form-control"
-                           value="{{ fields.principal_client|e }}">
-                </div>
-            </div>
-
-            <div class="row mb-3">
-                <label class="col-sm-5 col-form-label">{{ __('CRA logo', 'activity') }}</label>
-                <div class="col-sm-7">
-                    {% if logo_preview_url %}
-                    <div class="mb-2">
+                {% if logo_preview_url %}
+                    {% set logo_preview %}
                         <img src="{{ logo_preview_url }}" alt="{{ __('Current logo', 'activity') }}"
                              style="max-height:80px; max-width:250px; border:1px solid #dee2e6; border-radius:4px; padding:4px; background:#fff;">
-                    </div>
-                    {% endif %}
-                    {% if canedit %}
-                        {{ logo_upload_html|raw }}
-                        <div class="form-text text-muted">
-                            {{ __('Accepted formats: JPG or JPEG. Leave empty to keep the current logo.', 'activity') }}
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
+                    {% endset %}
+                    {# htmlField: markup built just above from an escaped URL #}
+                    {{ fields.htmlField('', logo_preview, __('Current logo', 'activity'), row) }}
+                {% endif %}
+                {% if canedit %}
+                    {# The upload must keep the name "filename": Option::prepareInput() reads _filename #}
+                    {{ fields.fileField('filename', null, __('CRA logo', 'activity'), row|merge({
+                        'multiple': false,
+                        'onlyimages': true,
+                        'helper': __('Accepted formats: JPG or JPEG. Leave empty to keep the current logo.', 'activity'),
+                    })) }}
+                {% endif %}
 
-            <div class="row mb-3">
-                <label class="col-sm-5 col-form-label">{{ __('CRA Footer', 'activity') }}</label>
-                <div class="col-sm-7">
-                    <textarea name="cra_footer" class="form-control" rows="5">{{ fields.cra_footer|e }}</textarea>
-                </div>
+                {{ fields.textareaField('cra_footer', values.cra_footer, __('CRA Footer', 'activity'), row|merge({'rows': 5})) }}
             </div>
-
         </div>
     </div>
 
@@ -125,32 +87,15 @@
             <strong>{{ __('Planning', 'activity') }}</strong>
         </div>
         <div class="card-body">
-
-            <div class="row mb-3">
-                <label class="col-sm-5 col-form-label">{{ __('Use time repartition', 'activity') }}</label>
-                <div class="col-sm-7">{{ use_timerepartition_html|raw }}</div>
+            <div class="row">
+                {{ fields.dropdownYesNo('use_timerepartition', values.use_timerepartition, __('Use time repartition', 'activity'), row) }}
+                {{ fields.dropdownYesNo('use_mandaydisplay', values.use_mandaydisplay, __('Use the view by day men in planning', 'activity'), row|merge({
+                    'add_field_attribs': {'data-activity-toggle': 'use_timerepartition', 'style': values.use_timerepartition ? '' : 'display: none'},
+                })) }}
+                {{ fields.dropdownYesNo('use_pairs', values.use_pairs, __('Use pairs schedules', 'activity'), row) }}
+                {{ fields.dropdownYesNo('use_integerschedules', values.use_integerschedules, __('Authorize only the whole schedules', 'activity'), row) }}
+                {{ fields.dropdownYesNo('use_weekend', values.use_weekend, __('Authorize activities on week-ends', 'activity'), row) }}
             </div>
-
-            <div class="row mb-3" id="activity_timerepartition" {% if not fields.use_timerepartition %}style="display:none"{% endif %}>
-                <label class="col-sm-5 col-form-label">{{ __('Use the view by day men in planning', 'activity') }}</label>
-                <div class="col-sm-7">{{ use_mandaydisplay_html|raw }}</div>
-            </div>
-
-            <div class="row mb-3">
-                <label class="col-sm-5 col-form-label">{{ __('Use pairs schedules', 'activity') }}</label>
-                <div class="col-sm-7">{{ use_pairs_html|raw }}</div>
-            </div>
-
-            <div class="row mb-3">
-                <label class="col-sm-5 col-form-label">{{ __('Authorize only the whole schedules', 'activity') }}</label>
-                <div class="col-sm-7">{{ use_integerschedules_html|raw }}</div>
-            </div>
-
-            <div class="row mb-3">
-                <label class="col-sm-5 col-form-label">{{ __('Authorize activities on week-ends', 'activity') }}</label>
-                <div class="col-sm-7">{{ use_weekend_html|raw }}</div>
-            </div>
-
         </div>
     </div>
 
@@ -161,25 +106,16 @@
             <strong>{{ __('Holidays', 'activity') }}</strong>
         </div>
         <div class="card-body">
-
-            <div class="row mb-3">
-                <label class="col-sm-5 col-form-label">{{ __('Use group manager as holiday manager', 'activity') }}</label>
-                <div class="col-sm-7">{{ use_groupmanager_html|raw }}</div>
+            <div class="row">
+                {{ fields.dropdownYesNo('use_groupmanager', values.use_groupmanager, __('Use group manager as holiday manager', 'activity'), row) }}
+                {{ fields.dropdownNumberField('default_validation_percent', values.default_validation_percent, __('Default validation percent', 'activity'), row|merge({
+                    'min': 0,
+                    'max': 100,
+                    'step': 50,
+                    'unit': '%',
+                })) }}
+                {{ fields.textField('used_mail_for_holidays', values.used_mail_for_holidays, __('Used mail for holidays', 'activity'), row) }}
             </div>
-
-            <div class="row mb-3">
-                <label class="col-sm-5 col-form-label">{{ __('Default validation percent', 'activity') }}</label>
-                <div class="col-sm-7">{{ default_validation_percent_html|raw }}</div>
-            </div>
-
-            <div class="row mb-3">
-                <label class="col-sm-5 col-form-label">{{ __('Used mail for holidays', 'activity') }}</label>
-                <div class="col-sm-7">
-                    <input type="text" name="used_mail_for_holidays" class="form-control"
-                           value="{{ fields.used_mail_for_holidays|e }}">
-                </div>
-            </div>
-
         </div>
         <div class="card-footer d-flex justify-content-end">
             {% if canedit %}
@@ -190,24 +126,3 @@
         </div>
     </div>
 </form>
-
-<script>
-function activity_changetimerepartition() {
-    if ($('#dropdown_use_timerepartition{{ rand_timerep }}').val() != 0) {
-        $('#activity_timerepartition').show();
-    } else {
-        $('#activity_timerepartition').hide();
-    }
-}
-function activity_change_useproject() {
-    if ($('#dropdown_use_project{{ rand_project }}').val() != 0) {
-        $('#activity_display_use_project').show();
-    } else {
-        $('#activity_display_use_project').hide();
-    }
-}
-$(function () {
-    activity_changetimerepartition();
-    activity_change_useproject();
-});
-</script>

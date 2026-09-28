@@ -25,64 +25,29 @@
  # --------------------------------------------------------------------------
  #}
 
-{% if can_use_cra %}
-    <table class="tab_cadre_fixe">
-        <tr class="tab_bg_2">
-            <td>{{ __('Use in CRA', 'activity') }}</td>
-            <td>{{ is_oncra_dropdown_html|raw }}</td>
-            <td colspan="2" style="width:250px"></td>
-        </tr>
-    </table>
-{% else %}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{% set row = {'field_class': 'col-12', 'label_class': 'col-2', 'input_class': 'col-10'} %}
+
+{% if can_use_cra or show_project %}
+    <div class="row">
+        {% if can_use_cra %}
+            {{ fields.dropdownYesNo('is_oncra', is_oncra_value, __('Use in CRA', 'activity'), row) }}
+        {% endif %}
+        {% if show_project %}
+            {{ fields.dropdownField('Project', 'projects_id', projects_id, __('Project'), row) }}
+        {% endif %}
+    </div>
+{% endif %}
+{% if not can_use_cra %}
     <input type="hidden" name="is_oncra" value="1">
 {% endif %}
 
 {% if use_subcategories %}
-    {# The subcategory dropdown is injected into the category row via JS #}
-    <div style="display:none">{{ subcategory_dropdown_html|raw }}</div>
-    <script>
-    (function () {
-        if (!window.plugin_activity) {
-            window.plugin_activity = {};
-        }
-        plugin_activity.subCategoryDropdownField = document.getElementById('{{ field_id }}').parentElement;
-        plugin_activity.categorySelect = document.getElementsByName('planningeventcategories_id');
-        if (plugin_activity.categorySelect.length) {
-            plugin_activity.categorySelect = plugin_activity.categorySelect[0];
-            plugin_activity.newRow = document.createElement('div');
-            plugin_activity.newRow.classList.add('form-field');
-            plugin_activity.newRow.classList.add('row');
-            plugin_activity.newRow.classList.add('align-items-center');
-            plugin_activity.newRow.classList.add('col-12');
-            plugin_activity.newRow.classList.add('mb-2');
-            plugin_activity.labelTd = document.createElement('label');
-            plugin_activity.labelTd.classList.add('col-form-label');
-            plugin_activity.labelTd.classList.add('col-2');
-            plugin_activity.labelTd.classList.add('text-xxl-end');
-            plugin_activity.labelTd.innerText = {{ subcategory_label|json_encode|raw }};
-            plugin_activity.newRow.append(plugin_activity.labelTd);
-            plugin_activity.dropdownTd = document.createElement('div');
-            plugin_activity.dropdownTd.classList.add('col-10');
-            plugin_activity.dropdownTd.classList.add('field-container');
-            plugin_activity.spanactivity = document.createElement('span');
-            plugin_activity.spanactivity.classList.add('form-control-plaintext');
-            plugin_activity.spanactivity.append(plugin_activity.subCategoryDropdownField);
-            plugin_activity.dropdownTd.append(plugin_activity.spanactivity);
-            plugin_activity.newRow.append(plugin_activity.dropdownTd);
-            plugin_activity.categoryRow = plugin_activity.categorySelect.parentElement.parentElement.parentElement.parentElement.parentElement;
-            plugin_activity.categoryRow.parentElement.insertBefore(plugin_activity.newRow, plugin_activity.categoryRow.nextElementSibling);
-        }
-        plugin_activity = {};
-    }());
-    </script>
-{% endif %}
-
-{% if show_project %}
-    <table class="tab_cadre_fixe">
-        <tr class="tab_bg_2">
-            <td>{{ __('Project') }}</td>
-            <td>{{ project_dropdown_html|raw }}</td>
-            <td colspan="2" style="width:250px"></td>
-        </tr>
-    </table>
+    {# Moved under the category row by public/scripts/planningexternalevent-subcategory.js #}
+    <div class="d-none" data-activity-subcategory
+         data-activity-subcategory-label="{{ subcategory_label }}"
+         data-activity-subcategory-field-id="{{ field_id }}">
+        {# raw: markup built by Dropdown::show() #}
+        <div>{{ subcategory_dropdown_html|raw }}</div>
+    </div>
 {% endif %}

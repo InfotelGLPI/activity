@@ -31,7 +31,6 @@ namespace GlpiPlugin\Activity;
 
 use CommonDBTM;
 use DbUtils;
-use Dropdown;
 use Glpi\Application\View\TemplateRenderer;
 use Glpi\DBAL\QuerySubQuery;
 
@@ -172,12 +171,8 @@ class ProjectTask extends CommonDBTM
             $is_cra_default = $projecttask->fields['is_oncra'] ?? $is_cra_default;
         }
 
-        ob_start();
-        Dropdown::showYesNo('is_oncra', $is_cra_default, -1, ['value' => 1]);
-        $is_oncra_dropdown_html = ob_get_clean();
-
         TemplateRenderer::getInstance()->display('@activity/projecttask_post_form.html.twig', [
-            'is_oncra_dropdown_html' => $is_oncra_dropdown_html,
+            'is_oncra_value' => $is_cra_default,
         ]);
     }
 

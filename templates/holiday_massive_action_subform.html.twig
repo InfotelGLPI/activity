@@ -25,13 +25,9 @@
  # --------------------------------------------------------------------------
  #}
 
-<table class="tab_cadre">
-    <tr class="tab_bg_1">
-        <td>{{ __('Approval') }}</td>
-        <td>{{ validation_status_dropdown_html|raw }}</td>
-    </tr>
-    <tr class="tab_bg_1">
-        <td>{{ _n('Comment', 'Comments', 1, 'activity') }}</td>
-        <td>{{ comment_textarea_html|raw }}</td>
-    </tr>
-</table>
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+<div class="row">
+    {{ fields.dropdownArrayField('global_validation', status_waiting, status_choices, __('Approval'), {'field_class': 'col-12'}) }}
+    {{ fields.textareaField('comment_validation', '', _n('Comment', 'Comments', 1, 'activity'), {'field_class': 'col-12', 'rows': 8}) }}
+</div>

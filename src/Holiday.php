@@ -673,20 +673,21 @@ class Holiday extends CommonDBTM
         $opt['itemtype']                  = Holiday::class;
         $opt['start']                     = 0;
 
-        $target = PLUGIN_ACTIVITY_WEBDIR . "/front/cra.php";
-        $url    = $target . "?" . Toolbox::append_params($opt, '&amp;');
+        // Holiday search pre-filtered on the requests waiting for the current user's approval.
+        // Plain '&' separator: the link is escaped once by the Twig templates that render it.
+        $url = Holiday::getSearchURL() . "?" . Toolbox::append_params($opt);
 
         // Array of action user can do :
         //    link     -> url of link
         //    img      -> ulr of the img to show
         //    label    -> label to show
-        //    onclick  -> if set, set the onclick value of the href
+        //    modal    -> if set, id of the modal the link opens
         //    rights   -> if true, action shown
 
         $listActions = [
             Action::HOLIDAY_REQUEST => [
                 'link'    => "#",
-                'onclick' => "data-bs-toggle='modal' data-bs-target='#holiday'",
+                'modal'   => 'holiday',
                 'img'     => "ti ti-calendar-off",
                 'label'   => __('Create a holiday request', 'activity'),
                 'rights'  => Session::haveRight("plugin_activity_can_requestholiday", READ) && sizeof($have_manager) > 0,
@@ -2085,29 +2086,9 @@ class Holiday extends CommonDBTM
     public static function showMassiveActionsSubForm(MassiveAction $ma)
     {
         if ($ma->getAction() === 'updateAllValidations') {
-            ob_start();
-            CommonValidation::dropdownStatus('global_validation', [
-                'name'    => _n('Status', 'Statuses', 1),
-                'field'   => 'global_validation',
-                'display' => true,
-                'value'   => CommonValidation::WAITING,
-                'id'      => '',
-            ]);
-            $validation_status_dropdown_html = ob_get_clean();
-
-            ob_start();
-            Html::textarea([
-                'name'            => 'comment_validation',
-                'id'              => 'comment_validation',
-                'cols'            => 30,
-                'rows'            => 8,
-                'enable_richtext' => false,
-            ]);
-            $comment_textarea_html = ob_get_clean();
-
             TemplateRenderer::getInstance()->display('@activity/holiday_massive_action_subform.html.twig', [
-                'validation_status_dropdown_html' => $validation_status_dropdown_html,
-                'comment_textarea_html'           => $comment_textarea_html,
+                'status_choices' => CommonValidation::getAllStatusArray(),
+                'status_waiting' => CommonValidation::WAITING,
             ]);
         }
 

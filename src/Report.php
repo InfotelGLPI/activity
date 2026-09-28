@@ -99,70 +99,6 @@ class Report extends CommonDBTM
         return (strtotime(self::getPmEnd()) - strtotime(self::getAmBegin())) - (strtotime(self::$PM_BEGIN) - strtotime(self::$AM_END));
     }
 
-    /*
-     *
-     * @Create an HTML drop down menu
-     *
-     * @param string $name The element name and ID
-     *
-     * @param int $selected The month to be selected
-     *
-     * @return string
-     *
-     */
-    public static function monthDropdown($name = "month", $selected = null)
-    {
-
-        $dd = "<select class='form-select' name='$name'>";
-
-        $monthsarray = Toolbox::getMonthsOfYearArray();
-
-        foreach ($monthsarray as $k => $month) {
-            $label = $monthsarray[$k];
-
-            $dd .= '<option value="' . $k . '"';
-            if ($k == $selected) {
-                $dd .= ' selected';
-            }
-            /*** get the month ***/
-            $dd .= '>' . $label . '</option>';
-        }
-
-        $dd .= "</select>";
-
-        return $dd;
-    }
-
-    /*
-     * @Create an HTML drop down menu
-     *
-     * @param string $name The element name and ID
-     *
-     * @param int $selected The month to be selected
-     *
-     * @return string
-     *
-     */
-    public static function YearDropdown($name = "year", $selected = null)
-    {
-
-        $dd   = "<select class='form-select' name='$name'>";
-        $year = date("Y") - 3;
-        for ($i = 0; $i <= 6; $i++) {
-            $dd .= '<option value="' . $year . '"';
-            if ($year == $selected) {
-                $dd .= ' selected';
-            }
-            /*** get the year ***/
-            $dd .= '>' . $year . '</option>';
-            $year++;
-        }
-
-        $dd .= "</select>";
-
-        return $dd;
-    }
-
     public static function getLastYear()
     {
 
@@ -394,49 +330,47 @@ class Report extends CommonDBTM
                 $annee_courante = (int) $input["year"];
             }
 
-            // Build hidden fields for export + snapshot forms
-            $export_hidden = '';
-            $snapshot_hidden = '';
+            // Hidden fields of the export and snapshot forms, as name => value
             // Security: rebuild the export form from the sanitised users_id so a
             // rejected target cannot be re-submitted through the hidden fields.
             $post_without_snapshot = array_merge($_POST, ["users_id" => $users_id]);
             unset($post_without_snapshot['snapshot']);
             unset($post_without_snapshot['_glpi_csrf_token']);
+            $export_hidden = [];
             foreach ($post_without_snapshot as $key => $val) {
                 if (is_array($val)) {
                     foreach ($val as $k => $v) {
-                        $export_hidden .= Html::hidden($key . "[$k]", ['value' => $v]);
+                        $export_hidden[$key . "[$k]"] = $v;
                     }
                 } else {
-                    $export_hidden .= Html::hidden($key, ['value' => $val]);
+                    $export_hidden[$key] = $val;
                 }
             }
-            $snapshot_hidden  = Html::hidden('month', ['value' => $input['month']  ?? '']);
-            $snapshot_hidden .= Html::hidden('year', ['value' => $input['year']   ?? '']);
-            $snapshot_hidden .= Html::hidden('users_id', ['value' => $input['users_id'] ?? Session::getLoginUserID()]);
-            $snapshot_hidden .= Html::hidden('display_type', ['value' => Search::PDF_OUTPUT_LANDSCAPE]);
-            $snapshot_hidden .= Html::hidden('snapshot', ['value' => 'snapshot']);
+            $snapshot_hidden = [
+                'month'        => $input['month'] ?? '',
+                'year'         => $input['year'] ?? '',
+                'users_id'     => $input['users_id'] ?? Session::getLoginUserID(),
+                'display_type' => Search::PDF_OUTPUT_LANDSCAPE,
+                'snapshot'     => 'snapshot',
+            ];
 
+            $current_year = (int) date('Y');
 
-            ob_start();
-            if (Session::haveRight("plugin_activity_all_users", 1)) {
-                User::dropdown([
+            TemplateRenderer::getInstance()->display('@activity/cra_search.html.twig', [
+                'months'                 => Toolbox::getMonthsOfYearArray(),
+                'month'                  => $mois_courant,
+                'years'                  => range($current_year - 3, $current_year + 3),
+                'year'                   => $annee_courante,
+                'can_see_all_users'      => Session::haveRight("plugin_activity_all_users", 1),
+                'user_dropdown_options'  => [
                     'name'     => 'users_id',
                     'value'    => $users_id,
                     'right'    => 'interface',
                     'comments' => 1,
                     'entity'   => $_SESSION["glpiactiveentities"],
-                ]);
-            }
-            $user_dropdown_html = ob_get_clean();
-
-            TemplateRenderer::getInstance()->display('@activity/cra_search.html.twig', [
-                'month_dropdown'       => self::monthDropdown('month', $mois_courant),
-                'year_dropdown'        => self::YearDropdown('year', $annee_courante),
-                'can_see_all_users'    => Session::haveRight("plugin_activity_all_users", 1),
-                'user_dropdown'        => $user_dropdown_html,
-                'user_hidden'          => Html::hidden('users_id', ['value' => $users_id]),
-                'export_hidden_fields' => $export_hidden,
+                ],
+                'users_id'               => $users_id,
+                'export_hidden_fields'   => $export_hidden,
                 'pdf_output_type'        => Search::PDF_OUTPUT_LANDSCAPE,
                 'snapshot_hidden_fields' => $snapshot_hidden,
             ]);

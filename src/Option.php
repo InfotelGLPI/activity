@@ -34,9 +34,7 @@ use CommonGLPI;
 use DbUtils;
 use Document;
 use Document_Item;
-use Dropdown;
 use Glpi\Application\View\TemplateRenderer;
-use Html;
 use Session;
 use Toolbox;
 
@@ -130,89 +128,6 @@ class Option extends CommonDBTM
             return false;
         }
 
-        $holiday = new Holiday();
-
-        ob_start();
-        $rand_timerep = Dropdown::showYesNo(
-            'use_timerepartition',
-            $this->fields['use_timerepartition'],
-            -1,
-            ['on_change' => 'activity_changetimerepartition();'],
-        );
-        $use_timerepartition_html = ob_get_clean();
-
-        ob_start();
-        Dropdown::showYesNo('use_mandaydisplay', $this->fields['use_mandaydisplay']);
-        $use_mandaydisplay_html = ob_get_clean();
-
-        ob_start();
-        Dropdown::showYesNo('use_type_as_name', $this->fields['use_type_as_name']);
-        $use_type_as_name_html = ob_get_clean();
-
-        ob_start();
-        Dropdown::showYesNo('use_pairs', $this->fields['use_pairs']);
-        $use_pairs_html = ob_get_clean();
-
-        ob_start();
-        Dropdown::showYesNo('use_integerschedules', $this->fields['use_integerschedules']);
-        $use_integerschedules_html = ob_get_clean();
-
-        ob_start();
-        Dropdown::showYesNo('use_weekend', $this->fields['use_weekend']);
-        $use_weekend_html = ob_get_clean();
-
-        ob_start();
-        Dropdown::showYesNo('use_groupmanager', $this->fields['use_groupmanager']);
-        $use_groupmanager_html = ob_get_clean();
-
-        $default_validation_percent_html = $holiday->getValueToSelect(
-            'validation_percent',
-            'default_validation_percent',
-            $this->fields['default_validation_percent'],
-        );
-
-        ob_start();
-        Dropdown::showYesNo('is_cra_default', $this->fields['is_cra_default']);
-        $is_cra_default_html = ob_get_clean();
-
-        ob_start();
-        $rand_project = Dropdown::showYesNo(
-            'use_project',
-            $this->fields['use_project'],
-            -1,
-            ['on_change' => 'activity_change_useproject();'],
-        );
-        $use_project_html = ob_get_clean();
-
-        ob_start();
-        Dropdown::showYesNo('is_cra_default_project', $this->fields['is_cra_default_project']);
-        $is_cra_default_project_html = ob_get_clean();
-
-        ob_start();
-        Dropdown::showYesNo('use_hour_on_cra', $this->fields['use_hour_on_cra']);
-        $use_hour_on_cra_html = ob_get_clean();
-
-        ob_start();
-        Dropdown::showYesNo('use_planning_activity_hours', $this->fields['use_planning_activity_hours']);
-        $use_planning_activity_hours_html = ob_get_clean();
-
-        ob_start();
-        Dropdown::showYesNo('use_planningeventsubcategories', $this->fields['use_planningeventsubcategories']);
-        $use_planningeventsubcategories_html = ob_get_clean();
-
-        ob_start();
-        Dropdown::showYesNo('show_planningevents_entity', $this->fields['show_planningevents_entity']);
-        $show_planningevents_entity_html = ob_get_clean();
-
-        ob_start();
-        Dropdown::showYesNo('show_planningevents_project', $this->fields['show_planningevents_project']);
-        $show_planningevents_project_html = ob_get_clean();
-
-        // Logo upload widget
-        ob_start();
-        Html::file(['multiple' => false, 'onlyimages' => true]);
-        $logo_upload_html = ob_get_clean();
-
         // Preview URL if a logo is already stored as a Document
         $logo_preview_url = '';
         $logo_id = (int) ($this->fields['cra_logo_id'] ?? 0);
@@ -222,27 +137,8 @@ class Option extends CommonDBTM
 
         TemplateRenderer::getInstance()->display('@activity/option_form.html.twig', [
             'form_url'                           => Toolbox::getItemTypeFormURL(Option::class),
-            'fields'                             => $this->fields,
-            'rand_timerep'                       => $rand_timerep,
-            'rand_project'                       => $rand_project,
-            'use_timerepartition_html'           => $use_timerepartition_html,
-            'use_mandaydisplay_html'             => $use_mandaydisplay_html,
-            'use_type_as_name_html'              => $use_type_as_name_html,
-            'use_pairs_html'                     => $use_pairs_html,
-            'use_integerschedules_html'          => $use_integerschedules_html,
-            'use_weekend_html'                   => $use_weekend_html,
-            'use_groupmanager_html'              => $use_groupmanager_html,
-            'default_validation_percent_html'    => $default_validation_percent_html,
-            'is_cra_default_html'                => $is_cra_default_html,
-            'use_project_html'                   => $use_project_html,
-            'is_cra_default_project_html'        => $is_cra_default_project_html,
-            'use_hour_on_cra_html'               => $use_hour_on_cra_html,
-            'use_planning_activity_hours_html'   => $use_planning_activity_hours_html,
-            'use_planningeventsubcategories_html' => $use_planningeventsubcategories_html,
-            'show_planningevents_entity_html'    => $show_planningevents_entity_html,
-            'show_planningevents_project_html'   => $show_planningevents_project_html,
+            'values'                             => $this->fields,
             'project_typename'                   => \Project::getTypeName(0),
-            'logo_upload_html'                   => $logo_upload_html,
             'logo_preview_url'                   => $logo_preview_url,
             'canedit'                            => $this->canCreate(),
         ]);

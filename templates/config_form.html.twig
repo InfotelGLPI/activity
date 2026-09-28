@@ -24,6 +24,7 @@
  # along with activity. If not, see <http://www.gnu.org/licenses/>.
  # --------------------------------------------------------------------------
  #}
+{% import 'components/form/fields_macros.html.twig' as fields %}
 
 {% if canedit %}
 <div class="card mb-3">
@@ -34,17 +35,10 @@
     <form method="post" action="{{ form_url }}">
         <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
         <div class="card-body">
-            <div class="row mb-3">
-                <label class="col-sm-3 col-form-label">{{ __('Entity') }}</label>
-                <div class="col-sm-4">{{ entity_dropdown_html|raw }}</div>
-                <label class="col-sm-2 col-form-label">{{ __('Child entities') }}</label>
-                <div class="col-sm-3">{{ is_recursive_html|raw }}</div>
-            </div>
-            <div class="row mb-3">
-                <label class="col-sm-3 col-form-label">{{ __('Type') }}</label>
-                <div class="col-sm-9">
-                    <input type="text" name="name" class="form-control">
-                </div>
+            <div class="row">
+                {{ fields.dropdownField('Entity', 'entities_id', null, __('Entity'), {'used': used_entities}) }}
+                {{ fields.dropdownYesNo('is_recursive', 0, __('Child entities')) }}
+                {{ fields.textField('name', '', __('Type')) }}
             </div>
         </div>
         <div class="card-footer d-flex justify-content-end">

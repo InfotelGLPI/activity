@@ -25,59 +25,72 @@
  # --------------------------------------------------------------------------
  #}
 
-<div class="p-2">
+{#
+ # The lateral activity menu, fetched by public/scripts/lateral-menu.js on the first
+ # click on the header icon and appended to the page as is.
+ #}
+<div class="offcanvas offcanvas-end" tabindex="-1" id="plugin_activity_lateral_menu"
+     data-bs-scroll="true" aria-labelledby="plugin_activity_lateral_menu_label">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title" id="plugin_activity_lateral_menu_label">{{ _n('Activity', 'Activities', 1, 'activity') }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="{{ __('Close') }}"></button>
+    </div>
+    <div class="offcanvas-body p-2">
 
-{# The holiday request modal, opened by the matching action below. The custom class widens
- # the dialog beyond the default modal-xl (see public/activity.css). #}
-{% do call('Ajax::createIframeModalWindow', [
-    'holiday',
-    holiday_form_url,
-    {
-        'title': __('Create a holiday request', 'activity'),
-        'reloadonclose': false,
-        'width': 1180,
-        'height': 700,
-        'dialog_class': 'modal-xl activity_holiday_modal',
-    },
-]) %}
+        {# The holiday request modal, opened by the matching action below. The custom class widens
+         # the dialog beyond the default modal-xl (see public/activity.css). #}
+        {% do call('Ajax::createIframeModalWindow', [
+            'holiday',
+            holiday_form_url,
+            {
+                'title': __('Create a holiday request', 'activity'),
+                'reloadonclose': false,
+                'width': 1180,
+                'height': 700,
+                'dialog_class': 'modal-xl activity_holiday_modal',
+            },
+        ]) %}
 
-<div class="d-grid gap-2 mb-3">
-    {% for action in actions %}
-        <a href="{{ action.link }}" class="btn btn-info"
-           {% if action.onclick %}{{ action.onclick|raw }}{% endif %}>
-            {{ action.label }}
-        </a>
-    {% endfor %}
-</div>
-
-{% if holidays_summary is not empty %}
-    <table class="tab_cadre" width="100%">
-        {% if holidays_summary.has_data %}
-            <tr class="tab_bg_1">
-                <td colspan="2"><b>{{ __('Remaining holidays', 'activity') }} : </b></td>
-            </tr>
-            {% for row in holidays_summary.rows %}
-                {% if row.type == 'period_header' %}
-                    <tr>
-                        <td colspan="2">{{ row.label }}</td>
-                    </tr>
-                {% elseif row.type == 'period_detail' %}
-                    <tr>
-                        <td>
-                            <span class="activity_tree"></span>
-                            {{ __('Valid until', 'activity') }}&nbsp;{{ row.end_date }}
-                        </td>
-                        <td>{{ row.count }}</td>
-                    </tr>
-                {% elseif row.type == 'total' %}
-                    <tr>
-                        <td>{{ __('Cumul', 'activity') }}</td>
-                        <td>{{ row.count }}</td>
-                    </tr>
-                {% endif %}
+        <div class="d-grid gap-2 mb-3">
+            {% for action in actions %}
+                <a href="{{ action.link }}" class="btn btn-info"
+                   {% if action.modal %}data-bs-toggle="modal" data-bs-target="#{{ action.modal }}"{% endif %}>
+                    {{ action.label }}
+                </a>
             {% endfor %}
-        {% endif %}
-    </table>
-{% endif %}
+        </div>
 
+        {% if holidays_summary is not empty and holidays_summary.has_data %}
+            <table class="table table-sm card-table">
+                <thead>
+                    <tr>
+                        <th colspan="2">{{ __('Remaining holidays', 'activity') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in holidays_summary.rows %}
+                        {% if row.type == 'period_header' %}
+                            <tr>
+                                <td colspan="2">{{ row.label }}</td>
+                            </tr>
+                        {% elseif row.type == 'period_detail' %}
+                            <tr>
+                                <td>
+                                    <span class="activity_tree"></span>
+                                    {{ __('Valid until', 'activity') }}&nbsp;{{ row.end_date }}
+                                </td>
+                                <td>{{ row.count }}</td>
+                            </tr>
+                        {% elseif row.type == 'total' %}
+                            <tr>
+                                <td>{{ __('Cumul', 'activity') }}</td>
+                                <td>{{ row.count }}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+
+    </div>
 </div>
