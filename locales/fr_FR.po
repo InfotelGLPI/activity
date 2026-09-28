@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-25 09:50+0000\n"
+"POT-Creation-Date: 2026-09-25 10:11+0000\n"
 "PO-Revision-Date: 2020-11-02 13:59+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/114456/fr_FR/)\n"
@@ -108,7 +108,7 @@ msgstr "Jour entier"
 
 #: src/EntityDistribution.php:223
 msgid "All technicians"
-msgstr "Tous les techinicens"
+msgstr "Tous les techniciens"
 
 #: src/NotificationTargetHoliday.php:46 src/NotificationTargetHoliday.php:261
 msgid "Answer to a personal holiday request"
@@ -687,7 +687,7 @@ msgstr[2] "Gestion des droits"
 #: templates/holiday_validation_summary.html.twig:60
 msgctxt "button"
 msgid "Save"
-msgstr "SAuver"
+msgstr "Sauvegarder"
 
 #: src/CheckSchema.php:56
 msgid "Schema check"
