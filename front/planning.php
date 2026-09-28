@@ -27,6 +27,8 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
+
 // The iCal branch authenticates with a personal token instead of the session, so it
 // cannot require a session right; every other branch still does, which keeps them
 // fail-closed now that the route is declared stateless in setup.php.
@@ -64,6 +66,15 @@ if (isset($_GET['checkavailability'])) {
 
 } elseif (isset($_GET['genical'])) {
     if (isset($_GET['token'])) {
+        // The route is declared stateless too late for this very request (plugin_init runs
+        // after SessionStart), so a browser still sends its GLPI cookie here. authWithToken()
+        // would then replace the logged-in session with the token bearer's one, and the
+        // teardown below would destroy it: a cross-site <img> pointing at this URL could log
+        // the victim out, or switch them to the attacker's account. The token flow is meant
+        // for calendar clients, which carry no session: refuse it inside an authenticated one.
+        if (Session::getLoginUserID() !== false) {
+            throw new AccessDeniedHttpException();
+        }
         // GLPI 11 removed User::getFromDBByToken() and centralised the token flow in
         // Session::authWithToken(), which builds an Auth and goes through Session::init().
         // The previous pairing - getFromDBByToken() + loadMinimalSession() - was therefore

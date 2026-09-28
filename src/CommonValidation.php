@@ -29,7 +29,6 @@
 
 namespace GlpiPlugin\Activity;
 
-use Ajax;
 use CommonDBTM;
 use Dropdown;
 
@@ -199,70 +198,5 @@ class CommonValidation extends CommonDBTM
                 return self::dropdownStatus($name, $options);
         }
         return parent::getSpecificValueToSelect($field, $name, $values, $options);
-    }
-
-    /**
-     * Dropdown of validator
-     *
-     * @param $options   array of options
-     *  - name                    : select name
-     *  - id                      : ID of object > 0 Update, < 0 New
-     *  - entity                  : ID of entity
-     *  - right                   : validation rights
-     *  - groups_id               : ID of group validator
-     *  - users_id_validate       : ID of user validator
-     *  - applyto
-     *
-     * @return
-     **/
-    public static function dropdownValidator(array $options = [])
-    {
-        global $CFG_GLPI;
-
-        $params['name']               = '';
-        $params['id']                 = 0;
-        $params['entity']             = $_SESSION['glpiactive_entity'];
-        $params['right']              = ['validate_request', 'validate_incident'];
-        $params['groups_id']          = 0;
-        $params['users_id_validate']  = [];
-        $params['applyto']            = 'show_validator_field';
-
-        foreach ($options as $key => $val) {
-            $params[$key] = $val;
-        }
-
-        $types = [0       => Dropdown::EMPTY_VALUE,
-            'user'  => __('User'),
-            'group' => __('Group')];
-
-        $type  = '__VALUE__';
-        if (!empty($params['users_id_validate'])) {
-            $type = 'list_users';
-        }
-
-        if ($params['id'] > 0) {
-            unset($types['group']);
-        }
-        $rand = Dropdown::showFromArray("validatortype", $types, ['value' => $type]);
-
-        if ($params['id'] > 0) {
-            $params['validatortype'] = $type;
-            Ajax::updateItem(
-                $params['applyto'],
-                $CFG_GLPI["root_doc"] . "/ajax/dropdownValidator.php",
-                $params,
-            );
-        }
-        $params['validatortype'] = '__VALUE__';
-        Ajax::updateItemOnSelectEvent(
-            "dropdown_validatortype$rand",
-            $params['applyto'],
-            $CFG_GLPI["root_doc"] . "/ajax/dropdownValidator.php",
-            $params,
-        );
-
-        if (!isset($options['applyto'])) {
-            echo "<br><span id='" . $params['applyto'] . "'>&nbsp;</span>\n";
-        }
     }
 }

@@ -70,7 +70,12 @@
         <form method="POST" action="cra.php" class="d-inline-flex align-items-center gap-2">
             <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
             {{ export_hidden_fields|raw }}
-            {{ output_format_selector|raw }}
+            <select class="form-select" name="display_type">
+                <option value="{{ pdf_output_type }}">{{ __('Export CRA', 'activity') }}</option>
+            </select>
+            <button type="submit" name="export" class="btn btn-primary" title="{{ _x('button', 'Export') }}">
+                <i class="ti ti-device-floppy"></i><span class="visually-hidden">{{ _x('button', 'Export') }}</span>
+            </button>
         </form>
 
         {# Snapshot trigger #}

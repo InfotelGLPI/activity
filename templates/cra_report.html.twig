@@ -1,0 +1,95 @@
+{#
+ # -------------------------------------------------------------------------
+ # activity plugin for GLPI
+ # Copyright (C) 2019-2026 by the activity Development Team.
+ #
+ # https://github.com/InfotelGLPI/activity
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of activity.
+ #
+ # activity is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # activity is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with activity. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#
+ # Monthly activity report (Report::showCRA): one column per day of the month.
+ # The table used to be concatenated from Search::showItem(), which writes its argument
+ # into the cell unescaped, so each category name had to be escaped by hand and the day
+ # links were assembled in PHP. Every value is now plain text escaped here.
+ #
+ # The day header and the week-end columns read their background from the variables of
+ # activity.css (dark palette), with the original colour as the fallback.
+ #}
+<div class="card mt-3">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table card-table table-hover text-center">
+                {% if rows is empty %}
+                    <thead>
+                        <tr>
+                            <th>{{ __('No activity found', 'activity') }}</th>
+                        </tr>
+                    </thead>
+                {% else %}
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            {% for day in days %}
+                                <th>{{ day.name }}</th>
+                            {% endfor %}
+                            <th></th>
+                        </tr>
+                        <tr class="fw-bold" style="background-color: var(--act-cra-header-bg, #f3f4f5)">
+                            <th>{{ __('Project', 'activity') }}</th>
+                            <th>{{ __('Activity', 'activity') }}</th>
+                            {% for day in days %}
+                                <th>{{ day.number }}</th>
+                            {% endfor %}
+                            <th>{{ __('Total') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in rows %}
+                            <tr{% if row.total_line ?? false %} class="fw-bold"{% endif %}>
+                                {% for label in row.labels %}
+                                    {% if row.header %}
+                                        <th>{{ label }}</th>
+                                    {% else %}
+                                        <td class="text-start">{{ label }}</td>
+                                    {% endif %}
+                                {% endfor %}
+                                {% for cell in row.cells|merge([row.total]) %}
+                                    <td{% if cell.weekend %} style="background-color: var(--act-cra-weekend-bg, #cccccc)"{% endif %}
+                                        {%- if cell.state is not empty %} class="text-{{ cell.state }}"{% endif %}>
+                                        {%- if cell.url is not empty -%}
+                                            <a href="{{ cell.url }}" target="_blank" rel="noopener"
+                                               {%- if cell.state is not empty %} class="text-{{ cell.state }}"{% endif %}
+                                               title="{{ cell.value }}">{{ cell.value }}</a>
+                                        {%- else -%}
+                                            {{ cell.value }}
+                                        {%- endif -%}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+</div>

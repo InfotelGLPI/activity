@@ -293,8 +293,9 @@ class EntityDistribution extends CommonGLPI
             }
         }
 
+        // The user name is database content and the core renders redirect messages with |raw
         Session::addMessageAfterRedirect(
-            sprintf(__('%1$s client(s) added for %2$s', 'activity'), $added, getUserName($techs_id)),
+            htmlescape(sprintf(__('%1$s client(s) added for %2$s', 'activity'), $added, getUserName($techs_id))),
         );
     }
 

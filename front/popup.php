@@ -27,6 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Activity\Holiday;
 use GlpiPlugin\Activity\PlanningExternalEvent;
@@ -82,7 +83,6 @@ if (isset($_SESSION["glpipopup"]["name"])) {
             break;
     }
 
-    echo "<div class='center'><br><a href='javascript:window.close()'>" . __('Close') . "</a>";
-    echo "</div>";
+    TemplateRenderer::getInstance()->display('@activity/popup_close.html.twig');
     Html::popFooter();
 }

@@ -158,8 +158,13 @@ class Holiday extends CommonDBTM
         // validating that user's requests may view it (mirrors canPurgeItem()
         // and the display gate in showForm()). Otherwise can($id, READ) — used
         // by the AJAX/popup render paths — would be a plain horizontal IDOR.
-        if (Session::haveRight('plugin_activity_all_users', 1)) {
-            return self::isUserInSessionEntities($this->fields['users_id'] ?? 0);
+        // The right grants access within the session entities; outside of them, the
+        // owner and manager branches below still apply instead of refusing outright
+        if (
+            Session::haveRight('plugin_activity_all_users', 1)
+            && self::isUserInSessionEntities($this->fields['users_id'] ?? 0)
+        ) {
+            return true;
         }
         if (isset($this->fields['users_id'])
             && $this->fields['users_id'] == Session::getLoginUserID()) {
@@ -186,8 +191,13 @@ class Holiday extends CommonDBTM
         // editing another user's request. Only the owner, or a profile holding
         // plugin_activity_all_users, may update it (mirrors the display gate in
         // showForm()). Otherwise check($id, UPDATE) would be a plain IDOR.
-        if (Session::haveRight('plugin_activity_all_users', 1)) {
-            return self::isUserInSessionEntities($this->fields['users_id'] ?? 0);
+        // The right grants access within the session entities; outside of them, the
+        // owner and manager branches below still apply instead of refusing outright
+        if (
+            Session::haveRight('plugin_activity_all_users', 1)
+            && self::isUserInSessionEntities($this->fields['users_id'] ?? 0)
+        ) {
+            return true;
         }
         return isset($this->fields['users_id'])
             && $this->fields['users_id'] == Session::getLoginUserID();
@@ -200,8 +210,13 @@ class Holiday extends CommonDBTM
         // validating that user's requests (mirrors can_purge_as_manager in
         // showForm()). The global plugin_activity PURGE right alone is not
         // enough, otherwise check($id, PURGE) would be a plain IDOR.
-        if (Session::haveRight('plugin_activity_all_users', 1)) {
-            return self::isUserInSessionEntities($this->fields['users_id'] ?? 0);
+        // The right grants access within the session entities; outside of them, the
+        // owner and manager branches below still apply instead of refusing outright
+        if (
+            Session::haveRight('plugin_activity_all_users', 1)
+            && self::isUserInSessionEntities($this->fields['users_id'] ?? 0)
+        ) {
+            return true;
         }
         if (isset($this->fields['users_id'])
             && $this->fields['users_id'] == Session::getLoginUserID()) {

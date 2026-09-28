@@ -125,8 +125,13 @@ class HolidayValidation extends CommonDBChild
         // between the two classes was an omission, not a design choice, all the more so as this
         // record has no entities_id of its own and CommonDBTM::checkEntity() is therefore a
         // no-op here.
-        if (Session::haveRight('plugin_activity_all_users', 1)) {
-            return Holiday::isUserInSessionEntities($holiday->fields['users_id'] ?? 0);
+        // The right grants access within the session entities; outside of them, the
+        // owner and manager branches below still apply instead of refusing outright
+        if (
+            Session::haveRight('plugin_activity_all_users', 1)
+            && Holiday::isUserInSessionEntities($holiday->fields['users_id'] ?? 0)
+        ) {
+            return true;
         }
         if (self::canValidate($holidays_id)) {
             return true;

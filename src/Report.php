@@ -336,23 +336,6 @@ class Report extends CommonDBTM
         }
     }
 
-    /**
-     * show dropdown for output format
-     *
-     * @since version 0.83
-     **/
-    public static function showOutputFormat()
-    {
-
-        echo "<select class='form-select' name='display_type'>";
-        echo "<option value='" . Search::PDF_OUTPUT_LANDSCAPE . "'>" . __('Export CRA', 'activity') .
-           "</option>";
-        echo "</select>&nbsp;";
-        echo "<button type='submit' name='export' class='submit btn btn-primary unstyled pointer' " .
-           " title=\"" . _sx('button', 'Export') . "\">" .
-           "<i class='ti ti-device-floppy'></i><span class='sr-only'>" . _sx('button', 'Export') . "<span>";
-    }
-
     public function showGenericSearch($input)
     {
         // Security: the CRA has its own right, plugin_activity_statistics, already
@@ -435,9 +418,6 @@ class Report extends CommonDBTM
             $snapshot_hidden .= Html::hidden('display_type', ['value' => Search::PDF_OUTPUT_LANDSCAPE]);
             $snapshot_hidden .= Html::hidden('snapshot', ['value' => 'snapshot']);
 
-            ob_start();
-            self::showOutputFormat();
-            $output_format_html = ob_get_clean();
 
             ob_start();
             if (Session::haveRight("plugin_activity_all_users", 1)) {
@@ -458,7 +438,7 @@ class Report extends CommonDBTM
                 'user_dropdown'        => $user_dropdown_html,
                 'user_hidden'          => Html::hidden('users_id', ['value' => $users_id]),
                 'export_hidden_fields' => $export_hidden,
-                'output_format_selector' => $output_format_html,
+                'pdf_output_type'        => Search::PDF_OUTPUT_LANDSCAPE,
                 'snapshot_hidden_fields' => $snapshot_hidden,
             ]);
 
@@ -1137,17 +1117,11 @@ class Report extends CommonDBTM
             $count = PlanningExternalEvent::getNbDays($crit["begin"], $crit["end"]);
 
             $countopened  = 0;
-            $countwe      = 0;
             $countweekend = 0;
             $days         = [];
-            $num          = 1;
-            if ($output_type == Search::HTML_OUTPUT) {
-                echo '<div class="card mt-3"><div class="card-body p-0">';
-            }
-            echo Search::showHeader($output_type, $number + $numberm + $numbert, 3, false);
-            echo Search::showNewLine($output_type);
-            self::showTitle($output_type, $num, '', '', false);
-            self::showTitle($output_type, $num, '', '', false);
+            // Day name and number of each column of the table (cra_report.html.twig)
+            $day_headers  = [];
+            $weekends     = [];
 
             /*joursem*/
             $joursem = ['Di', 'Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa'];
@@ -1157,14 +1131,19 @@ class Report extends CommonDBTM
                 $d = PlanningExternalEvent::dateAdd($i, $crit["begin"]);
                 list($annee, $mois, $jour) = explode('-', $d);
                 $timestamp = mktime(0, 0, 0, $mois, $jour, $annee);
-                self::showTitle($output_type, $num, $joursem[date("w", $timestamp)], 'day', false);
+                $days[]        = $d;
+                $day_headers[] = [
+                    'name'   => $joursem[date("w", $timestamp)],
+                    'number' => $jour,
+                ];
                 $timeHeaders[$jour]['header'] = $joursem[date("w", $timestamp)];
                 $timeHeaders[$jour]['values'] = 0;
                 $countopened++;
 
                 $countweekend += $holiday->countWe($d, $d, $holiday->getHolidays());
                 // In week end ?
-                if ($holiday->countWe($d, $d, $holiday->getHolidays()) > 0) {
+                $weekends[$i] = $holiday->countWe($d, $d, $holiday->getHolidays()) > 0;
+                if ($weekends[$i]) {
                     $timeHeaders[$jour]['options']['weekend'] = true;
                 }
             }
@@ -1172,26 +1151,6 @@ class Report extends CommonDBTM
             if ($pdfMode) {
                 $PDF->SetTimeHeader($timeHeaders);
             }
-
-            self::showTitle($output_type, $num, '', '', false);
-            echo Search::showEndLine($output_type);
-
-            /*days*/
-            if ($output_type == Search::HTML_OUTPUT) {
-                echo "<tr class='tab_bg_1' style='background-color:var(--act-cra-header-bg, #f3f4f5);font-weight:bold'>";
-            } else {
-                echo Search::showNewLine($output_type, true);
-            }
-            self::showTitle($output_type, $num, __('Project', 'activity'), '', false);
-            self::showTitle($output_type, $num, __('Activity', 'activity'), '', false);
-            for ($i = 0; $i != $count; $i++) {
-                $d      = PlanningExternalEvent::dateAdd($i, $crit["begin"]);
-                $days[] = $d;
-                list($annee, $mois, $jour) = explode('-', $d);
-                self::showTitle($output_type, $num, $jour, 'day', false);
-            }
-            self::showTitle($output_type, $num, __('Total'), '', false);
-            echo Search::showEndLine($output_type);
 
             $titles = [];
             foreach ($days as $k => $v) {
@@ -1225,7 +1184,6 @@ class Report extends CommonDBTM
             }
 
             /*List titles*/
-            $row_num                 = 1;
             $time[self::$WORK]       = [];
             $time[self::$HOLIDAY]    = [];
             $time[self::$HOLIDAY][1] = [];
@@ -1295,34 +1253,35 @@ class Report extends CommonDBTM
                 }
             }
 
-            // Show work
-            $tot_activity = $this->showActivity($time[self::$WORK], $output_type, $row_num, self::$WORK, $crit);
-            // Show holiday
-            $row_num++;
-            $num = 1;
-            echo Search::showNewLine($output_type);
-            self::showTitle($output_type, $num, __('Absences', 'activity'), '', false);
-            self::showTitle($output_type, $num, __('Comments'), '', false);
+            // The table is rendered by cra_report.html.twig from these rows, so every label
+            // reaches the page through Twig auto-escaping. It used to be concatenated from
+            // Search::showItem(), which writes its argument into the cell as is: each category
+            // name had to be escaped by hand, and the day links were assembled in PHP.
+            $rows = [];
 
-            for ($i = 0; $i != $count; $i++) {
-                $d     = PlanningExternalEvent::dateAdd($i, $crit["begin"]);
-                $class = "class='center'";
-                $style = "";
-                if ($holiday->countWe($d, $d, $holiday->getHolidays()) > 0) {
-                    $style = " style='background-color:var(--act-cra-weekend-bg, #CCCCCC)' ";
-                }
-                echo Search::showItem($output_type, '', $num, $row_num, $class . $style);
+            // Work
+            $tot_activity = $this->buildActivityRows($rows, $time[self::$WORK], self::$WORK, $weekends);
+
+            // Holidays, under their own heading line
+            $rows[] = [
+                'header' => true,
+                'labels' => [__('Absences', 'activity'), __('Comments')],
+                'cells'  => array_map(static fn($weekend) => self::buildCell('', null, $weekend), $weekends),
+                'total'  => self::buildCell(''),
+            ];
+            $tot_parttime = $this->buildActivityRows($rows, $time[self::$HOLIDAY][3], self::$PART_TIME, $weekends);
+            $tot_holiday  = $this->buildActivityRows($rows, $time[self::$HOLIDAY][1], self::$HOLIDAY, $weekends);
+            $tot_sickness = $this->buildActivityRows($rows, $time[self::$HOLIDAY][2], self::$SICKNESS, $weekends);
+
+            // Total of all
+            $rows[] = self::buildTotalRow($tot_activity + $tot_holiday + $tot_parttime + $tot_sickness, $countopened - $countweekend, $time, $weekends);
+
+            if ($output_type == Search::HTML_OUTPUT) {
+                TemplateRenderer::getInstance()->display('@activity/cra_report.html.twig', [
+                    'days' => $day_headers,
+                    'rows' => $rows,
+                ]);
             }
-
-            echo Search::showItem($output_type, '', $num, $row_num);
-            echo Search::showEndLine($output_type);
-
-            $tot_parttime = $this->showActivity($time[self::$HOLIDAY][3], $output_type, $row_num, self::$PART_TIME, $crit);
-            $tot_holiday  = $this->showActivity($time[self::$HOLIDAY][1], $output_type, $row_num, self::$HOLIDAY, $crit);
-            $tot_sickness = $this->showActivity($time[self::$HOLIDAY][2], $output_type, $row_num, self::$SICKNESS, $crit);
-
-            // Show total of all
-            $this->showTotal($tot_activity + $tot_holiday + $tot_parttime + $tot_sickness, $count, $countopened - $countweekend, $output_type, $row_num, $time);
 
             if ($pdfMode) {
                 $showPopUp = false; //We don't always show the popup with the pdf CRA
@@ -1373,11 +1332,6 @@ class Report extends CommonDBTM
 
                     $showPopUp = true;
                 }
-            }
-
-            echo Search::showFooter($output_type, PlanningExternalEvent::getTypeName(1));
-            if ($output_type == Search::HTML_OUTPUT) {
-                echo '</div></div>';
             }
 
             if ($number != "0" && $output_type == Search::HTML_OUTPUT) {
@@ -1491,12 +1445,11 @@ class Report extends CommonDBTM
                     'formatters' => $details_formatters,
                 ]);
             }
-        } else {
-            echo Search::showHeader($output_type, 1, 1, true);
-            echo Search::showNewLine($output_type);
-            self::showTitle($output_type, $num, __('No activity found', 'activity'), '', false);
-            echo Search::showEndLine($output_type);
-            echo Search::showFooter($output_type, PlanningExternalEvent::getTypeName(1));
+        } elseif ($output_type == Search::HTML_OUTPUT) {
+            TemplateRenderer::getInstance()->display('@activity/cra_report.html.twig', [
+                'days' => [],
+                'rows' => [],
+            ]);
         }
 
         if ($pdfMode && $showPopUp) {
@@ -1805,155 +1758,121 @@ class Report extends CommonDBTM
     }
 
     /**
-     * Display the activities
+     * Add the lines of one kind of activity to the rows of the CRA table.
      *
-     * @param string $activity
-     * @param int    $output_type
-     * @param int    $row_num
-     * @param int    $type
+     * Every label is kept as plain text: cra_report.html.twig escapes it. The day cells
+     * carry the URL of the search listing the items behind their value, if any.
      *
-     * @return int
+     * @param array $rows     rows of the table, completed in place
+     * @param array $activity times of the activity, by label then by day
+     * @param int   $type     work, holiday, part time or sickness
+     * @param array $weekends whether each day of the month is off, by day index
+     *
+     * @return float|int total time of the activity
      */
-    public function showActivity($activity, $output_type, $row_num, $type, $crit)
+    private function buildActivityRows(array &$rows, array $activity, int $type, array $weekends)
     {
-
         $tot = 0;
 
-        $activity_data = [];
-        $tot_act       = [];
         $opt = new Option();
         $opt->getFromDB(1);
-        $use_hour_on_cra               = $opt->fields['use_hour_on_cra'];
+        $use_hour_on_cra             = $opt->fields['use_hour_on_cra'];
         $use_planning_activity_hours = $opt->fields['use_planning_activity_hours'];
-        switch ($type) {
-            case self::$SICKNESS:
-            case self::$PART_TIME:
-            case self::$HOLIDAY:
-                $activity_data[self::getHolidayName($type)] = $activity;
-                break;
-            case self::$WORK:
-                $activity_data = $activity;
-                break;
+
+        if ($type == self::$WORK) {
+            $activity_data = $activity;
+        } else {
+            $activity_data = [self::getHolidayName($type) => $activity];
         }
 
-        if (!empty($activity)) {
-            foreach ($activity_data as $key => $times) {
-                $row_num++;
-                $num = 1;
-                echo Search::showNewLine($output_type);
-                $parent = $key;
-                $child  = '';
+        if (empty($activity)) {
+            // Empty line, under the name of the absence kind
+            $keys   = array_keys($activity_data);
+            $rows[] = [
+                'header' => false,
+                'labels' => [(string) ($keys[0] ?? ''), ''],
+                'cells'  => array_map(static fn($weekend) => self::buildCell('', null, $weekend), $weekends),
+                'total'  => self::buildCell(Html::formatNumber(0, false, 3), null, (bool) end($weekends)),
+            ];
+            return $tot;
+        }
 
-                if (strstr($key, '>') !== false) {
-                    $delimiter = ">";
-                } elseif (strstr($key, '&gt;') !== false) {
-                    $delimiter = "&gt;";
-                }
-                // Activity grouping labels come from task category names stored
-                // raw in the database (GLPI 10+). The HTML search output does not
-                // escape the values it receives, so escape them here to prevent a
-                // stored XSS. Escaping only applies to the HTML context: PDF/other
-                // outputs are not HTML and must keep the raw text.
-                $is_html = ($output_type == Search::HTML_OUTPUT);
-                if (strstr($key, '>') || strstr($key, '&gt;')) {
-                    $childs = explode($delimiter, $key);
-                    $part1  = trim($childs[0]);
-                    $part2  = isset($childs[2]) ? trim($childs[2]) : trim($childs[1]);
-                    if ($is_html) {
-                        $part1 = htmlspecialchars($part1, ENT_QUOTES, 'UTF-8');
-                        $part2 = htmlspecialchars($part2, ENT_QUOTES, 'UTF-8');
-                    }
-                    echo Search::showItem($output_type, $part1, $num, $row_num);
-                    echo Search::showItem($output_type, $part2, $num, $row_num);
-                } else {
-                    $parent_item = (string) $parent;
-                    $child_item  = (string) $child;
-                    if ($is_html) {
-                        $parent_item = htmlspecialchars($parent_item, ENT_QUOTES, 'UTF-8');
-                        $child_item  = htmlspecialchars($child_item, ENT_QUOTES, 'UTF-8');
-                    }
-                    if ($type == self::$WORK) {
-                        echo Search::showItem($output_type, $child_item, $num, $row_num);
-                        echo Search::showItem($output_type, $parent_item, $num, $row_num);
-                    } else {
-                        echo Search::showItem($output_type, $parent_item, $num, $row_num);
-                        echo Search::showItem($output_type, $child_item, $num, $row_num);
-                    }
-                }
-
-                foreach ($times as $begin => $data) {
-                    // Use round values
-                    $data['values'] = self::TotalTpsPassesArrondis($data['values'], [
-                        'arrondir_heure' => $use_hour_on_cra,
-                        'use_planning_activity_hours' => $use_planning_activity_hours,
-                    ]);
-
-                    // Get css
-                    $class = "class='center'";
-                    $style = "";
-                    if (isset($data['options']['weekend'])) {
-                        $style = " style='background-color:var(--act-cra-weekend-bg, #CCCCCC)' ";
-                    }
-
-                    // Get tickets link for value
-                    $link = '';
-                    if ($output_type == Search::HTML_OUTPUT) {
-                        $link = $this->getItemLink($data['values'], $key, date('Y-m-d', strtotime($begin)), ['depass' => isset($data['options']['depass']) ? $data['options']['depass'] : 0]);
-                    }
-                    echo Search::showItem($output_type, !empty($link) ? $link : '', $num, $row_num, $class . $style);
-
-                    // Total of all
-                    $tot += $data['values'];
-
-                    // Activity total
-                    if (isset($tot_act[$key])) {
-                        $tot_act[$key] += $data['values'];
-                    } else {
-                        $tot_act[$key] = $data['values'];
-                    }
-                }
-                // Total value depass
-                if (self::isIncorrectValue($tot_act[$key]) > 0 && !$use_hour_on_cra) {
-                    $class = " class='center red'";
-                }
-
-                echo Search::showItem($output_type, Html::formatNumber($tot_act[$key], false, 3), $num, $row_num, $class);
-                echo Search::showEndLine($output_type);
-            }
-        } else {
-            $num = 1;
-            $holiday = new Holiday();
-            $holiday->setHolidays();
-            $count = PlanningExternalEvent::getNbDays($crit["begin"], $crit["end"]);
-            echo Search::showNewLine($output_type);
-            $keys = array_keys($activity_data);
-            echo Search::showItem($output_type, isset($keys[0]) ? $keys[0] : "", $num, $row_num);
-
-            echo Search::showItem($output_type, "", $num, $row_num);
-
-            for ($i = 0; $i != $count; $i++) {
-                $d     = PlanningExternalEvent::dateAdd($i, $crit["begin"]);
-                $class = "class='center'";
-                $style = "";
-                if ($holiday->countWe($d, $d, $holiday->getHolidays()) > 0) {
-                    $style = " style='background-color:var(--act-cra-weekend-bg, #CCCCCC)' ";
-                }
-                echo Search::showItem($output_type, '', $num, $row_num, $class . $style);
+        foreach ($activity_data as $key => $times) {
+            $key = (string) $key;
+            if (str_contains($key, '>') || str_contains($key, '&gt;')) {
+                // "Parent > Child" category: one column each
+                $childs = explode(str_contains($key, '>') ? '>' : '&gt;', $key);
+                $labels = [trim($childs[0]), isset($childs[2]) ? trim($childs[2]) : trim($childs[1])];
+            } elseif ($type == self::$WORK) {
+                $labels = ['', $key];
+            } else {
+                $labels = [$key, ''];
             }
 
-            echo Search::showItem($output_type, Html::formatNumber(0, false, 3), $num, $row_num, $class . $style);
-            echo Search::showEndLine($output_type);
+            $cells   = [];
+            $tot_act = 0;
+            $i       = 0;
+            foreach ($times as $begin => $data) {
+                // Use round values
+                $value = self::TotalTpsPassesArrondis($data['values'], [
+                    'arrondir_heure'              => $use_hour_on_cra,
+                    'use_planning_activity_hours' => $use_planning_activity_hours,
+                ]);
+
+                $url   = empty($value) ? null : $this->getItemUrl($key, date('Y-m-d', strtotime($begin)));
+                $state = '';
+                if ($url !== null && !empty($data['options']['depass']) && !$use_hour_on_cra) {
+                    $state = 'danger';
+                }
+                $cells[] = self::buildCell(empty($value) ? '' : $value, $url, isset($data['options']['weekend']), $state);
+
+                $tot     += $value;
+                $tot_act += $value;
+                $i++;
+            }
+
+            $rows[] = [
+                'header' => false,
+                'labels' => $labels,
+                'cells'  => $cells,
+                'total'  => self::buildCell(
+                    Html::formatNumber($tot_act, false, 3),
+                    null,
+                    false,
+                    self::isIncorrectValue($tot_act) && !$use_hour_on_cra ? 'danger' : '',
+                ),
+            ];
         }
 
         return $tot;
     }
 
     /**
+     * One cell of the CRA table.
+     *
+     * @param mixed       $value   label, escaped by Twig
+     * @param string|null $url     target of the link wrapping the label, if any
+     * @param bool        $weekend whether the day is off (greyed background)
+     * @param string      $state   '', 'danger' or 'success': colour of the value
+     *
+     * @return array{value: string, url: string|null, weekend: bool, state: string}
+     */
+    private static function buildCell($value, ?string $url = null, bool $weekend = false, string $state = ''): array
+    {
+        return [
+            'value'   => (string) $value,
+            'url'     => $url,
+            'weekend' => $weekend,
+            'state'   => $state,
+        ];
+    }
+
+    /**
      * Set incorrect value display
      *
-     * @param string $value
+     * @param float|int|string $value
      *
-     * @return string
+     * @return bool
      */
     public static function isIncorrectValue($value)
     {
@@ -1986,211 +1905,108 @@ class Report extends CommonDBTM
     }
 
     /**
-     * Display a link with the activity search options
+     * URL of the search listing the items behind the time of an activity on a day.
      *
-     * @param int    $value
-     * @param string $activity
-     * @param date   $begin
-     * @param array  $options
+     * The URL is returned raw (& separator): the template escapes it into the attribute.
      *
-     * @return string url
+     * @param string $activity label of the activity
+     * @param string $begin    day (Y-m-d)
+     *
+     * @return string|null null when no item is known for the activity
      */
-    public function getItemLink($value, $activity, $begin, $options = [])
+    private function getItemUrl(string $activity, string $begin): ?string
     {
-        $output = $value;
-        $opt = new Option();
-        $opt->getFromDB(1);
-        $use_hour_on_cra = $opt->fields['use_hour_on_cra'];
-        if (!empty($value) && isset($this->item_search[$activity])) {
-            $rand                    = mt_rand();
-            $opt                     = [];
-            $opt['is_deleted']       = 0;
-            $opt['start']            = 0;
-            $opt['_glpi_csrf_token'] = Session::getNewCSRFToken();
-            $opt['depass']           = false;
+        if (!isset($this->item_search[$activity])) {
+            return null;
+        }
 
-            foreach ($this->item_search[$activity] as $itemtype => $data) {
-                $opt['itemtype'] = $itemtype;
-                $found           = false;
-                foreach ($data as $items_begin => $items) {
-                    if ($begin == $items_begin) {
-                        $found = true;
-                        $nb    = 0;
-                        foreach (array_unique($items) as $items_id) {
-                            $opt['criteria'][$nb]['field']      = 2; // Search options
-                            $opt['criteria'][$nb]['searchtype'] = 'equals';
-                            $opt['criteria'][$nb]['value']      = $items_id;
-                            $opt['criteria'][$nb]['link']       = 'OR';
-
-                            $nb++;
-                        }
-
-                        foreach ($options as $key => $val) {
-                            $opt[$key] = $val;
-                        }
-                        $target = PLUGIN_ACTIVITY_WEBDIR . "/front/cra.php";
-
-                        $url   = $target . "?" . Toolbox::append_params($opt, '&amp;');
-                        $style = null;
-                        if ($opt['depass'] && !$use_hour_on_cra) {
-                            $style = 'color:red';
-                        }
-                        $output = "<a style='$style' href=\"$url\" id=\"activity_link$rand\" target=\"_blank\" title=\"" . $value . "\">" . $value . "</a>";
-
-                        break;
-                    }
+        $url = null;
+        foreach ($this->item_search[$activity] as $itemtype => $data) {
+            $opt = [
+                'is_deleted' => 0,
+                'start'      => 0,
+                'itemtype'   => $itemtype,
+            ];
+            // Items of the day, or of the last previous day holding some: an item may
+            // have started before the day it spans (the lookup used to recurse day by day
+            // with no lower bound, which never ended when one itemtype had no earlier item)
+            $item_days = array_filter(array_keys($data), static fn($day) => $day <= $begin);
+            if ($item_days !== []) {
+                $nb = 0;
+                foreach (array_unique($data[max($item_days)]) as $items_id) {
+                    $opt['criteria'][$nb] = [
+                        'field'      => 2, // Search options
+                        'searchtype' => 'equals',
+                        'value'      => $items_id,
+                        'link'       => 'OR',
+                    ];
+                    $nb++;
                 }
-
-                // Get previous activity time if not found
-                if (!$found) {
-                    $output = $this->getItemLink($value, $activity, date('Y-m-d', strtotime($begin . ' -1 DAY')), $options);
-                }
+                $url = PLUGIN_ACTIVITY_WEBDIR . "/front/cra.php?" . Toolbox::append_params($opt, '&');
             }
         }
 
-        return $output;
+        return $url;
     }
 
     /**
-     * Display the total of all days
+     * Total line of the CRA table: time of each day and of the whole month.
      *
-     * @param  $tot
-     * @param  $countAllDays
-     * @param  $countopened
-     * @param  $output_type
-     * @param  $row_num
+     * @param float|int $tot         total time of the month
+     * @param int       $countopened number of working days of the month
+     * @param array     $time        times of the work and holidays, by kind then by day
+     * @param array     $weekends    whether each day of the month is off, by day index
+     *
+     * @return array row of cra_report.html.twig
      */
-    public function showTotal($tot, $countAllDays, $countopened, $output_type, $row_num, $time)
+    private static function buildTotalRow($tot, int $countopened, array $time, array $weekends): array
     {
-
-        $types = [self::$WORK, self::$HOLIDAY/*, self::$PART_TIME,  self::$SICKNESS*/];
         $opt = new Option();
         $opt->getFromDB(1);
         $use_hour_on_cra = $opt->fields['use_hour_on_cra'];
-        $time_total = [];
-        for ($y = 0; $y < $countAllDays; $y++) {
-            $time_total[$y] = ['value' => 0, 'style' => ''];
-        }
-        foreach ($types as $type) {
-            foreach ($time[$type] as $key => $times) {
-                $row_num++;
+
+        $day_totals = array_fill(0, count($weekends), 0);
+        foreach ([self::$WORK, self::$HOLIDAY] as $type) {
+            foreach ($time[$type] as $times) {
                 $i = 0;
-                foreach ($times as $begin => $data) {
+                foreach ($times as $data) {
                     // Use round values
-                    $data['values'] = self::TotalTpsPassesArrondis($data['values'], [
-                        'arrondir_heure' => $use_hour_on_cra,
+                    $day_totals[$i] = ($day_totals[$i] ?? 0) + self::TotalTpsPassesArrondis($data['values'], [
+                        'arrondir_heure'              => $use_hour_on_cra,
                         'use_planning_activity_hours' => $opt->fields['use_planning_activity_hours'],
                     ]);
-
-                    $time_total[$i]['value'] = $time_total[$i]['value'] + $data['values'];
-                    if (isset($data['options']['weekend'])) {
-                        $time_total[$i]['style'] = " style='background-color:var(--act-cra-weekend-bg, #CCCCCC)' ";
-                    }
                     $i++;
                 }
             }
         }
-        $opt = new Option();
-        $opt->getFromDB(1);
-        $use_hour_on_cra               = $opt->fields['use_hour_on_cra'];
-        $num = 1;
-        $row_num++;
-        echo Search::showNewLine($output_type);
-        if (!$use_hour_on_cra) {
-            echo Search::showItem($output_type, __('Total') . " (" . $countopened . ")", $num, $row_num);
-        } else {
-            echo Search::showItem($output_type, __('Total'), $num, $row_num);
-        }
 
-        echo Search::showItem($output_type, '', $num, $row_num);
-        foreach ($time_total as $key => $data) {
-            if (!empty($data['style'])) {
-                //week end
-                $class = $data['style'];
-                echo Search::showItem($output_type, '', $num, $row_num, $class);
+        $cells = [];
+        foreach ($weekends as $i => $weekend) {
+            if ($weekend || $day_totals[$i] == 1) {
+                // Days off, and complete days, are left blank
+                $cells[] = self::buildCell('', null, $weekend);
             } else {
-                $class = "class='center";
-                if ($data['value'] != 1) {
-                    if (!$use_hour_on_cra) {
-                        $class .= " red'";
-                    }
-
-                    echo Search::showItem($output_type, Html::formatNumber($data['value'], false, 2), $num, $row_num, $class);
-                } else {
-                    $class .= "' ";
-                    echo Search::showItem($output_type, '', $num, $row_num, $class);
-                }
+                $cells[] = self::buildCell(
+                    Html::formatNumber($day_totals[$i], false, 2),
+                    null,
+                    false,
+                    $use_hour_on_cra ? '' : 'danger',
+                );
             }
         }
-        $class = "class='center";
+
+        $state = '';
         if (!$use_hour_on_cra) {
-            if ($tot != $countopened) {
-                $class .= " red'";
-            } else {
-                $class .= " green'";
-            }
+            $state = $tot != $countopened ? 'danger' : 'success';
         }
-        echo Search::showItem($output_type, Html::formatNumber($tot, false, 3), $num, $row_num, $class);
-        echo Search::showEndLine($output_type);
-    }
 
-    /**
-     * Display the column title and allow the sort
-     *
-     * @param      $output_type
-     * @param      $num
-     * @param      $title
-     * @param      $columnname
-     * @param bool $sort
-     * @param      $options  string options to add (default '')
-     *
-     * @return mixed
-     */
-    public static function showTitle($output_type, &$num, $title, $columnname, $sort = false, $options = '')
-    {
-
-        if ($output_type != Search::HTML_OUTPUT || $sort == false) {
-            echo Search::showHeaderItem($output_type, $title, $num, '', '', '', $options);
-            return;
-        }
-        $order  = 'ASC';
-        $issort = false;
-        if (isset($_REQUEST['sort']) && $_REQUEST['sort'] == $columnname) {
-            $issort = true;
-            if (isset($_REQUEST['order']) && $_REQUEST['order'] == 'ASC') {
-                $order = 'DESC';
-            }
-        }
-        // In GLPI 11 every request goes through the front controller (public/index.php), so
-        // PHP_SELF designates the router and not the logical script: the column sort links of
-        // the report pointed away from front/cra.php and lost the search criteria on click.
-        // REQUEST_URI carries the route actually called; its query string is stripped because
-        // the parameters are rebuilt one by one just below.
-        $link  = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '';
-        $first = true;
-        foreach ($_REQUEST as $name => $value) {
-            if (!in_array($name, ['sort', 'order', 'PHPSESSID'])) {
-                // urlencode() throws a TypeError on PHP 8+ if a request parameter
-                // is array-valued (e.g. users_id[]=1); skip non-scalars so a
-                // forged URL cannot turn the report into a 500. Encode the key too.
-                if (!is_scalar($value)) {
-                    continue;
-                }
-                $link  .= ($first ? '?' : '&amp;');
-                $link  .= urlencode($name) . '=' . urlencode((string) $value);
-                $first = false;
-            }
-        }
-        $link .= ($first ? '?' : '&amp;') . 'sort=' . urlencode($columnname);
-        $link .= '&amp;order=' . $order;
-        echo Search::showHeaderItem(
-            $output_type,
-            $title,
-            $num,
-            $link,
-            $issort,
-            ($order == 'ASC' ? 'DESC' : 'ASC'),
-        );
+        return [
+            'header' => false,
+            'total_line' => true,
+            'labels' => [$use_hour_on_cra ? __('Total') : __('Total') . " (" . $countopened . ")", ''],
+            'cells'  => $cells,
+            'total'  => self::buildCell(Html::formatNumber($tot, false, 3), null, false, $state),
+        ];
     }
 
     /**
@@ -2200,7 +2016,7 @@ class Report extends CommonDBTM
      * @param $a_arrondir mixed Total à arrondir
      * @param $options array clés arrondir_heure
      *
-     * @return Le total arrondi selon la régle de gestion.
+     * @return float|int total rounded according to the business rule
      */
     public static function TotalTpsPassesArrondis($a_arrondir, $options = [])
     {

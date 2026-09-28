@@ -79,12 +79,6 @@ parameters:
 			path: src/CommonValidation.php
 
 		-
-			message: '#^PHPDoc tag @return has invalid value \(\)\: Unexpected token "\\n     \*", expected type at offset 456 on line 13$#'
-			identifier: phpDoc.parseError
-			count: 1
-			path: src/CommonValidation.php
-
-		-
 			message: '#^PHPDoc tag @param references unknown parameter\: \$ID$#'
 			identifier: parameter.notFound
 			count: 1
@@ -123,12 +117,6 @@ parameters:
 		-
 			message: '#^PHPDoc tag @return has invalid value \(L''heure donnée au format hh\:mm\.\)\: Unexpected token "''heure", expected TOKEN_HORIZONTAL_WS at offset 113 on line 4$#'
 			identifier: phpDoc.parseError
-			count: 1
-			path: src/CraPDF.php
-
-		-
-			message: '#^Parameter \#1 \$value of static method GlpiPlugin\\Activity\\Report\:\:isIncorrectValue\(\) expects string, \(float\|int\) given\.$#'
-			identifier: argument.type
 			count: 1
 			path: src/CraPDF.php
 
@@ -667,12 +655,6 @@ parameters:
 			path: src/Report.php
 
 		-
-			message: '#^Argument of an invalid type string supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 1
-			path: src/Report.php
-
-		-
 			message: '#^Call to method GetFromDB\(\) on an unknown class GlpiPlugin\\Manageentities\\Config\.$#'
 			identifier: class.notFound
 			count: 1
@@ -691,32 +673,8 @@ parameters:
 			path: src/Report.php
 
 		-
-			message: '#^Method GlpiPlugin\\Activity\\Report\:\:TotalTpsPassesArrondis\(\) has invalid return type GlpiPlugin\\Activity\\Le\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Report.php
-
-		-
-			message: '#^Method GlpiPlugin\\Activity\\Report\:\:TotalTpsPassesArrondis\(\) should return GlpiPlugin\\Activity\\Le but returns float\|int\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Report.php
-
-		-
 			message: '#^Method GlpiPlugin\\Activity\\Report\:\:getHolidayName\(\) should return string but return statement is missing\.$#'
 			identifier: return.missing
-			count: 1
-			path: src/Report.php
-
-		-
-			message: '#^Method GlpiPlugin\\Activity\\Report\:\:isIncorrectValue\(\) should return string but returns false\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Report.php
-
-		-
-			message: '#^Method GlpiPlugin\\Activity\\Report\:\:isIncorrectValue\(\) should return string but returns true\.$#'
-			identifier: return.type
 			count: 1
 			path: src/Report.php
 
@@ -733,37 +691,13 @@ parameters:
 			path: src/Report.php
 
 		-
-			message: '#^Parameter \#1 \$activity of method GlpiPlugin\\Activity\\Report\:\:showActivity\(\) expects string, array\<array\<array\<string, mixed\>\>\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Report.php
-
-		-
-			message: '#^Parameter \#1 \$activity of method GlpiPlugin\\Activity\\Report\:\:showActivity\(\) expects string, array\<array\<string, mixed\>\> given\.$#'
-			identifier: argument.type
-			count: 3
-			path: src/Report.php
-
-		-
 			message: '#^Parameter \#1 \$hour of method DateTime\:\:setTime\(\) expects int, string given\.$#'
 			identifier: argument.type
 			count: 4
 			path: src/Report.php
 
 		-
-			message: '#^Parameter \#1 \$number of static method Html\:\:formatNumber\(\) expects float, GlpiPlugin\\Activity\\Le given\.$#'
-			identifier: argument.type
-			count: 2
-			path: src/Report.php
-
-		-
 			message: '#^Parameter \#1 \$time of static method GlpiPlugin\\Activity\\Report\:\:setTimes\(\) expects int, float given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Report.php
-
-		-
-			message: '#^Parameter \#1 \$value of method GlpiPlugin\\Activity\\Report\:\:getItemLink\(\) expects int, GlpiPlugin\\Activity\\Le given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Report.php
@@ -778,12 +712,6 @@ parameters:
 			message: '#^Parameter \#2 \$minute of method DateTime\:\:setTime\(\) expects int, string given\.$#'
 			identifier: argument.type
 			count: 4
-			path: src/Report.php
-
-		-
-			message: '#^Parameter \#3 \$begin of method GlpiPlugin\\Activity\\Report\:\:getItemLink\(\) expects GlpiPlugin\\Activity\\date, string given\.$#'
-			identifier: argument.type
-			count: 2
 			path: src/Report.php
 
 		-
@@ -805,38 +733,14 @@ parameters:
 			path: src/Report.php
 
 		-
-			message: '#^Parameter \#5 \$issort of static method Search\:\:showHeaderItem\(\) expects bool\|int, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Report.php
-
-		-
 			message: '#^Parameter \#6 \$year of function mktime expects int\|null, string given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Report.php
 
 		-
-			message: '#^Parameter \$begin of method GlpiPlugin\\Activity\\Report\:\:getItemLink\(\) has invalid type GlpiPlugin\\Activity\\date\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Report.php
-
-		-
 			message: '#^Right side of && is always true\.$#'
 			identifier: booleanAnd.rightAlwaysTrue
-			count: 1
-			path: src/Report.php
-
-		-
-			message: '#^Variable \$class might not be defined\.$#'
-			identifier: variable.undefined
-			count: 2
-			path: src/Report.php
-
-		-
-			message: '#^Variable \$delimiter might not be defined\.$#'
-			identifier: variable.undefined
 			count: 1
 			path: src/Report.php
 
@@ -854,12 +758,6 @@ parameters:
 
 		-
 			message: '#^Variable \$showPopUp might not be defined\.$#'
-			identifier: variable.undefined
-			count: 1
-			path: src/Report.php
-
-		-
-			message: '#^Variable \$style might not be defined\.$#'
 			identifier: variable.undefined
 			count: 1
 			path: src/Report.php

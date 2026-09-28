@@ -61,8 +61,13 @@ class HolidayCount extends CommonDBTM
         // Same entity boundary as Holiday: this table carries no entities_id either, so
         // plugin_activity_all_users has to be read as "every user I can see" and not "every
         // user of the instance".
-        if (Session::haveRight('plugin_activity_all_users', 1)) {
-            return Holiday::isUserInSessionEntities($this->fields['users_id'] ?? 0);
+        // The right grants access within the session entities; outside of them, the
+        // owner and manager branches below still apply instead of refusing outright
+        if (
+            Session::haveRight('plugin_activity_all_users', 1)
+            && Holiday::isUserInSessionEntities($this->fields['users_id'] ?? 0)
+        ) {
+            return true;
         }
         if (isset($this->fields['users_id'])
             && $this->fields['users_id'] == Session::getLoginUserID()) {
@@ -109,8 +114,13 @@ class HolidayCount extends CommonDBTM
         // Same entity boundary as canViewItem() above, on the writing side this time: the
         // counter is the holiday entitlement of the user, so granting it across entities is
         // exactly the operation the right was never meant to authorise.
-        if (Session::haveRight('plugin_activity_all_users', 1)) {
-            return Holiday::isUserInSessionEntities($users_id);
+        // The right grants access within the session entities; outside of them, the
+        // owner and manager branches below still apply instead of refusing outright
+        if (
+            Session::haveRight('plugin_activity_all_users', 1)
+            && Holiday::isUserInSessionEntities($users_id)
+        ) {
+            return true;
         }
 
         $users_id = (int) $users_id;
