@@ -29,7 +29,6 @@
 
 namespace GlpiPlugin\Activity;
 
-use Ajax;
 use CommonDBTM;
 use Glpi\Application\View\TemplateRenderer;
 use Session;
@@ -59,18 +58,6 @@ class LateralMenu extends CommonDBTM
             }
         }
 
-        Ajax::createIframeModalWindow(
-            'holiday',
-            PLUGIN_ACTIVITY_WEBDIR . "/front/holiday.form.php",
-            ['title'         => __('Create a holiday request', 'activity'),
-                'reloadonclose' => false,
-                'width'         => 1180,
-                'height'        => 700,
-                // Custom class widens the dialog beyond the default modal-xl (see public/activity.css).
-                'dialog_class'  => 'modal-xl activity_holiday_modal',
-            ],
-        );
-
         $holidays_summary = [];
         if (Session::haveRight("plugin_activity_can_requestholiday", 1)) {
             $holiday = new Holiday();
@@ -84,6 +71,7 @@ class LateralMenu extends CommonDBTM
 
         TemplateRenderer::getInstance()->display('@activity/lateral_menu.html.twig', [
             'actions'          => $actions,
+            'holiday_form_url' => PLUGIN_ACTIVITY_WEBDIR . "/front/holiday.form.php",
             'holidays_summary' => $holidays_summary,
         ]);
     }

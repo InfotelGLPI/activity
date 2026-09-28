@@ -1,5 +1,3 @@
-<?php
-
 /**
  * -------------------------------------------------------------------------
  * activity plugin for GLPI
@@ -27,12 +25,20 @@
  * --------------------------------------------------------------------------
  */
 
-use GlpiPlugin\Activity\LateralMenu;
+/*
+ * Holiday request form (templates/holiday_form.html.twig): the begin and end dates and
+ * their half-day radios carry data-activity-duration, and changing any of them recomputes
+ * the duration through updateDuration() of scripts-activityholidays.js.
+ *
+ * The form is also rendered in the planning modal after page load, hence the listener
+ * delegated to the document. Flatpickr dispatches `change` on the named input.
+ */
 
-Html::header_nocache();
-
-Session::checkRight("plugin_activity", READ);
-
-header("Content-Type: text/html; charset=UTF-8");
-
-LateralMenu::showMenu();
+document.addEventListener('change', (event) => {
+    const input = event.target.closest?.('[data-activity-duration]');
+    const duration = document.getElementById('div_duration');
+    if (!input || !duration || typeof window.updateDuration !== 'function') {
+        return;
+    }
+    window.updateDuration(input, duration.dataset.activityWebdir);
+});

@@ -98,6 +98,7 @@ function plugin_init_activity()
         || Session::haveRight("plugin_activity_can_validate", 1)
         || Session::haveRight("plugin_activity_all_users", 1)) {
         $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['activity'] = $activityScripts;
+        $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT_MODULE]['activity'] = ['scripts/holiday-form.js'];
     }
 
     $PLUGIN_HOOKS[Hooks::POST_INIT]['activity'] = 'plugin_activity_postinit';

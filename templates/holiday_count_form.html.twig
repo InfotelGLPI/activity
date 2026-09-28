@@ -24,28 +24,30 @@
  # along with activity. If not, see <http://www.gnu.org/licenses/>.
  # --------------------------------------------------------------------------
  #}
+{% extends 'generic_show_form.html.twig' %}
+{% import 'components/form/fields_macros.html.twig' as fields %}
 
-<tr class="tab_bg_1">
-    <td>{{ _n('User', 'Users', 1) }}</td>
-    <td>
-        {% if user_dropdown_html is not empty %}
-            {# Server-side markup built by User::dropdown(). #}
-            {{ user_dropdown_html|raw }}
-        {% else %}
-            {{ username }}
-            <input type="hidden" name="users_id" value="{{ users_id }}">
-        {% endif %}
-    </td>
-    <td>{{ holiday_type_label }}</td>
-    <td>{{ holiday_type_dropdown_html|raw }}</td>
-</tr>
+{#
+ # The user can only be chosen on a new counter, by the profiles allowed to grant one;
+ # otherwise the target user is shown and posted as is.
+ #}
+{% block form_fields %}
+    {% if user_selector %}
+        {{ fields.dropdownField('User', 'users_id', users_id, _n('User', 'Users', 1), {
+            'right': 'all',
+        }) }}
+    {% else %}
+        {{ fields.readOnlyField('', username, _n('User', 'Users', 1)) }}
+        {{ fields.hiddenField('users_id', users_id) }}
+    {% endif %}
 
-<tr class="tab_bg_1">
-    <td>{{ holiday_period_label }}</td>
-    <td>{{ holiday_period_dropdown_html|raw }}</td>
-    <td>{{ __('Counter', 'activity') }}</td>
-    <td>
-        <input type="text" name="count" class="form-control" size="14"
-               value="{{ count }}">
-    </td>
-</tr>
+    {{ fields.dropdownField(holiday_type_class, 'plugin_activity_holidaytypes_id', item.fields['plugin_activity_holidaytypes_id'], holiday_type_class|itemtype_name, {
+        'comments': true,
+    }) }}
+
+    {{ fields.dropdownField(holiday_period_class, 'plugin_activity_holidayperiods_id', item.fields['plugin_activity_holidayperiods_id'], holiday_period_class|itemtype_name, {
+        'comments': true,
+    }) }}
+
+    {{ fields.textField('count', count, __('Counter', 'activity')) }}
+{% endblock %}

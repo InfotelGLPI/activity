@@ -165,13 +165,11 @@ class Option extends CommonDBTM
         Dropdown::showYesNo('use_groupmanager', $this->fields['use_groupmanager']);
         $use_groupmanager_html = ob_get_clean();
 
-        ob_start();
-        echo $holiday->getValueToSelect(
+        $default_validation_percent_html = $holiday->getValueToSelect(
             'validation_percent',
             'default_validation_percent',
             $this->fields['default_validation_percent'],
         );
-        $default_validation_percent_html = ob_get_clean();
 
         ob_start();
         Dropdown::showYesNo('is_cra_default', $this->fields['is_cra_default']);

@@ -36,7 +36,6 @@ use Glpi\Application\View\TemplateRenderer;
 use Group_User;
 use Html;
 use Session;
-use User;
 
 class HolidayCount extends CommonDBTM
 {
@@ -366,7 +365,6 @@ class HolidayCount extends CommonDBTM
         $dbu = new DbUtils();
 
         $this->initForm($ID, $options);
-        $this->showFormHeader($options);
 
         // The form used to hardcode the session user as the owner, which is exactly the
         // self-service path canCreateItem() now refuses. Target the record being edited,
@@ -377,53 +375,21 @@ class HolidayCount extends CommonDBTM
             $target_users_id = (int) ($options['users_id'] ?? Session::getLoginUserID());
         }
 
-        $user_dropdown_html = '';
-        if (
-            $this->isNewItem()
-            && (Session::haveRight('plugin_activity_all_users', 1)
-                || Session::haveRight('plugin_activity_can_validate', READ))
-        ) {
-            ob_start();
-            User::dropdown([
-                'name'  => 'users_id',
-                'value' => $target_users_id,
-                'right' => 'all',
-            ]);
-            $user_dropdown_html = ob_get_clean();
-        }
-
-        ob_start();
-        Dropdown::show(HolidayType::class, [
-            'name'     => 'plugin_activity_holidaytypes_id',
-            'value'    => $this->fields['plugin_activity_holidaytypes_id'],
-            'comments' => 1,
-        ]);
-        $holiday_type_dropdown_html = ob_get_clean();
-
-        ob_start();
-        Dropdown::show(HolidayPeriod::class, [
-            'name'     => 'plugin_activity_holidayperiods_id',
-            'value'    => $this->fields['plugin_activity_holidayperiods_id'],
-            'comments' => 1,
-        ]);
-        $holiday_period_dropdown_html = ob_get_clean();
-
         TemplateRenderer::getInstance()->display('@activity/holiday_count_form.html.twig', [
-            'users_id'                    => $target_users_id,
-            'username'                    => $dbu->getUserName($target_users_id),
-            'user_dropdown_html'          => $user_dropdown_html,
-            'holiday_type_label'          => HolidayType::getTypeName(1),
-            'holiday_type_dropdown_html'  => $holiday_type_dropdown_html,
-            'holiday_period_label'        => HolidayPeriod::getTypeName(1),
-            'holiday_period_dropdown_html' => $holiday_period_dropdown_html,
-            'count'                       => Html::formatNumber($this->fields['count'], true),
+            'item'                 => $this,
+            'params'               => $options,
+            'users_id'             => $target_users_id,
+            'username'             => $dbu->getUserName($target_users_id),
+            'user_selector'        => $this->isNewItem()
+                && (Session::haveRight('plugin_activity_all_users', 1)
+                    || Session::haveRight('plugin_activity_can_validate', READ)),
+            'holiday_type_class'   => HolidayType::class,
+            'holiday_period_class' => HolidayPeriod::class,
+            'count'                => Html::formatNumber($this->fields['count'], true),
         ]);
-
-        $this->showFormButtons($options);
 
         return true;
     }
-
     public function showCountForHolidayType($plugin_activity_holidaytypes_id)
     {
         global $DB;

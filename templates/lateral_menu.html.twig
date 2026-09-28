@@ -25,6 +25,22 @@
  # --------------------------------------------------------------------------
  #}
 
+<div class="p-2">
+
+{# The holiday request modal, opened by the matching action below. The custom class widens
+ # the dialog beyond the default modal-xl (see public/activity.css). #}
+{% do call('Ajax::createIframeModalWindow', [
+    'holiday',
+    holiday_form_url,
+    {
+        'title': __('Create a holiday request', 'activity'),
+        'reloadonclose': false,
+        'width': 1180,
+        'height': 700,
+        'dialog_class': 'modal-xl activity_holiday_modal',
+    },
+]) %}
+
 <div class="d-grid gap-2 mb-3">
     {% for action in actions %}
         <a href="{{ action.link }}" class="btn btn-info"
@@ -63,3 +79,5 @@
         {% endif %}
     </table>
 {% endif %}
+
+</div>

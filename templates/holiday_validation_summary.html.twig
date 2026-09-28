@@ -24,111 +24,97 @@
  # along with activity. If not, see <http://www.gnu.org/licenses/>.
  # --------------------------------------------------------------------------
  #}
+{#
+ # Validation tab of a holiday: the approval options of the request (posted to
+ # front/holiday.form.php), the action panel of every validation waiting for the
+ # current user, then the list of the validations.
+ #
+ # The options panel is folded with a Bootstrap collapse, no script needed.
+ #}
+{% import 'components/form/fields_macros.html.twig' as fields %}
 
-{# --- Options panel (global status + validation percent) --- #}
-<div id="hideopt" class="options">
-    {{ __('See validation options', 'activity') }}&nbsp;<i style="color:#004F91;" class="ti ti-chevrons-down"></i>
-</div>
+{% set options_id = 'plugin_activity_validation_options_' ~ holiday_id %}
 
-<div class="panelopt" style="display:none;">
-    {% if canedit %}
-        <form method="post" name="form" action="{{ form_url }}">
-            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
-    {% endif %}
+<div class="mb-3">
+    <button type="button" class="btn btn-link px-0" data-bs-toggle="collapse"
+            data-bs-target="#{{ options_id }}" aria-expanded="false" aria-controls="{{ options_id }}">
+        {{ __('See validation options', 'activity') }}
+        <i class="ti ti-chevrons-down ms-1"></i>
+    </button>
 
-    <table class="tab_cadre_fixe">
-        <tr>
-            <th colspan="3">{{ typename }}</th>
-        </tr>
-
-        <tr class="tab_bg_1">
-            <td>{{ __('Global approval status') }}</td>
-            <td colspan="2">{{ global_validation_dropdown_html|raw }}</td>
-        </tr>
-
-        <tr>
-            <th colspan="2">{{ _x('item', 'State') }}</th>
-            <th colspan="2">{{ validation_stats }}</th>
-        </tr>
-
-        <tr class="tab_bg_1">
-            <td>{{ __('Minimum approval required (%)') }}</td>
-            {% if canedit %}
-                <td>{{ validation_percent_html|raw }}</td>
-                <td>
-                    <button type="submit" name="update" class="btn btn-primary">
-                        {{ _x('button', 'Save') }}
+    <div id="{{ options_id }}" class="collapse">
+        <form method="post" action="{{ form_url }}" data-submit-once>
+            <div class="card">
+                <div class="card-header"><h4 class="card-title">{{ typename }}</h4></div>
+                <div class="card-body">
+                    <div class="row">
+                        {{ fields.dropdownArrayField('global_validation', global_validation, status_choices, __('Global approval status')) }}
+                        {{ fields.readOnlyField('', validation_stats, _x('item', 'State')) }}
+                        {{ fields.dropdownNumberField('validation_percent', validation_percent, __('Minimum approval required (%)'), {
+                            'min': 0,
+                            'max': 100,
+                            'step': 50,
+                            'unit': '%',
+                        }) }}
+                    </div>
+                </div>
+                <div class="card-footer text-end">
+                    <input type="hidden" name="id" value="{{ holiday_id }}">
+                    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" name="update" value="1" class="btn btn-primary">
+                        <i class="ti ti-device-floppy"></i>
+                        <span>{{ _x('button', 'Save') }}</span>
                     </button>
-                    {% if holiday_id %}
-                        <input type="hidden" name="id" value="{{ holiday_id }}">
-                    {% endif %}
-                </td>
-            {% else %}
-                <td colspan="2">{{ validation_percent_display }}</td>
-            {% endif %}
-        </tr>
-    </table>
-
-    {% if canedit %}
+                </div>
+            </div>
         </form>
-    {% endif %}
+    </div>
 </div>
 
-{# --- Per-validator action form (injected by PHP before this template) --- #}
-{{ validator_form_html|raw }}
+{# --- Action panel of the validations waiting for the current user --- #}
+{% for validator_form in validator_forms %}
+    <div class="card mb-3">
+        {{ include('@activity/holiday_validation_form.html.twig', validator_form, with_context = false) }}
+    </div>
+{% endfor %}
 
 {# --- Validation list --- #}
 {% if validations|length > 0 %}
-    <table class="tab_cadre_fixe">
-        <tr>
-            <th colspan="5">
-                {{ validations|length > 1
-                    ? _n('Validation for this holiday', 'Validations for this holiday', 2, 'activity')
-                    : _n('Validation for this holiday', 'Validations for this holiday', 1, 'activity') }}
-            </th>
-        </tr>
-        <tr>
-            <th>{{ _x('item', 'State') }}</th>
-            <th>{{ __('Request') ~ ': ' ~ __('Date') }}</th>
-            <th>{{ __('Approval date') }}</th>
-            <th>{{ __('Approver') }}</th>
-            <th>{{ __('Approval') ~ ': ' ~ __('Comments') }}</th>
-        </tr>
-        {% for row in validations %}
-            <tr class="tab_bg_1">
-                <td class="center">
-                    {% if row.status == STATUS_ACCEPTED %}
-                        <div style="color:forestgreen;">
-                            <i style="font-size:3.5em;" class="ti ti-circle-check"></i><br>{{ row.status_label }}
-                        </div>
-                    {% elseif row.status == STATUS_REFUSED %}
-                        <div style="color:darkred;">
-                            <i style="font-size:3.5em;" class="ti ti-circle-x"></i><br>{{ row.status_label }}
-                        </div>
-                    {% else %}
-                        <div style="color:orange;">
-                            <i style="font-size:3.5em;" class="ti ti-question-mark"></i><br>{{ row.status_label }}
-                        </div>
-                    {% endif %}
-                </td>
-                <td>{{ row.submission_date }}</td>
-                <td>{{ row.validation_date }}</td>
-                <td>{{ row.validator_name }}</td>
-                <td>{{ row.comment_validation|e }}</td>
+    <table class="table table-hover card-table">
+        <thead>
+            <tr>
+                <th colspan="5">
+                    {{ _n('Validation for this holiday', 'Validations for this holiday', validations|length, 'activity') }}
+                </th>
             </tr>
-        {% endfor %}
+            <tr>
+                <th>{{ _x('item', 'State') }}</th>
+                <th>{{ __('Request') ~ ': ' ~ __('Date') }}</th>
+                <th>{{ __('Approval date') }}</th>
+                <th>{{ __('Approver') }}</th>
+                <th>{{ __('Approval') ~ ': ' ~ __('Comments') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in validations %}
+                <tr>
+                    <td class="text-center">
+                        {% if row.status == STATUS_ACCEPTED %}
+                            <span class="badge bg-green-lt"><i class="ti ti-circle-check me-1"></i>{{ row.status_label }}</span>
+                        {% elseif row.status == STATUS_REFUSED %}
+                            <span class="badge bg-red-lt"><i class="ti ti-circle-x me-1"></i>{{ row.status_label }}</span>
+                        {% else %}
+                            <span class="badge bg-orange-lt"><i class="ti ti-question-mark me-1"></i>{{ row.status_label }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ row.submission_date }}</td>
+                    <td>{{ row.validation_date }}</td>
+                    <td>{{ row.validator_name }}</td>
+                    <td>{{ row.comment_validation }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
     </table>
 {% else %}
-    <div class="center b">{{ __('No holiday validation request found', 'activity') }}</div>
+    <div class="alert alert-info">{{ __('No holiday validation request found', 'activity') }}</div>
 {% endif %}
-
-<script>
-$(document).ready(function () {
-    if ($('.panelopt').size() === 0) {
-        $('#hideopt').hide();
-    }
-    $('#hideopt').click(function () {
-        $('.panelopt').toggle();
-    });
-});
-</script>

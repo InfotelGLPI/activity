@@ -1324,10 +1324,8 @@ class Holiday extends CommonDBTM
         $AllDay = Report::getAllDay();
 
         $_SESSION['notification_holidayvalidation'] = "false";
-        $options['colspan'] = 1;
 
         $this->initForm($ID, $options);
-        $this->showFormHeader($options);
 
         if (!empty($ID)) {
             if ($this->fields["users_id"] != Session::getLoginUserID()
@@ -1352,10 +1350,6 @@ class Holiday extends CommonDBTM
         $cbBeginChecked = $listCbs['cbBegin']['checked'];
         $cbEndChecked   = $listCbs['cbEnd']['checked'];
 
-        if (isset($options['from_planning_edit_ajax']) && $options['from_planning_edit_ajax']) {
-            echo Html::hidden('from_planning_edit_ajax');
-        }
-
         $is_existing = isset($this->fields['id']) && $this->fields['id'] > 0;
 
         // Dates
@@ -1377,17 +1371,6 @@ class Holiday extends CommonDBTM
             $holiday_type_name = $htype->fields['name'];
         }
 
-        ob_start();
-        if (!$is_existing) {
-            Dropdown::show(HolidayType::class, [
-                'name'      => 'plugin_activity_holidaytypes_id',
-                'value'     => $this->fields["plugin_activity_holidaytypes_id"],
-                'on_change' => 'plugin_activity_show_periods("' . PLUGIN_ACTIVITY_WEBDIR . '", this.value);',
-                'comments'  => 1,
-            ]);
-        }
-        $holiday_type_dropdown_html = ob_get_clean();
-
         // Period row visibility
         $show_period = false;
         if ($ID) {
@@ -1396,148 +1379,55 @@ class Holiday extends CommonDBTM
             $show_period = (bool) ($htype_period->fields['is_period'] ?? false);
         }
 
-        // Holiday period dropdown
-        $period_params = [
-            'name'     => 'plugin_activity_holidayperiods_id',
-            'value'    => $this->fields["plugin_activity_holidayperiods_id"],
-            'comments' => 1,
-        ];
-        if (empty($ID)) {
-            $period_params['condition'] = ['archived' => 0];
-            $period_params['on_change'] = 'plugin_activity_show_details("' . PLUGIN_ACTIVITY_WEBDIR . '", this.value);';
-        }
-        ob_start();
-        Dropdown::show(HolidayPeriod::class, $period_params);
-        $holiday_period_dropdown_html = ob_get_clean();
-
-        // Begin date field
-        ob_start();
-        if (!$is_existing) {
-            Html::showDateField("begin", [
-                'on_change' => "updateDuration(this, '" . PLUGIN_ACTIVITY_WEBDIR . "');",
-            ]);
-        }
-        $begin_date_html = ob_get_clean();
-
-        // End date field
-        ob_start();
-        if (!$is_existing) {
-            Html::showDateField("end", [
-                'on_change' => 'updateDuration(this,"' . PLUGIN_ACTIVITY_WEBDIR . '");',
-            ]);
-        }
-        $end_date_html = ob_get_clean();
-
-        // Radio button data arrays
-        $cb_onclick = 'updateDuration(this, ' . json_encode(PLUGIN_ACTIVITY_WEBDIR) . ');';
-
-        $cbs_begin = [
+        $cbs = static fn(string $prefix, array $list, string $checked): array => [
             [
-                'value'   => Report::$AM_LABEL,
-                'cb_id'   => 'cb_begindate_am',
-                'checked' => $cbBeginChecked == Report::$AM_LABEL,
-                'disabled' => $listCbs['cbBegin'][Report::$AM_LABEL]['disabled'],
-                'title'   => __('Only on morning', 'activity'),
-                'onclick' => $cb_onclick,
+                'value'    => Report::$AM_LABEL,
+                'cb_id'    => $prefix . '_am',
+                'checked'  => $checked == Report::$AM_LABEL,
+                'disabled' => $list[Report::$AM_LABEL]['disabled'],
+                'title'    => __('Only on morning', 'activity'),
             ],
             [
-                'value'   => Report::$PM_LABEL,
-                'cb_id'   => 'cb_begindate_pm',
-                'checked' => $cbBeginChecked == Report::$PM_LABEL,
-                'disabled' => $listCbs['cbBegin'][Report::$PM_LABEL]['disabled'],
-                'title'   => __('Only on afternoon', 'activity'),
-                'onclick' => $cb_onclick,
+                'value'    => Report::$PM_LABEL,
+                'cb_id'    => $prefix . '_pm',
+                'checked'  => $checked == Report::$PM_LABEL,
+                'disabled' => $list[Report::$PM_LABEL]['disabled'],
+                'title'    => __('Only on afternoon', 'activity'),
             ],
             [
-                'value'   => Report::$ALL_DAY_LABEL,
-                'cb_id'   => 'cb_begindate_allday',
-                'checked' => $cbBeginChecked == Report::$ALL_DAY_LABEL,
-                'disabled' => $listCbs['cbBegin'][Report::$ALL_DAY_LABEL]['disabled'],
-                'title'   => __('All day', 'activity'),
-                'onclick' => $cb_onclick,
-            ],
-        ];
-
-        $cbs_end = [
-            [
-                'value'   => Report::$AM_LABEL,
-                'cb_id'   => 'cb_enddate_am',
-                'checked' => $cbEndChecked == Report::$AM_LABEL,
-                'disabled' => $listCbs['cbEnd'][Report::$AM_LABEL]['disabled'],
-                'title'   => __('Only on morning', 'activity'),
-                'onclick' => $cb_onclick,
-            ],
-            [
-                'value'   => Report::$PM_LABEL,
-                'cb_id'   => 'cb_enddate_pm',
-                'checked' => $cbEndChecked == Report::$PM_LABEL,
-                'disabled' => $listCbs['cbEnd'][Report::$PM_LABEL]['disabled'],
-                'title'   => __('Only on afternoon', 'activity'),
-                'onclick' => $cb_onclick,
-            ],
-            [
-                'value'   => Report::$ALL_DAY_LABEL,
-                'cb_id'   => 'cb_enddate_allday',
-                'checked' => $cbEndChecked == Report::$ALL_DAY_LABEL,
-                'disabled' => $listCbs['cbEnd'][Report::$ALL_DAY_LABEL]['disabled'],
-                'title'   => __('All day', 'activity'),
-                'onclick' => $cb_onclick,
+                'value'    => Report::$ALL_DAY_LABEL,
+                'cb_id'    => $prefix . '_allday',
+                'checked'  => $checked == Report::$ALL_DAY_LABEL,
+                'disabled' => $list[Report::$ALL_DAY_LABEL]['disabled'],
+                'title'    => __('All day', 'activity'),
             ],
         ];
 
         // Duration
-        $period        = $this->getPeriodForTemplate($actionTime);
-        $duration_html = Report::TotalTpsPassesArrondis($actionTime / $AllDay);
+        $period = $this->getPeriodForTemplate($actionTime);
 
-        // User widget: keep the GLPI dropdown as raw widget markup, but expose
-        // the DB-stored display name as a plain string so the Twig template
-        // auto-escapes it ({{ }}). Echoing getUserName()/getName() as raw HTML
-        // would let an XSS in realname/firstname execute for the validator.
-        $user_dropdown_html = '';
-        $user_name          = '';
-        $users_id_hidden    = '';
+        // Owner: a selector for the "all users" right, the stored name otherwise. The name
+        // comes from realname/firstname and is auto-escaped by the template.
+        $user_mode = 'name';
+        $user_name = '';
+        $users_id  = (int) ($this->fields['users_id'] ?? 0);
         if (empty($ID) && Session::haveRight("plugin_activity_all_users", 1)) {
-            ob_start();
-            User::dropdown([
-                'name'      => 'users_id',
-                'value'     => Session::getLoginUserID(),
-                'right'     => 'interface',
-                'comment'   => 1,
-                'on_change' => 'plugin_activity_show_details_users("' . PLUGIN_ACTIVITY_WEBDIR . '", this.value);',
-            ]);
-            $user_dropdown_html = ob_get_clean();
+            $user_mode = 'new_selector';
+            $users_id  = Session::getLoginUserID();
         } elseif (empty($ID)) {
-            $user_name       = $dbu->getUserName(Session::getLoginUserID());
-            $users_id_hidden = Html::hidden('users_id', ['value' => Session::getLoginUserID()]);
+            $user_mode = 'hidden';
+            $users_id  = Session::getLoginUserID();
+            $user_name = $dbu->getUserName($users_id);
         } elseif (!$is_existing && Session::haveRight("plugin_activity_all_users", 1)) {
-            ob_start();
-            User::dropdown([
-                'name'    => 'users_id',
-                'value'   => $this->fields["users_id"],
-                'right'   => 'interface',
-                'comment' => 1,
-            ]);
-            $user_dropdown_html = ob_get_clean();
+            $user_mode = 'selector';
         } elseif ($is_existing && Session::haveRight("plugin_activity_all_users", 1)) {
             $user_obj = new User();
-            $user_obj->getFromDB($this->fields['users_id']);
+            $user_obj->getFromDB($users_id);
             $user_name = $user_obj->getName();
         } else {
-            $user_name       = $dbu->getUserName($this->fields["users_id"]);
-            $users_id_hidden = Html::hidden('users_id', ['value' => $this->fields["users_id"]]);
+            $user_mode = 'hidden';
+            $user_name = $dbu->getUserName($users_id);
         }
-
-        // Comment textarea
-        ob_start();
-        Html::textarea([
-            'name'            => 'comment',
-            'value'           => $this->fields['comment'],
-            'disabled'        => $is_existing ? 'disabled' : '',
-            'cols'            => 75,
-            'rows'            => 7,
-            'enable_richtext' => false,
-        ]);
-        $comment_textarea_html = ob_get_clean();
 
         // Manager checks
         $has_manager = $this->checkUserHasManager();
@@ -1548,44 +1438,55 @@ class Holiday extends CommonDBTM
             && $this->checkUserIsManager($this->fields["users_id"])
             && Session::haveRight("plugin_activity_can_requestholiday", 1);
 
-        TemplateRenderer::getInstance()->display('@activity/holiday_form.html.twig', [
-            'id'                           => $this->fields['id'] ?? '',
-            'is_existing'                  => $is_existing,
-            'holiday_type_label'           => HolidayType::getTypeName(1),
-            'holiday_type_name'            => $holiday_type_name,
-            'holiday_type_dropdown_html'   => $holiday_type_dropdown_html,
-            'show_period'                  => $show_period,
-            'holiday_period_label'         => HolidayPeriod::getTypeName(1),
-            'holiday_period_dropdown_html' => $holiday_period_dropdown_html,
-            'actiontime_days'              => $actionTime / $AllDay,
-            'begin_date_html'              => $begin_date_html,
-            'end_date_html'                => $end_date_html,
-            'begin_display'                => date('d-m-Y', strtotime($begin)),
-            'end_display'                  => date('d-m-Y', strtotime($end)),
-            'cbs_begin'                    => $cbs_begin,
-            'cbs_end'                      => $cbs_end,
-            'duration_html'                => $duration_html,
-            'period_lang'                  => $period['lang'],
-            'user_dropdown_html'           => $user_dropdown_html,
-            'user_name'                    => $user_name,
-            'users_id_hidden'              => $users_id_hidden,
-            'comment_textarea_html'        => $comment_textarea_html,
-            'can_purge_as_manager'         => $can_purge_as_manager,
-            'has_manager'                  => $has_manager,
-            'preference_url'               => $preference_url,
-        ]);
-
-        if ($ID) {
-            if (!$can_purge_as_manager && $this->fields["users_id"] == Session::getLoginUserID()) {
-                $this->showFormButtons($options);
-            }
-            echo "</table></div>";
-            Html::closeForm();
-        } else {
-            if ($has_manager) {
-                $this->showFormButtons($options);
-            }
+        // Without a manager nobody could validate the request: only the warning is shown
+        if (!$is_existing && !$has_manager) {
+            TemplateRenderer::getInstance()->display('@activity/holiday_no_manager.html.twig', [
+                'preference_url' => $preference_url,
+            ]);
+            return true;
         }
+
+        // On an existing request only its owner saves it, while both the owner and the
+        // validating manager may purge it, as canPurgeItem() allows
+        if ($is_existing) {
+            $is_owner           = $this->fields["users_id"] == Session::getLoginUserID();
+            $options['canedit'] = $is_owner && !$can_purge_as_manager;
+            $options['candel']  = $is_owner || $can_purge_as_manager;
+        }
+
+        $webdir = json_encode(PLUGIN_ACTIVITY_WEBDIR);
+
+        $period_options = ['comments' => 1];
+        if (empty($ID)) {
+            $period_options['condition'] = ['archived' => 0];
+            $period_options['on_change'] = 'plugin_activity_show_details(' . $webdir . ', this.value);';
+        }
+
+        TemplateRenderer::getInstance()->display('@activity/holiday_form.html.twig', [
+            'item'                    => $this,
+            'params'                  => $options,
+            'from_planning_edit_ajax' => (bool) ($options['from_planning_edit_ajax'] ?? false),
+            'is_existing'             => $is_existing,
+            'holiday_type_class'      => HolidayType::class,
+            'type_on_change'          => 'plugin_activity_show_periods(' . $webdir . ', this.value);',
+            'holiday_type_name'       => $holiday_type_name,
+            'show_period'             => $show_period,
+            'holiday_period_class'    => HolidayPeriod::class,
+            'period_options'          => $period_options,
+            'actiontime_days'         => $actionTime / $AllDay,
+            'begin_display'           => date('d-m-Y', strtotime($begin)),
+            'end_display'             => date('d-m-Y', strtotime($end)),
+            'cbs_begin'               => $cbs('cb_begindate', $listCbs['cbBegin'], $cbBeginChecked),
+            'cbs_end'                 => $cbs('cb_enddate', $listCbs['cbEnd'], $cbEndChecked),
+            'duration'                => Report::TotalTpsPassesArrondis($actionTime / $AllDay),
+            'period_lang'             => $period['lang'],
+            'user_mode'               => $user_mode,
+            'user_name'               => $user_name,
+            'users_id'                => $users_id,
+            'user_class'              => User::class,
+            'user_on_change'          => 'plugin_activity_show_details_users(' . $webdir . ', this.value);',
+            'webdir'                  => PLUGIN_ACTIVITY_WEBDIR,
+        ]);
 
         return true;
     }

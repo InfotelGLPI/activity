@@ -24,9 +24,14 @@
  # along with activity. If not, see <http://www.gnu.org/licenses/>.
  # --------------------------------------------------------------------------
  #}
-
-{# Loaded into the #tr_plugin_activity_details container of holiday_form.html.twig #}
-<div class="alert alert-info py-2 my-0">
-    {{ __('Remaining holidays for the period', 'activity') }}: {{ total_remaining_validated }} {{ _n('Day', 'Days', 2)|lower }}<br>
-    {{ __('Leave awaiting validation', 'activity') }}: {{ total_remaining }} {{ _n('Day', 'Days', 2)|lower }}
+{#
+ # Shown instead of the holiday request form while the user has no manager to validate it.
+ #}
+<div class="alert alert-warning">
+    <p>{{ __("You don't have any manager filled in you personal settings.", 'activity') }}</p>
+    <p>{{ __("In order to make a holiday demand, please fill at least one manager in your personal settings", 'activity') }}</p>
+    <p>
+        {{ __("See the page", 'activity') }}
+        <a href="{{ preference_url }}" target="_blank">{{ __('My settings') }}</a>
+    </p>
 </div>

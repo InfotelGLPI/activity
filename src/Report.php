@@ -29,7 +29,6 @@
 
 namespace GlpiPlugin\Activity;
 
-use Ajax;
 use CommonDBTM;
 use Contract;
 use DateInterval;
@@ -1453,13 +1452,9 @@ class Report extends CommonDBTM
         }
 
         if ($pdfMode && $showPopUp) {
-            echo Ajax::createIframeModalWindow(
-                'activity_displayPdf',
-                PLUGIN_ACTIVITY_WEBDIR . "/front/cra.send.php?file=_plugins/activity/$filename",
-                ['title'   => __('Activity report', 'activity'),
-                    'display' => false,
-                    'autoopen' => true],
-            );
+            TemplateRenderer::getInstance()->display('@activity/cra_pdf_modal.html.twig', [
+                'pdf_url' => PLUGIN_ACTIVITY_WEBDIR . "/front/cra.send.php?file=_plugins/activity/$filename",
+            ]);
         }
     }
 

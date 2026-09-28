@@ -24,79 +24,60 @@
  # along with activity. If not, see <http://www.gnu.org/licenses/>.
  # --------------------------------------------------------------------------
  #}
+{#
+ # Approval panel of a holiday validation, rendered standalone (not through
+ # generic_show_form): it is not an item form but an accept/refuse action for the
+ # designated validator, also loaded through ajax/viewsubvalidation.php.
+ #
+ # front/holidayvalidation.form.php only acts on a post carrying `update`, then
+ # reads `accept_holiday` / `refuse_holiday` from the name of the clicked button.
+ #}
+{% import 'components/form/fields_macros.html.twig' as fields %}
 
-<table class="tab_cadre_fixe" id="mainformtable">
+{% set can_answer = is_validator and status_waiting %}
 
-    {% if is_validator and status_waiting %}
-        {# --- Accept / Refuse actions --- #}
-        <tr class="tab_bg_2">
-            <th colspan="4">{{ __('Do you approve this holiday ?', 'activity') }}</th>
-        </tr>
-        <tr class="tab_bg_1">
-            <td>{{ __('Status of the approval request') }}</td>
-            <td class="center">
-                <div style="color:forestgreen;">
-                    <i id="accept_holiday" style="font-size:3.5em;" class="question ti ti-circle-check"></i>
-                    <br>{{ __('Accept holiday', 'activity') }}
-                </div>
-                <input type="hidden" name="accept_holiday" value="0">
-            </td>
-            <td class="center">
-                <div style="color:darkred;">
-                    <i id="refuse_holiday" style="font-size:3.5em;" class="question ti ti-circle-x"></i>
-                    <br>{{ __('Refuse holiday', 'activity') }}
-                </div>
-                <input type="hidden" name="refuse_holiday" value="0">
-                <input type="hidden" name="validation_date" value="{{ validation_date }}">
-                <input type="hidden" name="id" value="{{ id }}">
-            </td>
-        </tr>
+<div class="card-body">
+    {% if can_answer %}
+        <form id="{{ form_id }}" method="post" action="{{ item.getFormURL() }}" data-submit-once>
+            <input type="hidden" name="id" value="{{ item.getID() }}">
+            <input type="hidden" name="update" value="1">
+            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
     {% endif %}
 
-    {% if id > 0 %}
-        {% if is_validator %}
-            <tr class="tab_bg_1">
-                <td>
-                    {{ __('Approval comments') }}<br>
-                    <small>({{ __('Optional when approved') }})</small>
-                </td>
-                <td colspan="2">{{ comment_textarea_html|raw }}</td>
-            </tr>
-        {% else %}
-            <tr class="tab_bg_1">
-                <td>{{ __('Status of the approval request') }}</td>
-                <td colspan="2">{{ status_label }}</td>
-            </tr>
-            <tr class="tab_bg_1">
-                <td>{{ __('Comments') }}</td>
-                <td colspan="2">{{ comment_validation|e }}</td>
-            </tr>
+    <div class="row">
+        {% if can_answer %}
+            <h3 class="col-12 mb-3">{{ __('Do you approve this holiday ?', 'activity') }}</h3>
         {% endif %}
+
+        {% if not item.isNewItem() %}
+            {% if is_validator %}
+                {{ fields.textareaField('comment_validation', item.fields['comment_validation'], __('Approval comments'), {
+                    'rows': 3,
+                    'disabled': not can_answer,
+                    'helper': __('Optional when approved'),
+                    'field_class': 'col-12',
+                }) }}
+            {% else %}
+                {{ fields.readOnlyField('', status_label, __('Status of the approval request')) }}
+                {{ fields.readOnlyField('', item.fields['comment_validation'], __('Comments')) }}
+            {% endif %}
+        {% endif %}
+
+        {{ fields.readOnlyField('', requester_name, __('Approval requester')) }}
+        {{ fields.readOnlyField('', validator_name, __('Approver')) }}
+    </div>
+
+    {% if can_answer %}
+            <div class="d-flex justify-content-center gap-2 mt-3">
+                <button type="submit" name="accept_holiday" value="1" class="btn btn-success">
+                    <i class="ti ti-circle-check"></i>
+                    <span>{{ __('Accept holiday', 'activity') }}</span>
+                </button>
+                <button type="submit" name="refuse_holiday" value="1" class="btn btn-danger">
+                    <i class="ti ti-circle-x"></i>
+                    <span>{{ __('Refuse holiday', 'activity') }}</span>
+                </button>
+            </div>
+        </form>
     {% endif %}
-
-    {# --- Common fields --- #}
-    <tr class="tab_bg_1">
-        <td>{{ __('Approval requester') }}</td>
-        <td colspan="2">{{ requester_name }}</td>
-    </tr>
-    <tr class="tab_bg_1">
-        <td>{{ __('Approver') }}</td>
-        <td colspan="2">{{ validator_name }}</td>
-    </tr>
-
-</table>
-
-{% if is_validator and status_waiting %}
-<script>
-$("#accept_holiday").click(function () {
-    $("#formvalidation").append("<input type='hidden' name='accept_holiday' value='1' />");
-    $("#formvalidation").append("<input type='hidden' name='update' value='1' />");
-    $("#formvalidation").submit();
-});
-$("#refuse_holiday").click(function () {
-    $("#formvalidation").append("<input type='hidden' name='refuse_holiday' value='1' />");
-    $("#formvalidation").append("<input type='hidden' name='update' value='1' />");
-    $("#formvalidation").submit();
-});
-</script>
-{% endif %}
+</div>

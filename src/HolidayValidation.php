@@ -414,24 +414,13 @@ class HolidayValidation extends CommonDBChild
 
     public function showSummary($item)
     {
-        $canedit = true;
         $dbu     = new DbUtils();
         $hID     = $item->fields['id'];
         $holiday = new Holiday();
         $holiday->getFromDB($hID);
 
-        // Global validation dropdown
-        ob_start();
-        CommonValidation::dropdownStatus('global_validation', ['value' => $item->fields['global_validation']]);
-        $global_validation_dropdown_html = ob_get_clean();
-
-        // Validation percent widget
-        $validation_percent_html    = $item->getValueToSelect('validation_percent', 'validation_percent', $item->fields['validation_percent']);
-        $validation_percent_display = Dropdown::getValueWithUnit($item->fields['validation_percent'], '%');
-
-        // Validation rows + navigator + per-validator form
-        $validations        = [];
-        $validator_form_html = '';
+        $validations     = [];
+        $validator_forms = [];
 
         if (isset($holiday->fields['id'])) {
             $datas = $dbu->getAllDataFromTable(
@@ -447,39 +436,63 @@ class HolidayValidation extends CommonDBChild
             foreach ($datas as $data) {
                 Session::addToNavigateListItems(HolidayValidation::class, $data['id']);
 
-                // Capture the per-validator action form (showForm outputs HTML directly)
+                // The action panel of the validations waiting for the current user
                 if ($data['users_id_validate'] == Session::getLoginUserID()
                     && $data['status'] == CommonValidation::WAITING) {
-                    ob_start();
-                    $this->showForm($data['id'], ['parent' => $holiday->fields['id']]);
-                    $validator_form_html .= ob_get_clean();
+                    $validation = new self();
+                    if ($validation->getFromDB($data['id'])) {
+                        $validator_forms[] = $validation->getFormContext();
+                    }
                 }
 
                 $validations[] = [
-                    'status'          => $data['status'],
-                    'status_label'    => CommonValidation::getStatus($data['status']),
-                    'submission_date' => Html::convDateTime($data['submission_date']),
-                    'validation_date' => Html::convDateTime($data['validation_date']),
-                    'validator_name'  => $dbu->getUserName($data['users_id_validate']),
+                    'status'             => $data['status'],
+                    'status_label'       => CommonValidation::getStatus($data['status']),
+                    'submission_date'    => Html::convDateTime($data['submission_date']),
+                    'validation_date'    => Html::convDateTime($data['validation_date']),
+                    'validator_name'     => $dbu->getUserName($data['users_id_validate']),
                     'comment_validation' => $data['comment_validation'],
                 ];
             }
         }
 
         TemplateRenderer::getInstance()->display('@activity/holiday_validation_summary.html.twig', [
-            'canedit'                        => $canedit,
-            'form_url'                       => Toolbox::getItemTypeFormURL(static::$itemtype),
-            'typename'                       => self::getTypeName(Session::getPluralNumber()),
-            'holiday_id'                     => $hID,
-            'global_validation_dropdown_html' => $global_validation_dropdown_html,
-            'validation_stats'               => self::getValidationStats($hID),
-            'validation_percent_html'        => $validation_percent_html,
-            'validation_percent_display'     => $validation_percent_display,
-            'validator_form_html'            => $validator_form_html,
-            'validations'                    => $validations,
-            'STATUS_ACCEPTED'                => CommonValidation::ACCEPTED,
-            'STATUS_REFUSED'                 => CommonValidation::REFUSED,
+            'form_url'           => Toolbox::getItemTypeFormURL(static::$itemtype),
+            'typename'           => self::getTypeName(Session::getPluralNumber()),
+            'holiday_id'         => $hID,
+            'global_validation'  => $item->fields['global_validation'],
+            'status_choices'     => CommonValidation::getAllStatusArray(),
+            'validation_stats'   => self::getValidationStats($hID),
+            'validation_percent' => $item->fields['validation_percent'],
+            'validator_forms'    => $validator_forms,
+            'validations'        => $validations,
+            'STATUS_ACCEPTED'    => CommonValidation::ACCEPTED,
+            'STATUS_REFUSED'     => CommonValidation::REFUSED,
         ]);
+    }
+
+
+    /**
+     * Variables of holiday_validation_form.html.twig for the loaded validation
+     *
+     * @return array
+     */
+    private function getFormContext(): array
+    {
+        $dbu = new DbUtils();
+
+        $holiday = new Holiday();
+        $holiday->getFromDB($this->fields['plugin_activity_holidays_id']);
+
+        return [
+            'item'           => $this,
+            'form_id'        => 'formvalidation' . $this->getID(),
+            'is_validator'   => $this->fields['users_id_validate'] == Session::getLoginUserID(),
+            'status_waiting' => $this->fields['status'] == CommonValidation::WAITING,
+            'status_label'   => CommonValidation::getStatus($this->fields['status']),
+            'requester_name' => $dbu->getUserName($holiday->fields['users_id']),
+            'validator_name' => $dbu->getUserName($this->fields['users_id_validate']),
+        ];
     }
 
 
@@ -494,47 +507,12 @@ class HolidayValidation extends CommonDBChild
      */
     public function showForm($ID, $options = [])
     {
-        $dbu = new DbUtils();
-
-        $options['colspan']   = 1;
-        $options['candel']    = false;
-        $options['formtitle'] = '';
-        $options['form_id']   = 'formvalidation';
-
         $this->initForm($ID, $options);
-        $this->showFormHeader($options);
 
-        $holiday   = new Holiday();
-        $holiday->getFromDB($this->fields['plugin_activity_holidays_id']);
-        $is_validator   = ($this->fields['users_id_validate'] == Session::getLoginUserID());
-        $status_waiting = ($this->fields['status'] == CommonValidation::WAITING);
-
-        ob_start();
-        Html::textarea([
-            'name'            => 'comment_validation',
-            'value'           => $this->fields['comment_validation'],
-            'cols'            => 100,
-            'rows'            => 3,
-            'enable_richtext' => false,
-        ]);
-        $comment_textarea_html = ob_get_clean();
-
-        TemplateRenderer::getInstance()->display('@activity/holiday_validation_form.html.twig', [
-            'id'                   => $this->fields['id'],
-            'is_validator'         => $is_validator,
-            'status_waiting'       => $status_waiting,
-            'status_label'         => CommonValidation::getStatus($this->fields['status']),
-            'comment_validation'   => $this->fields['comment_validation'],
-            'comment_textarea_html' => $comment_textarea_html,
-            'requester_name'       => $dbu->getUserName($holiday->fields['users_id']),
-            'validator_name'       => $dbu->getUserName($this->fields['users_id_validate']),
-            'validation_date'      => date('Y-m-d H:i:s'),
-        ]);
-
-        $options['formfooter'] = '';
-        $options['canedit']    = false;
-        $this->showFormButtons($options);
-        Html::closeForm();
+        TemplateRenderer::getInstance()->display(
+            '@activity/holiday_validation_form.html.twig',
+            $this->getFormContext(),
+        );
         return true;
     }
 

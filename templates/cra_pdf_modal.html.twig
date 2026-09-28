@@ -24,9 +24,12 @@
  # along with activity. If not, see <http://www.gnu.org/licenses/>.
  # --------------------------------------------------------------------------
  #}
-
-{# Loaded into the #tr_plugin_activity_details container of holiday_form.html.twig #}
-<div class="alert alert-info py-2 my-0">
-    {{ __('Remaining holidays for the period', 'activity') }}: {{ total_remaining_validated }} {{ _n('Day', 'Days', 2)|lower }}<br>
-    {{ __('Leave awaiting validation', 'activity') }}: {{ total_remaining }} {{ _n('Day', 'Days', 2)|lower }}
-</div>
+{# Modal opened on load to show the PDF activity report that was just generated #}
+{% do call('Ajax::createIframeModalWindow', [
+    'activity_displayPdf',
+    pdf_url,
+    {
+        'title': __('Activity report', 'activity'),
+        'autoopen': true,
+    },
+]) %}

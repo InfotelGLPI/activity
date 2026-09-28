@@ -24,171 +24,96 @@
  # along with activity. If not, see <http://www.gnu.org/licenses/>.
  # --------------------------------------------------------------------------
  #}
+{#
+ # The holiday request form, on the core generic item form.
+ #
+ # Dates and half-day radios carry data-activity-duration: public/scripts/holiday-form.js
+ # recomputes the duration when they change. The type, period and user selectors keep
+ # the on_change of the legacy helpers of scripts-activityholidays.js, which target the
+ # containers tr_plugin_activity_holidayperiods_id and tr_plugin_activity_details.
+ #}
+{% extends 'generic_show_form.html.twig' %}
+{% import 'components/form/fields_macros.html.twig' as fields %}
 
-<tr class="tab_bg_1">
-    <td>
-
-        <table width="100%">
-
-            {# --- Holiday type --- #}
-            <tr>
-                <td>{{ holiday_type_label }}</td>
-                <td>
-                    {% if is_existing %}
-                        {{ holiday_type_name|e }}
-                    {% else %}
-                        {{ holiday_type_dropdown_html|raw }}
-                    {% endif %}
-                </td>
-            </tr>
-
-            {# --- Holiday period --- #}
-            <tr id="tr_plugin_activity_holidayperiods_id"
-                {% if not show_period %}style="display:none"{% endif %}>
-                <td>{{ holiday_period_label }}</td>
-                <td>{{ holiday_period_dropdown_html|raw }}</td>
-            </tr>
-
-            {# --- Begin date --- #}
-            <tr>
-                <td>{{ __('Start date') }}</td>
-                <td>
-                    {% if not is_existing %}
-                        <input type="hidden" name="is_planned" value="1">
-                        <input type="hidden" name="actiontime" id="actiontime" value="{{ actiontime_days }}">
-                        {{ begin_date_html|raw }}
-                    {% else %}
-                        <input class="form-control" disabled="disabled" value="{{ begin_display }}">
-                    {% endif %}
-                </td>
-            </tr>
-
-            {% if not is_existing %}
-            <tr>
-                <td>&nbsp;</td>
-                <td>
-                    {% for cb in cbs_begin %}
-                        <label for="{{ cb.cb_id }}">
-                            <input type="radio"
-                                   name="radio_cb_begindate"
-                                   id="{{ cb.cb_id }}"
-                                   value="{{ cb.value }}"
-                                   {% if cb.checked %}checked="checked"{% endif %}
-                                   {% if cb.disabled %}disabled="disabled"{% endif %}
-                                   onclick="{{ cb.onclick }}">
-                            &nbsp;{{ cb.title }}
-                        </label>&nbsp;&nbsp;
-                        {% if loop.index == 2 %}<br>{% endif %}
-                    {% endfor %}
-                </td>
-            </tr>
-            {% endif %}
-
-            {# --- End date --- #}
-            <tr>
-                <td>{{ __('End date') }}</td>
-                <td>
-                    {% if not is_existing %}
-                        {{ end_date_html|raw }}
-                    {% else %}
-                        <input class="form-control" disabled="disabled" value="{{ end_display }}">
-                    {% endif %}
-                </td>
-            </tr>
-
-            {% if not is_existing %}
-            <tr>
-                <td>&nbsp;</td>
-                <td>
-                    {% for cb in cbs_end %}
-                        <label for="{{ cb.cb_id }}">
-                            <input type="radio"
-                                   name="radio_cb_enddate"
-                                   id="{{ cb.cb_id }}"
-                                   value="{{ cb.value }}"
-                                   {% if cb.checked %}checked="checked"{% endif %}
-                                   {% if cb.disabled %}disabled="disabled"{% endif %}
-                                   onclick="{{ cb.onclick }}">
-                            &nbsp;{{ cb.title }}
-                        </label>&nbsp;&nbsp;
-                        {% if loop.index == 2 %}<br>{% endif %}
-                    {% endfor %}
-                </td>
-            </tr>
-            {% endif %}
-
-            {# --- Duration --- #}
-            <tr>
-                <td>{{ __('Duration') }}</td>
-                <td>
-                    <div id="div_duration">{{ duration_html|raw }}</div>
-                    {{ period_lang|e }}
-                </td>
-            </tr>
-
-        </table>
-
-    </td>
-
-    <td align="left" valign="top">
-
-        <table width="100%">
-
-            {# --- User --- #}
-            <tr class="tab_bg_2">
-                <td>{{ _n('User', 'Users', 1) }}</td>
-            </tr>
-            <tr>
-                <td>
-                    {% if user_dropdown_html %}
-                        {{ user_dropdown_html|raw }}
-                    {% else %}
-                        {{ user_name }}
-                        {{ users_id_hidden|raw }}
-                    {% endif %}
-                </td>
-            </tr>
-
-            {# --- Comment --- #}
-            <tr class="tab_bg_2">
-                <td>{{ __('Description') }}</td>
-            </tr>
-            <tr>
-                <td>{{ comment_textarea_html|raw }}</td>
-            </tr>
-
-        </table>
-
-    </td>
-</tr>
-
-{# --- Action buttons (existing item) --- #}
-{% if is_existing %}
-    {% if can_purge_as_manager %}
-        <tr class="tab_bg_2">
-            <td class="right" colspan="4">
-                <button type="submit" name="purge" class="btn btn-primary"
-                        onclick="return confirm('{{ __('Confirm the final deletion?')|e('js') }}')">
-                    {{ _x('button', 'Delete permanently') }}
-                </button>
-                <input type="hidden" name="id" value="{{ id }}">
-            </td>
-        </tr>
+{% block form_fields %}
+    {% if from_planning_edit_ajax %}
+        {{ fields.hiddenField('from_planning_edit_ajax', 1) }}
     {% endif %}
-{% else %}
-    {# New item: warn if no manager --- #}
-    {% if not has_manager %}
-        <tr>
-            <td colspan="4">
-                <div class="alert alert-warning">
-                    <p>{{ __("You don't have any manager filled in you personal settings.", 'activity') }}</p>
-                    <p>{{ __("In order to make a holiday demand, please fill at least one manager in your personal settings", 'activity') }}</p>
-                    <p>
-                        {{ __("See the page", 'activity') }}
-                        <a href="{{ preference_url }}" target="_blank">{{ __('My settings') }}</a>
-                    </p>
+
+    {# --- Holiday type --- #}
+    {% if is_existing %}
+        {{ fields.readOnlyField('', holiday_type_name, holiday_type_class|itemtype_name) }}
+    {% else %}
+        {{ fields.dropdownField(holiday_type_class, 'plugin_activity_holidaytypes_id', item.fields['plugin_activity_holidaytypes_id'], holiday_type_class|itemtype_name, {
+            'on_change': type_on_change,
+        }) }}
+    {% endif %}
+
+    {# --- User --- #}
+    {% if user_mode == 'new_selector' or user_mode == 'selector' %}
+        {{ fields.dropdownField(user_class, 'users_id', users_id, _n('User', 'Users', 1), {
+            'right': 'interface',
+            'on_change': user_mode == 'new_selector' ? user_on_change : '',
+        }) }}
+    {% else %}
+        {{ fields.readOnlyField('', user_name, _n('User', 'Users', 1)) }}
+        {% if user_mode == 'hidden' %}
+            {{ fields.hiddenField('users_id', users_id) }}
+        {% endif %}
+    {% endif %}
+
+    {# --- Holiday period, shown for the types counted by period --- #}
+    <div class="w-100"></div>
+    {{ fields.dropdownField(holiday_period_class, 'plugin_activity_holidayperiods_id', item.fields['plugin_activity_holidayperiods_id'], holiday_period_class|itemtype_name, period_options|merge({
+        'add_field_attribs': {'id': 'tr_plugin_activity_holidayperiods_id', 'style': show_period ? '' : 'display: none'},
+    })) }}
+
+    {# Remaining balance of the period, on the right of the period selector, filled by the helpers of scripts-activityholidays.js #}
+    <div id="tr_plugin_activity_details" class="col-12 col-sm-6 d-flex align-items-center"></div>
+
+    {# --- Dates, begin and end side by side on a row of their own --- #}
+    <div class="w-100"></div>
+    {% if is_existing %}
+        {{ fields.readOnlyField('', begin_display, __('Start date')) }}
+        {{ fields.readOnlyField('', end_display, __('End date')) }}
+    {% else %}
+        {{ fields.hiddenField('is_planned', 1) }}
+        {{ fields.hiddenField('actiontime', actiontime_days, {'id': 'actiontime'}) }}
+        {% for bound in [
+            {'name': 'begin', 'label': __('Start date'), 'cbs': cbs_begin, 'radio': 'radio_cb_begindate'},
+            {'name': 'end', 'label': __('End date'), 'cbs': cbs_end, 'radio': 'radio_cb_enddate'},
+        ] %}
+            {% set half_days %}
+                <div class="d-flex flex-wrap gap-3 mt-2">
+                    {% for cb in bound.cbs %}
+                        <label class="form-check form-check-inline mb-0" for="{{ cb.cb_id }}">
+                            <input class="form-check-input" type="radio" name="{{ bound.radio }}"
+                                   id="{{ cb.cb_id }}" value="{{ cb.value }}" data-activity-duration
+                                   {{ cb.checked ? 'checked' }} {{ cb.disabled ? 'disabled' }}>
+                            <span class="form-check-label">{{ cb.title }}</span>
+                        </label>
+                    {% endfor %}
                 </div>
-            </td>
-        </tr>
+            {% endset %}
+            {{ fields.dateField(bound.name, null, bound.label, {
+                'additional_attributes': {'data-activity-duration': ''},
+                'add_field_html': half_days,
+            }) }}
+        {% endfor %}
     {% endif %}
-{% endif %}
+
+    {# --- Duration, under the dates --- #}
+    {% set duration_html %}
+        <span id="div_duration" data-activity-webdir="{{ webdir }}">{{ duration }}</span>
+        {{ period_lang }}
+    {% endset %}
+    {# raw: an escaped figure and label, built just above #}
+    {{ fields.htmlField('', duration_html, __('Duration'), {'field_class': 'col-12'}) }}
+
+    {# --- Comment --- #}
+    {{ fields.textareaField('comment', item.fields['comment'], __('Description'), {
+        'rows': 7,
+        'disabled': is_existing,
+        'field_class': 'col-12',
+    }) }}
+{% endblock %}

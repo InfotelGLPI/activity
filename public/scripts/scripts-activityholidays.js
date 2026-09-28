@@ -132,14 +132,6 @@ function updateDuration(input, root_doc) {
 
    tmp = endDate.split('-');
    var objDateEnd = new Date(tmp[2], tmp[1] - 1, tmp[0]);
-
-
-   // if (dateDiff(objDateDeb,objDateEnd).day < 0) {
-   //    objDateEnd = objDateDeb;
-   //    endDate = beginDate;
-   // }
-   //console.log(beginDate)
-   //console.log(endDate)
    getActionTime(beginDate, endDate, Math.abs(dateDiff(objDateEnd, objDateDeb).day), input, 'day', root_doc);
 }
 
@@ -184,7 +176,6 @@ function getActionTime(beginDate, endDate, actiontime, input, format, root_doc) 
                actiontime: actiontime,
            },
            success: function (response) {
-               console.log(response);
                var jsondata = response;
                var finalDuration = jsondata['actiontime'] - 1;
 
@@ -221,14 +212,14 @@ function plugin_activity_show_details(root_doc, holidayperiod_id) {
    if (users_id === undefined) {
       users_id = $('select[name="users_id"]').val();
    }
-   $('#tr_plugin_activity_details').closest('tr').remove();
+   $('#tr_plugin_activity_details').empty();
    $.ajax({
       url: root_doc + '/ajax/activityholidays.php',
       type: 'POST',
       data: '&load_holiday_details&users_id=' + users_id + '&holiday_period_id=' + holidayperiod_id,
       dataType: 'html',
       success: function (code_html, statut) {
-         $('#tr_plugin_activity_holidayperiods_id').closest('tr').after(code_html);
+         $('#tr_plugin_activity_details').html(code_html);
       },
    });
 }
@@ -240,14 +231,14 @@ function plugin_activity_show_details(root_doc, holidayperiod_id) {
  */
 function plugin_activity_show_details_users(root_doc, users_id) {
    holidayperiod_id = $('input[name="plugin_activity_holidayperiods_id"]').val();
-   $('#tr_plugin_activity_details').closest('tr').remove();
+   $('#tr_plugin_activity_details').empty();
    $.ajax({
       url: root_doc + '/ajax/activityholidays.php',
       type: 'POST',
       data: '&load_holiday_details&users_id=' + users_id + '&holiday_period_id=' + holidayperiod_id,
       dataType: 'html',
       success: function (code_html, statut) {
-         $('#tr_plugin_activity_holidayperiods_id').closest('tr').after(code_html);
+         $('#tr_plugin_activity_details').html(code_html);
       },
    });
 }
@@ -268,7 +259,7 @@ function plugin_activity_show_periods(root_doc, plugin_activity_holidaytypes_id)
             $('#tr_plugin_activity_holidayperiods_id').show();
          } else {
             $('#tr_plugin_activity_holidayperiods_id').hide();
-            $('#tr_plugin_activity_details').closest('tr').remove();
+            $('#tr_plugin_activity_details').empty();
          }
       },
    });
