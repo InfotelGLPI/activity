@@ -2,7 +2,7 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "config": {
-        "autoloader-suffix": "GlpiPluginActivity",
+        "autoloader-suffix": "PluginActivity",
         "platform": {
             "php": "8.2.99"
         },
