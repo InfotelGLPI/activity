@@ -199,8 +199,25 @@ class Holiday extends CommonDBTM
         ) {
             return true;
         }
+        // Once the validators have decided, the owner can no longer change the request:
+        // nothing sends it back to validation, so moving the dates or the type of an
+        // accepted request would keep it ACCEPTED for an absence nobody approved. The
+        // owner may still purge it and file a new one.
         return isset($this->fields['users_id'])
-            && $this->fields['users_id'] == Session::getLoginUserID();
+            && $this->fields['users_id'] == Session::getLoginUserID()
+            && !$this->isDecided();
+    }
+
+    /**
+     * Whether the validators have accepted or refused the request.
+     */
+    public function isDecided(): bool
+    {
+        return in_array(
+            (int) ($this->fields['global_validation'] ?? CommonValidation::NONE),
+            [CommonValidation::ACCEPTED, CommonValidation::REFUSED],
+            true,
+        );
     }
 
     public function canPurgeItem(): bool
@@ -1447,11 +1464,12 @@ class Holiday extends CommonDBTM
             return true;
         }
 
-        // On an existing request only its owner saves it, while both the owner and the
-        // validating manager may purge it, as canPurgeItem() allows
+        // On an existing request only its owner saves it, and only until it is decided, as
+        // canUpdateItem() allows; both the owner and the validating manager may purge it, as
+        // canPurgeItem() allows
         if ($is_existing) {
             $is_owner           = $this->fields["users_id"] == Session::getLoginUserID();
-            $options['canedit'] = $is_owner && !$can_purge_as_manager;
+            $options['canedit'] = $is_owner && !$can_purge_as_manager && !$this->isDecided();
             $options['candel']  = $is_owner || $can_purge_as_manager;
         }
 
