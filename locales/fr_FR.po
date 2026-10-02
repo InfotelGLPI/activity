@@ -2,24 +2,26 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 # Translators:
 # Xavier CAILLAUD <thetsmr@gmail.com>, 2026
-# 
+#
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 09:43+0000\n"
+"POT-Creation-Date: 2026-10-02 07:56+0000\n"
 "PO-Revision-Date: 2020-11-02 13:59+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
-"Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/114456/fr_FR/)\n"
+"Language-Team: French (France) (https://app.transifex.com/infotelGLPI/"
+"teams/114456/fr_FR/)\n"
+"Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fr_FR\n"
-"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % "
+"1000000 == 0 ? 1 : 2;\n"
 
 #: src/EntityDistribution.php:291
 #, php-format
@@ -39,7 +41,7 @@ msgstr "Une nouvelle demande de congé a été soumise"
 msgid "Absences"
 msgstr "Absences"
 
-#: src/Holiday.php:1675
+#: src/Holiday.php:1693
 msgid "Absent"
 msgstr "Absent"
 
@@ -94,7 +96,7 @@ msgctxt "button"
 msgid "Add"
 msgstr "Ajouter"
 
-#: src/Holiday.php:722 templates/preference_add_manager.html.twig:32
+#: src/Holiday.php:739 templates/preference_add_manager.html.twig:32
 msgid "Add a manager"
 msgstr "Ajouter un responsable"
 
@@ -102,7 +104,7 @@ msgstr "Ajouter un responsable"
 msgid "Add an activity"
 msgstr "Ajouter une activité"
 
-#: src/Holiday.php:1403 src/Dashboard.php:311
+#: src/Holiday.php:1420 src/Dashboard.php:311
 msgid "All day"
 msgstr "Jour entier"
 
@@ -127,7 +129,7 @@ msgstr "Commentaires de validation"
 msgid "Approval date"
 msgstr "Date de validation"
 
-#: src/HolidayValidation.php:557 src/Holiday.php:544
+#: src/HolidayValidation.php:557 src/Holiday.php:561
 #, php-format
 msgid "Approval request send to %s"
 msgstr "Demande d'approbation envoyée à %s"
@@ -136,7 +138,7 @@ msgstr "Demande d'approbation envoyée à %s"
 msgid "Approval requester"
 msgstr "Demandeur de la validation"
 
-#: src/Holiday.php:705 src/Holiday.php:2080
+#: src/Holiday.php:722 src/Holiday.php:2098
 msgid "Approve holiday"
 msgid_plural "Approve holidays"
 msgstr[0] "Valider un congé"
@@ -164,7 +166,7 @@ msgstr "Autoriser les activité les Week-ends"
 msgid "Authorize only the whole schedules"
 msgstr "Autoriser uniquement les horaires entiers"
 
-#: src/HolidayType.php:98 src/Holiday.php:516
+#: src/HolidayType.php:98 src/Holiday.php:533
 msgid "Auto-validated"
 msgstr "Validé automatiquement"
 
@@ -230,7 +232,7 @@ msgstr "Confirmer la suppression définitive ?"
 msgid "Counter"
 msgstr "Compteur"
 
-#: src/PlanningExternalEvent.php:312 src/Profile.php:111 src/Holiday.php:692
+#: src/PlanningExternalEvent.php:312 src/Profile.php:111 src/Holiday.php:709
 msgid "Create a holiday request"
 msgstr "Demande de congé"
 
@@ -295,8 +297,7 @@ msgstr "Voir les activités / congés de tous"
 
 #: src/Dashboard.php:118 src/Dashboard.php:208
 msgid ""
-"Display of activity by month for a user (tickets, activity, holidays, "
-"others)"
+"Display of activity by month for a user (tickets, activity, holidays, others)"
 msgstr ""
 "Affichage de l'activité par mois pour un utilisateur (tickets, activité, "
 "vacances, autres)"
@@ -384,7 +385,7 @@ msgstr "Statut global de validation"
 msgid "Holiday"
 msgstr "Congé"
 
-#: src/HolidayCount.php:48 src/Holiday.php:711 src/Menu.php:66
+#: src/HolidayCount.php:48 src/Holiday.php:728 src/Menu.php:66
 msgid "Holiday counter"
 msgid_plural "Holiday counters"
 msgstr[0] "Compteur de congé"
@@ -413,7 +414,7 @@ msgstr[0] "Type de congé"
 msgstr[1] "Type de congés"
 msgstr[2] "Type de congés"
 
-#: src/HolidayCount.php:254 src/Holiday.php:378
+#: src/HolidayCount.php:254 src/Holiday.php:395
 msgid "Holiday type is mandatory field"
 msgstr "Le type de congé est un champ obligatoire"
 
@@ -460,7 +461,7 @@ msgstr "Lié à une période de congés"
 msgid "List of activities"
 msgstr "Liste des activités"
 
-#: src/Holiday.php:699
+#: src/Holiday.php:716
 msgid "List of holidays"
 msgstr "Liste des congés"
 
@@ -547,11 +548,11 @@ msgstr ""
 "L'une des dates est le week-end, veuillez ajouter la date dans les "
 "exceptions de la règle récurrente"
 
-#: src/Holiday.php:1184 src/Holiday.php:1208 src/Holiday.php:1396
+#: src/Holiday.php:1201 src/Holiday.php:1225 src/Holiday.php:1413
 msgid "Only on afternoon"
 msgstr "Que l'après-midi"
 
-#: src/Holiday.php:1190 src/Holiday.php:1196 src/Holiday.php:1389
+#: src/Holiday.php:1207 src/Holiday.php:1213 src/Holiday.php:1406
 msgid "Only on morning"
 msgstr "Que le matin"
 
@@ -592,7 +593,7 @@ msgstr "Accès au planning"
 msgid "Please activate the plugin"
 msgstr "Veuillez activer le plugin"
 
-#: src/Holiday.php:368 src/HolidayPeriod.php:107
+#: src/Holiday.php:385 src/HolidayPeriod.php:107
 msgid "Please fill a begin date"
 msgstr "Merci de renseigner une date de début"
 
@@ -604,7 +605,7 @@ msgstr "Merci d'ajouter le contenu de l'email"
 msgid "Please fill a subject"
 msgstr "Merci de spécifier un sujet"
 
-#: src/Holiday.php:372 src/HolidayPeriod.php:111
+#: src/Holiday.php:389 src/HolidayPeriod.php:111
 msgid "Please fill an end date"
 msgstr "Merci de renseigner une date de fin"
 
@@ -616,8 +617,7 @@ msgstr "Merci de sélectionner un responsable"
 msgid "Plugin setup"
 msgstr "Configuration du plugin"
 
-#: templates/cra_search.html.twig:74
-#: templates/entity_distribution.html.twig:57
+#: templates/cra_search.html.twig:74 templates/entity_distribution.html.twig:57
 msgid "Post"
 msgstr "Envoyer"
 
@@ -790,12 +790,12 @@ msgid "Technician"
 msgstr "Technicien"
 
 #: src/PlanningExternalEvent.php:695 src/PlanningExternalEvent.php:857
-#: src/Holiday.php:439
+#: src/Holiday.php:456
 msgid "The chosen begin date is on weekend"
 msgstr "La date de début choisie est en weekend"
 
 #: src/PlanningExternalEvent.php:681 src/PlanningExternalEvent.php:845
-#: src/Holiday.php:446
+#: src/Holiday.php:463
 msgid "The chosen date is a public holiday"
 msgstr "Le jour choisi est un jour férié"
 
@@ -809,10 +809,10 @@ msgid ""
 "expected schema: data will be lost. Check that they are not used by another "
 "plugin or by a custom development before running them."
 msgstr ""
-"Les requêtes suivantes suppriment des colonnes ou des tables qui ne font pas"
-" partie du schéma attendu : des données seront perdues. Avant de les "
-"exécuter, vérifiez qu’elles ne sont pas utilisées par un autre plugin ou par"
-" un développement personnalisé."
+"Les requêtes suivantes suppriment des colonnes ou des tables qui ne font pas "
+"partie du schéma attendu : des données seront perdues. Avant de les "
+"exécuter, vérifiez qu’elles ne sont pas utilisées par un autre plugin ou par "
+"un développement personnalisé."
 
 #: src/Ticket.php:57
 msgid "The following user is unavailable / on holiday : "
@@ -834,15 +834,15 @@ msgid ""
 msgstr ""
 "Les requêtes ci-dessous ne sont que des suggestions basées sur les "
 "différences constatées. Veuillez les examiner, sauvegarder votre base de "
-"données, puis les exécuter manuellement : elles ne sont jamais exécutées par"
-" l’extension."
+"données, puis les exécuter manuellement : elles ne sont jamais exécutées par "
+"l’extension."
 
-#: src/Holiday.php:561
+#: src/Holiday.php:578
 msgid "The user don't have any manager filled in his personal settings."
 msgstr ""
 "L'utilisateur n'a pas encore renseigné de responsable dans ses préférences"
 
-#: src/Holiday.php:454
+#: src/Holiday.php:471
 msgid "The user has already planned holidays for this period"
 msgstr "Cet utilisateur a déjà planifié des congés pour cette période"
 
@@ -859,14 +859,13 @@ msgstr[2] "Tickets"
 
 #: templates/entity_distribution.html.twig:64
 msgid ""
-"Time of the ticket tasks shown on the CRA, grouped by client (entity) of the"
-" ticket."
+"Time of the ticket tasks shown on the CRA, grouped by client (entity) of the "
+"ticket."
 msgstr ""
 "Durée des tâches du ticket affichée sur le CRA, regroupée par client "
 "(entité) du ticket."
 
-#: templates/cra_report.html.twig:63
-#: templates/entity_distribution.html.twig:79
+#: templates/cra_report.html.twig:63 templates/entity_distribution.html.twig:79
 msgid "Total"
 msgstr "Total"
 
@@ -947,7 +946,7 @@ msgstr[1] "Utilisateurs"
 msgstr[2] "Utilisateurs"
 
 #: src/PlanningExternalEvent.php:672 src/PlanningExternalEvent.php:768
-#: src/Holiday.php:412
+#: src/Holiday.php:429
 msgid "User is mandatory field"
 msgstr "L'utilisateur est un champ obligatoire"
 
@@ -969,7 +968,7 @@ msgstr[0] "Validation de ce congé"
 msgstr[1] "Validation de ces congés"
 msgstr[2] "Validation de ces congés"
 
-#: src/NotificationTargetHoliday.php:148 src/Holiday.php:557
+#: src/NotificationTargetHoliday.php:148 src/Holiday.php:574
 msgid "Validation of your holiday request"
 msgstr "Validation de la demande de congé"
 
@@ -995,7 +994,7 @@ msgstr ""
 msgid "You don't have any manager filled in you personal settings."
 msgstr "Vous n'avez pas encore renseigné de responsable dans vos préférences"
 
-#: src/Holiday.php:452
+#: src/Holiday.php:469
 msgid "You have already planned holidays for this period"
 msgstr "Vous avez déjà planifié des congés pour cette période"
 

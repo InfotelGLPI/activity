@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 09:37+0000\n"
+"POT-Creation-Date: 2026-10-02 07:56+0000\n"
 "PO-Revision-Date: 2020-11-02 13:59+0000\n"
 "Last-Translator: Soporte Infraestructura Standby, 2023\n"
 "Language-Team: Spanish (Ecuador) (https://app.transifex.com/infotelGLPI/"
@@ -41,7 +41,7 @@ msgstr "Se ha presentado una nueva solicitud de vacaciones"
 msgid "Absences"
 msgstr "Ausencias"
 
-#: src/Holiday.php:1675
+#: src/Holiday.php:1693
 msgid "Absent"
 msgstr ""
 
@@ -95,7 +95,7 @@ msgctxt "button"
 msgid "Add"
 msgstr ""
 
-#: src/Holiday.php:722 templates/preference_add_manager.html.twig:32
+#: src/Holiday.php:739 templates/preference_add_manager.html.twig:32
 msgid "Add a manager"
 msgstr "Añadir un supervisor"
 
@@ -103,7 +103,7 @@ msgstr "Añadir un supervisor"
 msgid "Add an activity"
 msgstr "Agregar una actividad"
 
-#: src/Holiday.php:1403 src/Dashboard.php:311
+#: src/Holiday.php:1420 src/Dashboard.php:311
 msgid "All day"
 msgstr "Todo el día"
 
@@ -128,7 +128,7 @@ msgstr ""
 msgid "Approval date"
 msgstr ""
 
-#: src/HolidayValidation.php:557 src/Holiday.php:544
+#: src/HolidayValidation.php:557 src/Holiday.php:561
 #, php-format
 msgid "Approval request send to %s"
 msgstr ""
@@ -137,7 +137,7 @@ msgstr ""
 msgid "Approval requester"
 msgstr ""
 
-#: src/Holiday.php:705 src/Holiday.php:2080
+#: src/Holiday.php:722 src/Holiday.php:2098
 msgid "Approve holiday"
 msgid_plural "Approve holidays"
 msgstr[0] "Aprobar las vacaciones"
@@ -165,7 +165,7 @@ msgstr "Autorizar actividades los fines de semana"
 msgid "Authorize only the whole schedules"
 msgstr "Autorizar sólo los horarios completos"
 
-#: src/HolidayType.php:98 src/Holiday.php:516
+#: src/HolidayType.php:98 src/Holiday.php:533
 msgid "Auto-validated"
 msgstr "Validación automática"
 
@@ -230,7 +230,7 @@ msgstr ""
 msgid "Counter"
 msgstr "Contador"
 
-#: src/PlanningExternalEvent.php:312 src/Profile.php:111 src/Holiday.php:692
+#: src/PlanningExternalEvent.php:312 src/Profile.php:111 src/Holiday.php:709
 msgid "Create a holiday request"
 msgstr "Crear una solicitud de vacaciones"
 
@@ -381,7 +381,7 @@ msgstr ""
 msgid "Holiday"
 msgstr "Vacaciones"
 
-#: src/HolidayCount.php:48 src/Holiday.php:711 src/Menu.php:66
+#: src/HolidayCount.php:48 src/Holiday.php:728 src/Menu.php:66
 msgid "Holiday counter"
 msgid_plural "Holiday counters"
 msgstr[0] "Contador de vacaciones"
@@ -410,7 +410,7 @@ msgstr[0] "Tipo de vacaciones"
 msgstr[1] "Tipo de vacaciones"
 msgstr[2] "Tipo de vacaciones"
 
-#: src/HolidayCount.php:254 src/Holiday.php:378
+#: src/HolidayCount.php:254 src/Holiday.php:395
 msgid "Holiday type is mandatory field"
 msgstr "El tipo de vacaciones es un campo obligatorio"
 
@@ -457,7 +457,7 @@ msgstr "Vinculado a un período"
 msgid "List of activities"
 msgstr "Lista de actividades"
 
-#: src/Holiday.php:699
+#: src/Holiday.php:716
 msgid "List of holidays"
 msgstr "Lista de vacaciones"
 
@@ -544,11 +544,11 @@ msgstr ""
 "Una de las fechas es el fin de semana, por favor agregue la fecha en las "
 "excepciones de la regla recurrente"
 
-#: src/Holiday.php:1184 src/Holiday.php:1208 src/Holiday.php:1396
+#: src/Holiday.php:1201 src/Holiday.php:1225 src/Holiday.php:1413
 msgid "Only on afternoon"
 msgstr "Sólo por la tarde"
 
-#: src/Holiday.php:1190 src/Holiday.php:1196 src/Holiday.php:1389
+#: src/Holiday.php:1207 src/Holiday.php:1213 src/Holiday.php:1406
 msgid "Only on morning"
 msgstr "Solo por la mañana"
 
@@ -588,7 +588,7 @@ msgstr "Planificación del acceso"
 msgid "Please activate the plugin"
 msgstr "Por favor, active el complemento"
 
-#: src/Holiday.php:368 src/HolidayPeriod.php:107
+#: src/Holiday.php:385 src/HolidayPeriod.php:107
 msgid "Please fill a begin date"
 msgstr "Por favor, introduzca una fecha de inicio"
 
@@ -600,7 +600,7 @@ msgstr "Por favor, rellene el cuerpo de un correo"
 msgid "Please fill a subject"
 msgstr "Por favor, rellene un asunto"
 
-#: src/Holiday.php:372 src/HolidayPeriod.php:111
+#: src/Holiday.php:389 src/HolidayPeriod.php:111
 msgid "Please fill an end date"
 msgstr "Indique una fecha de finalización"
 
@@ -785,12 +785,12 @@ msgid "Technician"
 msgstr ""
 
 #: src/PlanningExternalEvent.php:695 src/PlanningExternalEvent.php:857
-#: src/Holiday.php:439
+#: src/Holiday.php:456
 msgid "The chosen begin date is on weekend"
 msgstr "La fecha de inicio elegida es el fin de semana"
 
 #: src/PlanningExternalEvent.php:681 src/PlanningExternalEvent.php:845
-#: src/Holiday.php:446
+#: src/Holiday.php:463
 msgid "The chosen date is a public holiday"
 msgstr "La fecha elegida es un día festivo"
 
@@ -824,11 +824,11 @@ msgid ""
 "run by the plugin."
 msgstr ""
 
-#: src/Holiday.php:561
+#: src/Holiday.php:578
 msgid "The user don't have any manager filled in his personal settings."
 msgstr "El usuario no tiene ningún supervisor en sus preferencias."
 
-#: src/Holiday.php:454
+#: src/Holiday.php:471
 msgid "The user has already planned holidays for this period"
 msgstr "El usuario ya ha planificado sus vacaciones para este periodo"
 
@@ -928,7 +928,7 @@ msgstr[1] ""
 msgstr[2] ""
 
 #: src/PlanningExternalEvent.php:672 src/PlanningExternalEvent.php:768
-#: src/Holiday.php:412
+#: src/Holiday.php:429
 msgid "User is mandatory field"
 msgstr "El usuario es un campo obligatorio"
 
@@ -950,7 +950,7 @@ msgstr[0] "Validaciones para estas vacaciones"
 msgstr[1] "Validaciones para estas vacaciones"
 msgstr[2] "Validaciones para estas vacaciones"
 
-#: src/NotificationTargetHoliday.php:148 src/Holiday.php:557
+#: src/NotificationTargetHoliday.php:148 src/Holiday.php:574
 msgid "Validation of your holiday request"
 msgstr "Validación de su solicitud de vacaciones"
 
@@ -975,7 +975,7 @@ msgstr ""
 msgid "You don't have any manager filled in you personal settings."
 msgstr "No tiene ningún administrador completado su configuración personal."
 
-#: src/Holiday.php:452
+#: src/Holiday.php:469
 msgid "You have already planned holidays for this period"
 msgstr "Ya ha planificado vacaciones para este período"
 
