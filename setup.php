@@ -251,8 +251,8 @@ function plugin_version_activity()
         'homepage' => '',
         'requirements' => [
             'glpi' => [
-                'min' => '12.0',
-                'max' => '13.0',
+                'min' => '11.0.99',
+                'max' => '12.0.99',
                 'dev' => false,
             ],
         ],
