@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-02 14:13+0000\n"
+"POT-Creation-Date: 2026-10-05 09:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -237,7 +237,7 @@ msgstr[1] ""
 msgid "Current logo"
 msgstr ""
 
-#: templates/cra_search.html.twig:44 templates/cra_snapshots.html.twig:45
+#: templates/cra_search.html.twig:45 templates/cra_snapshots.html.twig:45
 #: templates/holiday_validation_summary.html.twig:92
 msgid "Date"
 msgstr ""
@@ -324,12 +324,12 @@ msgid_plural "Event subcategories"
 msgstr[0] ""
 msgstr[1] ""
 
-#: templates/cra_search.html.twig:91 templates/cra_search.html.twig:92
+#: templates/cra_search.html.twig:92 templates/cra_search.html.twig:93
 msgctxt "button"
 msgid "Export"
 msgstr ""
 
-#: templates/cra_search.html.twig:89
+#: templates/cra_search.html.twig:90
 msgid "Export CRA"
 msgstr ""
 
@@ -463,7 +463,7 @@ msgstr ""
 msgid "Minimum approval required (%)"
 msgstr ""
 
-#: templates/cra_search.html.twig:47
+#: templates/cra_search.html.twig:48
 msgid "Month"
 msgid_plural "Months"
 msgstr[0] ""
@@ -481,7 +481,7 @@ msgstr ""
 msgid "New personal holiday request"
 msgstr ""
 
-#: templates/cra_search.html.twig:62
+#: templates/cra_search.html.twig:63
 msgid "Next month"
 msgstr ""
 
@@ -585,11 +585,11 @@ msgstr ""
 msgid "Plugin setup"
 msgstr ""
 
-#: templates/cra_search.html.twig:74 templates/entity_distribution.html.twig:57
+#: templates/cra_search.html.twig:75 templates/entity_distribution.html.twig:57
 msgid "Post"
 msgstr ""
 
-#: templates/cra_search.html.twig:40
+#: templates/cra_search.html.twig:41
 msgid "Previous month"
 msgstr ""
 
@@ -732,7 +732,7 @@ msgstr ""
 msgid "Suggested queries"
 msgstr ""
 
-#: templates/cra_search.html.twig:103
+#: templates/cra_search.html.twig:104
 msgid "Take a snapshot of the CRA"
 msgstr ""
 
@@ -918,7 +918,7 @@ msgstr[1] ""
 msgid "Validation of your holiday request"
 msgstr ""
 
-#: src/CraPDF.php:395 templates/cra_search.html.twig:54
+#: src/CraPDF.php:395 templates/cra_search.html.twig:55
 #: templates/entity_distribution.html.twig:38
 msgid "Year"
 msgid_plural "Years"
