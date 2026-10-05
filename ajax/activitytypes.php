@@ -28,11 +28,12 @@
  */
 
 use GlpiPlugin\Activity\HolidayType;
+use GlpiPlugin\Activity\Profile;
 
 Html::header_nocache();
 
 // Serves the holiday-request form widget; gate on the same right the form uses.
-Session::checkRight("plugin_activity_can_requestholiday", READ);
+Session::checkRight(Profile::RIGHT_CAN_REQUESTHOLIDAY, READ);
 header("Content-Type: text/html; charset=UTF-8");
 
 if (isset($_POST['load_holiday_period'])) {

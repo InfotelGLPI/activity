@@ -28,10 +28,11 @@
  */
 
 use GlpiPlugin\Activity\LateralMenu;
+use GlpiPlugin\Activity\Menu;
 
 Html::header_nocache();
 
-Session::checkRight("plugin_activity", READ);
+Session::checkRight(Menu::$rightname, READ);
 
 header("Content-Type: text/html; charset=UTF-8");
 

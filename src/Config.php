@@ -39,7 +39,7 @@ use Toolbox;
 
 class Config extends CommonDBTM
 {
-    public static $rightname = "plugin_activity";
+    public static string $rightname = "plugin_activity";
 
     public static function getTypeName($nb = 0)
     {

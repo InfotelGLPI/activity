@@ -45,7 +45,7 @@ use User;
  */
 class Preference extends CommonDBTM
 {
-    public static $rightname = "plugin_activity";
+    public static string $rightname = "plugin_activity";
 
     /**
      * Is this id acceptable as a validating manager for the current user?

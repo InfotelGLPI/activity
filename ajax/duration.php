@@ -30,8 +30,9 @@
 use Glpi\Exception\Http\BadRequestHttpException;
 use GlpiPlugin\Activity\Holiday;
 use GlpiPlugin\Activity\Report;
+use GlpiPlugin\Activity\Menu;
 
-Session::checkRight("plugin_activity", READ);
+Session::checkRight(Menu::$rightname, READ);
 
 $values  = [];
 $report  = new Report();

@@ -29,7 +29,7 @@
 
 use GlpiPlugin\Activity\Option;
 
-Session::checkRight("config", UPDATE);
+Session::checkRight(\Config::$rightname, UPDATE);
 
 $opt = new Option();
 

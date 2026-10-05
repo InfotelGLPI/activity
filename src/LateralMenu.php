@@ -59,7 +59,7 @@ class LateralMenu extends CommonDBTM
         }
 
         $holidays_summary = [];
-        if (Session::haveRight("plugin_activity_can_requestholiday", 1)) {
+        if (Session::haveRight(Profile::RIGHT_CAN_REQUESTHOLIDAY, 1)) {
             $holiday = new Holiday();
             $hcount  = new HolidayCount();
             $periods = $hcount->getCurrentPeriods();

@@ -31,12 +31,13 @@ use Glpi\Exception\Http\BadRequestHttpException;
 use GlpiPlugin\Activity\Holiday;
 use GlpiPlugin\Activity\Menu;
 use GlpiPlugin\Activity\Report;
+use GlpiPlugin\Activity\Profile;
 
 // The CRA is gated by its own right: the menu entry (Menu::class) and the PDF
 // download endpoint (front/cra.send.php) both check plugin_activity_statistics.
 // Checking only the generic plugin_activity right here made the screen reachable
 // by direct URL for a profile the policy meant to exclude.
-Session::checkRight('plugin_activity_statistics', READ);
+Session::checkRight(Profile::RIGHT_STATISTICS, READ);
 
 if (isset($_GET['itemtype'])) {
     // Security: itemtype drives both a $_SESSION['glpisearch'] key and the
@@ -91,7 +92,7 @@ if (isset($_GET['itemtype'])) {
     // Only profiles holding plugin_activity_all_users may read another user's CRA;
     // everyone else is forced onto their own report regardless of the posted
     // users_id, otherwise any user could read anyone's activity by id.
-    if (!Session::haveRight("plugin_activity_all_users", 1)
+    if (!Session::haveRight(Profile::RIGHT_ALL_USERS, 1)
             || !isset($_POST["users_id"])
             || empty($_POST["users_id"])) {
         $_POST["users_id"] = Session::getLoginUserID();

@@ -277,7 +277,7 @@ class Report extends CommonDBTM
         // enforced by the menu entry and by the PDF endpoint. Replay it here so that no
         // parallel entry point can produce a report on the generic plugin_activity
         // right alone.
-        Session::checkRight('plugin_activity_statistics', READ);
+        Session::checkRight(Profile::RIGHT_STATISTICS, READ);
 
         // Display type
         $output_type = Search::HTML_OUTPUT;
@@ -306,7 +306,7 @@ class Report extends CommonDBTM
 
         // Security: defence in depth — enforce the compartmentalisation at the point of
         // consumption instead of relying on every caller to sanitise its input.
-        if (!Session::haveRight("plugin_activity_all_users", 1)) {
+        if (!Session::haveRight(Profile::RIGHT_ALL_USERS, 1)) {
             $users_id = Session::getLoginUserID();
         } elseif (!Holiday::isUserInSessionEntities($users_id)) {
             // The right was held, but on a profile of another entity: it is not a pass to the
@@ -335,7 +335,6 @@ class Report extends CommonDBTM
             // rejected target cannot be re-submitted through the hidden fields.
             $post_without_snapshot = array_merge($_POST, ["users_id" => $users_id]);
             unset($post_without_snapshot['snapshot']);
-            unset($post_without_snapshot['_glpi_csrf_token']);
             $export_hidden = [];
             foreach ($post_without_snapshot as $key => $val) {
                 if (is_array($val)) {
@@ -361,7 +360,7 @@ class Report extends CommonDBTM
                 'month'                  => $mois_courant,
                 'years'                  => range($current_year - 3, $current_year + 3),
                 'year'                   => $annee_courante,
-                'can_see_all_users'      => Session::haveRight("plugin_activity_all_users", 1),
+                'can_see_all_users'      => Session::haveRight(Profile::RIGHT_ALL_USERS, 1),
                 'user_dropdown_options'  => [
                     'name'     => 'users_id',
                     'value'    => $users_id,
@@ -816,7 +815,7 @@ class Report extends CommonDBTM
             }
 
             // 2.3 Plugin Activity holidays
-            if (Session::haveRight("plugin_activity_can_requestholiday", 1)) {
+            if (Session::haveRight(Profile::RIGHT_CAN_REQUESTHOLIDAY, 1)) {
                 $crit["is_usedbycra"] = true;
                 $queryh               = Holiday::queryUserHolidays(array_merge(
                     $crit,
@@ -1284,9 +1283,7 @@ class Report extends CommonDBTM
                             'glpi_planningexternalevents.planningeventcategories_id' => $data["type"],
                             'glpi_planningexternalevents.users_id'                   => $crit["users_id"],
                         ];
-                        $whereInner[] = new QueryExpression(
-                            $dbu->getEntitiesRestrictRequest("", "glpi_planningexternalevents"),
-                        );
+                        $whereInner[] = $dbu->getEntitiesRestrictCriteria("glpi_planningexternalevents");
                         if ($use_subcategory) {
                             if ($data['subtype']) {
                                 $whereInner['glpi_plugin_activity_planningexternalevents.planningeventsubcategories_id'] = $data["subtype"];

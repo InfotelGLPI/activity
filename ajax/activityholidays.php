@@ -28,10 +28,12 @@
  */
 
 use GlpiPlugin\Activity\Holiday;
+use GlpiPlugin\Activity\Menu;
+use GlpiPlugin\Activity\Profile;
 
 Html::header_nocache();
 
-Session::checkRight('plugin_activity', READ);
+Session::checkRight(Menu::$rightname, READ);
 
 header("Content-Type: text/html; charset=UTF-8");
 
@@ -44,7 +46,7 @@ if (isset($_POST['load_holiday_details'])) {
     // That right is granted per entity, so it only reaches users visible from the
     // active entities, as in Holiday::canViewItem() and HolidayCount::canViewItem().
     if ($target_users_id !== Session::getLoginUserID()
-        && (!Session::haveRight('plugin_activity_all_users', 1)
+        && (!Session::haveRight(Profile::RIGHT_ALL_USERS, 1)
             || !Holiday::isUserInSessionEntities($target_users_id))) {
         http_response_code(403);
         return;

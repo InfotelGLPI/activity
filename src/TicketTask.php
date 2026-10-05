@@ -41,9 +41,9 @@ use Session;
 
 class TicketTask extends CommonDBTM
 {
-    public $dohistory = false;
+    public bool $dohistory = false;
 
-    public static $rightname = "plugin_activity";
+    public static string $rightname = "plugin_activity";
 
     /**
      * functions mandatory
@@ -131,7 +131,7 @@ class TicketTask extends CommonDBTM
             : $is_cra_default;
 
         TemplateRenderer::getInstance()->display('@activity/tickettask_post_form.html.twig', [
-            'can_use_cra'    => Session::haveRight('plugin_activity_statistics', 1),
+            'can_use_cra'    => Session::haveRight(Profile::RIGHT_STATISTICS, 1),
             'is_oncra_value' => $is_oncra_value,
         ]);
     }

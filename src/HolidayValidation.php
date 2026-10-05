@@ -46,9 +46,9 @@ use User;
  */
 class HolidayValidation extends CommonDBChild
 {
-    public static $items_id  = 'plugin_activity_holidays_id';
-    public static $itemtype  = Holiday::class;
-    public static $rightname = "plugin_activity";
+    public static string $items_id  = 'plugin_activity_holidays_id';
+    public static string $itemtype  = Holiday::class;
+    public static string $rightname = "plugin_activity";
 
     /**
      * functions mandatory
@@ -128,7 +128,7 @@ class HolidayValidation extends CommonDBChild
         // The right grants access within the session entities; outside of them, the
         // owner and manager branches below still apply instead of refusing outright
         if (
-            Session::haveRight('plugin_activity_all_users', 1)
+            Session::haveRight(Profile::RIGHT_ALL_USERS, 1)
             && Holiday::isUserInSessionEntities($holiday->fields['users_id'] ?? 0)
         ) {
             return true;

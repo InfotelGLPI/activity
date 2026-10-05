@@ -36,9 +36,9 @@ use Glpi\DBAL\QuerySubQuery;
 
 class ProjectTask extends CommonDBTM
 {
-    public $dohistory = false;
+    public bool $dohistory = false;
 
-    public static $rightname = "plugin_activity";
+    public static string $rightname = "plugin_activity";
 
     public function canViewItem(): bool
     {

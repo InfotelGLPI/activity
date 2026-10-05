@@ -48,23 +48,6 @@ parameters:
 			count: 1
 			path: hook.php
 
-		-
-			message: '#^Unreachable statement \- code above always terminates\.$#'
-			identifier: deadCode.unreachable
-			count: 1
-			path: hook.php
-
-		-
-			message: '#^Negated boolean expression is always true\.$#'
-			identifier: booleanNot.alwaysTrue
-			count: 2
-			path: install/update_223_224.php
-
-		-
-			message: '#^Parameter \#1 \$ver of class Migration constructor expects string, int given\.$#'
-			identifier: argument.type
-			count: 1
-			path: install/update_223_224.php
 
 		-
 			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
@@ -378,11 +361,6 @@ parameters:
 			count: 1
 			path: src/Holiday.php
 
-		-
-			message: '#^PHPDoc tag @return has invalid value \(\)\: Unexpected token "\\n     ", expected type at offset 164 on line 10$#'
-			identifier: phpDoc.parseError
-			count: 1
-			path: src/Holiday.php
 
 		-
 			message: '#^Parameter \#2 \$replace of function str_ireplace expects array\<string\>\|string, \(float\|int\) given\.$#'

@@ -35,11 +35,11 @@ use Html;
 
 class PublicHoliday extends CommonDBTM
 {
-    public $dohistory = false;
-    public static $rightname = "plugin_activity";
+    public bool $dohistory = false;
+    public static string $rightname = "plugin_activity";
 
     // From CommonDBTM
-    public $auto_message_on_action    = false;
+    public bool $auto_message_on_action    = false;
 
     /**
      * functions mandatory

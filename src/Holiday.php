@@ -53,12 +53,12 @@ use UserEmail;
 
 class Holiday extends CommonDBTM
 {
-    public $dohistory = true;
+    public bool $dohistory = true;
     public $holidays  = [];
-    public static $rightname = "plugin_activity";
+    public static string $rightname = "plugin_activity";
 
     // From CommonDBTM
-    public $auto_message_on_action = false;
+    public bool $auto_message_on_action = false;
 
     // From CommonDBChild
     public static $itemtype = Holiday::class;
@@ -104,7 +104,7 @@ class Holiday extends CommonDBTM
 
     public static function canView(): bool
     {
-        return Session::haveRight('plugin_activity_can_requestholiday', 1);
+        return Session::haveRight(Profile::RIGHT_CAN_REQUESTHOLIDAY, 1);
     }
 
     /**
@@ -120,7 +120,7 @@ class Holiday extends CommonDBTM
      * What makes a user visible is glpi_profiles_users and not the default entity of
      * glpi_users: someone declared at the root with a recursive profile is legitimately
      * visible from every child entity. getUserEntities() expands that recursion exactly as
-     * getEntitiesRestrictRequest(..., $is_recursive = true) does in the Holiday branch of
+     * getEntitiesRestrictCriteria(..., $is_recursive = true) does in the Holiday branch of
      * plugin_activity_addDefaultWhere(), so the search list and this predicate always agree -
      * a request the list shows is a request the form opens, and the other way round.
      */
@@ -161,7 +161,7 @@ class Holiday extends CommonDBTM
         // The right grants access within the session entities; outside of them, the
         // owner and manager branches below still apply instead of refusing outright
         if (
-            Session::haveRight('plugin_activity_all_users', 1)
+            Session::haveRight(Profile::RIGHT_ALL_USERS, 1)
             && self::isUserInSessionEntities($this->fields['users_id'] ?? 0)
         ) {
             return true;
@@ -171,18 +171,18 @@ class Holiday extends CommonDBTM
             return true;
         }
         return isset($this->fields['users_id'])
-            && Session::haveRight('plugin_activity_can_requestholiday', 1)
+            && Session::haveRight(Profile::RIGHT_CAN_REQUESTHOLIDAY, 1)
             && $this->checkUserIsManager($this->fields['users_id']);
     }
 
     public static function canCreate(): bool
     {
-        return Session::haveRight('plugin_activity_can_requestholiday', 1);
+        return Session::haveRight(Profile::RIGHT_CAN_REQUESTHOLIDAY, 1);
     }
 
     public function canCreateItem(): bool
     {
-        return Session::haveRight('plugin_activity_can_requestholiday', 1);
+        return Session::haveRight(Profile::RIGHT_CAN_REQUESTHOLIDAY, 1);
     }
 
     public function canUpdateItem(): bool
@@ -194,7 +194,7 @@ class Holiday extends CommonDBTM
         // The right grants access within the session entities; outside of them, the
         // owner and manager branches below still apply instead of refusing outright
         if (
-            Session::haveRight('plugin_activity_all_users', 1)
+            Session::haveRight(Profile::RIGHT_ALL_USERS, 1)
             && self::isUserInSessionEntities($this->fields['users_id'] ?? 0)
         ) {
             return true;
@@ -230,7 +230,7 @@ class Holiday extends CommonDBTM
         // The right grants access within the session entities; outside of them, the
         // owner and manager branches below still apply instead of refusing outright
         if (
-            Session::haveRight('plugin_activity_all_users', 1)
+            Session::haveRight(Profile::RIGHT_ALL_USERS, 1)
             && self::isUserInSessionEntities($this->fields['users_id'] ?? 0)
         ) {
             return true;
@@ -240,7 +240,7 @@ class Holiday extends CommonDBTM
             return true;
         }
         return isset($this->fields['users_id'])
-            && Session::haveRight('plugin_activity_can_requestholiday', 1)
+            && Session::haveRight(Profile::RIGHT_CAN_REQUESTHOLIDAY, 1)
             && $this->checkUserIsManager($this->fields['users_id']);
     }
 
@@ -317,7 +317,7 @@ class Holiday extends CommonDBTM
         // granted in. Both ends matter here: the request being edited is already
         // covered by canUpdateItem(), but the users_id being written is not, so
         // without this check the record could be pushed out of the caller's own scope.
-        if (!Session::haveRight('plugin_activity_all_users', 1)
+        if (!Session::haveRight(Profile::RIGHT_ALL_USERS, 1)
             || !self::isUserInSessionEntities($input['users_id'] ?? 0)) {
             $input['users_id'] = $this->fields['users_id'];
         }
@@ -350,7 +350,7 @@ class Holiday extends CommonDBTM
         // by the entities it was granted in, exactly as it is on the reading side:
         // filing an absence for someone is a write on their HR record, so it is the
         // last place where the right should be read as instance-wide.
-        if (!Session::haveRight('plugin_activity_all_users', 1)
+        if (!Session::haveRight(Profile::RIGHT_ALL_USERS, 1)
             || !self::isUserInSessionEntities($input['users_id'] ?? 0)) {
             $input['users_id'] = Session::getLoginUserID();
         }
@@ -707,26 +707,26 @@ class Holiday extends CommonDBTM
                 'modal'   => 'holiday',
                 'img'     => "ti ti-calendar-off",
                 'label'   => __('Create a holiday request', 'activity'),
-                'rights'  => Session::haveRight("plugin_activity_can_requestholiday", READ) && sizeof($have_manager) > 0,
+                'rights'  => Session::haveRight(Profile::RIGHT_CAN_REQUESTHOLIDAY, READ) && sizeof($have_manager) > 0,
             ],
 
             Action::LIST_HOLIDAYS    => [
                 'link'   => PLUGIN_ACTIVITY_WEBDIR . "/front/holiday.php",
                 'img'    => "ti ti-search",
                 'label'  => __('List of holidays', 'activity'),
-                'rights' => Session::haveRight("plugin_activity_can_requestholiday", READ),
+                'rights' => Session::haveRight(Profile::RIGHT_CAN_REQUESTHOLIDAY, READ),
             ],
             Action::APPROVE_HOLIDAYS => [
                 'link'   => $url,
                 'img'    => "ti ti-calendar-time",
                 'label'  => _n('Approve holiday', 'Approve holidays', 2, 'activity'),
-                'rights' => Session::haveRight("plugin_activity_can_validate", READ) && sizeof($users_id_validate) > 0,
+                'rights' => Session::haveRight(Profile::RIGHT_CAN_VALIDATE, READ) && sizeof($users_id_validate) > 0,
             ],
             Action::HOLIDAY_COUNT    => [
                 'link'   => PLUGIN_ACTIVITY_WEBDIR . "/front/holidaycount.php",
                 'img'    => "ti ti-clock",
                 'label'  => _n('Holiday counter', 'Holiday counters', 2, 'activity'),
-                'rights' => Session::haveRight("plugin_activity_can_requestholiday", READ),
+                'rights' => Session::haveRight(Profile::RIGHT_CAN_REQUESTHOLIDAY, READ),
             ],
         ];
 
@@ -737,7 +737,7 @@ class Holiday extends CommonDBTM
                     'link'   => $CFG_GLPI["root_doc"] . "/front/preference.php?glpi_tab=GlpiPlugin\Activity\Preference$1",
                     'img'    => "ti ti-user-plus",
                     'label'  => __('Add a manager', 'activity'),
-                    'rights' => Session::haveRight("plugin_activity_can_requestholiday", READ),
+                    'rights' => Session::haveRight(Profile::RIGHT_CAN_REQUESTHOLIDAY, READ),
                 ],
             ];
         }
@@ -1347,7 +1347,7 @@ class Holiday extends CommonDBTM
 
         if (!empty($ID)) {
             if ($this->fields["users_id"] != Session::getLoginUserID()
-             && !Session::haveRight("plugin_activity_all_users", 1)) {
+             && !Session::haveRight(Profile::RIGHT_ALL_USERS, 1)) {
                 return false;
             }
         }
@@ -1429,16 +1429,16 @@ class Holiday extends CommonDBTM
         $user_mode = 'name';
         $user_name = '';
         $users_id  = (int) ($this->fields['users_id'] ?? 0);
-        if (empty($ID) && Session::haveRight("plugin_activity_all_users", 1)) {
+        if (empty($ID) && Session::haveRight(Profile::RIGHT_ALL_USERS, 1)) {
             $user_mode = 'new_selector';
             $users_id  = Session::getLoginUserID();
         } elseif (empty($ID)) {
             $user_mode = 'hidden';
             $users_id  = Session::getLoginUserID();
             $user_name = $dbu->getUserName($users_id);
-        } elseif (!$is_existing && Session::haveRight("plugin_activity_all_users", 1)) {
+        } elseif (!$is_existing && Session::haveRight(Profile::RIGHT_ALL_USERS, 1)) {
             $user_mode = 'selector';
-        } elseif ($is_existing && Session::haveRight("plugin_activity_all_users", 1)) {
+        } elseif ($is_existing && Session::haveRight(Profile::RIGHT_ALL_USERS, 1)) {
             $user_obj = new User();
             $user_obj->getFromDB($users_id);
             $user_name = $user_obj->getName();
@@ -1454,7 +1454,7 @@ class Holiday extends CommonDBTM
         $can_purge_as_manager = $ID
             && $this->fields["users_id"] != Session::getLoginUserID()
             && $this->checkUserIsManager($this->fields["users_id"])
-            && Session::haveRight("plugin_activity_can_requestholiday", 1);
+            && Session::haveRight(Profile::RIGHT_CAN_REQUESTHOLIDAY, 1);
 
         // Without a manager nobody could validate the request: only the warning is shown
         if (!$is_existing && !$has_manager) {
@@ -1622,7 +1622,7 @@ class Holiday extends CommonDBTM
         // which usually states the reason, simply by switching to the core planning
         // view. Narrow the query to the caller rather than returning nothing, so the
         // user keeps seeing their own holidays whatever the requested filter is.
-        if (!Session::haveRight('plugin_activity_all_users', 1)) {
+        if (!Session::haveRight(Profile::RIGHT_ALL_USERS, 1)) {
             $where['glpi_plugin_activity_holidays.users_id'] = (int) Session::getLoginUserID();
         }
 
@@ -1683,7 +1683,7 @@ class Holiday extends CommonDBTM
             // are the sensitive part, so the entity boundary applies to them too.
             if (
                 (int) $data["users_id"] === (int) Session::getLoginUserID()
-                || (Session::haveRight('plugin_activity_all_users', 1)
+                || (Session::haveRight(Profile::RIGHT_ALL_USERS, 1)
                     && self::isUserInSessionEntities($data["users_id"] ?? 0))
             ) {
                 $interv[$key]["name"]    = Html::resume_text($data["name"], $CFG_GLPI["cut"]); // name is re-encoded on JS side
@@ -2042,8 +2042,6 @@ class Holiday extends CommonDBTM
      * @param  $interv
      * @param  $key
      * @param  $id
-     *
-     * @return
      */
     public function excludeWe($debut, $fin, &$interv, $key, $id)
     {
@@ -2125,7 +2123,7 @@ class Holiday extends CommonDBTM
 
         switch ($ma->getAction()) {
             case "updateAllValidations":
-                if (Session::haveRight('plugin_activity_can_validate', 1)) {
+                if (Session::haveRight(Profile::RIGHT_CAN_VALIDATE, 1)) {
                     // Security (mass assignment): MassiveAction::getInput() returns the whole
                     // POST body minus a handful of infrastructure keys, and update() persists
                     // every key matching a real column. Passing it through meant any column of

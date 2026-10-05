@@ -960,3 +960,11 @@ msgstr ""
 #: ajax/sendmail.php:100
 msgid "of"
 msgstr ""
+
+#: src/PlanningExternalEvent.php:310
+msgid "Transfer to another entity"
+msgstr ""
+
+#: src/PlanningExternalEvent.php:343
+msgid "You do not have access to the selected entity"
+msgstr ""

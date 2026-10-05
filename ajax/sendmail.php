@@ -32,15 +32,16 @@ use Glpi\Exception\Http\NotFoundHttpException;
 use GlpiPlugin\Activity\Holiday;
 use GlpiPlugin\Activity\HolidayValidation;
 use GlpiPlugin\Activity\Notification;
+use GlpiPlugin\Activity\Profile;
 
-Session::checkRight("plugin_activity_can_validate", READ);
+Session::checkRight(Profile::RIGHT_CAN_VALIDATE, READ);
 
 // Security (CSRF): this endpoint is state-changing -- it writes a temporary file, sends
-// the holiday request by mail and historises the notification. GLPI 11 validates the CSRF
-// token in CheckCsrfListener, which by design only inspects non-GET requests, so accepting
-// the identifier from the query string meant the whole workflow could be triggered without
-// any token, for instance by an <img> tag rendered in a validator's browser. Serving POST
-// only puts every call back under the token check. The $_GET branch had no caller anyway:
+// the holiday request by mail and historises the notification. GLPI's CheckCsrfListener
+// validates the request origin (Sec-Fetch-Site / Origin headers) and by design only inspects
+// non-GET requests, so accepting the identifier from the query string meant the whole workflow
+// could be triggered cross-site, for instance by an <img> tag rendered in a validator's browser.
+// Serving POST only puts every call back under the origin check. The $_GET branch had no caller anyway:
 // nothing in the plugin links to this file, and the $_POST branch alone covers the
 // historical AJAX usage.
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

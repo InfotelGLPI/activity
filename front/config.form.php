@@ -40,16 +40,16 @@ if (Plugin::isPluginActive("activity")) {
     // the only unguarded one, and it hands out the whole plugin setup: notification addresses,
     // helpdesk routing, and the schema check tab with the structure of the plugin tables. The
     // page now carries the same right as what it shows and what it writes.
-    if (Session::haveRight("config", UPDATE)) {
+    if (Session::haveRight(\Config::$rightname, UPDATE)) {
         $opt = new Option();
 
         if (isset($_POST["update"])) {
-            Session::checkRight("config", UPDATE);
+            Session::checkRight(\Config::$rightname, UPDATE);
             $opt->update($_POST);
             Html::back();
 
         } elseif (isset($_POST["add_config"])) {
-            Session::checkRight("config", UPDATE);
+            Session::checkRight(\Config::$rightname, UPDATE);
             $config = new Config();
             if (isset($_POST['entities_id'])) {
                 // Defence in depth: the config right above is the real gate, but the
@@ -63,7 +63,7 @@ if (Plugin::isPluginActive("activity")) {
             Html::back();
 
         } elseif (isset($_POST["delete_item"])) {
-            Session::checkRight("config", UPDATE);
+            Session::checkRight(\Config::$rightname, UPDATE);
             $config = new Config();
             foreach ((array) ($_POST["item"] ?? []) as $key => $val) {
                 if ($val != 0) {

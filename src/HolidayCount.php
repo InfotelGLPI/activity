@@ -39,9 +39,9 @@ use Session;
 
 class HolidayCount extends CommonDBTM
 {
-    public $dohistory = false;
+    public bool $dohistory = false;
     public $holidays  = [];
-    public static $rightname = "plugin_activity";
+    public static string $rightname = "plugin_activity";
 
     public static function getTypeName($nb = 1)
     {
@@ -63,7 +63,7 @@ class HolidayCount extends CommonDBTM
         // The right grants access within the session entities; outside of them, the
         // owner and manager branches below still apply instead of refusing outright
         if (
-            Session::haveRight('plugin_activity_all_users', 1)
+            Session::haveRight(Profile::RIGHT_ALL_USERS, 1)
             && Holiday::isUserInSessionEntities($this->fields['users_id'] ?? 0)
         ) {
             return true;
@@ -116,7 +116,7 @@ class HolidayCount extends CommonDBTM
         // The right grants access within the session entities; outside of them, the
         // owner and manager branches below still apply instead of refusing outright
         if (
-            Session::haveRight('plugin_activity_all_users', 1)
+            Session::haveRight(Profile::RIGHT_ALL_USERS, 1)
             && Holiday::isUserInSessionEntities($users_id)
         ) {
             return true;
@@ -381,8 +381,8 @@ class HolidayCount extends CommonDBTM
             'users_id'             => $target_users_id,
             'username'             => $dbu->getUserName($target_users_id),
             'user_selector'        => $this->isNewItem()
-                && (Session::haveRight('plugin_activity_all_users', 1)
-                    || Session::haveRight('plugin_activity_can_validate', READ)),
+                && (Session::haveRight(Profile::RIGHT_ALL_USERS, 1)
+                    || Session::haveRight(Profile::RIGHT_CAN_VALIDATE, READ)),
             'holiday_type_class'   => HolidayType::class,
             'holiday_period_class' => HolidayPeriod::class,
             'count'                => Html::formatNumber($this->fields['count'], true),

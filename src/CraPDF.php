@@ -77,11 +77,11 @@ class CraPDF extends \TCPDF
         parent::__construct($orientation, $unit, $size, true, 'UTF-8');
 
         // Reproduce the FPDF defaults the layout relied on: 10 mm page margins,
-        // ~1 mm horizontal cell padding, 20 mm auto page-break and no promo link.
+        // ~1 mm horizontal cell padding and 20 mm auto page-break. TCPDF 7 (GLPI 12) no
+        // longer adds a promo link, so the former $tcpdflink switch is gone.
         $this->SetMargins(10, 10, 10);
         $this->SetAutoPageBreak(true, 20);
         $this->setCellPaddings(1, 0, 1, 0);
-        $this->tcpdflink = false;
         $this->SetFont($this->pol_def, '', $this->tail_pol_def);
     }
 

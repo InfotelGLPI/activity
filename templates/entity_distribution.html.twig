@@ -32,7 +32,6 @@
     </div>
     <div class="card-body">
         <form method="post" action="{{ form_action }}">
-            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
             <div class="row g-3 align-items-end">
                 <div class="col-auto">
                     <label class="col-form-label fw-bold" for="activity_distribution_year">{{ __('Year', 'activity') }}</label>
@@ -79,7 +78,6 @@
             <span class="ms-auto badge bg-blue-lt">{{ __('Total') }} : {{ tech.total_readable }}</span>
             {% if can_set_techleads %}
                 <form method="post" action="{{ form_action }}" class="d-inline">
-                    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="year" value="{{ year }}">
                     <input type="hidden" name="users_id" value="{{ users_id }}">
                     <input type="hidden" name="techs_id" value="{{ tech.id }}">

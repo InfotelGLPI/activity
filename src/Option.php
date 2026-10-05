@@ -40,7 +40,7 @@ use Toolbox;
 
 class Option extends CommonDBTM
 {
-    public static $rightname = "plugin_activity";
+    public static string $rightname = "plugin_activity";
 
     public static function getTypeName($nb = 0)
     {
@@ -64,7 +64,7 @@ class Option extends CommonDBTM
     // the same right as writing it.
     public static function canView(): bool
     {
-        return \Session::haveRight('config', UPDATE);
+        return \Session::haveRight(\Config::$rightname, UPDATE);
     }
 
     // Same right as canView() above and as the two controllers that write the setup
@@ -76,7 +76,7 @@ class Option extends CommonDBTM
     // setup to a standard business profile.
     public static function canCreate(): bool
     {
-        return \Session::haveRight('config', UPDATE);
+        return \Session::haveRight(\Config::$rightname, UPDATE);
     }
 
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
@@ -196,7 +196,7 @@ class Option extends CommonDBTM
         // body to update(), and CommonDBTM persists every key matching a real column --
         // including id, which would move the write onto another options row. Keep only
         // what option_form.html.twig actually exposes, plus GLPI's own underscore-
-        // prefixed infrastructure keys (upload handling, CSRF token). The caller is a
+        // prefixed infrastructure keys (upload handling). The caller is a
         // super-admin, so this is defence in depth and consistency with the rest of the
         // plugin, not a privilege boundary.
         $allowed = [

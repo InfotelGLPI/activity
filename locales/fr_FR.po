@@ -1017,3 +1017,11 @@ msgstr "Valeur par défaut du champ \"Afficher sur le CRA\""
 #: ajax/sendmail.php:100
 msgid "of"
 msgstr "du"
+
+#: src/PlanningExternalEvent.php:310
+msgid "Transfer to another entity"
+msgstr "Transférer vers une autre entité"
+
+#: src/PlanningExternalEvent.php:343
+msgid "You do not have access to the selected entity"
+msgstr "Vous n'avez pas accès à l'entité sélectionnée"

@@ -41,7 +41,6 @@
         <form id="{{ form_id }}" method="post" action="{{ item.getFormURL() }}" data-submit-once>
             <input type="hidden" name="id" value="{{ item.getID() }}">
             <input type="hidden" name="update" value="1">
-            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
     {% endif %}
 
     <div class="row">

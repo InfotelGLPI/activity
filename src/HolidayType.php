@@ -35,16 +35,16 @@ use Session;
 /// HolidayType class
 class HolidayType extends CommonDropdown
 {
-    public $can_be_translated  = true;
-    public static $rightname = "dropdown";
+    public bool $can_be_translated  = true;
+    public static string $rightname = "dropdown";
 
     public const RTT = 'RT';
     public const CP = 'CP';
 
     public static function canCreate(): bool
     {
-        return Session::haveRight('plugin_activity', CREATE)
-                 && Session::haveRight("plugin_activity_all_users", 1);
+        return Session::haveRight(Menu::$rightname, CREATE)
+                 && Session::haveRight(Profile::RIGHT_ALL_USERS, 1);
     }
 
     /**
@@ -59,14 +59,14 @@ class HolidayType extends CommonDropdown
      */
     public static function canUpdate(): bool
     {
-        return Session::haveRight('plugin_activity', UPDATE)
-                 && Session::haveRight("plugin_activity_all_users", 1);
+        return Session::haveRight(Menu::$rightname, UPDATE)
+                 && Session::haveRight(Profile::RIGHT_ALL_USERS, 1);
     }
 
     public static function canPurge(): bool
     {
-        return Session::haveRight('plugin_activity', PURGE)
-                 && Session::haveRight("plugin_activity_all_users", 1);
+        return Session::haveRight(Menu::$rightname, PURGE)
+                 && Session::haveRight(Profile::RIGHT_ALL_USERS, 1);
     }
 
     // canView() is deliberately left on the inherited `dropdown` right: the holiday

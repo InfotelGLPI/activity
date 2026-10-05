@@ -33,7 +33,6 @@
     </div>
     <div class="card-body">
         <form method="post" action="{{ form_url }}">
-            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="users_id" value="{{ users_id }}">
 
             <div class="row g-3 align-items-end">

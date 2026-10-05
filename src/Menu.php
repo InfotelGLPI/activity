@@ -34,7 +34,7 @@ use Session;
 
 class Menu extends CommonGLPI
 {
-    public static $rightname = 'plugin_activity';
+    public static string $rightname = 'plugin_activity';
 
     public static function getMenuName()
     {
@@ -52,11 +52,11 @@ class Menu extends CommonGLPI
         $menu['links']['search']  = $plugin_page;
 
         if (Session::haveRight(static::$rightname, UPDATE)
-              || Session::haveRight("config", UPDATE)) {
+              || Session::haveRight(\Config::$rightname, UPDATE)) {
             // The two links below point at front/config.form.php, which is gated on config in
             // UPDATE. They used to be emitted for the plugin right as well, so a user holding
             // plugin_activity/UPDATE alone was offered a cog that answered 403.
-            if (Session::haveRight("config", UPDATE)) {
+            if (Session::haveRight(\Config::$rightname, UPDATE)) {
                 //Entry icon in breadcrumb
                 $menu['links']['config']                  = PLUGIN_ACTIVITY_WEBDIR . '/front/config.form.php';
                 //Link to config page in admin plugins list

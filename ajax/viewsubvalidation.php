@@ -31,11 +31,12 @@ use Glpi\Exception\Http\AccessDeniedHttpException;
 use Glpi\Exception\Http\NotFoundHttpException;
 use GlpiPlugin\Activity\Holiday;
 use GlpiPlugin\Activity\HolidayValidation;
+use GlpiPlugin\Activity\Profile;
 
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
-Session::checkRight('plugin_activity_can_validate', READ);
+Session::checkRight(Profile::RIGHT_CAN_VALIDATE, READ);
 
 if (!isset($_POST['type'])) {
     throw new NotFoundHttpException();
@@ -79,7 +80,7 @@ if (($item = $dbu->getItemForItemtype($_POST['type']))
                 && (int) $holiday->fields['users_id'] === Session::getLoginUserID();
             if (!HolidayValidation::canValidate($holidays_id)
                 && !$is_requester
-                && !Session::haveRight('plugin_activity_all_users', 1)) {
+                && !Session::haveRight(Profile::RIGHT_ALL_USERS, 1)) {
                 throw new AccessDeniedHttpException();
             }
         }

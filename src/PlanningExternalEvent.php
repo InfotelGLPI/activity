@@ -45,6 +45,7 @@ use Glpi\DBAL\QuerySubQuery;
 use GlpiPlugin\Manageentities\CriDetail;
 use GlpiPlugin\Manageentities\CriTechnician;
 use Html;
+use MassiveAction;
 use PlanningEventCategory;
 use Plugin;
 use Session;
@@ -70,9 +71,9 @@ class PlanningExternalEvent extends CommonDBTM
     public static $ACTIVITY_TAG = 'activity';
     public static $HOLIDAY_TAG = 'holiday';
 
-    public $dohistory = false;
+    public bool $dohistory = false;
 
-    public static $rightname = "plugin_activity";
+    public static string $rightname = "plugin_activity";
 
     /**
      * functions mandatory
@@ -271,7 +272,7 @@ class PlanningExternalEvent extends CommonDBTM
             return true;
         }
 
-        return Session::haveRight('plugin_activity_all_users', 1)
+        return Session::haveRight(Profile::RIGHT_ALL_USERS, 1)
                && Holiday::isUserInSessionEntities($owner);
     }
 
@@ -293,6 +294,77 @@ class PlanningExternalEvent extends CommonDBTM
         $forbidden[] = 'add_transfer_list';
 
         return $forbidden;
+    }
+
+    public function getSpecificMassiveActions($checkitem = null)
+    {
+        $actions = parent::getSpecificMassiveActions($checkitem);
+
+        // The core Transfer engine knows nothing about PlanningExternalEvent, so moving an
+        // activity to another entity is a dedicated action acting on the core event this row
+        // qualifies. It is reserved to the managers who already see other people's activities.
+        if (Session::haveRight(Profile::RIGHT_ALL_USERS, 1)
+            && Session::isMultiEntitiesMode()) {
+            $actions[self::class . MassiveAction::CLASS_ACTION_SEPARATOR . 'transfer_entity']
+                = "<i class='ti ti-corner-right-up' aria-hidden='true'></i>"
+                  . __s('Transfer to another entity', 'activity');
+        }
+
+        return $actions;
+    }
+
+    public static function showMassiveActionsSubForm(MassiveAction $ma)
+    {
+        if ($ma->getAction() === 'transfer_entity') {
+            Entity::dropdown([
+                'name'   => 'entities_id',
+                'entity' => $_SESSION['glpiactiveentities'],
+            ]);
+            echo '<br><br>' . Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
+            return true;
+        }
+
+        return parent::showMassiveActionsSubForm($ma);
+    }
+
+    public static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item, array $ids)
+    {
+        if ($ma->getAction() !== 'transfer_entity') {
+            parent::processMassiveActionsForOneItemtype($ma, $item, $ids);
+            return;
+        }
+
+        $entities_id = (int) ($ma->getInput()['entities_id'] ?? -1);
+        // Security: the target comes from the form, so it must be one of the caller's active
+        // entities, as the dropdown offers; otherwise anyone could push events out of reach.
+        if (!Session::haveRight(Profile::RIGHT_ALL_USERS, 1)
+            || !in_array($entities_id, array_map('intval', $_SESSION['glpiactiveentities'] ?? []), true)) {
+            $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_NORIGHT);
+            $ma->addMessage(__('You do not have access to the selected entity', 'activity'));
+            return;
+        }
+
+        $event = new \PlanningExternalEvent();
+        foreach ($ids as $id) {
+            // canUpdateItem() resolves the right on the core event (owner, or managed user
+            // in the caller's entities), exactly as for the standard update action
+            if (!$item->getFromDB($id) || !$item->canUpdateItem()) {
+                $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_NORIGHT);
+                $ma->addMessage($item->getErrorMessage(ERROR_RIGHT));
+                continue;
+            }
+
+            $events_id = (int) $item->fields['planningexternalevents_id'];
+            // Only entities_id is sent: the plugin's pre_item_update hooks act on dates and
+            // categories, which are left untouched here
+            if ($event->getFromDB($events_id)
+                && $event->update(['id' => $events_id, 'entities_id' => $entities_id])) {
+                $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
+            } else {
+                $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
+                $ma->addMessage($item->getErrorMessage(ERROR_ON_ACTION));
+            }
+        }
     }
 
     /**
@@ -339,19 +411,19 @@ class PlanningExternalEvent extends CommonDBTM
                 'link' => $CFG_GLPI["root_doc"] . "/front/planning.php",
                 'img' => "ti ti-calendar-plus",
                 'label' => __('Add an activity', 'activity'),
-                'rights' => Session::haveRight("plugin_activity", CREATE),
+                'rights' => Session::haveRight(Menu::$rightname, CREATE),
             ],
             Action::LIST_ACTIVITIES => [
                 'link' => PLUGIN_ACTIVITY_WEBDIR . "/front/planningexternalevent.php",
                 'img' => "ti ti-calendar",
                 'label' => __('List of activities', 'activity'),
-                'rights' => Session::haveRight("plugin_activity", READ),
+                'rights' => Session::haveRight(Menu::$rightname, READ),
             ],
             Action::CRA => [
                 'link' => PLUGIN_ACTIVITY_WEBDIR . "/front/cra.php",
                 'img' => "ti ti-calendar-stats",
                 'label' => __('CRA', 'activity'),
-                'rights' => Session::haveRight("plugin_activity_statistics", 1),
+                'rights' => Session::haveRight(Profile::RIGHT_STATISTICS, 1),
             ],
             Action::ENTITY_DISTRIBUTION => [
                 'link' => PLUGIN_ACTIVITY_WEBDIR . "/front/entitydistribution.php",
@@ -411,7 +483,7 @@ class PlanningExternalEvent extends CommonDBTM
         }
 
         TemplateRenderer::getInstance()->display('@activity/planningexternalevent_post_item_form.html.twig', [
-            'can_use_cra'               => Session::haveRight('plugin_activity_statistics', 1),
+            'can_use_cra'               => Session::haveRight(Profile::RIGHT_STATISTICS, 1),
             'is_oncra_value'            => $is_oncra_value,
             'use_subcategories'         => (bool) $opt->fields['use_planningeventsubcategories'],
             'subcategory_dropdown_html' => $subcategory_dropdown_html,

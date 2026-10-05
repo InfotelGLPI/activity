@@ -41,7 +41,7 @@ use Session;
  */
 class CheckSchema extends CommonDBTM
 {
-    public static $rightname = 'plugin_activity';
+    public static string $rightname = 'plugin_activity';
 
     /**
      * functions mandatory
@@ -138,7 +138,7 @@ class CheckSchema extends CommonDBTM
         // entry point leading here (front/config.form.php) already carries. It used to replay
         // the much weaker plugin_activity/UPDATE, so a direct call from a future endpoint would
         // have mapped the schema for any user allowed to declare his activity.
-        Session::checkRight('config', UPDATE);
+        Session::checkRight(\Config::$rightname, UPDATE);
 
         $schemaFile = $this->getSchemaPath($version);
 

@@ -27,6 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\DBAL\QuerySubQuery;
 use GlpiPlugin\Activity\Holiday;
 use GlpiPlugin\Activity\HolidayCount;
 use GlpiPlugin\Activity\HolidayPeriod;
@@ -508,8 +509,8 @@ function plugin_activity_addDefaultWhere($type)
     switch ($type) {
         case Holiday::class:
             $who = (int) Session::getLoginUserID();
-            if (!Session::haveRight("plugin_activity_all_users", 1)) {
-                return " `glpi_plugin_activity_holidays`.`users_id` = '$who' ";
+            if (!Session::haveRight(Profile::RIGHT_ALL_USERS, 1)) {
+                return ['glpi_plugin_activity_holidays.users_id' => $who];
             }
             // Security: the holidays table carries no entities_id, so the core adds no entity
             // restriction of its own and the break below returned an empty WHERE - the search
@@ -520,14 +521,15 @@ function plugin_activity_addDefaultWhere($type)
             // event. glpi_profiles_users and the recursive flag are what makes this the exact
             // counterpart of Holiday::isUserInSessionEntities(), which gates the form: what
             // the list shows is what the form opens.
-            $dbu = new DbUtils();
-            $sub = "SELECT `users_id` FROM `glpi_profiles_users` WHERE 1 "
-                   . $dbu->getEntitiesRestrictRequest("AND", "glpi_profiles_users", '', '', true);
-            return " `glpi_plugin_activity_holidays`.`users_id` IN ($sub) ";
+            return [
+                'glpi_plugin_activity_holidays.users_id' => new QuerySubQuery([
+                    'SELECT' => 'users_id',
+                    'FROM'   => 'glpi_profiles_users',
+                    'WHERE'  => getEntitiesRestrictCriteria('glpi_profiles_users', '', '', true),
+                ]),
+            ];
         case HolidayCount::class:
-            $who = (int) Session::getLoginUserID();
-            return " `glpi_plugin_activity_holidaycounts`.`users_id` = '$who' ";
-            break;
+            return ['glpi_plugin_activity_holidaycounts.users_id' => (int) Session::getLoginUserID()];
         case PlanningExternalEvent::class:
             // Security: this itemtype is exposed through Search::show() behind the
             // generic plugin_activity READ right only. Its satellite table carries
@@ -535,14 +537,17 @@ function plugin_activity_addDefaultWhere($type)
             // the entity boundary is applied by anything else: the list would show the
             // logged activity of the whole instance. Restrict through the core event
             // the row hangs off, mirroring what Report::showGenericSearch() enforces.
-            $dbu = new DbUtils();
-            $sub = "SELECT `id` FROM `glpi_planningexternalevents` WHERE 1 "
-                   . $dbu->getEntitiesRestrictRequest("AND", "glpi_planningexternalevents");
-            if (!Session::haveRight("plugin_activity_all_users", 1)) {
-                $who = (int) Session::getLoginUserID();
-                $sub .= " AND `glpi_planningexternalevents`.`users_id` = '$who' ";
+            $sub_where = getEntitiesRestrictCriteria('glpi_planningexternalevents');
+            if (!Session::haveRight(Profile::RIGHT_ALL_USERS, 1)) {
+                $sub_where['glpi_planningexternalevents.users_id'] = (int) Session::getLoginUserID();
             }
-            return " `glpi_plugin_activity_planningexternalevents`.`planningexternalevents_id` IN ($sub) ";
+            return [
+                'glpi_plugin_activity_planningexternalevents.planningexternalevents_id' => new QuerySubQuery([
+                    'SELECT' => 'id',
+                    'FROM'   => 'glpi_planningexternalevents',
+                    'WHERE'  => $sub_where,
+                ]),
+            ];
     }
     return "";
 }
@@ -576,7 +581,7 @@ function plugin_activity_post_item_form($params)
     $opt->getFromDB(1);
     switch ($item->getType()) {
         case 'PlanningExternalEvent':
-            if (Session::haveRight("plugin_activity", READ)) {
+            if (Session::haveRight(Menu::$rightname, READ)) {
                 PlanningExternalEvent::postItemForm($params);
             }
             break;
@@ -589,12 +594,12 @@ function plugin_activity_post_item_form($params)
             // profiles with no activity right at all. The fields it adds carry the plugin's own
             // referential (activity types, the caller's declarable time) and post back to the
             // plugin's tables, so the right is checked here the same way.
-            if ($opt->getUseProject() && Session::haveRight("plugin_activity", READ)) {
+            if ($opt->getUseProject() && Session::haveRight(Menu::$rightname, READ)) {
                 ProjectTask::addField($params);
             }
             break;
         case 'TicketTask':
-            if (Session::haveRight("plugin_activity", READ)) {
+            if (Session::haveRight(Menu::$rightname, READ)) {
                 // Ticket task cra
                 TicketTask::postForm($params);
             }

@@ -31,6 +31,7 @@ use Glpi\Exception\Http\AccessDeniedHttpException;
 use Glpi\Exception\Http\BadRequestHttpException;
 use GlpiPlugin\Activity\Holiday;
 use GlpiPlugin\Activity\Report;
+use GlpiPlugin\Activity\Profile;
 
 if (isset($_GET["file"])) { // for other file
     $splitter = explode("/", $_GET["file"]);
@@ -39,7 +40,7 @@ if (isset($_GET["file"])) { // for other file
         $send = false;
         if (
             ($splitter[1] == "activity")
-            && Session::haveRight("plugin_activity_statistics", READ)
+            && Session::haveRight(Profile::RIGHT_STATISTICS, READ)
         ) {
             // Security: plugin_activity_statistics is the nominal right of anyone
             // allowed to produce their own CRA, not an administration right, and the
@@ -59,7 +60,7 @@ if (isset($_GET["file"])) { // for other file
             if (
                 $owner === null
                 || ($owner !== (int) Session::getLoginUserID()
-                    && (!Session::haveRight("plugin_activity_all_users", 1)
+                    && (!Session::haveRight(Profile::RIGHT_ALL_USERS, 1)
                         || !Holiday::isUserInSessionEntities($owner)))
             ) {
                 throw new AccessDeniedHttpException();

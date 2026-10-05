@@ -35,13 +35,13 @@ use Session;
 /// PlanningEventSubCategory class
 class PlanningEventSubCategory extends CommonDropdown
 {
-    public $can_be_translated  = true;
-    public static $rightname = "dropdown";
+    public bool $can_be_translated  = true;
+    public static string $rightname = "dropdown";
 
     public static function canCreate(): bool
     {
-        return Session::haveRight('plugin_activity', CREATE)
-            && Session::haveRight("plugin_activity_all_users", 1);
+        return Session::haveRight(Menu::$rightname, CREATE)
+            && Session::haveRight(Profile::RIGHT_ALL_USERS, 1);
     }
 
     /**
@@ -55,14 +55,14 @@ class PlanningEventSubCategory extends CommonDropdown
      */
     public static function canUpdate(): bool
     {
-        return Session::haveRight('plugin_activity', UPDATE)
-            && Session::haveRight("plugin_activity_all_users", 1);
+        return Session::haveRight(Menu::$rightname, UPDATE)
+            && Session::haveRight(Profile::RIGHT_ALL_USERS, 1);
     }
 
     public static function canPurge(): bool
     {
-        return Session::haveRight('plugin_activity', PURGE)
-            && Session::haveRight("plugin_activity_all_users", 1);
+        return Session::haveRight(Menu::$rightname, PURGE)
+            && Session::haveRight(Profile::RIGHT_ALL_USERS, 1);
     }
 
     public static function getTypeName($nb = 0)

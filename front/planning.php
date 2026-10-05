@@ -28,12 +28,13 @@
  */
 
 use Glpi\Exception\Http\AccessDeniedHttpException;
+use GlpiPlugin\Activity\Menu;
 
 // The iCal branch authenticates with a personal token instead of the session, so it
 // cannot require a session right; every other branch still does, which keeps them
 // fail-closed now that the route is declared stateless in setup.php.
 if (!isset($_GET['genical'])) {
-    Session::checkRight("plugin_activity", READ);
+    Session::checkRight(Menu::$rightname, READ);
 }
 
 if (!isset($_GET["uID"])) {
@@ -57,7 +58,7 @@ if (isset($_GET['checkavailability'])) {
     // a profile holding the plugin right but deliberately denied the planning right could
     // still browse the core slots through this route. The plugin check at the top of the
     // file is kept: this branch needs both rights.
-    Session::checkRight("planning", READ);
+    Session::checkRight(\Planning::$rightname, READ);
 
     Html::popHeader(__('Availability'));
 
@@ -188,7 +189,7 @@ if (isset($_GET['checkavailability'])) {
     // The right must be settled before anything is written to the response: checked
     // after Html::header(), the access-denied exception was raised with the page
     // already half-sent, which replaced the core error screen with a truncated DOM.
-    Session::checkRight('plugin_activity', CREATE);
+    Session::checkRight(Menu::$rightname, CREATE);
 
     Html::header(__('Planning'), $_SERVER['REQUEST_URI'], "plugins", "activity");
 

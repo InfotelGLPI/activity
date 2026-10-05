@@ -69,7 +69,7 @@ class Dashboard extends CommonGLPI
         //      $mois_courant   = intval(strftime("%m"));
         //      $annee_courante = strftime("%Y");
         //
-        //      if (isset($this->options['users_id']) && Session::haveRight("plugin_activity_all_users", 1)) {
+        //      if (isset($this->options['users_id']) && Session::haveRight(Profile::RIGHT_ALL_USERS, 1)) {
         //         $users_id = $this->options['users_id'];
         //      } else {
         //         $users_id = $_SESSION['glpiID'];
@@ -144,7 +144,7 @@ class Dashboard extends CommonGLPI
     {
         $users_id = (int) ($opt['users_id'] ?? 0);
         if ($users_id > 0
-            && Session::haveRight('plugin_activity_all_users', 1)
+            && Session::haveRight(Profile::RIGHT_ALL_USERS, 1)
             && Holiday::isUserInSessionEntities($users_id)) {
             return $users_id;
         }
@@ -159,7 +159,7 @@ class Dashboard extends CommonGLPI
         // Security: mydashboard reposts the widget id on every refresh, so gating the
         // hook registration in setup.php only filters what is offered, never what can be
         // asked for. The right is replayed here, where the widget actually reads data.
-        Session::checkRight('plugin_activity', READ);
+        Session::checkRight(\GlpiPlugin\Activity\Menu::$rightname, READ);
 
         $dbu = new DbUtils();
         if (empty($this->form)) {
@@ -338,7 +338,7 @@ class Dashboard extends CommonGLPI
                                <div id='calendarwidget" . $rand . "' ></div>";
                 $widget->setWidgetHtmlContent($html);
                 //                    Form to choose user, and then see user's planning, toggleRefresh to enable the automatic refresh
-                if (Session::haveRight("plugin_activity_all_users", 1)) {
+                if (Session::haveRight(Profile::RIGHT_ALL_USERS, 1)) {
                     $widget->appendWidgetHtmlContent(Helper::getFormHeader($this->getType() . "2") . $this->form);
                     $widget->toggleWidgetRefresh();
                 }
@@ -551,7 +551,7 @@ class Dashboard extends CommonGLPI
             }
 
             # 2.3 Plugin Activity holidays
-            if (Session::haveRight("plugin_activity_can_requestholiday", 1)) {
+            if (Session::haveRight(Profile::RIGHT_CAN_REQUESTHOLIDAY, 1)) {
                 $opt["is_usedbycra"] = true;
                 $opt                 = array_merge($crit, $opt);
 

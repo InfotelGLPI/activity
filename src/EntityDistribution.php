@@ -44,7 +44,7 @@ use Ticket;
  */
 class EntityDistribution extends CommonGLPI
 {
-    public static $rightname = 'plugin_activity_statistics';
+    public static string $rightname = 'plugin_activity_statistics';
 
     public static function getTypeName($nb = 0)
     {
@@ -77,7 +77,7 @@ class EntityDistribution extends CommonGLPI
     public static function resolveUser($users_id): int
     {
         // Without plugin_activity_all_users, a user only ever sees their own distribution
-        if (!Session::haveRight('plugin_activity_all_users', 1)) {
+        if (!Session::haveRight(Profile::RIGHT_ALL_USERS, 1)) {
             return (int) Session::getLoginUserID();
         }
 
@@ -210,7 +210,7 @@ class EntityDistribution extends CommonGLPI
         }
         $users_id = self::resolveUser($input['users_id'] ?? 0);
 
-        $can_see_all_users = (bool) Session::haveRight('plugin_activity_all_users', 1);
+        $can_see_all_users = (bool) Session::haveRight(Profile::RIGHT_ALL_USERS, 1);
         $techs = self::getData($year, $users_id);
 
         TemplateRenderer::getInstance()->display('@activity/entity_distribution.html.twig', [

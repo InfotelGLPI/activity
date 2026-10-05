@@ -32,10 +32,11 @@ use GlpiPlugin\Activity\PlanningExternalEvent;
 use GlpiPlugin\Activity\Holiday;
 use Glpi\Application\View\TemplateRenderer;
 use Glpi\Exception\Http\AccessDeniedHttpException;
+use GlpiPlugin\Activity\Profile;
 
-$can = Session::haveRight("plugin_activity", READ);
-$canholiday = Session::haveRight("plugin_activity_can_requestholiday", 1);
-$canvalidateholiday = Session::haveRight("plugin_activity_can_validate", 1);
+$can = Session::haveRight(Menu::$rightname, READ);
+$canholiday = Session::haveRight(Profile::RIGHT_CAN_REQUESTHOLIDAY, 1);
+$canvalidateholiday = Session::haveRight(Profile::RIGHT_CAN_VALIDATE, 1);
 
 if (!$can
     && !$canholiday

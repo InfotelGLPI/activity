@@ -44,7 +44,7 @@ document.addEventListener('click', (event) => {
     }
     event.preventDefault();
     // Already sent (data-submit-once, set by the core on submit): a second click would shift the
-    // month again and resend the single-use CSRF token, rejected as "action not allowed"
+    // month again and start a second slow report computation
     if (form.dataset.submitted === 'true') {
         return;
     }

@@ -38,7 +38,13 @@ use Session;
 
 class Profile extends \Profile
 {
-    public static $rightname = "profile";
+    public static string $rightname = "profile";
+
+    // Secondary plugin rights; the main one is Menu::$rightname ('plugin_activity')
+    public const RIGHT_ALL_USERS          = 'plugin_activity_all_users';
+    public const RIGHT_CAN_REQUESTHOLIDAY = 'plugin_activity_can_requestholiday';
+    public const RIGHT_CAN_VALIDATE       = 'plugin_activity_can_validate';
+    public const RIGHT_STATISTICS         = 'plugin_activity_statistics';
 
     public static function getTypeName($nb = 0)
     {

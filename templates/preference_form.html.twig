@@ -35,7 +35,6 @@
         {% if use_groupmanager == 0 %}
             {# Mode manual: managers declared by the user #}
             <form method="post" action="{{ form_url }}">
-                <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
                 <table class="table table-hover mb-0">
                     <thead>
                         <tr>

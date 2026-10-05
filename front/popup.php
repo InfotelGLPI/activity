@@ -32,8 +32,10 @@ use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Activity\Holiday;
 use GlpiPlugin\Activity\PlanningExternalEvent;
 use GlpiPlugin\Activity\Report;
+use GlpiPlugin\Activity\Menu;
+use GlpiPlugin\Activity\Profile;
 
-Session::checkRight('plugin_activity', READ);
+Session::checkRight(Menu::$rightname, READ);
 
 if (isset($_GET["users_id"])) {
     $users_id = (int) $_GET["users_id"];
@@ -47,7 +49,7 @@ if (isset($_GET["users_id"])) {
 
 // Only profiles holding plugin_activity_all_users may target another user;
 // everyone else is forced onto their own data regardless of the requested id.
-if (!Session::haveRight("plugin_activity_all_users", 1)) {
+if (!Session::haveRight(Profile::RIGHT_ALL_USERS, 1)) {
     $users_id = Session::getLoginUserID();
 }
 

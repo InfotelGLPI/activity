@@ -167,9 +167,6 @@ function getActionTime(beginDate, endDate, actiontime, input, format, root_doc) 
        $.ajax({
            url: root_doc + '/ajax/duration.php',
            type: 'POST',
-           headers: {
-               'X-Glpi-Csrf-Token': getAjaxCsrfToken()
-           },
            data: {
                begin: beginDate,
                end: endDate,

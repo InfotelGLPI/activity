@@ -34,7 +34,6 @@
     </div>
     <div class="card-body p-0">
         <form id="snapshot_form" method="POST" action="{{ webdir }}/front/cra.php">
-            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
             {{ include('components/datatable.html.twig', {
                 'datatable_id': 'snapshots_table',
                 'nosort': true,

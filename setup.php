@@ -27,7 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
-define('PLUGIN_ACTIVITY_VERSION', '3.2.19');
+define('PLUGIN_ACTIVITY_VERSION', '3.3.0');
 
 global $CFG_GLPI;
 
@@ -96,12 +96,12 @@ function plugin_init_activity()
         'scripts/planningexternalevent-subcategory.js',
     ];
 
-    if (Session::haveRight("plugin_activity", UPDATE)
-        || Session::haveRight("plugin_activity_can_requestholiday", 1)
-        || Session::haveRight("plugin_activity_can_validate", 1)
-        || Session::haveRight("plugin_activity_all_users", 1)) {
+    if (Session::haveRight(Menu::$rightname, UPDATE)
+        || Session::haveRight(Profile::RIGHT_CAN_REQUESTHOLIDAY, 1)
+        || Session::haveRight(Profile::RIGHT_CAN_VALIDATE, 1)
+        || Session::haveRight(Profile::RIGHT_ALL_USERS, 1)) {
         $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['activity'] = ['scripts/scripts-activityholidays.js'];
-        if (Session::haveRight("plugin_activity", READ)) {
+        if (Session::haveRight(Menu::$rightname, READ)) {
             // Header icon opening the lateral menu, served by ajax/lateralmenu.php
             $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT_MODULE]['activity'][] = 'scripts/lateral-menu.js';
         }
@@ -139,15 +139,15 @@ function plugin_init_activity()
         Plugin::registerClass(HolidayValidation::class, []);
 
         if (Session::getLoginUserID()) {
-            if (Session::haveRight("plugin_activity", READ)
-                || Session::haveRight("plugin_activity_can_requestholiday", 1)
-                || Session::haveRight("plugin_activity_can_validate", 1)) {
+            if (Session::haveRight(Menu::$rightname, READ)
+                || Session::haveRight(Profile::RIGHT_CAN_REQUESTHOLIDAY, 1)
+                || Session::haveRight(Profile::RIGHT_CAN_VALIDATE, 1)) {
                 Plugin::registerClass(
                     Preference::class,
                     ['addtabon' => 'Preference'],
                 );
 
-                if (Session::haveRight('plugin_activity', READ)) {
+                if (Session::haveRight(Menu::$rightname, READ)) {
                     $PLUGIN_HOOKS[Hooks::MENU_TOADD]['activity'] = ['tools' => Menu::class];
                     $PLUGIN_HOOKS[Hooks::HELPDESK_MENU_ENTRY]['activity'] = PLUGIN_ACTIVITY_WEBDIR . '/front/menu.php';
                     $PLUGIN_HOOKS[Hooks::HELPDESK_MENU_ENTRY_ICON]['activity'] = Holiday::getIcon();
@@ -162,7 +162,7 @@ function plugin_init_activity()
                 $PLUGIN_HOOKS['redirect_page']['activity'] = PLUGIN_ACTIVITY_WEBDIR . '/front/holiday.form.php';
             }
 
-            if (Session::haveRight("plugin_activity", UPDATE) && class_exists(Profile::class)) {
+            if (Session::haveRight(Menu::$rightname, UPDATE) && class_exists(Profile::class)) {
                 $PLUGIN_HOOKS[Hooks::CONFIG_PAGE]['activity'] = 'front/config.form.php';
                 $PLUGIN_HOOKS[Hooks::USE_MASSIVE_ACTION]['activity'] = false;
             }
@@ -251,8 +251,8 @@ function plugin_version_activity()
         'homepage' => '',
         'requirements' => [
             'glpi' => [
-                'min' => '11.0',
-                'max' => '12.0',
+                'min' => '12.0',
+                'max' => '13.0',
                 'dev' => false,
             ],
         ],
