@@ -31,7 +31,8 @@
         <strong>{{ __('Activity report', 'activity') }}</strong>
     </div>
     <div class="card-body">
-        <form method="post" id="form_cra" name="form" action="cra.php">
+        {# data-submit-once: the report is slow to compute, a second click would resend the CSRF token the first request already consumed #}
+        <form method="post" id="form_cra" name="form" action="cra.php" data-submit-once>
             <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
             <div class="row g-3 align-items-end">
                 <div class="col-auto">

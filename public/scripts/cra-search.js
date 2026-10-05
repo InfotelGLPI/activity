@@ -43,6 +43,11 @@ document.addEventListener('click', (event) => {
         return;
     }
     event.preventDefault();
+    // Already sent (data-submit-once, set by the core on submit): a second click would shift the
+    // month again and resend the single-use CSRF token, rejected as "action not allowed"
+    if (form.dataset.submitted === 'true') {
+        return;
+    }
 
     const step = Number.parseInt(button.dataset.activityMonthStep, 10);
     let month = Number.parseInt(month_select.value, 10) + step;
