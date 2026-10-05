@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin 2.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-02 07:56+0000\n"
+"POT-Creation-Date: 2026-10-05 09:33+0000\n"
 "PO-Revision-Date: 2020-07-19 20:08+0200\n"
 "Last-Translator: Xavier CAILLAUD <tsmr@thetsmr.fr>\n"
 "Language-Team: \n"
@@ -238,7 +238,7 @@ msgstr[1] "Cumulative ticket tasks"
 msgid "Current logo"
 msgstr ""
 
-#: templates/cra_search.html.twig:44 templates/cra_snapshots.html.twig:45
+#: templates/cra_search.html.twig:45 templates/cra_snapshots.html.twig:45
 #: templates/holiday_validation_summary.html.twig:92
 msgid "Date"
 msgstr ""
@@ -328,12 +328,12 @@ msgid_plural "Event subcategories"
 msgstr[0] ""
 msgstr[1] ""
 
-#: templates/cra_search.html.twig:91 templates/cra_search.html.twig:92
+#: templates/cra_search.html.twig:92 templates/cra_search.html.twig:93
 msgctxt "button"
 msgid "Export"
 msgstr ""
 
-#: templates/cra_search.html.twig:89
+#: templates/cra_search.html.twig:90
 msgid "Export CRA"
 msgstr "Export CRA"
 
@@ -469,7 +469,7 @@ msgstr "Mandatory comment"
 msgid "Minimum approval required (%)"
 msgstr ""
 
-#: templates/cra_search.html.twig:47
+#: templates/cra_search.html.twig:48
 msgid "Month"
 msgid_plural "Months"
 msgstr[0] ""
@@ -487,7 +487,7 @@ msgstr ""
 msgid "New personal holiday request"
 msgstr "New personal holiday request"
 
-#: templates/cra_search.html.twig:62
+#: templates/cra_search.html.twig:63
 msgid "Next month"
 msgstr "Next month"
 
@@ -591,11 +591,11 @@ msgstr "Please select a manager"
 msgid "Plugin setup"
 msgstr "Plugin setup"
 
-#: templates/cra_search.html.twig:74 templates/entity_distribution.html.twig:57
+#: templates/cra_search.html.twig:75 templates/entity_distribution.html.twig:57
 msgid "Post"
 msgstr ""
 
-#: templates/cra_search.html.twig:40
+#: templates/cra_search.html.twig:41
 msgid "Previous month"
 msgstr "Previous month"
 
@@ -738,7 +738,7 @@ msgstr ""
 msgid "Suggested queries"
 msgstr ""
 
-#: templates/cra_search.html.twig:103
+#: templates/cra_search.html.twig:104
 msgid "Take a snapshot of the CRA"
 msgstr "Take a snapshot of the CRA"
 
@@ -924,7 +924,7 @@ msgstr[1] "Validations for this holiday"
 msgid "Validation of your holiday request"
 msgstr "Validation of your holiday request"
 
-#: src/CraPDF.php:395 templates/cra_search.html.twig:54
+#: src/CraPDF.php:395 templates/cra_search.html.twig:55
 #: templates/entity_distribution.html.twig:38
 #, fuzzy
 msgid "Year"

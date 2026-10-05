@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-02 07:56+0000\n"
+"POT-Creation-Date: 2026-10-05 09:33+0000\n"
 "PO-Revision-Date: 2020-11-02 13:59+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/"
@@ -251,7 +251,7 @@ msgstr[2] "Tâches de ticket cumulées"
 msgid "Current logo"
 msgstr "Logo actuel"
 
-#: templates/cra_search.html.twig:44 templates/cra_snapshots.html.twig:45
+#: templates/cra_search.html.twig:45 templates/cra_snapshots.html.twig:45
 #: templates/holiday_validation_summary.html.twig:92
 msgid "Date"
 msgstr "Date"
@@ -346,12 +346,12 @@ msgstr[0] "Sous-catégorie d'événements"
 msgstr[1] "Sous-catégories d'événements"
 msgstr[2] "Sous-catégories d'événements"
 
-#: templates/cra_search.html.twig:91 templates/cra_search.html.twig:92
+#: templates/cra_search.html.twig:92 templates/cra_search.html.twig:93
 msgctxt "button"
 msgid "Export"
 msgstr "Exporter"
 
-#: templates/cra_search.html.twig:89
+#: templates/cra_search.html.twig:90
 msgid "Export CRA"
 msgstr "Exporter le CRA"
 
@@ -491,7 +491,7 @@ msgstr "Commentaire obligatoire"
 msgid "Minimum approval required (%)"
 msgstr "Minimum requis de la validation (%)"
 
-#: templates/cra_search.html.twig:47
+#: templates/cra_search.html.twig:48
 msgid "Month"
 msgid_plural "Months"
 msgstr[0] "Mois"
@@ -510,7 +510,7 @@ msgstr "Nom"
 msgid "New personal holiday request"
 msgstr "Nouvelle demande de congé personnel"
 
-#: templates/cra_search.html.twig:62
+#: templates/cra_search.html.twig:63
 msgid "Next month"
 msgstr "Mois suivant"
 
@@ -617,11 +617,11 @@ msgstr "Merci de sélectionner un responsable"
 msgid "Plugin setup"
 msgstr "Configuration du plugin"
 
-#: templates/cra_search.html.twig:74 templates/entity_distribution.html.twig:57
+#: templates/cra_search.html.twig:75 templates/entity_distribution.html.twig:57
 msgid "Post"
 msgstr "Envoyer"
 
-#: templates/cra_search.html.twig:40
+#: templates/cra_search.html.twig:41
 msgid "Previous month"
 msgstr "Mois précédent"
 
@@ -767,7 +767,7 @@ msgstr "Sous-catégorie"
 msgid "Suggested queries"
 msgstr "Requêtes suggérées"
 
-#: templates/cra_search.html.twig:103
+#: templates/cra_search.html.twig:104
 msgid "Take a snapshot of the CRA"
 msgstr "Prendre un instantané du CRA"
 
@@ -972,7 +972,7 @@ msgstr[2] "Validation de ces congés"
 msgid "Validation of your holiday request"
 msgstr "Validation de la demande de congé"
 
-#: src/CraPDF.php:395 templates/cra_search.html.twig:54
+#: src/CraPDF.php:395 templates/cra_search.html.twig:55
 #: templates/entity_distribution.html.twig:38
 msgid "Year"
 msgid_plural "Years"
