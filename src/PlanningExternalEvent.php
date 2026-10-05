@@ -665,7 +665,7 @@ class PlanningExternalEvent extends CommonDBTM
                     Session::addMessageAfterRedirect(
                         __('Only whole hours are allowed (no split times)', 'activity'),
                     );
-                    unset($item->input);
+                    $item->input = false;
                     return false;
                 }
 
@@ -675,7 +675,7 @@ class PlanningExternalEvent extends CommonDBTM
                         false,
                         ERROR,
                     );
-                    unset($item->input);
+                    $item->input = false;
                     return false;
                 }
             }
@@ -718,7 +718,7 @@ class PlanningExternalEvent extends CommonDBTM
                                 false,
                                 ERROR,
                             );
-                            unset($item->input);
+                            $item->input = false;
                             return false;
                         }
                     }
@@ -734,7 +734,7 @@ class PlanningExternalEvent extends CommonDBTM
             if (isset($item->input["planningeventcategories_id"])) {
                 if ($item->input["planningeventcategories_id"] == 0) {
                     Session::addMessageAfterRedirect(__('Activity type is mandatory field', 'activity'), false, ERROR);
-                    unset($item->input);
+                    $item->input = false;
                     return false;
                 }
             }
@@ -742,7 +742,7 @@ class PlanningExternalEvent extends CommonDBTM
             if (isset($item->input["users"])) {
                 if ($item->input['users_id'] == 0) {
                     Session::addMessageAfterRedirect(__('User is mandatory field', 'activity'), false, ERROR);
-                    unset($item->input);
+                    $item->input = false;
                     return false;
                 }
             }
@@ -754,7 +754,7 @@ class PlanningExternalEvent extends CommonDBTM
                         false,
                         ERROR,
                     );
-                    unset($item->input);
+                    $item->input = false;
                     return false;
                 }
             }
@@ -768,7 +768,7 @@ class PlanningExternalEvent extends CommonDBTM
                             false,
                             ERROR,
                         );
-                        unset($item->input);
+                        $item->input = false;
                         return false;
                     }
                 }
@@ -779,7 +779,7 @@ class PlanningExternalEvent extends CommonDBTM
                             false,
                             ERROR,
                         );
-                        unset($item->input);
+                        $item->input = false;
                         return false;
                     }
                 }
