@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-05 12:31+0000\n"
+"POT-Creation-Date: 2026-10-08 08:17+0000\n"
 "PO-Revision-Date: 2020-11-02 13:59+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2020\n"
 "Language-Team: Italian (Italy) (https://www.transifex.com/infotelGLPI/"
@@ -36,7 +36,7 @@ msgstr ""
 msgid "A new holiday request has been submitted"
 msgstr "A new holiday request has been submitted"
 
-#: src/Report.php:1200 src/CraPDF.php:628
+#: src/Report.php:1203 src/CraPDF.php:628
 msgid "Absences"
 msgstr "Absences"
 
@@ -411,7 +411,7 @@ msgstr[1] "Holidays validation"
 msgid "Holidays"
 msgstr ""
 
-#: src/Report.php:1825 src/CraPDF.php:592
+#: src/Report.php:1829 src/CraPDF.php:592
 msgid "Holidays or exceptional absences"
 msgstr "Holidays or exceptional absences"
 
@@ -499,8 +499,8 @@ msgstr "Next month"
 msgid "No activity found"
 msgstr "Nessuna attività trovata"
 
-#: src/Report.php:623 src/Report.php:643 src/Report.php:701 src/Report.php:721
-#: src/Report.php:778 src/Report.php:788 src/Report.php:831
+#: src/Report.php:626 src/Report.php:646 src/Report.php:704 src/Report.php:724
+#: src/Report.php:781 src/Report.php:791 src/Report.php:834
 #: src/Dashboard.php:533 src/Dashboard.php:565
 msgid "No defined type"
 msgstr "No defined type"
@@ -551,11 +551,11 @@ msgstr "Only whole hours are allowed (no split times)"
 msgid "Optional when approved"
 msgstr ""
 
-#: src/Report.php:1827 src/HolidayType.php:118 src/CraPDF.php:591
+#: src/Report.php:1831 src/HolidayType.php:118 src/CraPDF.php:591
 msgid "Part time"
 msgstr "Part time"
 
-#: src/Report.php:1369
+#: src/Report.php:1373
 msgid "Percent"
 msgstr "Percentuale"
 
@@ -704,11 +704,11 @@ msgstr "Show internal helpdesk"
 msgid "Sickness"
 msgstr "Sickness"
 
-#: src/Report.php:1829 src/CraPDF.php:593
+#: src/Report.php:1833 src/CraPDF.php:593
 msgid "Sickness or maternity"
 msgstr "Sickness or maternity"
 
-#: src/Report.php:246
+#: src/Report.php:249
 msgid "Snapshot taken in"
 msgstr "Snapshot preso in"
 
@@ -846,7 +846,7 @@ msgstr ""
 msgid "Type"
 msgstr ""
 
-#: src/Report.php:856 src/Report.php:873
+#: src/Report.php:859 src/Report.php:876
 msgid "Unbilled"
 msgstr "Unbilled"
 
