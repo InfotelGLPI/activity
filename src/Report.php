@@ -52,6 +52,7 @@ use Toolbox;
 use User;
 
 use function Safe\mkdir;
+use function Safe\file_put_contents;
 
 #[\AllowDynamicProperties]
 class Report extends CommonDBTM
@@ -228,7 +229,9 @@ class Report extends CommonDBTM
             mkdir($docpath, 0770, true);
         }
 
-        $PDF->Output(GLPI_TMP_DIR . "/" . $filename, 'F');
+        // TCPDF >= 7 expects a directory for the "F" destination: get the document as a
+        // string and write it at the expected path, whatever the TCPDF version.
+        file_put_contents(GLPI_TMP_DIR . "/" . $filename, $PDF->Output($filename, 'S'));
 
         $doc = new Document();
 
@@ -1260,7 +1263,8 @@ class Report extends CommonDBTM
                     if (!is_dir($seepath)) {
                         mkdir($seepath, 0770, true);
                     }
-                    $PDF->Output($seepath . $filename, 'F');
+                    // TCPDF >= 7 expects a directory for the "F" destination.
+                    file_put_contents($seepath . $filename, $PDF->Output($filename, 'S'));
 
                     $showPopUp = true;
                 }
