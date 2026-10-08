@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-05 12:31+0000\n"
+"POT-Creation-Date: 2026-10-08 08:17+0000\n"
 "PO-Revision-Date: 2020-11-02 13:59+0000\n"
 "Last-Translator: Soporte Infraestructura Standby, 2023\n"
 "Language-Team: Spanish (Ecuador) (https://app.transifex.com/infotelGLPI/"
@@ -37,7 +37,7 @@ msgstr "Se ha enviado un correo a %s"
 msgid "A new holiday request has been submitted"
 msgstr "Se ha presentado una nueva solicitud de vacaciones"
 
-#: src/Report.php:1200 src/CraPDF.php:628
+#: src/Report.php:1203 src/CraPDF.php:628
 msgid "Absences"
 msgstr "Ausencias"
 
@@ -425,7 +425,7 @@ msgstr[2] "Validación de vacaciones"
 msgid "Holidays"
 msgstr ""
 
-#: src/Report.php:1825 src/CraPDF.php:592
+#: src/Report.php:1829 src/CraPDF.php:592
 msgid "Holidays or exceptional absences"
 msgstr "Vacaciones o ausencias excepcionales"
 
@@ -514,8 +514,8 @@ msgstr "Próximo mes"
 msgid "No activity found"
 msgstr "No se ha encontrado actividad"
 
-#: src/Report.php:623 src/Report.php:643 src/Report.php:701 src/Report.php:721
-#: src/Report.php:778 src/Report.php:788 src/Report.php:831
+#: src/Report.php:626 src/Report.php:646 src/Report.php:704 src/Report.php:724
+#: src/Report.php:781 src/Report.php:791 src/Report.php:834
 #: src/Dashboard.php:533 src/Dashboard.php:565
 msgid "No defined type"
 msgstr "Sin tipo definido"
@@ -568,11 +568,11 @@ msgstr "Sólo se admiten horas completas (no se admiten tiempos parciales)"
 msgid "Optional when approved"
 msgstr ""
 
-#: src/Report.php:1827 src/HolidayType.php:118 src/CraPDF.php:591
+#: src/Report.php:1831 src/HolidayType.php:118 src/CraPDF.php:591
 msgid "Part time"
 msgstr "A tiempo parcial"
 
-#: src/Report.php:1369
+#: src/Report.php:1373
 msgid "Percent"
 msgstr "Porcentaje"
 
@@ -724,11 +724,11 @@ msgstr "Mostrar el servicio de asistencia interna"
 msgid "Sickness"
 msgstr "Enfermedad"
 
-#: src/Report.php:1829 src/CraPDF.php:593
+#: src/Report.php:1833 src/CraPDF.php:593
 msgid "Sickness or maternity"
 msgstr "Enfermedad o maternidad"
 
-#: src/Report.php:246
+#: src/Report.php:249
 msgid "Snapshot taken in"
 msgstr "Instantánea tomada en"
 
@@ -869,7 +869,7 @@ msgstr ""
 msgid "Type"
 msgstr ""
 
-#: src/Report.php:856 src/Report.php:873
+#: src/Report.php:859 src/Report.php:876
 msgid "Unbilled"
 msgstr "Sin facturar"
 
