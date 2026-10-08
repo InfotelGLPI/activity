@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-08 08:17+0000\n"
+"POT-Creation-Date: 2026-10-08 16:21+0000\n"
 "PO-Revision-Date: 2020-11-02 13:59+0000\n"
 "Last-Translator: Soporte Infraestructura Standby, 2023\n"
 "Language-Team: Spanish (Ecuador) (https://app.transifex.com/infotelGLPI/"
@@ -81,7 +81,7 @@ msgstr "Menú de actividades"
 msgid "Activity in the month"
 msgstr "Actividad en el mes"
 
-#: templates/cra_search.html.twig:31
+#: templates/cra_search.html.twig:31 templates/cra_pdf_modal.html.twig:32
 msgid "Activity report"
 msgstr "Informe de actividades"
 
@@ -109,6 +109,10 @@ msgstr "Todo el día"
 
 #: src/EntityDistribution.php:229
 msgid "All technicians"
+msgstr ""
+
+#: templates/checkschema_result.html.twig:30
+msgid "Altered table"
 msgstr ""
 
 #: src/NotificationTargetHoliday.php:46 src/NotificationTargetHoliday.php:261
@@ -231,6 +235,7 @@ msgid "Counter"
 msgstr "Contador"
 
 #: src/PlanningExternalEvent.php:384 src/Profile.php:117 src/Holiday.php:709
+#: templates/lateral_menu.html.twig:46
 msgid "Create a holiday request"
 msgstr "Crear una solicitud de vacaciones"
 
@@ -319,7 +324,7 @@ msgstr ""
 msgid "Duration"
 msgstr ""
 
-#: templates/holiday_form.html.twig:78
+#: templates/holiday_form.html.twig:78 templates/holiday_form.html.twig:84
 msgid "End date"
 msgstr ""
 
@@ -485,6 +490,10 @@ msgstr "Comentario obligatorio"
 
 #: templates/holiday_validation_summary.html.twig:53
 msgid "Minimum approval required (%)"
+msgstr ""
+
+#: templates/checkschema_result.html.twig:29
+msgid "Missing table"
 msgstr ""
 
 #: templates/cra_search.html.twig:47
@@ -736,7 +745,7 @@ msgstr "Instantánea tomada en"
 msgid "Snapshots of the month"
 msgstr "Instantáneas del mes"
 
-#: templates/holiday_form.html.twig:77
+#: templates/holiday_form.html.twig:77 templates/holiday_form.html.twig:83
 msgid "Start date"
 msgstr ""
 
@@ -872,6 +881,10 @@ msgstr ""
 #: src/Report.php:859 src/Report.php:876
 msgid "Unbilled"
 msgstr "Sin facturar"
+
+#: templates/checkschema_result.html.twig:31
+msgid "Unknown table"
+msgstr ""
 
 #: templates/option_form.html.twig:51
 msgid "Use event subcategories"

@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-08 08:17+0000\n"
+"POT-Creation-Date: 2026-10-08 16:21+0000\n"
 "PO-Revision-Date: 2020-11-02 13:59+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/"
@@ -82,7 +82,7 @@ msgstr "Menu Activité"
 msgid "Activity in the month"
 msgstr "Activité du mois"
 
-#: templates/cra_search.html.twig:31
+#: templates/cra_search.html.twig:31 templates/cra_pdf_modal.html.twig:32
 msgid "Activity report"
 msgstr "Rapport d'activité"
 
@@ -111,6 +111,10 @@ msgstr "Jour entier"
 #: src/EntityDistribution.php:229
 msgid "All technicians"
 msgstr "Tous les techniciens"
+
+#: templates/checkschema_result.html.twig:30
+msgid "Altered table"
+msgstr ""
 
 #: src/NotificationTargetHoliday.php:46 src/NotificationTargetHoliday.php:261
 msgid "Answer to a personal holiday request"
@@ -233,6 +237,7 @@ msgid "Counter"
 msgstr "Compteur"
 
 #: src/PlanningExternalEvent.php:384 src/Profile.php:117 src/Holiday.php:709
+#: templates/lateral_menu.html.twig:46
 msgid "Create a holiday request"
 msgstr "Demande de congé"
 
@@ -323,7 +328,7 @@ msgstr "Document"
 msgid "Duration"
 msgstr "Durée"
 
-#: templates/holiday_form.html.twig:78
+#: templates/holiday_form.html.twig:78 templates/holiday_form.html.twig:84
 msgid "End date"
 msgstr "Date de fin"
 
@@ -490,6 +495,10 @@ msgstr "Commentaire obligatoire"
 #: templates/holiday_validation_summary.html.twig:53
 msgid "Minimum approval required (%)"
 msgstr "Minimum requis de la validation (%)"
+
+#: templates/checkschema_result.html.twig:29
+msgid "Missing table"
+msgstr ""
 
 #: templates/cra_search.html.twig:47
 msgid "Month"
@@ -741,7 +750,7 @@ msgstr "Instantané pris le"
 msgid "Snapshots of the month"
 msgstr "Instantanés du mois"
 
-#: templates/holiday_form.html.twig:77
+#: templates/holiday_form.html.twig:77 templates/holiday_form.html.twig:83
 msgid "Start date"
 msgstr "Date de début"
 
@@ -888,6 +897,10 @@ msgstr "Type"
 #: src/Report.php:859 src/Report.php:876
 msgid "Unbilled"
 msgstr "Non facturé"
+
+#: templates/checkschema_result.html.twig:31
+msgid "Unknown table"
+msgstr ""
 
 #: templates/option_form.html.twig:51
 msgid "Use event subcategories"
