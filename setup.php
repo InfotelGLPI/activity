@@ -53,7 +53,6 @@ if (!defined("PLUGIN_ACTIVITY_DIR")) {
     define("PLUGIN_ACTIVITY_WEBDIR", $root);
 }
 
-include_once PLUGIN_ACTIVITY_DIR . "/vendor/autoload.php";
 
 // Init the hooks of the plugins -Needed
 function plugin_init_activity()
@@ -264,10 +263,6 @@ function plugin_version_activity()
  */
 function plugin_activity_check_prerequisites()
 {
-    if (!is_readable(__DIR__ . '/vendor/autoload.php') || !is_file(__DIR__ . '/vendor/autoload.php')) {
-        echo "Run composer install --no-dev in the plugin directory<br>";
-        return false;
-    }
-
+    // No runtime dependency: GLPI autoloads the classes of src/, the release ships no vendor/
     return true;
 }
