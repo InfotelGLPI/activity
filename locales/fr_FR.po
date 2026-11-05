@@ -2,26 +2,24 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 # Translators:
 # Xavier CAILLAUD <thetsmr@gmail.com>, 2026
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-08 08:17+0000\n"
+"POT-Creation-Date: 2026-10-08 16:21+0000\n"
 "PO-Revision-Date: 2020-11-02 13:59+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
-"Language-Team: French (France) (https://app.transifex.com/infotelGLPI/"
-"teams/114456/fr_FR/)\n"
-"Language: fr_FR\n"
+"Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/114456/fr_FR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % "
-"1000000 == 0 ? 1 : 2;\n"
+"Language: fr_FR\n"
+"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #: src/EntityDistribution.php:291
 #, php-format
@@ -82,7 +80,7 @@ msgstr "Menu Activité"
 msgid "Activity in the month"
 msgstr "Activité du mois"
 
-#: templates/cra_search.html.twig:31
+#: templates/cra_search.html.twig:31 templates/cra_pdf_modal.html.twig:32
 msgid "Activity report"
 msgstr "Rapport d'activité"
 
@@ -111,6 +109,10 @@ msgstr "Jour entier"
 #: src/EntityDistribution.php:229
 msgid "All technicians"
 msgstr "Tous les techniciens"
+
+#: templates/checkschema_result.html.twig:30
+msgid "Altered table"
+msgstr "Table modifiée"
 
 #: src/NotificationTargetHoliday.php:46 src/NotificationTargetHoliday.php:261
 msgid "Answer to a personal holiday request"
@@ -233,6 +235,7 @@ msgid "Counter"
 msgstr "Compteur"
 
 #: src/PlanningExternalEvent.php:384 src/Profile.php:117 src/Holiday.php:709
+#: templates/lateral_menu.html.twig:46
 msgid "Create a holiday request"
 msgstr "Demande de congé"
 
@@ -297,7 +300,8 @@ msgstr "Voir les activités / congés de tous"
 
 #: src/Dashboard.php:118 src/Dashboard.php:208
 msgid ""
-"Display of activity by month for a user (tickets, activity, holidays, others)"
+"Display of activity by month for a user (tickets, activity, holidays, "
+"others)"
 msgstr ""
 "Affichage de l'activité par mois pour un utilisateur (tickets, activité, "
 "vacances, autres)"
@@ -323,7 +327,7 @@ msgstr "Document"
 msgid "Duration"
 msgstr "Durée"
 
-#: templates/holiday_form.html.twig:78
+#: templates/holiday_form.html.twig:78 templates/holiday_form.html.twig:84
 msgid "End date"
 msgstr "Date de fin"
 
@@ -491,6 +495,10 @@ msgstr "Commentaire obligatoire"
 msgid "Minimum approval required (%)"
 msgstr "Minimum requis de la validation (%)"
 
+#: templates/checkschema_result.html.twig:29
+msgid "Missing table"
+msgstr "Table manquante"
+
 #: templates/cra_search.html.twig:47
 msgid "Month"
 msgid_plural "Months"
@@ -617,7 +625,8 @@ msgstr "Merci de sélectionner un responsable"
 msgid "Plugin setup"
 msgstr "Configuration du plugin"
 
-#: templates/cra_search.html.twig:74 templates/entity_distribution.html.twig:56
+#: templates/cra_search.html.twig:74
+#: templates/entity_distribution.html.twig:56
 msgid "Post"
 msgstr "Envoyer"
 
@@ -741,7 +750,7 @@ msgstr "Instantané pris le"
 msgid "Snapshots of the month"
 msgstr "Instantanés du mois"
 
-#: templates/holiday_form.html.twig:77
+#: templates/holiday_form.html.twig:77 templates/holiday_form.html.twig:83
 msgid "Start date"
 msgstr "Date de début"
 
@@ -809,10 +818,10 @@ msgid ""
 "expected schema: data will be lost. Check that they are not used by another "
 "plugin or by a custom development before running them."
 msgstr ""
-"Les requêtes suivantes suppriment des colonnes ou des tables qui ne font pas "
-"partie du schéma attendu : des données seront perdues. Avant de les "
-"exécuter, vérifiez qu’elles ne sont pas utilisées par un autre plugin ou par "
-"un développement personnalisé."
+"Les requêtes suivantes suppriment des colonnes ou des tables qui ne font pas"
+" partie du schéma attendu : des données seront perdues. Avant de les "
+"exécuter, vérifiez qu’elles ne sont pas utilisées par un autre plugin ou par"
+" un développement personnalisé."
 
 #: src/Ticket.php:57
 msgid "The following user is unavailable / on holiday : "
@@ -834,8 +843,8 @@ msgid ""
 msgstr ""
 "Les requêtes ci-dessous ne sont que des suggestions basées sur les "
 "différences constatées. Veuillez les examiner, sauvegarder votre base de "
-"données, puis les exécuter manuellement : elles ne sont jamais exécutées par "
-"l’extension."
+"données, puis les exécuter manuellement : elles ne sont jamais exécutées par"
+" l’extension."
 
 #: src/Holiday.php:578
 msgid "The user don't have any manager filled in his personal settings."
@@ -859,13 +868,14 @@ msgstr[2] "Tickets"
 
 #: templates/entity_distribution.html.twig:63
 msgid ""
-"Time of the ticket tasks shown on the CRA, grouped by client (entity) of the "
-"ticket."
+"Time of the ticket tasks shown on the CRA, grouped by client (entity) of the"
+" ticket."
 msgstr ""
 "Durée des tâches du ticket affichée sur le CRA, regroupée par client "
 "(entité) du ticket."
 
-#: templates/cra_report.html.twig:63 templates/entity_distribution.html.twig:78
+#: templates/cra_report.html.twig:63
+#: templates/entity_distribution.html.twig:78
 msgid "Total"
 msgstr "Total"
 
@@ -888,6 +898,10 @@ msgstr "Type"
 #: src/Report.php:859 src/Report.php:876
 msgid "Unbilled"
 msgstr "Non facturé"
+
+#: templates/checkschema_result.html.twig:31
+msgid "Unknown table"
+msgstr "Table inconnue"
 
 #: templates/option_form.html.twig:51
 msgid "Use event subcategories"
