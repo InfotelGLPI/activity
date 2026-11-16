@@ -63,7 +63,7 @@
                         {% if canedit %}
                         <th style="width:40px">
                             <input type="checkbox" id="checkall_config"
-                                   onclick="checkAll('mass_config_form')">
+                                   data-activity-check-all="mass_config_form">
                         </th>
                         {% endif %}
                         <th>{{ __('Entity') }}</th>
@@ -89,7 +89,7 @@
             {% if canedit %}
             <div class="card-footer d-flex justify-content-end">
                 <button type="submit" name="delete_item" class="btn btn-danger"
-                        onclick="return confirm('{{ __('Confirm the deletion?') }}')">
+                        data-activity-confirm="{{ __('Confirm the deletion?') }}">
                     <i class="ti ti-trash me-1"></i>{{ _x('button', 'Delete permanently') }}
                 </button>
             </div>

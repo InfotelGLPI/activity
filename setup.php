@@ -93,6 +93,8 @@ function plugin_init_activity()
         'scripts/cra-search.js',
         'scripts/option-form.js',
         'scripts/planningexternalevent-subcategory.js',
+        // Delegated listeners replacing the inline event handlers (CSP)
+        'scripts/csp-handlers.js',
     ];
 
     if (Session::haveRight(Menu::$rightname, UPDATE)
@@ -248,6 +250,9 @@ function plugin_version_activity()
         'author'       => "<a href='https://blogglpi.infotel.com'>Infotel</a>, Xavier CAILLAUD",
         'license' => 'GPLv3+',
         'homepage' => '',
+        // No inline event handler, javascript: URL nor script without nonce: the plugin works
+        // under the Content Security Policy of GLPI (public/scripts/csp-handlers.js)
+        'csp_compliant' => true,
         'requirements' => [
             'glpi' => [
                 'min' => '11.0.99',
