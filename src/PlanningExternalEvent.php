@@ -1658,7 +1658,18 @@ class PlanningExternalEvent extends CommonDBTM
      */
     public static function getTicketTaskDateCriterias(string $begin, string $end)
     {
+        global $DB;
+
         $ticketTaskTable = \TicketTask::getTable();
+
+        // Raw SQL strings are no longer accepted as criteria by DBmysqlIterator (TypeError in
+        // analyseCrit()): the computed start of the task goes through a QueryExpression, with
+        // quoted identifiers and the end date as a quoted value.
+        $task_start_before_end = new QueryExpression(
+            'TIMESTAMPADD(SECOND, -' . $DB->quoteName($ticketTaskTable . '.actiontime') . ', '
+            . $DB->quoteName($ticketTaskTable . '.date') . ') < ' . $DB->quoteValue($end),
+        );
+
         return [
             'AND' => [
                 [
@@ -1681,7 +1692,7 @@ class PlanningExternalEvent extends CommonDBTM
                                     [$ticketTaskTable . '.begin' => null],
                                 ],
                                 [ // not planned task with a date after the end, but an actiontime which indicate a start before the end
-                                    "(TIMESTAMPADD(SECOND, -$ticketTaskTable.actiontime, $ticketTaskTable.date) < '$end')",
+                                    $task_start_before_end,
                                     [$ticketTaskTable . '.begin' => null],
                                 ],
                             ],

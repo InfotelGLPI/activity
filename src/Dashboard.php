@@ -293,7 +293,9 @@ class Dashboard extends CommonGLPI
                     JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT,
                 );
                 $rand       = mt_rand();
-                $html       = '<script type="text/javascript">$("#calendarwidget' . $rand . '").fullCalendar({header: {
+                // The script is wrapped by Html::scriptBlock() below, which adds the nonce of the
+                // Content Security Policy that a <script> tag written by hand lacks
+                $js         = '$("#calendarwidget' . $rand . '").fullCalendar({header: {
                                                                                                    left:"",
                                                                                                    center: "",
                                                                                                    right:""
@@ -332,9 +334,9 @@ class Dashboard extends CommonGLPI
                                                                                                   }
                                                                                                },'
                               . 'events:' . $activities . '});';
-                $html       .= "onMaximize['" . $widgetId . "'] = function() { $('#calendarwidget" . $rand . "').fullCalendar('render'); }; ";
-                $html       .= "onMinimize['" . $widgetId . "'] = onMaximize['" . $widgetId . "'];";
-                $html       .= "</script>
+                $js         .= "onMaximize['" . $widgetId . "'] = function() { $('#calendarwidget" . $rand . "').fullCalendar('render'); }; ";
+                $js         .= "onMinimize['" . $widgetId . "'] = onMaximize['" . $widgetId . "'];";
+                $html       = Html::scriptBlock($js) . "
                                <div id='calendarwidget" . $rand . "' ></div>";
                 $widget->setWidgetHtmlContent($html);
                 //                    Form to choose user, and then see user's planning, toggleRefresh to enable the automatic refresh
