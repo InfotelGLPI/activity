@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-05 08:07+0000\n"
+"POT-Creation-Date: 2026-11-16 10:05+0000\n"
 "PO-Revision-Date: 2020-11-02 13:59+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2020\n"
 "Language-Team: Italian (Italy) (https://www.transifex.com/infotelGLPI/teams/"
@@ -62,15 +62,15 @@ msgstr[1] ""
 msgid "Activities detail"
 msgstr "Activities detail"
 
-#: src/Menu.php:41 src/Preference.php:95 src/Profile.php:59 src/Profile.php:110
-#: src/Config.php:47 setup.php:246 front/menu.php:70 ⁨standard input⁩:59
+#: setup.php:248 src/Preference.php:95 src/Menu.php:41 src/Profile.php:59
+#: src/Profile.php:110 src/Config.php:47 front/menu.php:70 ⁨standard input⁩:59
 #: ⁨standard input⁩:35
 msgid "Activity"
 msgid_plural "Activities"
 msgstr[0] "Attività"
 msgstr[1] "Attività"
 
-#: src/Dashboard.php:119 src/Dashboard.php:349
+#: src/Dashboard.php:119 src/Dashboard.php:351
 msgid "Activity Menu"
 msgstr "Activity Menu"
 
@@ -86,7 +86,7 @@ msgstr "Rapporto attività"
 msgid "Activity type is mandatory field"
 msgstr "Activity type is mandatory field"
 
-#: ⁨standard input⁩:44 ⁨standard input⁩:45
+#: ⁨standard input⁩:45 ⁨standard input⁩:44
 msgctxt "button"
 msgid "Add"
 msgstr ""
@@ -99,7 +99,7 @@ msgstr "Add a manager"
 msgid "Add an activity"
 msgstr "Add an activity"
 
-#: src/Holiday.php:1420 src/Dashboard.php:311
+#: src/Dashboard.php:313 src/Holiday.php:1420
 msgid "All day"
 msgstr "All day"
 
@@ -127,7 +127,7 @@ msgstr ""
 msgid "Approval date"
 msgstr ""
 
-#: src/HolidayValidation.php:557 src/Holiday.php:561
+#: src/Holiday.php:561 src/HolidayValidation.php:557
 #, php-format
 msgid "Approval request send to %s"
 msgstr ""
@@ -202,7 +202,7 @@ msgid_plural "Clients"
 msgstr[0] "Client"
 msgstr[1] "Client"
 
-#: ⁨standard input⁩:36 ⁨standard input⁩:32
+#: ⁨standard input⁩:32 ⁨standard input⁩:36
 msgid "Close"
 msgstr ""
 
@@ -224,7 +224,7 @@ msgstr ""
 msgid "Counter"
 msgstr "Counter"
 
-#: src/Holiday.php:709 src/PlanningExternalEvent.php:384 src/Profile.php:117
+#: src/Holiday.php:709 src/Profile.php:117 src/PlanningExternalEvent.php:384
 #: ⁨standard input⁩:46
 msgid "Create a holiday request"
 msgstr "Create a holiday request"
@@ -304,7 +304,7 @@ msgstr "Do you approve this holiday ?"
 msgid "Document"
 msgstr ""
 
-#: ⁨standard input⁩:111 ⁨standard input⁩:101
+#: ⁨standard input⁩:101 ⁨standard input⁩:111
 msgid "Duration"
 msgstr ""
 
@@ -344,7 +344,7 @@ msgstr "Export CRA"
 msgid "Fail to send a mail to %s"
 msgstr ""
 
-#: ajax/sendmail.php:95 src/Notification.php:213
+#: src/Notification.php:213 ajax/sendmail.php:95
 msgid "Failed Mail send"
 msgstr ""
 
@@ -369,7 +369,7 @@ msgstr ""
 msgid "Holiday"
 msgstr "Holiday"
 
-#: src/Holiday.php:728 src/HolidayCount.php:48 src/Menu.php:66
+#: src/HolidayCount.php:48 src/Holiday.php:728 src/Menu.php:66
 msgid "Holiday counter"
 msgid_plural "Holiday counters"
 msgstr[0] "Holiday counter"
@@ -389,13 +389,13 @@ msgstr "Holiday period is mandatory field"
 msgid "Holiday request from"
 msgstr "Holiday request from"
 
-#: src/NotificationTargetHoliday.php:197 src/HolidayType.php:79
+#: src/HolidayType.php:79 src/NotificationTargetHoliday.php:197
 msgid "Holiday type"
 msgid_plural "Holiday types"
 msgstr[0] "Holiday type"
 msgstr[1] "Holiday types"
 
-#: src/Holiday.php:395 src/HolidayCount.php:254
+#: src/HolidayCount.php:254 src/Holiday.php:395
 msgid "Holiday type is mandatory field"
 msgstr "Holiday type is mandatory field"
 
@@ -425,7 +425,7 @@ msgstr ""
 msgid "Internal helpdesk"
 msgstr ""
 
-#: src/Dashboard.php:122 src/Dashboard.php:437
+#: src/Dashboard.php:122 src/Dashboard.php:439
 msgid "Interventions not in CRA"
 msgstr "Interventions not in CRA"
 
@@ -500,9 +500,9 @@ msgstr "Next month"
 msgid "No activity found"
 msgstr "Nessuna attività trovata"
 
-#: src/Report.php:626 src/Report.php:646 src/Report.php:704 src/Report.php:724
-#: src/Report.php:781 src/Report.php:791 src/Report.php:834
-#: src/Dashboard.php:533 src/Dashboard.php:565
+#: src/Dashboard.php:535 src/Dashboard.php:567 src/Report.php:626
+#: src/Report.php:646 src/Report.php:704 src/Report.php:724 src/Report.php:781
+#: src/Report.php:791 src/Report.php:834
 msgid "No defined type"
 msgstr "No defined type"
 
@@ -552,7 +552,7 @@ msgstr "Only whole hours are allowed (no split times)"
 msgid "Optional when approved"
 msgstr ""
 
-#: src/CraPDF.php:591 src/Report.php:1831 src/HolidayType.php:118
+#: src/CraPDF.php:591 src/HolidayType.php:118 src/Report.php:1831
 msgid "Part time"
 msgstr "Part time"
 
@@ -572,7 +572,7 @@ msgstr "Planning access"
 msgid "Please activate the plugin"
 msgstr "Please activate the plugin"
 
-#: src/HolidayPeriod.php:107 src/Holiday.php:385
+#: src/Holiday.php:385 src/HolidayPeriod.php:107
 msgid "Please fill a begin date"
 msgstr "Please fill a begin date"
 
@@ -584,7 +584,7 @@ msgstr ""
 msgid "Please fill a subject"
 msgstr ""
 
-#: src/HolidayPeriod.php:111 src/Holiday.php:389
+#: src/Holiday.php:389 src/HolidayPeriod.php:111
 msgid "Please fill an end date"
 msgstr "Please fill an end date"
 
@@ -666,7 +666,7 @@ msgid_plural "Rights management"
 msgstr[0] "Right management"
 msgstr[1] "Rights management"
 
-#: ⁨standard input⁩:122 ⁨standard input⁩:34 ⁨standard input⁩:65
+#: ⁨standard input⁩:34 ⁨standard input⁩:65 ⁨standard input⁩:122
 msgctxt "button"
 msgid "Save"
 msgstr ""
@@ -687,7 +687,7 @@ msgstr "See validation options"
 msgid "Set as tech lead of these clients"
 msgstr ""
 
-#: src/HolidayPeriod.php:82 src/HolidayType.php:88
+#: src/HolidayType.php:88 src/HolidayPeriod.php:82
 msgid "Short name"
 msgstr "Short name"
 
@@ -824,7 +824,7 @@ msgid ""
 "ticket."
 msgstr ""
 
-#: ⁨standard input⁩:63 ⁨standard input⁩:78
+#: ⁨standard input⁩:78 ⁨standard input⁩:63
 msgid "Total"
 msgstr ""
 

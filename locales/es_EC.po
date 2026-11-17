@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-05 08:07+0000\n"
+"POT-Creation-Date: 2026-11-16 10:05+0000\n"
 "PO-Revision-Date: 2020-11-02 13:59+0000\n"
 "Last-Translator: Soporte Infraestructura Standby, 2023\n"
 "Language-Team: Spanish (Ecuador) (https://app.transifex.com/infotelGLPI/"
@@ -64,8 +64,8 @@ msgstr[2] ""
 msgid "Activities detail"
 msgstr "Detalle de las actividades"
 
-#: src/Menu.php:41 src/Preference.php:95 src/Profile.php:59 src/Profile.php:110
-#: src/Config.php:47 setup.php:246 front/menu.php:70 ⁨standard input⁩:59
+#: setup.php:248 src/Preference.php:95 src/Menu.php:41 src/Profile.php:59
+#: src/Profile.php:110 src/Config.php:47 front/menu.php:70 ⁨standard input⁩:59
 #: ⁨standard input⁩:35
 msgid "Activity"
 msgid_plural "Activities"
@@ -73,7 +73,7 @@ msgstr[0] "Actividades"
 msgstr[1] "Actividades"
 msgstr[2] "Actividades"
 
-#: src/Dashboard.php:119 src/Dashboard.php:349
+#: src/Dashboard.php:119 src/Dashboard.php:351
 msgid "Activity Menu"
 msgstr "Menú de actividades"
 
@@ -89,7 +89,7 @@ msgstr "Informe de actividades"
 msgid "Activity type is mandatory field"
 msgstr "El tipo de actividad es un campo obligatorio"
 
-#: ⁨standard input⁩:44 ⁨standard input⁩:45
+#: ⁨standard input⁩:45 ⁨standard input⁩:44
 msgctxt "button"
 msgid "Add"
 msgstr ""
@@ -102,7 +102,7 @@ msgstr "Añadir un supervisor"
 msgid "Add an activity"
 msgstr "Agregar una actividad"
 
-#: src/Holiday.php:1420 src/Dashboard.php:311
+#: src/Dashboard.php:313 src/Holiday.php:1420
 msgid "All day"
 msgstr "Todo el día"
 
@@ -130,7 +130,7 @@ msgstr ""
 msgid "Approval date"
 msgstr ""
 
-#: src/HolidayValidation.php:557 src/Holiday.php:561
+#: src/Holiday.php:561 src/HolidayValidation.php:557
 #, php-format
 msgid "Approval request send to %s"
 msgstr ""
@@ -207,7 +207,7 @@ msgstr[0] "Cliente"
 msgstr[1] "Cliente"
 msgstr[2] "Cliente"
 
-#: ⁨standard input⁩:36 ⁨standard input⁩:32
+#: ⁨standard input⁩:32 ⁨standard input⁩:36
 msgid "Close"
 msgstr ""
 
@@ -230,7 +230,7 @@ msgstr ""
 msgid "Counter"
 msgstr "Contador"
 
-#: src/Holiday.php:709 src/PlanningExternalEvent.php:384 src/Profile.php:117
+#: src/Holiday.php:709 src/Profile.php:117 src/PlanningExternalEvent.php:384
 #: ⁨standard input⁩:46
 msgid "Create a holiday request"
 msgstr "Crear una solicitud de vacaciones"
@@ -313,7 +313,7 @@ msgstr "¿Aprueba estas vacaciones?"
 msgid "Document"
 msgstr ""
 
-#: ⁨standard input⁩:111 ⁨standard input⁩:101
+#: ⁨standard input⁩:101 ⁨standard input⁩:111
 msgid "Duration"
 msgstr ""
 
@@ -354,7 +354,7 @@ msgstr "Exportar informe de actividades"
 msgid "Fail to send a mail to %s"
 msgstr "Error al enviar un correo a 1%s"
 
-#: ajax/sendmail.php:95 src/Notification.php:213
+#: src/Notification.php:213 ajax/sendmail.php:95
 msgid "Failed Mail send"
 msgstr "Envío fallido"
 
@@ -379,7 +379,7 @@ msgstr ""
 msgid "Holiday"
 msgstr "Vacaciones"
 
-#: src/Holiday.php:728 src/HolidayCount.php:48 src/Menu.php:66
+#: src/HolidayCount.php:48 src/Holiday.php:728 src/Menu.php:66
 msgid "Holiday counter"
 msgid_plural "Holiday counters"
 msgstr[0] "Contador de vacaciones"
@@ -401,14 +401,14 @@ msgstr "El período de vacaciones es un campo obligatorio"
 msgid "Holiday request from"
 msgstr "Solicitud de vacaciones desde"
 
-#: src/NotificationTargetHoliday.php:197 src/HolidayType.php:79
+#: src/HolidayType.php:79 src/NotificationTargetHoliday.php:197
 msgid "Holiday type"
 msgid_plural "Holiday types"
 msgstr[0] "Tipo de vacaciones"
 msgstr[1] "Tipo de vacaciones"
 msgstr[2] "Tipo de vacaciones"
 
-#: src/Holiday.php:395 src/HolidayCount.php:254
+#: src/HolidayCount.php:254 src/Holiday.php:395
 msgid "Holiday type is mandatory field"
 msgstr "El tipo de vacaciones es un campo obligatorio"
 
@@ -439,7 +439,7 @@ msgstr ""
 msgid "Internal helpdesk"
 msgstr ""
 
-#: src/Dashboard.php:122 src/Dashboard.php:437
+#: src/Dashboard.php:122 src/Dashboard.php:439
 msgid "Interventions not in CRA"
 msgstr "Intervenciones no incluidas en el Informe de actividades"
 
@@ -515,9 +515,9 @@ msgstr "Próximo mes"
 msgid "No activity found"
 msgstr "No se ha encontrado actividad"
 
-#: src/Report.php:626 src/Report.php:646 src/Report.php:704 src/Report.php:724
-#: src/Report.php:781 src/Report.php:791 src/Report.php:834
-#: src/Dashboard.php:533 src/Dashboard.php:565
+#: src/Dashboard.php:535 src/Dashboard.php:567 src/Report.php:626
+#: src/Report.php:646 src/Report.php:704 src/Report.php:724 src/Report.php:781
+#: src/Report.php:791 src/Report.php:834
 msgid "No defined type"
 msgstr "Sin tipo definido"
 
@@ -569,7 +569,7 @@ msgstr "Sólo se admiten horas completas (no se admiten tiempos parciales)"
 msgid "Optional when approved"
 msgstr ""
 
-#: src/CraPDF.php:591 src/Report.php:1831 src/HolidayType.php:118
+#: src/CraPDF.php:591 src/HolidayType.php:118 src/Report.php:1831
 msgid "Part time"
 msgstr "A tiempo parcial"
 
@@ -589,7 +589,7 @@ msgstr "Planificación del acceso"
 msgid "Please activate the plugin"
 msgstr "Por favor, active el complemento"
 
-#: src/HolidayPeriod.php:107 src/Holiday.php:385
+#: src/Holiday.php:385 src/HolidayPeriod.php:107
 msgid "Please fill a begin date"
 msgstr "Por favor, introduzca una fecha de inicio"
 
@@ -601,7 +601,7 @@ msgstr "Por favor, rellene el cuerpo de un correo"
 msgid "Please fill a subject"
 msgstr "Por favor, rellene un asunto"
 
-#: src/HolidayPeriod.php:111 src/Holiday.php:389
+#: src/Holiday.php:389 src/HolidayPeriod.php:111
 msgid "Please fill an end date"
 msgstr "Indique una fecha de finalización"
 
@@ -686,7 +686,7 @@ msgstr[0] "Rights management"
 msgstr[1] "Rights management"
 msgstr[2] "Rights management"
 
-#: ⁨standard input⁩:122 ⁨standard input⁩:34 ⁨standard input⁩:65
+#: ⁨standard input⁩:34 ⁨standard input⁩:65 ⁨standard input⁩:122
 msgctxt "button"
 msgid "Save"
 msgstr ""
@@ -707,7 +707,7 @@ msgstr "Ver opciones de validación"
 msgid "Set as tech lead of these clients"
 msgstr ""
 
-#: src/HolidayPeriod.php:82 src/HolidayType.php:88
+#: src/HolidayType.php:88 src/HolidayPeriod.php:82
 msgid "Short name"
 msgstr "Nombre corto"
 
@@ -847,7 +847,7 @@ msgid ""
 "ticket."
 msgstr ""
 
-#: ⁨standard input⁩:63 ⁨standard input⁩:78
+#: ⁨standard input⁩:78 ⁨standard input⁩:63
 msgid "Total"
 msgstr ""
 
