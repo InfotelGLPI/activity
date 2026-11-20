@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Activity plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 10:05+0000\n"
+"POT-Creation-Date: 2026-11-20 07:20+0000\n"
 "PO-Revision-Date: 2020-11-02 13:59+0000\n"
 "Last-Translator: Soporte Infraestructura Standby, 2023\n"
 "Language-Team: Spanish (Ecuador) (https://app.transifex.com/infotelGLPI/"
@@ -37,7 +37,7 @@ msgstr "Se ha enviado un correo a %s"
 msgid "A new holiday request has been submitted"
 msgstr "Se ha presentado una nueva solicitud de vacaciones"
 
-#: src/CraPDF.php:628 src/Report.php:1203
+#: src/CraPDF.php:633 src/Report.php:1203
 msgid "Absences"
 msgstr "Ausencias"
 
@@ -64,7 +64,7 @@ msgstr[2] ""
 msgid "Activities detail"
 msgstr "Detalle de las actividades"
 
-#: setup.php:248 src/Preference.php:95 src/Menu.php:41 src/Profile.php:59
+#: setup.php:248 src/Menu.php:41 src/Preference.php:95 src/Profile.php:59
 #: src/Profile.php:110 src/Config.php:47 front/menu.php:70 ⁨standard input⁩:59
 #: ⁨standard input⁩:35
 msgid "Activity"
@@ -81,7 +81,7 @@ msgstr "Menú de actividades"
 msgid "Activity in the month"
 msgstr "Actividad en el mes"
 
-#: ⁨standard input⁩:31 ⁨standard input⁩:32
+#: ⁨standard input⁩:32 ⁨standard input⁩:31
 msgid "Activity report"
 msgstr "Informe de actividades"
 
@@ -89,7 +89,7 @@ msgstr "Informe de actividades"
 msgid "Activity type is mandatory field"
 msgstr "El tipo de actividad es un campo obligatorio"
 
-#: ⁨standard input⁩:45 ⁨standard input⁩:44
+#: ⁨standard input⁩:44 ⁨standard input⁩:45
 msgctxt "button"
 msgid "Add"
 msgstr ""
@@ -146,7 +146,7 @@ msgstr[0] "Aprobar las vacaciones"
 msgstr[1] "Aprobar las vacaciones"
 msgstr[2] "Aprobar las vacaciones"
 
-#: ⁨standard input⁩:66 ⁨standard input⁩:93
+#: ⁨standard input⁩:93 ⁨standard input⁩:66
 msgid "Approver"
 msgstr ""
 
@@ -166,7 +166,7 @@ msgstr "Autorizar actividades los fines de semana"
 msgid "Authorize only the whole schedules"
 msgstr "Autorizar sólo los horarios completos"
 
-#: src/Holiday.php:533 src/HolidayType.php:98
+#: src/HolidayType.php:98 src/Holiday.php:533
 msgid "Auto-validated"
 msgstr "Validación automática"
 
@@ -199,7 +199,7 @@ msgstr ""
 msgid "Choose your project when entering externals events and display on CRA"
 msgstr ""
 
-#: src/CraPDF.php:403 ⁨standard input⁩:95
+#: src/CraPDF.php:408 ⁨standard input⁩:95
 #, fuzzy
 msgid "Client"
 msgid_plural "Clients"
@@ -207,7 +207,7 @@ msgstr[0] "Cliente"
 msgstr[1] "Cliente"
 msgstr[2] "Cliente"
 
-#: ⁨standard input⁩:32 ⁨standard input⁩:36
+#: ⁨standard input⁩:36 ⁨standard input⁩:32
 msgid "Close"
 msgstr ""
 
@@ -218,7 +218,7 @@ msgstr[0] "Comentarios"
 msgstr[1] "Comentarios"
 msgstr[2] "Comentarios"
 
-#: ⁨standard input⁩:61 ⁨standard input⁩:94
+#: ⁨standard input⁩:94 ⁨standard input⁩:61
 msgid "Comments"
 msgstr ""
 
@@ -230,7 +230,7 @@ msgstr ""
 msgid "Counter"
 msgstr "Contador"
 
-#: src/Holiday.php:709 src/Profile.php:117 src/PlanningExternalEvent.php:384
+#: src/PlanningExternalEvent.php:384 src/Holiday.php:709 src/Profile.php:117
 #: ⁨standard input⁩:46
 msgid "Create a holiday request"
 msgstr "Crear una solicitud de vacaciones"
@@ -313,7 +313,7 @@ msgstr "¿Aprueba estas vacaciones?"
 msgid "Document"
 msgstr ""
 
-#: ⁨standard input⁩:101 ⁨standard input⁩:111
+#: ⁨standard input⁩:111 ⁨standard input⁩:101
 msgid "Duration"
 msgstr ""
 
@@ -325,7 +325,7 @@ msgstr ""
 msgid "Entity"
 msgstr ""
 
-#: src/CraPDF.php:669
+#: src/CraPDF.php:674
 msgid ""
 "Entry except in the month, the total must be equal to the number of working "
 "days this month"
@@ -367,7 +367,7 @@ msgstr ""
 msgid "Failed to send email to \"%s\""
 msgstr ""
 
-#: src/CraPDF.php:734
+#: src/CraPDF.php:739
 msgid "Generated with GLPI on"
 msgstr "Generado con GLPI el"
 
@@ -379,7 +379,7 @@ msgstr ""
 msgid "Holiday"
 msgstr "Vacaciones"
 
-#: src/HolidayCount.php:48 src/Holiday.php:728 src/Menu.php:66
+#: src/Menu.php:66 src/HolidayCount.php:48 src/Holiday.php:728
 msgid "Holiday counter"
 msgid_plural "Holiday counters"
 msgstr[0] "Contador de vacaciones"
@@ -401,7 +401,7 @@ msgstr "El período de vacaciones es un campo obligatorio"
 msgid "Holiday request from"
 msgstr "Solicitud de vacaciones desde"
 
-#: src/HolidayType.php:79 src/NotificationTargetHoliday.php:197
+#: src/NotificationTargetHoliday.php:197 src/HolidayType.php:79
 msgid "Holiday type"
 msgid_plural "Holiday types"
 msgstr[0] "Tipo de vacaciones"
@@ -423,7 +423,7 @@ msgstr[2] "Validación de vacaciones"
 msgid "Holidays"
 msgstr ""
 
-#: src/CraPDF.php:592 src/Report.php:1829
+#: src/CraPDF.php:597 src/Report.php:1829
 msgid "Holidays or exceptional absences"
 msgstr "Vacaciones o ausencias excepcionales"
 
@@ -569,7 +569,7 @@ msgstr "Sólo se admiten horas completas (no se admiten tiempos parciales)"
 msgid "Optional when approved"
 msgstr ""
 
-#: src/CraPDF.php:591 src/HolidayType.php:118 src/Report.php:1831
+#: src/CraPDF.php:596 src/Report.php:1831 src/HolidayType.php:118
 msgid "Part time"
 msgstr "A tiempo parcial"
 
@@ -589,7 +589,7 @@ msgstr "Planificación del acceso"
 msgid "Please activate the plugin"
 msgstr "Por favor, active el complemento"
 
-#: src/Holiday.php:385 src/HolidayPeriod.php:107
+#: src/HolidayPeriod.php:107 src/Holiday.php:385
 msgid "Please fill a begin date"
 msgstr "Por favor, introduzca una fecha de inicio"
 
@@ -601,7 +601,7 @@ msgstr "Por favor, rellene el cuerpo de un correo"
 msgid "Please fill a subject"
 msgstr "Por favor, rellene un asunto"
 
-#: src/Holiday.php:389 src/HolidayPeriod.php:111
+#: src/HolidayPeriod.php:111 src/Holiday.php:389
 msgid "Please fill an end date"
 msgstr "Indique una fecha de finalización"
 
@@ -636,7 +636,7 @@ msgstr[2] "Vacaciones privadas"
 msgid "Project"
 msgstr "Proyecto"
 
-#: src/CraPDF.php:460
+#: src/CraPDF.php:465
 msgid "Project / activity"
 msgstr "Proyecto / actividad"
 
@@ -671,7 +671,7 @@ msgstr "Vacaciones restantes del período"
 msgid "Replace activity name by the activity type"
 msgstr "Sustituir el nombre de la actividad por el tipo de actividad"
 
-#: src/CraPDF.php:354 front/cra.php:72
+#: src/CraPDF.php:359 front/cra.php:72
 msgid "Report of Activities"
 msgstr "Informe de Actividades"
 
@@ -686,7 +686,7 @@ msgstr[0] "Rights management"
 msgstr[1] "Rights management"
 msgstr[2] "Rights management"
 
-#: ⁨standard input⁩:34 ⁨standard input⁩:65 ⁨standard input⁩:122
+#: ⁨standard input⁩:122 ⁨standard input⁩:34 ⁨standard input⁩:65
 msgctxt "button"
 msgid "Save"
 msgstr ""
@@ -707,7 +707,7 @@ msgstr "Ver opciones de validación"
 msgid "Set as tech lead of these clients"
 msgstr ""
 
-#: src/HolidayType.php:88 src/HolidayPeriod.php:82
+#: src/HolidayPeriod.php:82 src/HolidayType.php:88
 msgid "Short name"
 msgstr "Nombre corto"
 
@@ -723,7 +723,7 @@ msgstr "Mostrar el servicio de asistencia interna"
 msgid "Sickness"
 msgstr "Enfermedad"
 
-#: src/CraPDF.php:593 src/Report.php:1833
+#: src/CraPDF.php:598 src/Report.php:1833
 msgid "Sickness or maternity"
 msgstr "Enfermedad o maternidad"
 
@@ -782,13 +782,13 @@ msgstr[2] ""
 msgid "Technician"
 msgstr ""
 
-#: src/Holiday.php:456 src/PlanningExternalEvent.php:767
-#: src/PlanningExternalEvent.php:929
+#: src/PlanningExternalEvent.php:767 src/PlanningExternalEvent.php:929
+#: src/Holiday.php:456
 msgid "The chosen begin date is on weekend"
 msgstr "La fecha de inicio elegida es el fin de semana"
 
-#: src/Holiday.php:463 src/PlanningExternalEvent.php:753
-#: src/PlanningExternalEvent.php:917
+#: src/PlanningExternalEvent.php:753 src/PlanningExternalEvent.php:917
+#: src/Holiday.php:463
 msgid "The chosen date is a public holiday"
 msgstr "La fecha elegida es un día festivo"
 
@@ -847,15 +847,15 @@ msgid ""
 "ticket."
 msgstr ""
 
-#: ⁨standard input⁩:78 ⁨standard input⁩:63
+#: ⁨standard input⁩:63 ⁨standard input⁩:78
 msgid "Total"
 msgstr ""
 
-#: src/CraPDF.php:680
+#: src/CraPDF.php:685
 msgid "Total OK"
 msgstr "Total OK"
 
-#: src/CraPDF.php:678
+#: src/CraPDF.php:683
 msgid "Total incorrect"
 msgstr "Total incorrecto"
 
@@ -887,7 +887,7 @@ msgstr "Usar el supervisor del grupo como supervisor de vacaciones"
 msgid "Use hour on cra and not half day"
 msgstr ""
 
-#: src/PlanningExternalEvent.php:183 ⁨standard input⁩:31 ⁨standard input⁩:34
+#: src/PlanningExternalEvent.php:183 ⁨standard input⁩:34 ⁨standard input⁩:31
 #: ⁨standard input⁩:32
 msgid "Use in CRA"
 msgstr "Usar en el Informe de actividades"
@@ -928,8 +928,8 @@ msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#: src/Holiday.php:429 src/PlanningExternalEvent.php:744
-#: src/PlanningExternalEvent.php:840
+#: src/PlanningExternalEvent.php:744 src/PlanningExternalEvent.php:840
+#: src/Holiday.php:429
 msgid "User is mandatory field"
 msgstr "El usuario es un campo obligatorio"
 
@@ -951,11 +951,11 @@ msgstr[0] "Validaciones para estas vacaciones"
 msgstr[1] "Validaciones para estas vacaciones"
 msgstr[2] "Validaciones para estas vacaciones"
 
-#: src/Holiday.php:574 src/NotificationTargetHoliday.php:148
+#: src/NotificationTargetHoliday.php:148 src/Holiday.php:574
 msgid "Validation of your holiday request"
 msgstr "Validación de su solicitud de vacaciones"
 
-#: src/CraPDF.php:395 ⁨standard input⁩:54 ⁨standard input⁩:37
+#: src/CraPDF.php:400 ⁨standard input⁩:54 ⁨standard input⁩:37
 #, fuzzy
 msgid "Year"
 msgid_plural "Years"
@@ -987,11 +987,11 @@ msgstr "Ya ha planificado vacaciones para este período"
 msgid "You have not declared any manager yet."
 msgstr "Aún no ha declarado ningún supervisor."
 
-#: src/CraPDF.php:390
+#: src/CraPDF.php:395
 msgid "during"
 msgstr "durante"
 
-#: src/CraPDF.php:399
+#: src/CraPDF.php:404
 msgid "for"
 msgstr "para"
 
