@@ -345,9 +345,14 @@ class CraPDF extends \TCPDF
         /* Logo. */
         $image = Option::getCraLogoPath() ?? (PLUGIN_ACTIVITY_DIR . '/public/pics/logo.jpg');
         $target = 30;
-        [$width, $height, $type, $attr] = getimagesize($image);
-        [$width, $height] = $this->imageResize($width, $height, $target);
-        $this->Image($image, $this->margin_left + 5, $this->margin_top + $height / 3, $width, $height); // x, y, w, h
+        // Given as data: TCPDF 7 (GLPI 12) only reads the local files of an allowlist the
+        // plugin and document directories are not part of; every version accepts '@' data
+        $image_data = is_readable($image) ? file_get_contents($image) : false;
+        $image_size = $image_data !== false ? getimagesize($image) : false;
+        if ($image_data !== false && $image_size !== false) {
+            [$width, $height] = $this->imageResize($image_size[0], $image_size[1], $target);
+            $this->Image('@' . $image_data, $this->margin_left + 5, $this->margin_top + $height / 3, $width, $height); // x, y, w, h
+        }
         $this->Cell($logo_width, $logo_height, '', 0, 0, 'C');
 
         // Title
